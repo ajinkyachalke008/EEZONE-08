@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
+import { InstrumentScanner } from '@/components/instrument-scanner';
 import Link from 'next/link';
 
 type Role = 'professional' | 'student' | 'technician' | null;
@@ -152,6 +153,17 @@ export default function Home() {
               })}
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* Instrument Scanner Section */}
+      <section className="py-16 px-4 bg-[#071428]">
+        <div className="container mx-auto max-w-4xl">
+          <div className="text-center mb-8">
+            <h2 className="text-3xl font-bold text-white mb-2">AI-Powered Instrument Scanner</h2>
+            <p className="text-gray-300">Instantly identify any electrical or electronic instrument with advanced AI</p>
+          </div>
+          <InstrumentScanner />
         </div>
       </section>
 
