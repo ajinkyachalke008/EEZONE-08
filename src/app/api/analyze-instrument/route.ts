@@ -75,10 +75,27 @@ Be specific and technical in your descriptions. Focus on practical information t
     });
 
     if (!response.ok) {
-      const errorData = await response.json();
-      console.error('OpenAI API error:', errorData);
+      const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
+      console.error('OpenAI API error:', {
+        status: response.status,
+        statusText: response.statusText,
+        error: errorData
+      });
+      
+      // Provide specific error messages based on status code
+      let errorMessage = 'Failed to analyze image with AI';
+      if (response.status === 401) {
+        errorMessage = 'Invalid OpenAI API key. Please check your OPENAI_API_KEY environment variable.';
+      } else if (response.status === 429) {
+        errorMessage = errorData.error?.message || 'OpenAI API rate limit exceeded or quota reached. Please check your API usage and billing.';
+      } else if (response.status === 400) {
+        errorMessage = errorData.error?.message || 'Invalid request to OpenAI API.';
+      } else if (errorData.error?.message) {
+        errorMessage = errorData.error.message;
+      }
+      
       return NextResponse.json(
-        { error: 'Failed to analyze image with AI' },
+        { error: errorMessage },
         { status: response.status }
       );
     }
