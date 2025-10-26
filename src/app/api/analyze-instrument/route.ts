@@ -11,24 +11,26 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const apiKey = process.env.OPENAI_API_KEY;
+    const apiKey = process.env.OPENROUTER_API_KEY;
 
     if (!apiKey) {
       return NextResponse.json(
-        { error: 'OpenAI API key not configured. Please add OPENAI_API_KEY to your environment variables.' },
+        { error: 'OpenRouter API key not configured. Please add OPENROUTER_API_KEY to your environment variables.' },
         { status: 500 }
       );
     }
 
-    // Call OpenAI Vision API
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+    // Call OpenRouter Vision API
+    const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${apiKey}`
+        'Authorization': `Bearer ${apiKey}`,
+        'HTTP-Referer': process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000',
+        'X-Title': 'EE Zone - Instrument Scanner'
       },
       body: JSON.stringify({
-        model: 'gpt-4o',
+        model: 'openai/gpt-4o',
         messages: [
           {
             role: 'user',
@@ -76,7 +78,7 @@ Be specific and technical in your descriptions. Focus on practical information t
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
-      console.error('OpenAI API error:', {
+      console.error('OpenRouter API error:', {
         status: response.status,
         statusText: response.statusText,
         error: errorData
@@ -85,11 +87,11 @@ Be specific and technical in your descriptions. Focus on practical information t
       // Provide specific error messages based on status code
       let errorMessage = 'Failed to analyze image with AI';
       if (response.status === 401) {
-        errorMessage = 'Invalid OpenAI API key. Please check your OPENAI_API_KEY environment variable.';
+        errorMessage = 'Invalid OpenRouter API key. Please check your OPENROUTER_API_KEY environment variable.';
       } else if (response.status === 429) {
-        errorMessage = errorData.error?.message || 'OpenAI API rate limit exceeded or quota reached. Please check your API usage and billing.';
+        errorMessage = errorData.error?.message || 'OpenRouter API rate limit exceeded. Please check your API usage.';
       } else if (response.status === 400) {
-        errorMessage = errorData.error?.message || 'Invalid request to OpenAI API.';
+        errorMessage = errorData.error?.message || 'Invalid request to OpenRouter API.';
       } else if (errorData.error?.message) {
         errorMessage = errorData.error.message;
       }
