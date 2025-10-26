@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { Search, Star, Filter, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -123,6 +124,7 @@ const apps = [
 ];
 
 export default function AppsPage() {
+  const router = useRouter();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedPricing, setSelectedPricing] = useState<string[]>([]);
   const [selectedPurpose, setSelectedPurpose] = useState<string[]>([]);
@@ -166,6 +168,10 @@ export default function AppsPage() {
     setSelectedPurpose([]);
     setSelectedNEC([]);
     setMinRating(0);
+  };
+
+  const handleLaunchApp = (appId: number) => {
+    router.push(`/apps/${appId}`);
   };
 
   const FilterSidebar = () => (
@@ -353,7 +359,10 @@ export default function AppsPage() {
                     </div>
                   </CardContent>
                   <CardFooter className="flex gap-2">
-                    <Button className="flex-1 bg-[#071428] hover:bg-[#071428]/90">
+                    <Button 
+                      className="flex-1 bg-[#071428] hover:bg-[#071428]/90"
+                      onClick={() => handleLaunchApp(app.id)}
+                    >
                       Launch
                     </Button>
                     <Button variant="outline" size="icon">
