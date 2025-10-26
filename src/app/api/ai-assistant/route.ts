@@ -43,9 +43,11 @@ Keep responses concise but thorough. Use technical terms appropriately but expla
         'X-Title': 'EE Zone AI Assistant',
       },
       body: JSON.stringify({
-        model: 'mistralai/mistral-7b-instruct:free',
+        model: 'google/gemini-flash-1.5',
         messages: [
-          { role: 'user', content: systemPrompt + '\n\n' + (context ? `Context: ${context}\n\n` : '') + message }
+          { role: 'system', content: systemPrompt },
+          ...(context ? [{ role: 'user', content: `Context: ${context}` }] : []),
+          { role: 'user', content: message }
         ],
         temperature: 0.7,
         max_tokens: 1000,
