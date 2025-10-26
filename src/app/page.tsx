@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Badge } from '@/components/ui/badge';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 import { InstrumentScanner } from '@/components/instrument-scanner';
+import { ProblemSolver } from '@/components/problem-solver';
 import Link from 'next/link';
 
 type Role = 'professional' | 'student' | 'technician' | null;
@@ -164,6 +165,17 @@ export default function Home() {
             <p className="text-gray-300">Instantly identify any electrical or electronic instrument with advanced AI</p>
           </div>
           <InstrumentScanner />
+        </div>
+      </section>
+
+      {/* Problem Solver Section */}
+      <section className="py-16 px-4 bg-gradient-to-b from-[#071428] to-[#0a1d38]">
+        <div className="container mx-auto max-w-4xl">
+          <div className="text-center mb-8">
+            <h2 className="text-3xl font-bold text-white mb-2">AI Problem Solver</h2>
+            <p className="text-gray-300">Get detailed step-by-step solutions for electrical & electronics numerical problems</p>
+          </div>
+          <ProblemSolver />
         </div>
       </section>
 
