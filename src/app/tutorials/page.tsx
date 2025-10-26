@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Input } from '@/components/ui/input';
+import { AIAssistantChat } from '@/components/ai-assistant-chat';
 
 const videoTutorials = [
   {
@@ -187,6 +188,9 @@ export default function TutorialsPage() {
 
   return (
     <div className="min-h-screen bg-gray-50 py-8 px-4">
+      {/* AI Assistant Chat Widget */}
+      <AIAssistantChat context="User is browsing EE Zone tutorials and learning resources" />
+      
       <div className="container mx-auto max-w-7xl">
         {/* Header */}
         <div className="mb-8">
