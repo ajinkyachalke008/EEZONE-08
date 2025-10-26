@@ -216,9 +216,11 @@ export default function Home() {
                 </ul>
               </CardContent>
               <CardFooter>
-                <Button className="w-full bg-[#071428] hover:bg-[#071428]/90">
-                  Explore Tools
-                </Button>
+                <Link href="/tools/power-systems" className="w-full">
+                  <Button className="w-full bg-[#071428] hover:bg-[#071428]/90">
+                    Explore Tools
+                  </Button>
+                </Link>
               </CardFooter>
             </Card>
 
@@ -248,9 +250,11 @@ export default function Home() {
                 </ul>
               </CardContent>
               <CardFooter>
-                <Button className="w-full bg-[#071428] hover:bg-[#071428]/90">
-                  Explore Tools
-                </Button>
+                <Link href="/tools/motor-drives" className="w-full">
+                  <Button className="w-full bg-[#071428] hover:bg-[#071428]/90">
+                    Explore Tools
+                  </Button>
+                </Link>
               </CardFooter>
             </Card>
 
@@ -280,9 +284,11 @@ export default function Home() {
                 </ul>
               </CardContent>
               <CardFooter>
-                <Button className="w-full bg-[#071428] hover:bg-[#071428]/90">
-                  Explore Tools
-                </Button>
+                <Link href="/tools/lighting-energy" className="w-full">
+                  <Button className="w-full bg-[#071428] hover:bg-[#071428]/90">
+                    Explore Tools
+                  </Button>
+                </Link>
               </CardFooter>
             </Card>
           </div>
@@ -328,9 +334,11 @@ export default function Home() {
                 </ul>
               </CardContent>
               <CardFooter>
-                <Button className="w-full bg-[#00C2D1] text-[#071428] hover:bg-[#00C2D1]/90">
-                  Launch Simulator
-                </Button>
+                <Link href="/tools/circuit-simulator" className="w-full">
+                  <Button className="w-full bg-[#00C2D1] text-[#071428] hover:bg-[#00C2D1]/90">
+                    Launch Simulator
+                  </Button>
+                </Link>
               </CardFooter>
             </Card>
 
@@ -362,9 +370,11 @@ export default function Home() {
                 </ul>
               </CardContent>
               <CardFooter>
-                <Button className="w-full bg-[#00C2D1] text-[#071428] hover:bg-[#00C2D1]/90">
-                  Open Designer
-                </Button>
+                <Link href="/tutorials" className="w-full">
+                  <Button className="w-full bg-[#00C2D1] text-[#071428] hover:bg-[#00C2D1]/90">
+                    Open Designer
+                  </Button>
+                </Link>
               </CardFooter>
             </Card>
           </div>
@@ -423,9 +433,11 @@ export default function Home() {
                         <span>Thermal Management</span>
                       </div>
                     </div>
-                    <Button size="lg" className="bg-[#00C2D1] text-[#071428] hover:bg-[#00C2D1]/90 font-semibold">
-                      Access All Utilities
-                    </Button>
+                    <Link href="/tools/quick-utilities">
+                      <Button size="lg" className="bg-[#00C2D1] text-[#071428] hover:bg-[#00C2D1]/90 font-semibold">
+                        Access All Utilities
+                      </Button>
+                    </Link>
                   </div>
                 </div>
               </div>
@@ -492,9 +504,11 @@ export default function Home() {
                 </Card>
               </div>
 
-              <Button size="lg" className="w-full bg-[#00C2D1] text-[#071428] hover:bg-[#00C2D1]/90 font-semibold">
-                Start Learning
-              </Button>
+              <Link href="/tutorials">
+                <Button size="lg" className="w-full bg-[#00C2D1] text-[#071428] hover:bg-[#00C2D1]/90 font-semibold">
+                  Start Learning
+                </Button>
+              </Link>
             </div>
           </div>
         </div>
