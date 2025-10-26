@@ -98,7 +98,7 @@ export default function MotorDrivesPage() {
     if (length > 100) deratingFactor = 0.90;
     if (length > 150) deratingFactor = 0.85;
 
-    const derated HP = hp * deratingFactor;
+    const deratedHP = hp * deratingFactor;
     const recommendedVFD = Math.ceil(deratedHP);
 
     // Cable recommendations
