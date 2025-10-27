@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import { Search, Briefcase, GraduationCap, Wrench, ChevronRight, Star, Zap, Calculator, BookOpen, Cpu, Settings, Lightbulb, CircuitBoard, FileText, Gauge, GraduationCap as EducationIcon } from 'lucide-react';
+import { Search, Briefcase, GraduationCap, Wrench, ChevronRight, Star, Zap, Calculator, BookOpen, Cpu, Settings, Lightbulb, CircuitBoard, FileText, Gauge, GraduationCap as EducationIcon, ClipboardList, Scale, Wrench as DiagnosticIcon, Code, Sparkles, Headphones, Globe, Beaker, Box, Shield, Clock, Calendar, TrendingUp, MapPin, FileCheck, BarChart, Thermometer, PlayCircle, Smartphone } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -105,6 +105,46 @@ const toolCategories = [
     icon: FileText,
     image: 'https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/project-uploads/e24d0c9e-e4fc-4077-96b8-bf644fe969e3/generated_images/electrical-schematic-editor-and-wiring-d-edc888a6-20251026042846.jpg',
   },
+];
+
+const projectManagementTools = [
+  { icon: Calculator, name: 'Material Cost Estimator', description: 'Calculate component and material costs for projects', href: '/tools/project-management#cost-estimator' },
+  { icon: Clock, name: 'Labor Time Calculator', description: 'Estimate labor hours and project duration', href: '/tools/project-management#labor-calculator' },
+  { icon: Calendar, name: 'Project Timeline Planner', description: 'Plan and visualize project schedules', href: '/tools/project-management#timeline' },
+  { icon: ClipboardList, name: 'BOM Generator', description: 'Create detailed Bills of Materials', href: '/tools/project-management#bom' },
+  { icon: TrendingUp, name: 'Vendor Comparison', description: 'Compare prices and specs across vendors', href: '/tools/project-management#vendor-comparison' },
+];
+
+const codeComplianceTools = [
+  { icon: Search, name: 'NEC Code Search', description: 'AI-powered National Electrical Code search', href: '/tools/compliance#nec-search' },
+  { icon: Scale, name: 'Compliance Checker', description: 'Automatic code compliance verification', href: '/tools/compliance#checker' },
+  { icon: FileText, name: 'Code Change Tracker', description: 'Track updates in NEC 2026 and beyond', href: '/tools/compliance#change-tracker' },
+  { icon: MapPin, name: 'Jurisdiction Database', description: 'Local code requirements by location', href: '/tools/compliance#jurisdiction' },
+  { icon: FileCheck, name: 'Permit Assistant', description: 'Help with permit applications', href: '/tools/compliance#permit' },
+];
+
+const diagnosticTools = [
+  { icon: Calendar, name: 'Maintenance Scheduler', description: 'Schedule and track equipment maintenance', href: '/tools/diagnostics#scheduler' },
+  { icon: FileText, name: 'Test Report Generator', description: 'Generate megger and insulation test reports', href: '/tools/diagnostics#test-reports' },
+  { icon: BarChart, name: 'Load Profile Analyzer', description: 'Analyze meter data and load profiles', href: '/tools/diagnostics#load-analyzer' },
+  { icon: Gauge, name: 'Power Quality Reporter', description: 'Interpret power quality reports', href: '/tools/diagnostics#power-quality' },
+  { icon: Thermometer, name: 'Thermal Imaging Tool', description: 'Analyze thermal imaging data', href: '/tools/diagnostics#thermal' },
+];
+
+const aiFeatures = [
+  { icon: Code, name: 'AI Code Assistant', description: 'PLC, Arduino, ESP32 code generation', isPro: true },
+  { icon: CircuitBoard, name: 'AI Circuit Designer', description: 'Describe needs, get schematic suggestions', isPro: true },
+  { icon: Wrench, name: 'AI Troubleshooting', description: 'Upload error photos for diagnostics', isPro: true },
+  { icon: Headphones, name: 'Voice Input', description: 'Hands-free queries for field work', isPro: false },
+  { icon: Globe, name: 'Multi-language Support', description: 'Spanish, Mandarin, Hindi support', isPro: false },
+];
+
+const interactiveSimulations = [
+  { icon: Beaker, name: 'Virtual Lab Experiments', description: 'No physical equipment needed' },
+  { icon: Box, name: '3D Installation Viewer', description: 'Visualize electrical installations' },
+  { icon: PlayCircle, name: 'Animated Theory', description: 'How transformers and motors work' },
+  { icon: Shield, name: 'Safety Training', description: 'Arc flash scenario simulations' },
+  { icon: Smartphone, name: 'AR Circuit Overlays', description: 'Camera-based circuit visualization' },
 ];
 
 export default function Home() {
@@ -412,6 +452,172 @@ export default function Home() {
                         </Button>
                       </Link>
                     </CardFooter>
+                  </Card>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Project Management Suite - NEW */}
+      {!searchQuery && (
+        <section className="py-16 px-4 bg-white">
+          <div className="container mx-auto max-w-6xl">
+            <div className="text-center mb-12">
+              <h2 className="text-4xl font-bold text-[#071428] mb-4">📋 Project Management Suite</h2>
+              <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+                Professional tools for planning, estimation, and project execution
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {projectManagementTools.map((tool) => {
+                const Icon = tool.icon;
+                return (
+                  <Link key={tool.name} href={tool.href}>
+                    <Card className="hover:shadow-xl transition-all hover:scale-105 cursor-pointer h-full">
+                      <CardHeader>
+                        <Icon className="h-10 w-10 text-[#00C2D1] mb-2" />
+                        <CardTitle className="text-lg">{tool.name}</CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <p className="text-gray-600 text-sm">{tool.description}</p>
+                      </CardContent>
+                    </Card>
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Code Compliance Tools - NEW */}
+      {!searchQuery && (
+        <section className="py-16 px-4 bg-gradient-to-br from-[#071428] to-[#0a1d38]">
+          <div className="container mx-auto max-w-6xl">
+            <div className="text-center mb-12">
+              <h2 className="text-4xl font-bold text-white mb-4">⚖️ Code Compliance Tools</h2>
+              <p className="text-lg text-gray-300 max-w-3xl mx-auto">
+                Ensure your designs meet electrical codes and standards
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {codeComplianceTools.map((tool) => {
+                const Icon = tool.icon;
+                return (
+                  <Link key={tool.name} href={tool.href}>
+                    <Card className="hover:shadow-xl transition-all hover:scale-105 cursor-pointer h-full bg-white/5 border-white/10 hover:bg-white/10">
+                      <CardHeader>
+                        <Icon className="h-10 w-10 text-[#00C2D1] mb-2" />
+                        <CardTitle className="text-lg text-white">{tool.name}</CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <p className="text-gray-300 text-sm">{tool.description}</p>
+                      </CardContent>
+                    </Card>
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Diagnostic & Testing Tools - NEW */}
+      {!searchQuery && (
+        <section className="py-16 px-4 bg-gray-50">
+          <div className="container mx-auto max-w-6xl">
+            <div className="text-center mb-12">
+              <h2 className="text-4xl font-bold text-[#071428] mb-4">🔧 Diagnostic & Testing Tools</h2>
+              <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+                Equipment maintenance, analysis, and reporting solutions
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {diagnosticTools.map((tool) => {
+                const Icon = tool.icon;
+                return (
+                  <Link key={tool.name} href={tool.href}>
+                    <Card className="hover:shadow-xl transition-all hover:scale-105 cursor-pointer h-full">
+                      <CardHeader>
+                        <Icon className="h-10 w-10 text-[#00C2D1] mb-2" />
+                        <CardTitle className="text-lg">{tool.name}</CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <p className="text-gray-600 text-sm">{tool.description}</p>
+                      </CardContent>
+                    </Card>
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Advanced AI Features - NEW */}
+      {!searchQuery && (
+        <section className="py-16 px-4 bg-gradient-to-br from-indigo-900 to-purple-900">
+          <div className="container mx-auto max-w-6xl">
+            <div className="text-center mb-12">
+              <h2 className="text-4xl font-bold text-white mb-4">✨ Advanced AI Features</h2>
+              <p className="text-lg text-gray-200 max-w-3xl mx-auto">
+                Leverage artificial intelligence for code assistance, design, and troubleshooting
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {aiFeatures.map((feature) => {
+                const Icon = feature.icon;
+                return (
+                  <Card key={feature.name} className="bg-white/10 border-white/20 hover:bg-white/15 transition-all">
+                    <CardHeader>
+                      <div className="flex items-start justify-between mb-2">
+                        <Icon className="h-10 w-10 text-[#00C2D1]" />
+                        {feature.isPro && (
+                          <Badge className="bg-yellow-500 text-black">Pro</Badge>
+                        )}
+                      </div>
+                      <CardTitle className="text-white text-lg">{feature.name}</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <p className="text-gray-200 text-sm">{feature.description}</p>
+                    </CardContent>
+                  </Card>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Interactive Simulations - NEW */}
+      {!searchQuery && (
+        <section className="py-16 px-4 bg-white">
+          <div className="container mx-auto max-w-6xl">
+            <div className="text-center mb-12">
+              <h2 className="text-4xl font-bold text-[#071428] mb-4">🎮 Interactive Simulations</h2>
+              <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+                Immersive and educational experiences for hands-on learning
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {interactiveSimulations.map((sim) => {
+                const Icon = sim.icon;
+                return (
+                  <Card key={sim.name} className="hover:shadow-xl transition-all hover:scale-105 cursor-pointer border-2 border-gray-200 hover:border-[#00C2D1]">
+                    <CardHeader>
+                      <Icon className="h-10 w-10 text-[#00C2D1] mb-2" />
+                      <CardTitle className="text-lg">{sim.name}</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <p className="text-gray-600 text-sm">{sim.description}</p>
+                    </CardContent>
                   </Card>
                 );
               })}
