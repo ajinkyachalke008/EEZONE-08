@@ -132,19 +132,19 @@ const diagnosticTools = [
 ];
 
 const aiFeatures = [
-  { icon: Code, name: 'AI Code Assistant', description: 'PLC, Arduino, ESP32 code generation', isPro: true },
-  { icon: CircuitBoard, name: 'AI Circuit Designer', description: 'Describe needs, get schematic suggestions', isPro: true },
-  { icon: Wrench, name: 'AI Troubleshooting', description: 'Upload error photos for diagnostics', isPro: true },
-  { icon: Headphones, name: 'Voice Input', description: 'Hands-free queries for field work', isPro: false },
-  { icon: Globe, name: 'Multi-language Support', description: 'Spanish, Mandarin, Hindi support', isPro: false },
+  { icon: Code, name: 'AI Code Assistant', description: 'PLC, Arduino, ESP32 code generation', isPro: true, href: '/tools/ai-features#code-assistant' },
+  { icon: CircuitBoard, name: 'AI Circuit Designer', description: 'Describe needs, get schematic suggestions', isPro: true, href: '/tools/ai-features#circuit-designer' },
+  { icon: Wrench, name: 'AI Troubleshooting', description: 'Upload error photos for diagnostics', isPro: true, href: '/tools/ai-features#troubleshooting' },
+  { icon: Headphones, name: 'Voice Input', description: 'Hands-free queries for field work', isPro: false, href: '/tools/ai-features#voice-input' },
+  { icon: Globe, name: 'Multi-language Support', description: 'Spanish, Mandarin, Hindi support', isPro: false, href: '/tools/ai-features#multi-language' },
 ];
 
 const interactiveSimulations = [
-  { icon: Beaker, name: 'Virtual Lab Experiments', description: 'No physical equipment needed' },
-  { icon: Box, name: '3D Installation Viewer', description: 'Visualize electrical installations' },
-  { icon: PlayCircle, name: 'Animated Theory', description: 'How transformers and motors work' },
-  { icon: Shield, name: 'Safety Training', description: 'Arc flash scenario simulations' },
-  { icon: Smartphone, name: 'AR Circuit Overlays', description: 'Camera-based circuit visualization' },
+  { icon: Beaker, name: 'Virtual Lab Experiments', description: 'No physical equipment needed', href: '/tools/simulations#virtual-lab' },
+  { icon: Box, name: '3D Installation Viewer', description: 'Visualize electrical installations', href: '/tools/simulations#3d-viewer' },
+  { icon: PlayCircle, name: 'Animated Theory', description: 'How transformers and motors work', href: '/tools/simulations#animated-theory' },
+  { icon: Shield, name: 'Safety Training', description: 'Arc flash scenario simulations', href: '/tools/simulations#safety-training' },
+  { icon: Smartphone, name: 'AR Circuit Overlays', description: 'Camera-based circuit visualization', href: '/tools/simulations#ar-overlays' },
 ];
 
 export default function Home() {
@@ -574,20 +574,22 @@ export default function Home() {
               {aiFeatures.map((feature) => {
                 const Icon = feature.icon;
                 return (
-                  <Card key={feature.name} className="bg-white/10 border-white/20 hover:bg-white/15 transition-all">
-                    <CardHeader>
-                      <div className="flex items-start justify-between mb-2">
-                        <Icon className="h-10 w-10 text-[#00C2D1]" />
-                        {feature.isPro && (
-                          <Badge className="bg-yellow-500 text-black">Pro</Badge>
-                        )}
-                      </div>
-                      <CardTitle className="text-white text-lg">{feature.name}</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <p className="text-gray-200 text-sm">{feature.description}</p>
-                    </CardContent>
-                  </Card>
+                  <Link key={feature.name} href={feature.href}>
+                    <Card className="bg-white/10 border-white/20 hover:bg-white/15 transition-all cursor-pointer h-full">
+                      <CardHeader>
+                        <div className="flex items-start justify-between mb-2">
+                          <Icon className="h-10 w-10 text-[#00C2D1]" />
+                          {feature.isPro && (
+                            <Badge className="bg-yellow-500 text-black">Pro</Badge>
+                          )}
+                        </div>
+                        <CardTitle className="text-white text-lg">{feature.name}</CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <p className="text-gray-200 text-sm">{feature.description}</p>
+                      </CardContent>
+                    </Card>
+                  </Link>
                 );
               })}
             </div>
@@ -610,15 +612,17 @@ export default function Home() {
               {interactiveSimulations.map((sim) => {
                 const Icon = sim.icon;
                 return (
-                  <Card key={sim.name} className="hover:shadow-xl transition-all hover:scale-105 cursor-pointer border-2 border-gray-200 hover:border-[#00C2D1]">
-                    <CardHeader>
-                      <Icon className="h-10 w-10 text-[#00C2D1] mb-2" />
-                      <CardTitle className="text-lg">{sim.name}</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <p className="text-gray-600 text-sm">{sim.description}</p>
-                    </CardContent>
-                  </Card>
+                  <Link key={sim.name} href={sim.href}>
+                    <Card className="hover:shadow-xl transition-all hover:scale-105 cursor-pointer border-2 border-gray-200 hover:border-[#00C2D1] h-full">
+                      <CardHeader>
+                        <Icon className="h-10 w-10 text-[#00C2D1] mb-2" />
+                        <CardTitle className="text-lg">{sim.name}</CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <p className="text-gray-600 text-sm">{sim.description}</p>
+                      </CardContent>
+                    </Card>
+                  </Link>
                 );
               })}
             </div>
