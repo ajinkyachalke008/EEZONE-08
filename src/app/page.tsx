@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import { Search, Briefcase, GraduationCap, Wrench, ChevronRight, Star, Zap, Calculator, BookOpen, Cpu, Settings, Lightbulb, CircuitBoard, FileText, Gauge, GraduationCap as EducationIcon, ClipboardList, Scale, Wrench as DiagnosticIcon, Code, Sparkles, Headphones, Globe, Beaker, Box, Shield, Clock, Calendar, TrendingUp, MapPin, FileCheck, BarChart, Thermometer, PlayCircle, Smartphone } from 'lucide-react';
+import { Search, Briefcase, GraduationCap, Wrench, ChevronRight, Star, Zap, Calculator, BookOpen, Cpu, Settings, Lightbulb, CircuitBoard, FileText, Gauge, GraduationCap as EducationIcon, ClipboardList, Scale, Wrench as DiagnosticIcon, Code, Sparkles, Headphones, Globe, Beaker, Box, Shield, Clock, Calendar, TrendingUp, MapPin, FileCheck, BarChart, Thermometer, PlayCircle, Smartphone, Camera } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -11,6 +11,7 @@ import { InstrumentScanner } from '@/components/instrument-scanner';
 import { ProblemSolver } from '@/components/problem-solver';
 import { Header } from '@/components/header';
 import Link from 'next/link';
+import { motion } from 'framer-motion';
 
 type Role = 'professional' | 'student' | 'technician' | null;
 
@@ -266,15 +267,31 @@ export default function Home() {
         <section className="bg-[#071428] text-white py-20 px-4">
           <div className="container mx-auto max-w-6xl">
             <div className="text-center space-y-6">
-              <h1 className="text-4xl md:text-6xl font-bold leading-tight">
+              <motion.h1 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6 }}
+                className="text-4xl md:text-6xl font-bold leading-tight"
+              >
                 Your Complete <span className="text-[#00C2D1]">Electrical & Electronics</span> Platform
-              </h1>
-              <p className="text-lg md:text-xl text-gray-300 max-w-3xl mx-auto">
+              </motion.h1>
+              <motion.p 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.2 }}
+                className="text-lg md:text-xl text-gray-300 max-w-3xl mx-auto"
+              >
                 Access professional tools, calculators, tutorials, and resources designed for EEE professionals, students, and technicians.
-              </p>
+              </motion.p>
 
               {/* Search Bar */}
-              <form onSubmit={(e) => { e.preventDefault(); }} className="max-w-2xl mx-auto mt-8">
+              <motion.form 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.4 }}
+                onSubmit={(e) => { e.preventDefault(); }} 
+                className="max-w-2xl mx-auto mt-8"
+              >
                 <div className="flex gap-2">
                   <div className="relative flex-1">
                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
@@ -290,63 +307,244 @@ export default function Home() {
                     Search
                   </Button>
                 </div>
-              </form>
+              </motion.form>
 
               {/* Role Selector */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-12 max-w-4xl mx-auto">
-                {roles.map((role) => {
+              <motion.div 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.6 }}
+                className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-12 max-w-4xl mx-auto"
+              >
+                {roles.map((role, index) => {
                   const Icon = role.icon;
                   const isSelected = selectedRole === role.type;
                   return (
-                    <Card
+                    <motion.div
                       key={role.type}
-                      className={`cursor-pointer transition-all hover:scale-105 ${
-                        isSelected
-                          ? 'bg-[#00C2D1] border-[#00C2D1] text-[#071428]'
-                          : 'bg-white/10 border-white/20 text-white hover:bg-white/20'
-                      }`}
-                      onClick={() => setSelectedRole(role.type)}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.4, delay: 0.7 + index * 0.1 }}
                     >
-                      <CardHeader>
-                        <Icon className="h-10 w-10 mb-2" />
-                        <CardTitle className={isSelected ? 'text-[#071428]' : 'text-white'}>
-                          {role.title}
-                        </CardTitle>
-                        <CardDescription className={isSelected ? 'text-[#071428]/80' : 'text-gray-300'}>
-                          {role.description}
-                        </CardDescription>
-                      </CardHeader>
-                    </Card>
+                      <Card
+                        className={`cursor-pointer transition-all hover:scale-105 ${
+                          isSelected
+                            ? 'bg-[#00C2D1] border-[#00C2D1] text-[#071428]'
+                            : 'bg-white/10 border-white/20 text-white hover:bg-white/20'
+                        }`}
+                        onClick={() => setSelectedRole(role.type)}
+                      >
+                        <CardHeader>
+                          <Icon className="h-10 w-10 mb-2" />
+                          <CardTitle className={isSelected ? 'text-[#071428]' : 'text-white'}>
+                            {role.title}
+                          </CardTitle>
+                          <CardDescription className={isSelected ? 'text-[#071428]/80' : 'text-gray-300'}>
+                            {role.description}
+                          </CardDescription>
+                        </CardHeader>
+                      </Card>
+                    </motion.div>
                   );
                 })}
+              </motion.div>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Instrument Scanner Section - Enhanced with Image */}
+      {!searchQuery && (
+        <section className="relative py-20 px-4 bg-gradient-to-br from-[#071428] via-[#0a1d38] to-[#071428] overflow-hidden">
+          {/* Animated Background Elements */}
+          <div className="absolute inset-0 opacity-10">
+            <div className="absolute top-20 left-10 w-64 h-64 bg-[#00C2D1] rounded-full blur-3xl animate-pulse" />
+            <div className="absolute bottom-20 right-10 w-96 h-96 bg-purple-500 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
+          </div>
+
+          <div className="container mx-auto max-w-6xl relative z-10">
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+              viewport={{ once: true }}
+              className="text-center mb-12"
+            >
+              <div className="flex items-center justify-center gap-3 mb-4">
+                <motion.div
+                  animate={{ rotate: [0, 360] }}
+                  transition={{ duration: 3, repeat: Infinity, ease: 'linear' }}
+                >
+                  <CircuitBoard className="h-12 w-12 text-[#00C2D1]" />
+                </motion.div>
+                <h2 className="text-4xl md:text-5xl font-bold text-white">AI-Powered Instrument Scanner</h2>
               </div>
+              <p className="text-xl text-gray-300 max-w-3xl mx-auto">
+                Instantly identify any electrical or electronic instrument with advanced AI technology
+              </p>
+            </motion.div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center mb-8">
+              {/* Feature Image */}
+              <motion.div
+                initial={{ opacity: 0, x: -50 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.8 }}
+                viewport={{ once: true }}
+                className="relative rounded-2xl overflow-hidden shadow-2xl"
+              >
+                <img
+                  src="https://images.unsplash.com/photo-1581092918056-0c4c3acd3789?w=800&h=600&fit=crop"
+                  alt="Instrument Scanner"
+                  className="w-full h-full object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#00C2D1]/80 to-transparent" />
+                <div className="absolute bottom-6 left-6 right-6">
+                  <h3 className="text-2xl font-bold text-white mb-2">Advanced Recognition</h3>
+                  <p className="text-white/90 text-sm">Identify multimeters, oscilloscopes, power supplies, and more</p>
+                </div>
+              </motion.div>
+
+              {/* Feature List */}
+              <motion.div
+                initial={{ opacity: 0, x: 50 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.8 }}
+                viewport={{ once: true }}
+                className="space-y-4"
+              >
+                {[
+                  { icon: Zap, title: 'Instant Recognition', desc: 'AI identifies instruments in under 2 seconds' },
+                  { icon: CircuitBoard, title: 'Complete Specifications', desc: 'Get full technical specs and datasheets' },
+                  { icon: BookOpen, title: 'Usage Tutorials', desc: 'Learn how to use each instrument properly' },
+                  { icon: Shield, title: 'Safety Guidelines', desc: 'Important safety notes and precautions' },
+                ].map((feature, index) => (
+                  <motion.div
+                    key={index}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.4, delay: index * 0.1 }}
+                    viewport={{ once: true }}
+                    className="flex items-start gap-4 bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-4 hover:bg-white/10 transition-colors"
+                  >
+                    <div className="p-3 bg-[#00C2D1]/20 rounded-lg">
+                      <feature.icon className="h-6 w-6 text-[#00C2D1]" />
+                    </div>
+                    <div>
+                      <h4 className="text-white font-semibold text-lg mb-1">{feature.title}</h4>
+                      <p className="text-gray-400 text-sm">{feature.desc}</p>
+                    </div>
+                  </motion.div>
+                ))}
+              </motion.div>
             </div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.4 }}
+              viewport={{ once: true }}
+            >
+              <InstrumentScanner />
+            </motion.div>
           </div>
         </section>
       )}
 
-      {/* Instrument Scanner Section - Hidden when searching */}
+      {/* Problem Solver Section - Enhanced with Image */}
       {!searchQuery && (
-        <section className="py-16 px-4 bg-[#071428]">
-          <div className="container mx-auto max-w-4xl">
-            <div className="text-center mb-8">
-              <h2 className="text-3xl font-bold text-white mb-2">AI-Powered Instrument Scanner</h2>
-              <p className="text-gray-300">Instantly identify any electrical or electronic instrument with advanced AI</p>
-            </div>
-            <InstrumentScanner />
+        <section className="relative py-20 px-4 bg-gradient-to-br from-[#0a1d38] via-[#1a1f3a] to-[#0a1d38] overflow-hidden">
+          {/* Animated Background Elements */}
+          <div className="absolute inset-0 opacity-10">
+            <div className="absolute top-20 right-10 w-64 h-64 bg-purple-500 rounded-full blur-3xl animate-pulse" />
+            <div className="absolute bottom-20 left-10 w-96 h-96 bg-[#00C2D1] rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1.5s' }} />
           </div>
-        </section>
-      )}
 
-      {/* Problem Solver Section - Hidden when searching */}
-      {!searchQuery && (
-        <section className="py-16 px-4 bg-gradient-to-b from-[#071428] to-[#0a1d38]">
-          <div className="container mx-auto max-w-4xl">
-            <div className="text-center mb-8">
-              <h2 className="text-3xl font-bold text-white mb-2">AI Problem Solver</h2>
-              <p className="text-gray-300">Get detailed step-by-step solutions for electrical & electronics numerical problems</p>
+          <div className="container mx-auto max-w-6xl relative z-10">
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+              viewport={{ once: true }}
+              className="text-center mb-12"
+            >
+              <div className="flex items-center justify-center gap-3 mb-4">
+                <motion.div
+                  animate={{ rotate: [0, 360] }}
+                  transition={{ duration: 3, repeat: Infinity, ease: 'linear' }}
+                >
+                  <Sparkles className="h-12 w-12 text-purple-400" />
+                </motion.div>
+                <h2 className="text-4xl md:text-5xl font-bold text-white">AI Problem Solver</h2>
+              </div>
+              <p className="text-xl text-gray-300 max-w-3xl mx-auto">
+                Get detailed step-by-step solutions for electrical & electronics numerical problems
+              </p>
+            </motion.div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center mb-8">
+              {/* Feature List */}
+              <motion.div
+                initial={{ opacity: 0, x: -50 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.8 }}
+                viewport={{ once: true }}
+                className="space-y-4 order-2 lg:order-1"
+              >
+                {[
+                  { icon: Calculator, title: 'Complex Calculations', desc: 'Solve circuit analysis, power systems, and control problems' },
+                  { icon: BookOpen, title: 'Step-by-Step Solutions', desc: 'Detailed breakdown of every calculation step' },
+                  { icon: Camera, title: 'Multiple Input Methods', desc: 'Type, paste, or scan problems from books' },
+                  { icon: Zap, title: 'Instant Results', desc: 'Get solutions in seconds with AI processing' },
+                ].map((feature, index) => (
+                  <motion.div
+                    key={index}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.4, delay: index * 0.1 }}
+                    viewport={{ once: true }}
+                    className="flex items-start gap-4 bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-4 hover:bg-white/10 transition-colors"
+                  >
+                    <div className="p-3 bg-purple-500/20 rounded-lg">
+                      <feature.icon className="h-6 w-6 text-purple-400" />
+                    </div>
+                    <div>
+                      <h4 className="text-white font-semibold text-lg mb-1">{feature.title}</h4>
+                      <p className="text-gray-400 text-sm">{feature.desc}</p>
+                    </div>
+                  </motion.div>
+                ))}
+              </motion.div>
+
+              {/* Feature Image */}
+              <motion.div
+                initial={{ opacity: 0, x: 50 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.8 }}
+                viewport={{ once: true }}
+                className="relative rounded-2xl overflow-hidden shadow-2xl order-1 lg:order-2"
+              >
+                <img
+                  src="https://images.unsplash.com/photo-1635070041078-e363dbe005cb?w=800&h=600&fit=crop"
+                  alt="Problem Solver"
+                  className="w-full h-full object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-purple-500/80 to-transparent" />
+                <div className="absolute bottom-6 left-6 right-6">
+                  <h3 className="text-2xl font-bold text-white mb-2">Smart Analysis</h3>
+                  <p className="text-white/90 text-sm">AI-powered solutions for complex electrical problems</p>
+                </div>
+              </motion.div>
             </div>
-            <ProblemSolver />
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.4 }}
+              viewport={{ once: true }}
+            >
+              <ProblemSolver />
+            </motion.div>
           </div>
         </section>
       )}
