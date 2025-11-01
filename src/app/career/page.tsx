@@ -37,6 +37,9 @@ import {
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
+import { StudyPlanGenerator } from '@/components/career/study-plan-generator';
+import { ResumeBuilder } from '@/components/career/resume-builder';
+import { InterviewPrep } from '@/components/career/interview-prep';
 
 const certifications = [
   {
@@ -230,6 +233,7 @@ export default function CareerPage() {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [selectedLocation, setSelectedLocation] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
+  const [activeCareerTool, setActiveCareerTool] = useState<string | null>(null);
 
   const filteredJobs = jobListings.filter(job => {
     const matchesCategory = selectedCategory === 'all' || job.category.toLowerCase() === selectedCategory;
@@ -386,144 +390,130 @@ export default function CareerPage() {
                 ))}
               </div>
 
-              {/* Study Plans */}
+              {/* AI Study Plan Generator */}
               <div className="space-y-6">
                 <div className="flex items-center gap-3">
                   <Sparkles className="h-6 w-6 text-[#9C4AFF]" />
                   <h2 className="text-2xl font-bold text-white">AI-Generated Study Plans</h2>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  {studyPlans.map((plan, index) => (
-                    <motion.div
-                      key={index}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.4, delay: index * 0.1 }}
-                    >
-                      <Card className="glass-surface border-white/10 hover:border-[#9C4AFF]/50 hover:shadow-glowViolet transition-all h-full">
-                        <CardHeader>
-                          <CardTitle className="text-white text-lg">{plan.title}</CardTitle>
-                        </CardHeader>
-                        <CardContent className="space-y-4">
-                          <div className="flex items-center gap-4">
-                            <div className="flex items-center gap-2 text-[#B8A7E0] text-sm">
-                              <Calendar className="h-4 w-4" />
-                              {plan.weeks} weeks
-                            </div>
-                            <div className="flex items-center gap-2 text-[#B8A7E0] text-sm">
-                              <Clock className="h-4 w-4" />
-                              {plan.hours}
-                            </div>
-                          </div>
-                          <div className="space-y-2">
-                            <div className="text-white font-medium text-sm">Topics Covered:</div>
-                            <div className="flex flex-wrap gap-2">
-                              {plan.topics.map((topic, idx) => (
-                                <Badge key={idx} className="glass-surface text-[#B8A7E0] border-white/20">
-                                  {topic}
-                                </Badge>
-                              ))}
-                            </div>
-                          </div>
-                        </CardContent>
-                        <CardFooter>
-                          <Button variant="outline" className="w-full border-white/20 text-white hover:bg-white/10">
-                            <Download className="h-4 w-4 mr-2" />
-                            Download Plan
-                          </Button>
-                        </CardFooter>
-                      </Card>
-                    </motion.div>
-                  ))}
-                </div>
+                <StudyPlanGenerator />
               </div>
             </TabsContent>
 
             {/* Career Tools Tab */}
             <TabsContent value="career-tools" className="space-y-8">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {careerTools.map((tool, index) => (
-                  <motion.div
-                    key={tool.id}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.4, delay: index * 0.1 }}
-                  >
-                    <Card className="glass-surface border-white/10 hover:border-[#FF6B00]/50 hover:shadow-glowOrange transition-all h-full">
-                      <CardHeader>
-                        <div className={`p-3 w-fit rounded-xl mb-4 ${
-                          tool.color === 'violet' ? 'gradient-violet' :
-                          tool.color === 'orange' ? 'gradient-fire' : 'gradient-aqua'
-                        }`}>
-                          <tool.icon className="h-6 w-6 text-white" />
+              {!activeCareerTool ? (
+                <>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    {careerTools.map((tool, index) => (
+                      <motion.div
+                        key={tool.id}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.4, delay: index * 0.1 }}
+                      >
+                        <Card className="glass-surface border-white/10 hover:border-[#FF6B00]/50 hover:shadow-glowOrange transition-all h-full">
+                          <CardHeader>
+                            <div className={`p-3 w-fit rounded-xl mb-4 ${
+                              tool.color === 'violet' ? 'gradient-violet' :
+                              tool.color === 'orange' ? 'gradient-fire' : 'gradient-aqua'
+                            }`}>
+                              <tool.icon className="h-6 w-6 text-white" />
+                            </div>
+                            <CardTitle className="text-white">{tool.title}</CardTitle>
+                            <CardDescription className="text-[#B8A7E0]">
+                              {tool.description}
+                            </CardDescription>
+                          </CardHeader>
+                          <CardContent>
+                            <ul className="space-y-2">
+                              {tool.features.map((feature, idx) => (
+                                <li key={idx} className="flex items-center gap-2 text-[#B8A7E0] text-sm">
+                                  <CheckCircle2 className="h-4 w-4 text-[#00E5FF]" />
+                                  {feature}
+                                </li>
+                              ))}
+                            </ul>
+                          </CardContent>
+                          <CardFooter>
+                            <Button 
+                              onClick={() => setActiveCareerTool(tool.id)}
+                              className="w-full gradient-fire hover:shadow-glowOrange text-white font-semibold"
+                            >
+                              {tool.action}
+                            </Button>
+                          </CardFooter>
+                        </Card>
+                      </motion.div>
+                    ))}
+                  </div>
+
+                  {/* Feature Showcase */}
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-12">
+                    <Card className="glass-surface border-2 border-[#9C4AFF]/30 overflow-hidden">
+                      <div className="relative h-48 gradient-violet flex items-center justify-center">
+                        <FileText className="h-20 w-20 text-white opacity-20" />
+                        <div className="absolute bottom-4 left-4">
+                          <h3 className="text-white font-bold text-xl">Professional Templates</h3>
+                          <p className="text-white/80 text-sm">Industry-tested resume formats</p>
                         </div>
-                        <CardTitle className="text-white">{tool.title}</CardTitle>
-                        <CardDescription className="text-[#B8A7E0]">
-                          {tool.description}
-                        </CardDescription>
-                      </CardHeader>
-                      <CardContent>
-                        <ul className="space-y-2">
-                          {tool.features.map((feature, idx) => (
-                            <li key={idx} className="flex items-center gap-2 text-[#B8A7E0] text-sm">
-                              <CheckCircle2 className="h-4 w-4 text-[#00E5FF]" />
-                              {feature}
+                      </div>
+                      <CardContent className="p-6">
+                        <ul className="space-y-3">
+                          {['Modern & clean design', 'ATS-optimized layout', 'Technical skills section', 'Project showcase area'].map((item, idx) => (
+                            <li key={idx} className="flex items-center gap-2 text-[#B8A7E0]">
+                              <CheckCircle2 className="h-4 w-4 text-[#9C4AFF]" />
+                              {item}
                             </li>
                           ))}
                         </ul>
                       </CardContent>
-                      <CardFooter>
-                        <Button className="w-full gradient-fire hover:shadow-glowOrange text-white font-semibold">
-                          {tool.action}
-                        </Button>
-                      </CardFooter>
                     </Card>
-                  </motion.div>
-                ))}
-              </div>
 
-              {/* Feature Showcase */}
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-12">
-                <Card className="glass-surface border-2 border-[#9C4AFF]/30 overflow-hidden">
-                  <div className="relative h-48 gradient-violet flex items-center justify-center">
-                    <FileText className="h-20 w-20 text-white opacity-20" />
-                    <div className="absolute bottom-4 left-4">
-                      <h3 className="text-white font-bold text-xl">Professional Templates</h3>
-                      <p className="text-white/80 text-sm">Industry-tested resume formats</p>
-                    </div>
+                    <Card className="glass-surface border-2 border-[#FF6B00]/30 overflow-hidden">
+                      <div className="relative h-48 gradient-fire flex items-center justify-center">
+                        <Brain className="h-20 w-20 text-white opacity-20" />
+                        <div className="absolute bottom-4 left-4">
+                          <h3 className="text-white font-bold text-xl">Interview AI Coach</h3>
+                          <p className="text-white/80 text-sm">Practice with AI feedback</p>
+                        </div>
+                      </div>
+                      <CardContent className="p-6">
+                        <ul className="space-y-3">
+                          {['Real-time feedback', 'Common EE questions', 'Behavioral scenarios', 'Video practice mode'].map((item, idx) => (
+                            <li key={idx} className="flex items-center gap-2 text-[#B8A7E0]">
+                              <CheckCircle2 className="h-4 w-4 text-[#FF6B00]" />
+                              {item}
+                            </li>
+                          ))}
+                        </ul>
+                      </CardContent>
+                    </Card>
                   </div>
-                  <CardContent className="p-6">
-                    <ul className="space-y-3">
-                      {['Modern & clean design', 'ATS-optimized layout', 'Technical skills section', 'Project showcase area'].map((item, idx) => (
-                        <li key={idx} className="flex items-center gap-2 text-[#B8A7E0]">
-                          <CheckCircle2 className="h-4 w-4 text-[#9C4AFF]" />
-                          {item}
-                        </li>
-                      ))}
-                    </ul>
-                  </CardContent>
-                </Card>
-
-                <Card className="glass-surface border-2 border-[#FF6B00]/30 overflow-hidden">
-                  <div className="relative h-48 gradient-fire flex items-center justify-center">
-                    <Brain className="h-20 w-20 text-white opacity-20" />
-                    <div className="absolute bottom-4 left-4">
-                      <h3 className="text-white font-bold text-xl">Interview AI Coach</h3>
-                      <p className="text-white/80 text-sm">Practice with AI feedback</p>
-                    </div>
-                  </div>
-                  <CardContent className="p-6">
-                    <ul className="space-y-3">
-                      {['Real-time feedback', 'Common EE questions', 'Behavioral scenarios', 'Video practice mode'].map((item, idx) => (
-                        <li key={idx} className="flex items-center gap-2 text-[#B8A7E0]">
-                          <CheckCircle2 className="h-4 w-4 text-[#FF6B00]" />
-                          {item}
-                        </li>
-                      ))}
-                    </ul>
-                  </CardContent>
-                </Card>
-              </div>
+                </>
+              ) : (
+                <div className="space-y-6">
+                  <Button
+                    variant="outline"
+                    onClick={() => setActiveCareerTool(null)}
+                    className="border-white/20 text-white hover:bg-white/10"
+                  >
+                    ← Back to Career Tools
+                  </Button>
+                  
+                  {activeCareerTool === 'resume-builder' && <ResumeBuilder />}
+                  {activeCareerTool === 'interview-prep' && <InterviewPrep />}
+                  {activeCareerTool === 'portfolio' && (
+                    <Card className="glass-surface border-2 border-[#9C4AFF]/30">
+                      <CardContent className="p-12 text-center">
+                        <Palette className="h-16 w-16 text-[#9C4AFF] mx-auto mb-4" />
+                        <h3 className="text-2xl font-bold text-white mb-2">Portfolio Generator</h3>
+                        <p className="text-[#B8A7E0] mb-6">Coming Soon! Create stunning portfolios to showcase your projects.</p>
+                      </CardContent>
+                    </Card>
+                  )}
+                </div>
+              )}
             </TabsContent>
 
             {/* Job Board Tab */}
