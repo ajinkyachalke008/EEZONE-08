@@ -102,7 +102,7 @@ const toolCategories = [
     id: 'schematic',
     title: 'Schematic & Wiring',
     description: 'Professional Schematic Editor, Residential Wiring Planner, Control Panel Designer, PCB Trace Width Calculator, Multi-sheet Design Support',
-    href: '/tutorials',
+    href: '/tools/schematic-wiring',
     icon: FileText,
     image: 'https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/project-uploads/e24d0c9e-e4fc-4077-96b8-bf644fe969e3/generated_images/electrical-schematic-editor-and-wiring-d-edc888a6-20251026042846.jpg',
   },
