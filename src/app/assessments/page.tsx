@@ -29,6 +29,7 @@ import {
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
+import { QuizInterface } from '@/components/assessments/quiz-interface';
 
 const quizTopics = [
   { id: 'circuits', name: 'Circuit Analysis', icon: Zap, color: 'violet' },
@@ -110,6 +111,21 @@ export default function AssessmentsPage() {
   const [selectedTopic, setSelectedTopic] = useState('');
   const [selectedDifficulty, setSelectedDifficulty] = useState('');
   const [quizMode, setQuizMode] = useState<'practice' | 'timed' | null>(null);
+  const [startQuiz, setStartQuiz] = useState(false);
+
+  const handleStartQuiz = () => {
+    if (selectedTopic && selectedDifficulty && quizMode) {
+      setStartQuiz(true);
+    }
+  };
+
+  const handleQuizComplete = (score: number, answers: number[]) => {
+    console.log('Quiz completed:', { score, answers });
+    setStartQuiz(false);
+    setSelectedTopic('');
+    setSelectedDifficulty('');
+    setQuizMode(null);
+  };
 
   return (
     <div className="min-h-screen gradient-depth">
@@ -195,132 +211,143 @@ export default function AssessmentsPage() {
 
             {/* Smart Quiz Generator */}
             <TabsContent value="quiz-generator" className="space-y-8">
-              <Card className="glass-surface border-2 border-[#9C4AFF]/30">
-                <CardHeader>
-                  <CardTitle className="text-white flex items-center gap-2">
-                    <Sparkles className="h-6 w-6 text-[#9C4AFF]" />
-                    Smart Quiz Generator
-                  </CardTitle>
-                  <CardDescription className="text-[#B8A7E0]">
-                    Create customized quizzes based on topic and difficulty
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="space-y-2">
-                      <label className="text-white font-medium">Select Topic</label>
-                      <Select value={selectedTopic} onValueChange={setSelectedTopic}>
-                        <SelectTrigger className="glass-surface border-white/20 text-white">
-                          <SelectValue placeholder="Choose a topic..." />
-                        </SelectTrigger>
-                        <SelectContent className="glass-surface border-white/20">
-                          {quizTopics.map((topic) => (
-                            <SelectItem key={topic.id} value={topic.id} className="text-white">
-                              {topic.name}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
+              {!startQuiz ? (
+                <>
+                  <Card className="glass-surface border-2 border-[#9C4AFF]/30">
+                    <CardHeader>
+                      <CardTitle className="text-white flex items-center gap-2">
+                        <Sparkles className="h-6 w-6 text-[#9C4AFF]" />
+                        Smart Quiz Generator
+                      </CardTitle>
+                      <CardDescription className="text-[#B8A7E0]">
+                        Create customized quizzes based on topic and difficulty
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-6">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="space-y-2">
+                          <label className="text-white font-medium">Select Topic</label>
+                          <Select value={selectedTopic} onValueChange={setSelectedTopic}>
+                            <SelectTrigger className="glass-surface border-white/20 text-white">
+                              <SelectValue placeholder="Choose a topic..." />
+                            </SelectTrigger>
+                            <SelectContent className="glass-surface border-white/20">
+                              {quizTopics.map((topic) => (
+                                <SelectItem key={topic.id} value={topic.id} className="text-white">
+                                  {topic.name}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
 
-                    <div className="space-y-2">
-                      <label className="text-white font-medium">Difficulty Level</label>
-                      <Select value={selectedDifficulty} onValueChange={setSelectedDifficulty}>
-                        <SelectTrigger className="glass-surface border-white/20 text-white">
-                          <SelectValue placeholder="Choose difficulty..." />
-                        </SelectTrigger>
-                        <SelectContent className="glass-surface border-white/20">
-                          <SelectItem value="beginner" className="text-white">Beginner</SelectItem>
-                          <SelectItem value="intermediate" className="text-white">Intermediate</SelectItem>
-                          <SelectItem value="advanced" className="text-white">Advanced</SelectItem>
-                          <SelectItem value="expert" className="text-white">Expert</SelectItem>
-                        </SelectContent>
-                      </Select>
+                        <div className="space-y-2">
+                          <label className="text-white font-medium">Difficulty Level</label>
+                          <Select value={selectedDifficulty} onValueChange={setSelectedDifficulty}>
+                            <SelectTrigger className="glass-surface border-white/20 text-white">
+                              <SelectValue placeholder="Choose difficulty..." />
+                            </SelectTrigger>
+                            <SelectContent className="glass-surface border-white/20">
+                              <SelectItem value="beginner" className="text-white">Beginner</SelectItem>
+                              <SelectItem value="intermediate" className="text-white">Intermediate</SelectItem>
+                              <SelectItem value="advanced" className="text-white">Advanced</SelectItem>
+                              <SelectItem value="expert" className="text-white">Expert</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </div>
+
+                      <div className="space-y-3">
+                        <label className="text-white font-medium">Quiz Mode</label>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <Card 
+                            className={`cursor-pointer transition-all ${
+                              quizMode === 'practice' 
+                                ? 'border-2 border-[#9C4AFF] shadow-glowViolet gradient-violet' 
+                                : 'glass-surface border-white/10 hover:border-[#9C4AFF]/50'
+                            }`}
+                            onClick={() => setQuizMode('practice')}
+                          >
+                            <CardContent className="p-6 text-center">
+                              <BookOpen className={`h-10 w-10 mx-auto mb-3 ${quizMode === 'practice' ? 'text-white' : 'text-[#9C4AFF]'}`} />
+                              <h3 className={`font-semibold mb-2 ${quizMode === 'practice' ? 'text-white' : 'text-white'}`}>
+                                Practice Mode
+                              </h3>
+                              <p className={`text-sm ${quizMode === 'practice' ? 'text-white/90' : 'text-[#B8A7E0]'}`}>
+                                Unlimited time, instant feedback
+                              </p>
+                            </CardContent>
+                          </Card>
+
+                          <Card 
+                            className={`cursor-pointer transition-all ${
+                              quizMode === 'timed' 
+                                ? 'border-2 border-[#FF6B00] shadow-glowOrange gradient-fire' 
+                                : 'glass-surface border-white/10 hover:border-[#FF6B00]/50'
+                            }`}
+                            onClick={() => setQuizMode('timed')}
+                          >
+                            <CardContent className="p-6 text-center">
+                              <Timer className={`h-10 w-10 mx-auto mb-3 ${quizMode === 'timed' ? 'text-white' : 'text-[#FF6B00]'}`} />
+                              <h3 className={`font-semibold mb-2 ${quizMode === 'timed' ? 'text-white' : 'text-white'}`}>
+                                Timed Mode
+                              </h3>
+                              <p className={`text-sm ${quizMode === 'timed' ? 'text-white/90' : 'text-[#B8A7E0]'}`}>
+                                Real exam conditions, time pressure
+                              </p>
+                            </CardContent>
+                          </Card>
+                        </div>
+                      </div>
+
+                      <Button 
+                        size="lg" 
+                        className="w-full gradient-violet hover:shadow-glowViolet text-white font-semibold"
+                        disabled={!selectedTopic || !selectedDifficulty || !quizMode}
+                        onClick={handleStartQuiz}
+                      >
+                        <Play className="h-5 w-5 mr-2" />
+                        Start Quiz
+                      </Button>
+                    </CardContent>
+                  </Card>
+
+                  {/* Available Topics */}
+                  <div className="space-y-4">
+                    <h3 className="text-2xl font-bold text-white">Available Topics</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                      {quizTopics.map((topic, index) => (
+                        <motion.div
+                          key={topic.id}
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ duration: 0.4, delay: index * 0.1 }}
+                        >
+                          <Card className="glass-surface border-white/10 hover:border-[#9C4AFF]/50 hover:shadow-glowViolet transition-all cursor-pointer">
+                            <CardContent className="p-6">
+                              <topic.icon className={`h-8 w-8 mb-3 ${
+                                topic.color === 'violet' ? 'text-[#9C4AFF]' :
+                                topic.color === 'orange' ? 'text-[#FF6B00]' : 'text-[#00E5FF]'
+                              }`} />
+                              <h4 className="text-white font-semibold mb-2">{topic.name}</h4>
+                              <div className="flex items-center gap-2 text-sm text-[#B8A7E0]">
+                                <CheckCircle2 className="h-4 w-4" />
+                                <span>45 questions available</span>
+                              </div>
+                            </CardContent>
+                          </Card>
+                        </motion.div>
+                      ))}
                     </div>
                   </div>
-
-                  <div className="space-y-3">
-                    <label className="text-white font-medium">Quiz Mode</label>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <Card 
-                        className={`cursor-pointer transition-all ${
-                          quizMode === 'practice' 
-                            ? 'border-2 border-[#9C4AFF] shadow-glowViolet gradient-violet' 
-                            : 'glass-surface border-white/10 hover:border-[#9C4AFF]/50'
-                        }`}
-                        onClick={() => setQuizMode('practice')}
-                      >
-                        <CardContent className="p-6 text-center">
-                          <BookOpen className={`h-10 w-10 mx-auto mb-3 ${quizMode === 'practice' ? 'text-white' : 'text-[#9C4AFF]'}`} />
-                          <h3 className={`font-semibold mb-2 ${quizMode === 'practice' ? 'text-white' : 'text-white'}`}>
-                            Practice Mode
-                          </h3>
-                          <p className={`text-sm ${quizMode === 'practice' ? 'text-white/90' : 'text-[#B8A7E0]'}`}>
-                            Unlimited time, instant feedback
-                          </p>
-                        </CardContent>
-                      </Card>
-
-                      <Card 
-                        className={`cursor-pointer transition-all ${
-                          quizMode === 'timed' 
-                            ? 'border-2 border-[#FF6B00] shadow-glowOrange gradient-fire' 
-                            : 'glass-surface border-white/10 hover:border-[#FF6B00]/50'
-                        }`}
-                        onClick={() => setQuizMode('timed')}
-                      >
-                        <CardContent className="p-6 text-center">
-                          <Timer className={`h-10 w-10 mx-auto mb-3 ${quizMode === 'timed' ? 'text-white' : 'text-[#FF6B00]'}`} />
-                          <h3 className={`font-semibold mb-2 ${quizMode === 'timed' ? 'text-white' : 'text-white'}`}>
-                            Timed Mode
-                          </h3>
-                          <p className={`text-sm ${quizMode === 'timed' ? 'text-white/90' : 'text-[#B8A7E0]'}`}>
-                            Real exam conditions, time pressure
-                          </p>
-                        </CardContent>
-                      </Card>
-                    </div>
-                  </div>
-
-                  <Button 
-                    size="lg" 
-                    className="w-full gradient-violet hover:shadow-glowViolet text-white font-semibold"
-                    disabled={!selectedTopic || !selectedDifficulty || !quizMode}
-                  >
-                    <Play className="h-5 w-5 mr-2" />
-                    Start Quiz
-                  </Button>
-                </CardContent>
-              </Card>
-
-              {/* Available Topics */}
-              <div className="space-y-4">
-                <h3 className="text-2xl font-bold text-white">Available Topics</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {quizTopics.map((topic, index) => (
-                    <motion.div
-                      key={topic.id}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.4, delay: index * 0.1 }}
-                    >
-                      <Card className="glass-surface border-white/10 hover:border-[#9C4AFF]/50 hover:shadow-glowViolet transition-all cursor-pointer">
-                        <CardContent className="p-6">
-                          <topic.icon className={`h-8 w-8 mb-3 ${
-                            topic.color === 'violet' ? 'text-[#9C4AFF]' :
-                            topic.color === 'orange' ? 'text-[#FF6B00]' : 'text-[#00E5FF]'
-                          }`} />
-                          <h4 className="text-white font-semibold mb-2">{topic.name}</h4>
-                          <div className="flex items-center gap-2 text-sm text-[#B8A7E0]">
-                            <CheckCircle2 className="h-4 w-4" />
-                            <span>45 questions available</span>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    </motion.div>
-                  ))}
-                </div>
-              </div>
+                </>
+              ) : (
+                <QuizInterface 
+                  mode={quizMode!} 
+                  duration={30}
+                  onComplete={handleQuizComplete}
+                />
+              )}
             </TabsContent>
 
             {/* Mock Exams */}
