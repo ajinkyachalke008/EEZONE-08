@@ -8,68 +8,61 @@ import { Input } from '@/components/ui/input';
 import { motion } from 'framer-motion';
 
 interface HeaderProps {
-  onSearch?: (query: string) => void;
-  searchQuery?: string;
-  onSearchChange?: (query: string) => void;
+  onSearch: (query: string) => void;
+  searchQuery: string;
+  onSearchChange: (query: string) => void;
 }
 
 export function Header({ onSearch, searchQuery, onSearchChange }: HeaderProps) {
   const navLinks = [
     { href: '/', label: 'Home' },
-    { href: '/apps', label: 'Apps Library' },
+    { href: '/apps', label: 'Apps' },
     { href: '/calculators', label: 'Calculators' },
     { href: '/tutorials', label: 'Tutorials' },
+    { href: '/assessments', label: 'Assessments' },
+    { href: '/career', label: 'Career' },
   ];
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-white/10 glass-surface backdrop-blur-glass">
-      {/* Ambient Glow Effects */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-10 left-20 w-40 h-40 bg-[#9C4AFF] rounded-full blur-[100px] opacity-20 animate-pulse-slow" />
-        <div className="absolute -top-10 right-20 w-40 h-40 bg-[#FF6B00] rounded-full blur-[100px] opacity-20 animate-pulse-slow" style={{ animationDelay: '1.5s' }} />
-      </div>
+    <header className="sticky top-0 z-50 w-full glass-surface backdrop-blur-glass border-b border-white/10">
+      {/* Ambient Glow */}
+      <div className="absolute top-0 left-1/4 w-[200px] h-[100px] bg-[#9C4AFF] opacity-10 blur-[80px] rounded-full animate-pulse-slow" />
+      <div className="absolute top-0 right-1/4 w-[200px] h-[100px] bg-[#FF6B00] opacity-10 blur-[80px] rounded-full animate-pulse-slow" style={{ animationDelay: '1.5s' }} />
 
-      <div className="container mx-auto flex h-20 items-center justify-between px-4 relative z-10">
-        <Link href="/" className="flex items-center space-x-3 group">
+      <div className="container mx-auto flex h-16 items-center justify-between px-4 relative z-10">
+        <Link href="/" className="flex items-center space-x-2 group">
           <motion.div 
-            className="relative"
-            whileHover={{ scale: 1.1, rotate: 360 }}
-            transition={{ duration: 0.6 }}
+            className="gradient-violet p-1.5 rounded-lg shadow-glowViolet"
+            whileHover={{ scale: 1.1, rotate: 180 }}
+            transition={{ duration: 0.3 }}
           >
-            <div className="absolute inset-0 gradient-violet rounded-lg blur-md opacity-60 group-hover:opacity-100 transition-opacity" />
-            <div className="relative gradient-fire p-2 rounded-lg">
-              <Zap className="h-6 w-6 text-white" />
-            </div>
+            <Zap className="h-5 w-5 text-white" />
           </motion.div>
-          <span className="font-bold text-2xl text-white glow-text-violet" style={{ fontFamily: 'Orbitron, sans-serif' }}>
+          <span 
+            className="font-bold text-xl text-white glow-text-violet transition-all group-hover:glow-text-orange" 
+            style={{ fontFamily: 'Orbitron, sans-serif' }}
+          >
             EE ZONE
           </span>
         </Link>
 
         {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center space-x-8">
-          {navLinks.map((link, index) => (
-            <motion.div
+        <nav className="hidden md:flex items-center space-x-1">
+          {navLinks.map((link) => (
+            <Link
               key={link.href}
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3, delay: index * 0.1 }}
+              href={link.href}
+              className="relative px-4 py-2 text-sm font-medium text-[#B8A7E0] transition-all hover:text-white group"
             >
-              <Link
-                href={link.href}
-                className="text-sm font-medium text-[#B8A7E0] hover:text-white transition-all relative group uppercase tracking-wider"
-              >
-                {link.label}
-                <span className="absolute -bottom-1 left-0 w-0 h-0.5 gradient-fire group-hover:w-full transition-all duration-300" />
-              </Link>
-            </motion.div>
+              {link.label}
+              <span className="absolute bottom-0 left-0 w-0 h-0.5 gradient-fire transition-all group-hover:w-full" />
+            </Link>
           ))}
           <motion.div
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.4, delay: 0.4 }}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
           >
-            <Button className="gradient-violet text-white hover:shadow-glowViolet font-semibold px-6 py-2 rounded-xl transition-all duration-300 hover:scale-105 border border-white/20 uppercase tracking-wider">
+            <Button className="ml-4 gradient-fire text-white hover:shadow-glowOrange font-semibold rounded-xl transition-all animate-pulse-slow">
               Go Pro
             </Button>
           </motion.div>
@@ -83,20 +76,21 @@ export function Header({ onSearch, searchQuery, onSearchChange }: HeaderProps) {
             </Button>
           </SheetTrigger>
           <SheetContent className="glass-surface backdrop-blur-glass text-white border-white/10">
-            {/* Mobile Ambient Glow */}
-            <div className="absolute top-0 right-0 w-32 h-32 bg-[#9C4AFF] rounded-full blur-[80px] opacity-20" />
+            {/* Ambient Orbs in Mobile Menu */}
+            <div className="absolute top-10 right-10 w-[150px] h-[150px] bg-[#9C4AFF] opacity-20 blur-[60px] rounded-full" />
+            <div className="absolute bottom-10 left-10 w-[150px] h-[150px] bg-[#FF6B00] opacity-20 blur-[60px] rounded-full" />
             
-            <nav className="flex flex-col space-y-6 mt-12 relative z-10">
+            <nav className="flex flex-col space-y-4 mt-8 relative z-10">
               {navLinks.map((link) => (
                 <Link
                   key={link.href}
                   href={link.href}
-                  className="text-lg font-medium text-[#B8A7E0] hover:text-white transition-all uppercase tracking-wider"
+                  className="text-lg font-medium transition-colors hover:text-[#9C4AFF] text-white"
                 >
                   {link.label}
                 </Link>
               ))}
-              <Button className="gradient-violet text-white glow-violet font-semibold w-full rounded-xl py-3 uppercase tracking-wider">
+              <Button className="gradient-fire text-white hover:shadow-glowOrange font-semibold w-full rounded-xl mt-4">
                 Go Pro
               </Button>
             </nav>
