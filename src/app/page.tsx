@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import { Search, Briefcase, GraduationCap, Wrench, ChevronRight, Star, Zap, Calculator, BookOpen, Cpu, Settings, Lightbulb, CircuitBoard, FileText, Gauge, GraduationCap as EducationIcon, ClipboardList, Scale, Wrench as DiagnosticIcon, Code, Sparkles, Headphones, Globe, Beaker, Box, Shield, Clock, Calendar, TrendingUp, MapPin, FileCheck, BarChart, Thermometer, PlayCircle, Smartphone, Camera } from 'lucide-react';
+import { Search, Briefcase, GraduationCap, Wrench, ChevronRight, Star, Zap, Calculator, BookOpen, Cpu, Settings, Lightbulb, CircuitBoard, FileText, Gauge, GraduationCap as EducationIcon, ClipboardList, Scale, Wrench as DiagnosticIcon, Code, Sparkles, Headphones, Globe, Beaker, Box, Shield, Clock, Calendar, TrendingUp, MapPin, FileCheck, BarChart, Thermometer, PlayCircle, Smartphone, Camera, Brain } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -1053,9 +1053,9 @@ export default function Home() {
               >
                 <div className="space-y-4">
                   {[
-                    { icon: BookOpen, title: 'Interactive Tutorials', desc: 'Step-by-step guides with embedded calculators and real-world examples' },
-                    { icon: Wrench, title: 'Troubleshooting Wizard', desc: 'Diagnostic flowcharts for common electrical issues and solutions' },
-                    { icon: EducationIcon, title: 'Certification Prep', desc: 'Exam simulators for Journeyman/Master electrician certifications' },
+                    { icon: BookOpen, title: 'Interactive Tutorials', desc: 'Step-by-step guides with embedded calculators and real-world examples', href: '/tutorials' },
+                    { icon: Brain, title: 'Practice & Assessment', desc: 'Smart quizzes, mock exams, and personalized skill tracking', href: '/assessments' },
+                    { icon: Briefcase, title: 'Career Center', desc: 'Certification prep, resume builder, interview practice, and job board', href: '/career' },
                   ].map((item, index) => (
                     <motion.div
                       key={index}
@@ -1064,26 +1064,35 @@ export default function Home() {
                       transition={{ duration: 0.4, delay: index * 0.1 }}
                       viewport={{ once: true }}
                     >
-                      <Card className="glass-surface border-white/10 hover:border-[#9C4AFF]/50 hover:shadow-glowViolet transition-all">
-                        <CardHeader className="pb-3">
-                          <CardTitle className="text-white text-lg flex items-center gap-2">
-                            <item.icon className="h-5 w-5 text-[#9C4AFF]" />
-                            {item.title}
-                          </CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                          <p className="text-[#B8A7E0] text-sm">{item.desc}</p>
-                        </CardContent>
-                      </Card>
+                      <Link href={item.href}>
+                        <Card className="glass-surface border-white/10 hover:border-[#9C4AFF]/50 hover:shadow-glowViolet transition-all cursor-pointer">
+                          <CardHeader className="pb-3">
+                            <CardTitle className="text-white text-lg flex items-center gap-2">
+                              <item.icon className="h-5 w-5 text-[#9C4AFF]" />
+                              {item.title}
+                            </CardTitle>
+                          </CardHeader>
+                          <CardContent>
+                            <p className="text-[#B8A7E0] text-sm">{item.desc}</p>
+                          </CardContent>
+                        </Card>
+                      </Link>
                     </motion.div>
                   ))}
                 </div>
 
-                <Link href="/tutorials">
-                  <Button size="lg" className="w-full gradient-violet hover:shadow-glowViolet text-white font-semibold rounded-xl py-3 uppercase tracking-wider">
-                    Start Learning
-                  </Button>
-                </Link>
+                <div className="flex gap-3">
+                  <Link href="/assessments" className="flex-1">
+                    <Button size="lg" className="w-full gradient-violet hover:shadow-glowViolet text-white font-semibold rounded-xl py-3 uppercase tracking-wider">
+                      Start Practicing
+                    </Button>
+                  </Link>
+                  <Link href="/career" className="flex-1">
+                    <Button size="lg" className="w-full gradient-fire hover:shadow-glowOrange text-white font-semibold rounded-xl py-3 uppercase tracking-wider">
+                      Advance Career
+                    </Button>
+                  </Link>
+                </div>
               </motion.div>
             </div>
           </div>
