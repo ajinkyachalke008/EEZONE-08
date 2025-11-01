@@ -630,51 +630,67 @@ export default function Home() {
 
       {/* Interactive Design Tools - Show only 2 remaining categories when not searching */}
       {!searchQuery && filteredTools.length > 3 && (
-        <section className="py-16 px-4 bg-gradient-to-br from-[#071428] to-[#0a1d38]">
-          <div className="container mx-auto max-w-6xl">
+        <section className="py-16 px-4 relative overflow-hidden">
+          {/* Ambient Glow */}
+          <div className="absolute top-10 right-10 w-[400px] h-[400px] bg-[#FF6B00] opacity-20 blur-[150px] rounded-full" />
+          <div className="absolute bottom-10 left-10 w-[400px] h-[400px] bg-[#00E5FF] opacity-20 blur-[150px] rounded-full" />
+          
+          <div className="container mx-auto max-w-6xl relative z-10">
             <div className="text-center mb-12">
-              <h2 className="text-4xl font-bold text-white mb-4">🎨 Interactive Design Tools</h2>
-              <p className="text-lg text-gray-300 max-w-3xl mx-auto">
+              <h2 className="text-4xl font-bold text-white mb-4 glow-text-orange" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>
+                🎨 Interactive Design Tools
+              </h2>
+              <p className="text-lg text-[#B8A7E0] max-w-3xl mx-auto">
                 Hands-on tools for circuit development, simulation, and professional layout design
               </p>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              {filteredTools.slice(3).map((tool) => {
+              {filteredTools.slice(3).map((tool, index) => {
                 const Icon = tool.icon;
                 return (
-                  <Card key={tool.id} className="overflow-hidden bg-white/5 border-white/10 hover:bg-white/10 transition-all">
-                    <div className="relative h-64 overflow-hidden">
-                      <img
-                        src={tool.image}
-                        alt={tool.title}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                    <CardHeader>
-                      <CardTitle className="text-white flex items-center gap-2">
-                        <Icon className="h-5 w-5 text-[#00C2D1]" />
-                        {tool.title}
-                      </CardTitle>
-                      <CardDescription className="text-gray-300">
-                        {tool.description.split(', ').slice(0, 2).join(', ')}
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent className="text-gray-300 space-y-2">
-                      <ul className="space-y-1 text-sm">
-                        {tool.description.split(', ').map((item, idx) => (
-                          <li key={idx}>• {item}</li>
-                        ))}
-                      </ul>
-                    </CardContent>
-                    <CardFooter>
-                      <Link href={tool.href} className="w-full">
-                        <Button className="w-full bg-[#00C2D1] text-[#071428] hover:bg-[#00C2D1]/90">
-                          Launch Tool
-                        </Button>
-                      </Link>
-                    </CardFooter>
-                  </Card>
+                  <motion.div
+                    key={tool.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5, delay: index * 0.1 }}
+                    viewport={{ once: true }}
+                    whileHover={{ scale: 1.03, y: -5 }}
+                  >
+                    <Card className="overflow-hidden glass-surface border-white/10 hover:border-[#FF6B00]/50 hover:shadow-glowOrange transition-all h-full">
+                      <div className="relative h-64 overflow-hidden">
+                        <img
+                          src={tool.image}
+                          alt={tool.title}
+                          className="w-full h-full object-cover"
+                        />
+                        <div className="absolute inset-0 gradient-fire opacity-20" />
+                      </div>
+                      <CardHeader>
+                        <CardTitle className="text-white flex items-center gap-2">
+                          <Icon className="h-5 w-5 text-[#FF6B00]" />
+                          {tool.title}
+                        </CardTitle>
+                        <CardDescription className="text-[#B8A7E0]">
+                          {tool.description.split(', ').slice(0, 2).join(', ')}
+                        </CardDescription>
+                      </CardHeader>
+                      <CardContent className="text-[#B8A7E0] space-y-2">
+                        <ul className="space-y-1 text-sm">
+                          {tool.description.split(', ').map((item, idx) => (
+                            <li key={idx}>• {item}</li>
+                          ))}
+                        </ul>
+                      </CardContent>
+                      <CardFooter>
+                        <Link href={tool.href} className="w-full">
+                          <Button className="w-full gradient-fire hover:shadow-glowOrange text-white rounded-xl">
+                            Launch Tool
+                          </Button>
+                        </Link>
+                      </CardFooter>
+                    </Card>
+                  </motion.div>
                 );
               })}
             </div>
@@ -682,32 +698,46 @@ export default function Home() {
         </section>
       )}
 
-      {/* Project Management Suite - NEW */}
+      {/* Project Management Suite */}
       {!searchQuery && (
-        <section className="py-16 px-4 bg-white">
-          <div className="container mx-auto max-w-6xl">
+        <section className="py-16 px-4 relative overflow-hidden">
+          {/* Ambient Glow */}
+          <div className="absolute top-10 left-1/2 w-[400px] h-[400px] bg-[#9C4AFF] opacity-15 blur-[150px] rounded-full" />
+          
+          <div className="container mx-auto max-w-6xl relative z-10">
             <div className="text-center mb-12">
-              <h2 className="text-4xl font-bold text-[#071428] mb-4">📋 Project Management Suite</h2>
-              <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+              <h2 className="text-4xl font-bold text-white mb-4 glow-text-violet" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>
+                📋 Project Management Suite
+              </h2>
+              <p className="text-lg text-[#B8A7E0] max-w-3xl mx-auto">
                 Professional tools for planning, estimation, and project execution
               </p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {projectManagementTools.map((tool) => {
+              {projectManagementTools.map((tool, index) => {
                 const Icon = tool.icon;
                 return (
-                  <Link key={tool.name} href={tool.href}>
-                    <Card className="hover:shadow-xl transition-all hover:scale-105 cursor-pointer h-full">
-                      <CardHeader>
-                        <Icon className="h-10 w-10 text-[#00C2D1] mb-2" />
-                        <CardTitle className="text-lg">{tool.name}</CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <p className="text-gray-600 text-sm">{tool.description}</p>
-                      </CardContent>
-                    </Card>
-                  </Link>
+                  <motion.div
+                    key={tool.name}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.4, delay: index * 0.1 }}
+                    viewport={{ once: true }}
+                    whileHover={{ scale: 1.05, y: -5 }}
+                  >
+                    <Link href={tool.href}>
+                      <Card className="glass-surface border-white/10 hover:border-[#9C4AFF]/50 hover:shadow-glowViolet transition-all cursor-pointer h-full">
+                        <CardHeader>
+                          <Icon className="h-10 w-10 text-[#9C4AFF] mb-2" />
+                          <CardTitle className="text-lg text-white">{tool.name}</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <p className="text-[#B8A7E0] text-sm">{tool.description}</p>
+                        </CardContent>
+                      </Card>
+                    </Link>
+                  </motion.div>
                 );
               })}
             </div>
@@ -715,32 +745,47 @@ export default function Home() {
         </section>
       )}
 
-      {/* Code Compliance Tools - NEW */}
+      {/* Code Compliance Tools */}
       {!searchQuery && (
-        <section className="py-16 px-4 bg-gradient-to-br from-[#071428] to-[#0a1d38]">
-          <div className="container mx-auto max-w-6xl">
+        <section className="py-16 px-4 relative overflow-hidden">
+          {/* Ambient Glow */}
+          <div className="absolute top-10 right-10 w-[400px] h-[400px] bg-[#00E5FF] opacity-20 blur-[150px] rounded-full animate-pulse-slow" />
+          <div className="absolute bottom-10 left-10 w-[400px] h-[400px] bg-[#9C4AFF] opacity-20 blur-[150px] rounded-full animate-pulse-slow" style={{ animationDelay: '1s' }} />
+          
+          <div className="container mx-auto max-w-6xl relative z-10">
             <div className="text-center mb-12">
-              <h2 className="text-4xl font-bold text-white mb-4">⚖️ Code Compliance Tools</h2>
-              <p className="text-lg text-gray-300 max-w-3xl mx-auto">
+              <h2 className="text-4xl font-bold text-white mb-4 glow-text-cyan" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>
+                ⚖️ Code Compliance Tools
+              </h2>
+              <p className="text-lg text-[#B8A7E0] max-w-3xl mx-auto">
                 Ensure your designs meet electrical codes and standards
               </p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {codeComplianceTools.map((tool) => {
+              {codeComplianceTools.map((tool, index) => {
                 const Icon = tool.icon;
                 return (
-                  <Link key={tool.name} href={tool.href}>
-                    <Card className="hover:shadow-xl transition-all hover:scale-105 cursor-pointer h-full bg-white/5 border-white/10 hover:bg-white/10">
-                      <CardHeader>
-                        <Icon className="h-10 w-10 text-[#00C2D1] mb-2" />
-                        <CardTitle className="text-lg text-white">{tool.name}</CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <p className="text-gray-300 text-sm">{tool.description}</p>
-                      </CardContent>
-                    </Card>
-                  </Link>
+                  <motion.div
+                    key={tool.name}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.4, delay: index * 0.1 }}
+                    viewport={{ once: true }}
+                    whileHover={{ scale: 1.05, y: -5 }}
+                  >
+                    <Link href={tool.href}>
+                      <Card className="glass-surface border-white/10 hover:border-[#00E5FF]/50 hover:shadow-glowCyan transition-all cursor-pointer h-full">
+                        <CardHeader>
+                          <Icon className="h-10 w-10 text-[#00E5FF] mb-2" />
+                          <CardTitle className="text-lg text-white">{tool.name}</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <p className="text-[#B8A7E0] text-sm">{tool.description}</p>
+                        </CardContent>
+                      </Card>
+                    </Link>
+                  </motion.div>
                 );
               })}
             </div>
@@ -748,32 +793,46 @@ export default function Home() {
         </section>
       )}
 
-      {/* Diagnostic & Testing Tools - NEW */}
+      {/* Diagnostic & Testing Tools */}
       {!searchQuery && (
-        <section className="py-16 px-4 bg-gray-50">
-          <div className="container mx-auto max-w-6xl">
+        <section className="py-16 px-4 relative overflow-hidden">
+          {/* Ambient Glow */}
+          <div className="absolute top-10 left-1/2 w-[400px] h-[400px] bg-[#FF6B00] opacity-15 blur-[150px] rounded-full" />
+          
+          <div className="container mx-auto max-w-6xl relative z-10">
             <div className="text-center mb-12">
-              <h2 className="text-4xl font-bold text-[#071428] mb-4">🔧 Diagnostic & Testing Tools</h2>
-              <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+              <h2 className="text-4xl font-bold text-white mb-4 glow-text-orange" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>
+                🔧 Diagnostic & Testing Tools
+              </h2>
+              <p className="text-lg text-[#B8A7E0] max-w-3xl mx-auto">
                 Equipment maintenance, analysis, and reporting solutions
               </p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {diagnosticTools.map((tool) => {
+              {diagnosticTools.map((tool, index) => {
                 const Icon = tool.icon;
                 return (
-                  <Link key={tool.name} href={tool.href}>
-                    <Card className="hover:shadow-xl transition-all hover:scale-105 cursor-pointer h-full">
-                      <CardHeader>
-                        <Icon className="h-10 w-10 text-[#00C2D1] mb-2" />
-                        <CardTitle className="text-lg">{tool.name}</CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <p className="text-gray-600 text-sm">{tool.description}</p>
-                      </CardContent>
-                    </Card>
-                  </Link>
+                  <motion.div
+                    key={tool.name}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.4, delay: index * 0.1 }}
+                    viewport={{ once: true }}
+                    whileHover={{ scale: 1.05, y: -5 }}
+                  >
+                    <Link href={tool.href}>
+                      <Card className="glass-surface border-white/10 hover:border-[#FF6B00]/50 hover:shadow-glowOrange transition-all cursor-pointer h-full">
+                        <CardHeader>
+                          <Icon className="h-10 w-10 text-[#FF6B00] mb-2" />
+                          <CardTitle className="text-lg text-white">{tool.name}</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <p className="text-[#B8A7E0] text-sm">{tool.description}</p>
+                        </CardContent>
+                      </Card>
+                    </Link>
+                  </motion.div>
                 );
               })}
             </div>
@@ -781,37 +840,53 @@ export default function Home() {
         </section>
       )}
 
-      {/* Advanced AI Features - NEW */}
+      {/* Advanced AI Features */}
       {!searchQuery && (
-        <section className="py-16 px-4 bg-gradient-to-br from-indigo-900 to-purple-900">
-          <div className="container mx-auto max-w-6xl">
+        <section className="py-16 px-4 relative overflow-hidden">
+          {/* Animated Gradient Background */}
+          <div className="absolute inset-0 gradient-violet opacity-30 animate-gradient-move" style={{ backgroundSize: '400% 400%' }} />
+          <div className="absolute top-10 right-10 w-[400px] h-[400px] bg-[#FF00C8] opacity-25 blur-[150px] rounded-full animate-pulse-slow" />
+          <div className="absolute bottom-10 left-10 w-[400px] h-[400px] bg-[#9C4AFF] opacity-25 blur-[150px] rounded-full animate-pulse-slow" style={{ animationDelay: '1.5s' }} />
+          
+          <div className="container mx-auto max-w-6xl relative z-10">
             <div className="text-center mb-12">
-              <h2 className="text-4xl font-bold text-white mb-4">✨ Advanced AI Features</h2>
-              <p className="text-lg text-gray-200 max-w-3xl mx-auto">
+              <h2 className="text-4xl font-bold text-white mb-4 glow-text-violet" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>
+                ✨ Advanced AI Features
+              </h2>
+              <p className="text-lg text-[#B8A7E0] max-w-3xl mx-auto">
                 Leverage artificial intelligence for code assistance, design, and troubleshooting
               </p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {aiFeatures.map((feature) => {
+              {aiFeatures.map((feature, index) => {
                 const Icon = feature.icon;
                 return (
-                  <Link key={feature.name} href={feature.href}>
-                    <Card className="bg-white/10 border-white/20 hover:bg-white/15 transition-all cursor-pointer h-full">
-                      <CardHeader>
-                        <div className="flex items-start justify-between mb-2">
-                          <Icon className="h-10 w-10 text-[#00C2D1]" />
-                          {feature.isPro && (
-                            <Badge className="bg-yellow-500 text-black">Pro</Badge>
-                          )}
-                        </div>
-                        <CardTitle className="text-white text-lg">{feature.name}</CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <p className="text-gray-200 text-sm">{feature.description}</p>
-                      </CardContent>
-                    </Card>
-                  </Link>
+                  <motion.div
+                    key={feature.name}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.4, delay: index * 0.1 }}
+                    viewport={{ once: true }}
+                    whileHover={{ scale: 1.05, y: -5 }}
+                  >
+                    <Link href={feature.href}>
+                      <Card className="glass-surface border-white/10 hover:border-[#9C4AFF]/50 hover:shadow-glowViolet transition-all cursor-pointer h-full">
+                        <CardHeader>
+                          <div className="flex items-start justify-between mb-2">
+                            <Icon className="h-10 w-10 text-[#9C4AFF]" />
+                            {feature.isPro && (
+                              <Badge className="gradient-fire text-white border-0">Pro</Badge>
+                            )}
+                          </div>
+                          <CardTitle className="text-white text-lg">{feature.name}</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <p className="text-[#B8A7E0] text-sm">{feature.description}</p>
+                        </CardContent>
+                      </Card>
+                    </Link>
+                  </motion.div>
                 );
               })}
             </div>
@@ -819,32 +894,47 @@ export default function Home() {
         </section>
       )}
 
-      {/* Interactive Simulations - NEW */}
+      {/* Interactive Simulations */}
       {!searchQuery && (
-        <section className="py-16 px-4 bg-white">
-          <div className="container mx-auto max-w-6xl">
+        <section className="py-16 px-4 relative overflow-hidden">
+          {/* Ambient Glow */}
+          <div className="absolute top-10 left-10 w-[400px] h-[400px] bg-[#00E5FF] opacity-20 blur-[150px] rounded-full" />
+          <div className="absolute bottom-10 right-10 w-[400px] h-[400px] bg-[#FF6B00] opacity-20 blur-[150px] rounded-full" />
+          
+          <div className="container mx-auto max-w-6xl relative z-10">
             <div className="text-center mb-12">
-              <h2 className="text-4xl font-bold text-[#071428] mb-4">🎮 Interactive Simulations</h2>
-              <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+              <h2 className="text-4xl font-bold text-white mb-4 glow-text-cyan" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>
+                🎮 Interactive Simulations
+              </h2>
+              <p className="text-lg text-[#B8A7E0] max-w-3xl mx-auto">
                 Immersive and educational experiences for hands-on learning
               </p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {interactiveSimulations.map((sim) => {
+              {interactiveSimulations.map((sim, index) => {
                 const Icon = sim.icon;
                 return (
-                  <Link key={sim.name} href={sim.href}>
-                    <Card className="hover:shadow-xl transition-all hover:scale-105 cursor-pointer border-2 border-gray-200 hover:border-[#00C2D1] h-full">
-                      <CardHeader>
-                        <Icon className="h-10 w-10 text-[#00C2D1] mb-2" />
-                        <CardTitle className="text-lg">{sim.name}</CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <p className="text-gray-600 text-sm">{sim.description}</p>
-                      </CardContent>
-                    </Card>
-                  </Link>
+                  <motion.div
+                    key={sim.name}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.4, delay: index * 0.1 }}
+                    viewport={{ once: true }}
+                    whileHover={{ scale: 1.05, y: -5 }}
+                  >
+                    <Link href={sim.href}>
+                      <Card className="glass-surface border-2 border-white/10 hover:border-[#00E5FF]/50 hover:shadow-glowCyan transition-all cursor-pointer h-full">
+                        <CardHeader>
+                          <Icon className="h-10 w-10 text-[#00E5FF] mb-2" />
+                          <CardTitle className="text-lg text-white">{sim.name}</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <p className="text-[#B8A7E0] text-sm">{sim.description}</p>
+                        </CardContent>
+                      </Card>
+                    </Link>
+                  </motion.div>
                 );
               })}
             </div>
@@ -852,138 +942,149 @@ export default function Home() {
         </section>
       )}
 
-      {/* Quick-Access Utilities - Hidden when searching */}
+      {/* Quick-Access Utilities */}
       {!searchQuery && (
-        <section className="py-16 px-4 bg-gray-50">
-          <div className="container mx-auto max-w-6xl">
+        <section className="py-16 px-4 relative overflow-hidden">
+          {/* Ambient Glow */}
+          <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-[#2B0B4B] to-[#0A0014]" />
+          <div className="absolute top-10 right-10 w-[300px] h-[300px] bg-[#FF6B00] opacity-20 blur-[120px] rounded-full" />
+          
+          <div className="container mx-auto max-w-6xl relative z-10">
             <div className="text-center mb-12">
-              <h2 className="text-4xl font-bold text-[#071428] mb-4">🔥 Quick-Access Utilities</h2>
-              <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+              <h2 className="text-4xl font-bold text-white mb-4 glow-text-orange" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>
+                🔥 Quick-Access Utilities
+              </h2>
+              <p className="text-lg text-[#B8A7E0] max-w-3xl mx-auto">
                 Essential everyday calculators for component and protection selection
               </p>
             </div>
 
             <div className="relative">
-              <div className="relative h-96 rounded-2xl overflow-hidden mb-8">
+              <motion.div 
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6 }}
+                viewport={{ once: true }}
+                className="relative h-96 rounded-2xl overflow-hidden mb-8 border-2 border-[#FF6B00]/30 shadow-glowOrange"
+              >
                 <img
                   src="https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/project-uploads/e24d0c9e-e4fc-4077-96b8-bf644fe969e3/generated_images/quick-access-electrical-utilities-dashbo-31822a66-20251026042846.jpg"
                   alt="Quick Utilities"
                   className="w-full h-full object-cover"
                 />
-                <div className="absolute inset-0 bg-gradient-to-r from-[#071428]/90 to-[#071428]/70 flex items-center">
+                <div className="absolute inset-0 gradient-fire opacity-60" />
+                <div className="absolute inset-0 flex items-center">
                   <div className="container mx-auto px-8">
                     <div className="max-w-2xl">
-                      <h3 className="text-3xl font-bold text-white mb-4">
+                      <h3 className="text-3xl font-bold text-white mb-4 glow-text-orange">
                         Essential Component Calculators
                       </h3>
-                      <p className="text-lg text-gray-300 mb-6">
+                      <p className="text-lg text-white/90 mb-6">
                         Fast, accurate tools for daily electrical engineering tasks
                       </p>
                       <div className="grid grid-cols-2 gap-3 mb-6">
-                        <div className="flex items-center gap-2 text-white">
-                          <Gauge className="h-5 w-5 text-[#00C2D1]" />
-                          <span>Fuse/Breaker Selector</span>
-                        </div>
-                        <div className="flex items-center gap-2 text-white">
-                          <Gauge className="h-5 w-5 text-[#00C2D1]" />
-                          <span>Voltage Divider</span>
-                        </div>
-                        <div className="flex items-center gap-2 text-white">
-                          <Gauge className="h-5 w-5 text-[#00C2D1]" />
-                          <span>555 Timer Designer</span>
-                        </div>
-                        <div className="flex items-center gap-2 text-white">
-                          <Gauge className="h-5 w-5 text-[#00C2D1]" />
-                          <span>Opamp Calculator</span>
-                        </div>
-                        <div className="flex items-center gap-2 text-white">
-                          <Gauge className="h-5 w-5 text-[#00C2D1]" />
-                          <span>Filter Designer</span>
-                        </div>
-                        <div className="flex items-center gap-2 text-white">
-                          <Gauge className="h-5 w-5 text-[#00C2D1]" />
-                          <span>Thermal Management</span>
-                        </div>
+                        {['Fuse/Breaker Selector', 'Voltage Divider', '555 Timer Designer', 'Opamp Calculator', 'Filter Designer', 'Thermal Management'].map((item, index) => (
+                          <motion.div 
+                            key={index}
+                            initial={{ opacity: 0, x: -20 }}
+                            whileInView={{ opacity: 1, x: 0 }}
+                            transition={{ duration: 0.4, delay: index * 0.1 }}
+                            viewport={{ once: true }}
+                            className="flex items-center gap-2 text-white"
+                          >
+                            <Gauge className="h-5 w-5 text-[#00E5FF]" />
+                            <span>{item}</span>
+                          </motion.div>
+                        ))}
                       </div>
                       <Link href="/tools/quick-utilities">
-                        <Button size="lg" className="bg-[#00C2D1] text-[#071428] hover:bg-[#00C2D1]/90 font-semibold">
+                        <Button size="lg" className="glass-surface border-2 border-white/30 text-white hover:border-white hover:shadow-glowOrange font-semibold rounded-xl px-8 transition-all duration-300 hover:scale-105 uppercase tracking-wider">
                           Access All Utilities
                         </Button>
                       </Link>
                     </div>
                   </div>
                 </div>
-              </div>
+              </motion.div>
             </div>
           </div>
         </section>
       )}
 
-      {/* Educational & Training - Hidden when searching */}
+      {/* Educational & Training */}
       {!searchQuery && (
-        <section className="py-16 px-4 bg-gradient-to-b from-[#071428] to-[#0a1d38]">
-          <div className="container mx-auto max-w-6xl">
+        <section className="py-16 px-4 relative overflow-hidden">
+          {/* Ambient Glow */}
+          <div className="absolute top-10 left-10 w-[400px] h-[400px] bg-[#9C4AFF] opacity-20 blur-[150px] rounded-full" />
+          <div className="absolute bottom-10 right-10 w-[400px] h-[400px] bg-[#00E5FF] opacity-20 blur-[150px] rounded-full" />
+          
+          <div className="container mx-auto max-w-6xl relative z-10">
             <div className="text-center mb-12">
-              <h2 className="text-4xl font-bold text-white mb-4">🎓 Educational & Training</h2>
-              <p className="text-lg text-gray-300 max-w-3xl mx-auto">
+              <h2 className="text-4xl font-bold text-white mb-4 glow-text-violet" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>
+                🎓 Educational & Training
+              </h2>
+              <p className="text-lg text-[#B8A7E0] max-w-3xl mx-auto">
                 Learning, troubleshooting, and professional development resources
               </p>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
-              <div className="relative h-96 rounded-2xl overflow-hidden">
+              <motion.div
+                initial={{ opacity: 0, x: -50 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.8 }}
+                viewport={{ once: true }}
+                className="relative h-96 rounded-2xl overflow-hidden border-2 border-[#9C4AFF]/30 shadow-glowViolet"
+              >
                 <img
                   src="https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/project-uploads/e24d0c9e-e4fc-4077-96b8-bf644fe969e3/generated_images/educational-electrical-engineering-learn-74ff25a4-20251026042846.jpg"
                   alt="Educational Resources"
                   className="w-full h-full object-cover"
                 />
-              </div>
+                <div className="absolute inset-0 gradient-violet opacity-40" />
+              </motion.div>
 
-              <div className="space-y-6">
+              <motion.div
+                initial={{ opacity: 0, x: 50 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.8 }}
+                viewport={{ once: true }}
+                className="space-y-6"
+              >
                 <div className="space-y-4">
-                  <Card className="bg-white/5 border-white/10 hover:bg-white/10 transition-all">
-                    <CardHeader className="pb-3">
-                      <CardTitle className="text-white text-lg flex items-center gap-2">
-                        <BookOpen className="h-5 w-5 text-[#00C2D1]" />
-                        Interactive Tutorials
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <p className="text-gray-300 text-sm">Step-by-step guides with embedded calculators and real-world examples</p>
-                    </CardContent>
-                  </Card>
-
-                  <Card className="bg-white/5 border-white/10 hover:bg-white/10 transition-all">
-                    <CardHeader className="pb-3">
-                      <CardTitle className="text-white text-lg flex items-center gap-2">
-                        <Wrench className="h-5 w-5 text-[#00C2D1]" />
-                        Troubleshooting Wizard
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <p className="text-gray-300 text-sm">Diagnostic flowcharts for common electrical issues and solutions</p>
-                    </CardContent>
-                  </Card>
-
-                  <Card className="bg-white/5 border-white/10 hover:bg-white/10 transition-all">
-                    <CardHeader className="pb-3">
-                      <CardTitle className="text-white text-lg flex items-center gap-2">
-                        <EducationIcon className="h-5 w-5 text-[#00C2D1]" />
-                        Certification Prep
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <p className="text-gray-300 text-sm">Exam simulators for Journeyman/Master electrician certifications</p>
-                    </CardContent>
-                  </Card>
+                  {[
+                    { icon: BookOpen, title: 'Interactive Tutorials', desc: 'Step-by-step guides with embedded calculators and real-world examples' },
+                    { icon: Wrench, title: 'Troubleshooting Wizard', desc: 'Diagnostic flowcharts for common electrical issues and solutions' },
+                    { icon: EducationIcon, title: 'Certification Prep', desc: 'Exam simulators for Journeyman/Master electrician certifications' },
+                  ].map((item, index) => (
+                    <motion.div
+                      key={index}
+                      initial={{ opacity: 0, y: 20 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.4, delay: index * 0.1 }}
+                      viewport={{ once: true }}
+                    >
+                      <Card className="glass-surface border-white/10 hover:border-[#9C4AFF]/50 hover:shadow-glowViolet transition-all">
+                        <CardHeader className="pb-3">
+                          <CardTitle className="text-white text-lg flex items-center gap-2">
+                            <item.icon className="h-5 w-5 text-[#9C4AFF]" />
+                            {item.title}
+                          </CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <p className="text-[#B8A7E0] text-sm">{item.desc}</p>
+                        </CardContent>
+                      </Card>
+                    </motion.div>
+                  ))}
                 </div>
 
                 <Link href="/tutorials">
-                  <Button size="lg" className="w-full bg-[#00C2D1] text-[#071428] hover:bg-[#00C2D1]/90 font-semibold">
+                  <Button size="lg" className="w-full gradient-violet hover:shadow-glowViolet text-white font-semibold rounded-xl py-3 uppercase tracking-wider">
                     Start Learning
                   </Button>
                 </Link>
-              </div>
+              </motion.div>
             </div>
           </div>
         </section>
@@ -991,14 +1092,17 @@ export default function Home() {
 
       {/* Featured Apps Carousel */}
       {(!searchQuery || filteredApps.length > 0) && (
-        <section className="py-16 px-4 bg-gray-50">
-          <div className="container mx-auto max-w-6xl">
+        <section className="py-16 px-4 relative overflow-hidden">
+          {/* Ambient Glow */}
+          <div className="absolute top-10 right-10 w-[400px] h-[400px] bg-[#FF6B00] opacity-15 blur-[150px] rounded-full" />
+          
+          <div className="container mx-auto max-w-6xl relative z-10">
             <div className="flex justify-between items-center mb-8">
               <div>
-                <h2 className="text-3xl font-bold text-[#071428]">
+                <h2 className="text-3xl font-bold text-white glow-text-orange" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>
                   {searchQuery ? 'Matching Apps' : 'Featured Apps'}
                 </h2>
-                <p className="text-gray-600 mt-2">
+                <p className="text-[#B8A7E0] mt-2">
                   {searchQuery 
                     ? `${filteredApps.length} app${filteredApps.length !== 1 ? 's' : ''} found`
                     : 'Explore our most popular electrical engineering tools'
@@ -1006,7 +1110,7 @@ export default function Home() {
                 </p>
               </div>
               <Link href="/apps">
-                <Button variant="outline" className="hidden md:flex items-center gap-2">
+                <Button variant="ghost" className="hidden md:flex items-center gap-2 text-[#B8A7E0] hover:text-white hover:bg-white/10">
                   View All Apps
                   <ChevronRight className="h-4 w-4" />
                 </Button>
@@ -1017,7 +1121,7 @@ export default function Home() {
               <CarouselContent>
                 {filteredApps.map((app) => (
                   <CarouselItem key={app.id} className="md:basis-1/2 lg:basis-1/3">
-                    <Card className="h-full hover:shadow-lg transition-shadow">
+                    <Card className="h-full glass-surface border-white/10 hover:border-[#FF6B00]/50 hover:shadow-glowOrange transition-all">
                       <CardHeader className="p-0">
                         <div className="relative h-48 w-full overflow-hidden rounded-t-lg">
                           <img
@@ -1025,8 +1129,9 @@ export default function Home() {
                             alt={app.name}
                             className="w-full h-full object-cover"
                           />
+                          <div className="absolute inset-0 gradient-fire opacity-20" />
                           {app.isPro && (
-                            <Badge className="absolute top-3 right-3 bg-[#00C2D1] text-[#071428]">
+                            <Badge className="absolute top-3 right-3 gradient-violet text-white border-0">
                               Pro
                             </Badge>
                           )}
@@ -1034,20 +1139,20 @@ export default function Home() {
                       </CardHeader>
                       <CardContent className="pt-4">
                         <div className="flex items-start justify-between mb-2">
-                          <CardTitle className="text-lg">{app.name}</CardTitle>
+                          <CardTitle className="text-lg text-white">{app.name}</CardTitle>
                         </div>
-                        <CardDescription className="mb-3">{app.description}</CardDescription>
+                        <CardDescription className="mb-3 text-[#B8A7E0]">{app.description}</CardDescription>
                         <div className="flex items-center gap-4 text-sm">
                           <div className="flex items-center gap-1">
-                            <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                            <span className="font-medium">{app.rating}</span>
-                            <span className="text-gray-500">({app.reviews})</span>
+                            <Star className="h-4 w-4 fill-[#FF6B00] text-[#FF6B00]" />
+                            <span className="font-medium text-white">{app.rating}</span>
+                            <span className="text-[#B8A7E0]">({app.reviews})</span>
                           </div>
-                          <Badge variant="secondary">{app.category}</Badge>
+                          <Badge className="glass-surface text-[#B8A7E0] border-white/20">{app.category}</Badge>
                         </div>
                       </CardContent>
                       <CardFooter>
-                        <Button className="w-full bg-[#071428] hover:bg-[#071428]/90">
+                        <Button className="w-full gradient-fire hover:shadow-glowOrange text-white rounded-xl">
                           Launch App
                         </Button>
                       </CardFooter>
@@ -1055,13 +1160,13 @@ export default function Home() {
                   </CarouselItem>
                 ))}
               </CarouselContent>
-              <CarouselPrevious className="hidden md:flex" />
-              <CarouselNext className="hidden md:flex" />
+              <CarouselPrevious className="hidden md:flex border-white/20 text-white hover:bg-white/10" />
+              <CarouselNext className="hidden md:flex border-white/20 text-white hover:bg-white/10" />
             </Carousel>
 
             <div className="md:hidden mt-6 text-center">
               <Link href="/apps">
-                <Button variant="outline" className="items-center gap-2">
+                <Button variant="ghost" className="items-center gap-2 text-[#B8A7E0] hover:text-white hover:bg-white/10">
                   View All Apps
                   <ChevronRight className="h-4 w-4" />
                 </Button>
@@ -1073,23 +1178,35 @@ export default function Home() {
 
       {/* Quick Tools */}
       {(!searchQuery || filteredQuickTools.length > 0) && (
-        <section className="py-16 px-4">
-          <div className="container mx-auto max-w-6xl">
-            <h2 className="text-3xl font-bold text-[#071428] text-center mb-8">
+        <section className="py-16 px-4 relative overflow-hidden">
+          {/* Ambient Glow */}
+          <div className="absolute top-10 left-10 w-[400px] h-[400px] bg-[#00E5FF] opacity-15 blur-[150px] rounded-full" />
+          
+          <div className="container mx-auto max-w-6xl relative z-10">
+            <h2 className="text-3xl font-bold text-white text-center mb-8 glow-text-cyan" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>
               {searchQuery ? 'Quick Tools' : 'Quick Access Tools'}
             </h2>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {filteredQuickTools.map((tool) => {
+              {filteredQuickTools.map((tool, index) => {
                 const Icon = tool.icon;
                 return (
-                  <Link key={tool.name} href={tool.href}>
-                    <Card className="hover:shadow-lg transition-all hover:scale-105 cursor-pointer border-2 hover:border-[#00C2D1]">
-                      <CardContent className="flex flex-col items-center justify-center p-6 text-center">
-                        <Icon className="h-12 w-12 text-[#00C2D1] mb-3" />
-                        <p className="font-semibold text-[#071428]">{tool.name}</p>
-                      </CardContent>
-                    </Card>
-                  </Link>
+                  <motion.div
+                    key={tool.name}
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    whileInView={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.4, delay: index * 0.1 }}
+                    viewport={{ once: true }}
+                    whileHover={{ scale: 1.05, y: -5 }}
+                  >
+                    <Link href={tool.href}>
+                      <Card className="glass-surface border-2 border-white/10 hover:border-[#00E5FF]/50 hover:shadow-glowCyan transition-all cursor-pointer">
+                        <CardContent className="flex flex-col items-center justify-center p-6 text-center">
+                          <Icon className="h-12 w-12 text-[#00E5FF] mb-3" />
+                          <p className="font-semibold text-white">{tool.name}</p>
+                        </CardContent>
+                      </Card>
+                    </Link>
+                  </motion.div>
                 );
               })}
             </div>
