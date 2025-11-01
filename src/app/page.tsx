@@ -211,7 +211,7 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen gradient-depth">
       <Header 
         onSearch={handleSearch}
         searchQuery={searchQuery}
@@ -220,21 +220,21 @@ export default function Home() {
 
       {/* Search Results Section */}
       {hasSearchResults && (
-        <section className="bg-gray-50 py-8 px-4 border-b">
+        <section className="glass-surface py-8 px-4 border-b border-white/10">
           <div className="container mx-auto max-w-6xl">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-2xl font-bold text-[#071428]">
+              <h2 className="text-2xl font-bold text-white glow-text-violet">
                 Search Results for "{searchQuery}"
               </h2>
               <Button
                 variant="ghost"
                 onClick={() => setSearchQuery('')}
-                className="text-gray-600 hover:text-[#071428]"
+                className="text-[#B8A7E0] hover:text-white hover:bg-white/10"
               >
                 Clear Search
               </Button>
             </div>
-            <p className="text-gray-600">
+            <p className="text-[#B8A7E0]">
               Found {filteredApps.length + filteredTools.length + filteredQuickTools.length} results
             </p>
           </div>
@@ -243,18 +243,18 @@ export default function Home() {
 
       {/* No Results Message */}
       {hasNoResults && (
-        <section className="bg-gray-50 py-16 px-4">
+        <section className="glass-surface py-16 px-4">
           <div className="container mx-auto max-w-6xl text-center">
-            <Search className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-            <h2 className="text-2xl font-bold text-[#071428] mb-2">
+            <Search className="h-16 w-16 text-[#9C4AFF] mx-auto mb-4" />
+            <h2 className="text-2xl font-bold text-white mb-2">
               No results found for "{searchQuery}"
             </h2>
-            <p className="text-gray-600 mb-6">
+            <p className="text-[#B8A7E0] mb-6">
               Try searching with different keywords or browse our categories below
             </p>
             <Button
               onClick={() => setSearchQuery('')}
-              className="bg-[#00C2D1] text-[#071428] hover:bg-[#00C2D1]/90"
+              className="gradient-fire text-white hover:shadow-glowOrange"
             >
               Clear Search
             </Button>
@@ -264,22 +264,28 @@ export default function Home() {
 
       {/* Hero Section - Hidden when searching */}
       {!searchQuery && (
-        <section className="bg-[#071428] text-white py-20 px-4">
-          <div className="container mx-auto max-w-6xl">
+        <section className="relative py-20 px-4 overflow-hidden">
+          {/* Ambient Background Orbs */}
+          <div className="absolute top-20 left-10 w-[500px] h-[500px] bg-[#9C4AFF] opacity-20 blur-[150px] rounded-full animate-float" />
+          <div className="absolute top-40 right-10 w-[400px] h-[400px] bg-[#FF6B00] opacity-20 blur-[150px] rounded-full animate-float" style={{ animationDelay: '2s' }} />
+          <div className="absolute bottom-20 left-1/2 w-[300px] h-[300px] bg-[#00E5FF] opacity-20 blur-[150px] rounded-full animate-float" style={{ animationDelay: '4s' }} />
+
+          <div className="container mx-auto max-w-6xl relative z-10">
             <div className="text-center space-y-6">
               <motion.h1 
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6 }}
-                className="text-4xl md:text-6xl font-bold leading-tight"
+                className="text-4xl md:text-6xl font-bold leading-tight text-white"
+                style={{ fontFamily: 'Space Grotesk, sans-serif' }}
               >
-                Your Complete <span className="text-[#00C2D1]">Electrical & Electronics</span> Platform
+                Your Complete <span className="gradient-text-violet glow-text-violet">Electrical & Electronics</span> Platform
               </motion.h1>
               <motion.p 
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.2 }}
-                className="text-lg md:text-xl text-gray-300 max-w-3xl mx-auto"
+                className="text-lg md:text-xl text-[#B8A7E0] max-w-3xl mx-auto"
               >
                 Access professional tools, calculators, tutorials, and resources designed for EEE professionals, students, and technicians.
               </motion.p>
@@ -294,16 +300,20 @@ export default function Home() {
               >
                 <div className="flex gap-2">
                   <div className="relative flex-1">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#B8A7E0] h-5 w-5" />
                     <Input
                       type="text"
                       placeholder="Search apps, calculators, tutorials..."
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
-                      className="pl-10 h-12 bg-white text-black border-none"
+                      className="pl-10 h-12 glass-surface backdrop-blur-glass text-white border-white/20 focus:border-[#9C4AFF] focus:ring-[#9C4AFF] placeholder:text-[#B8A7E0]"
                     />
                   </div>
-                  <Button type="button" onClick={() => handleSearch(searchQuery)} className="h-12 px-6 bg-[#00C2D1] text-[#071428] hover:bg-[#00C2D1]/90 font-semibold">
+                  <Button 
+                    type="button" 
+                    onClick={() => handleSearch(searchQuery)} 
+                    className="h-12 px-6 gradient-fire text-white hover:shadow-glowOrange font-semibold rounded-xl transition-all duration-300 hover:scale-105"
+                  >
                     Search
                   </Button>
                 </div>
@@ -325,21 +335,22 @@ export default function Home() {
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.4, delay: 0.7 + index * 0.1 }}
+                      whileHover={{ scale: 1.05, y: -5 }}
                     >
                       <Card
-                        className={`cursor-pointer transition-all hover:scale-105 ${
+                        className={`cursor-pointer transition-all border-2 ${
                           isSelected
-                            ? 'bg-[#00C2D1] border-[#00C2D1] text-[#071428]'
-                            : 'bg-white/10 border-white/20 text-white hover:bg-white/20'
+                            ? 'gradient-fire border-[#FF6B00] shadow-glowOrange'
+                            : 'glass-surface border-white/20 hover:border-[#9C4AFF] hover:shadow-glowViolet'
                         }`}
                         onClick={() => setSelectedRole(role.type)}
                       >
                         <CardHeader>
-                          <Icon className="h-10 w-10 mb-2" />
-                          <CardTitle className={isSelected ? 'text-[#071428]' : 'text-white'}>
+                          <Icon className={`h-10 w-10 mb-2 ${isSelected ? 'text-white' : 'text-[#9C4AFF]'}`} />
+                          <CardTitle className="text-white">
                             {role.title}
                           </CardTitle>
-                          <CardDescription className={isSelected ? 'text-[#071428]/80' : 'text-gray-300'}>
+                          <CardDescription className="text-[#B8A7E0]">
                             {role.description}
                           </CardDescription>
                         </CardHeader>
@@ -353,14 +364,12 @@ export default function Home() {
         </section>
       )}
 
-      {/* Instrument Scanner Section - Enhanced with Image */}
+      {/* Instrument Scanner Section */}
       {!searchQuery && (
-        <section className="relative py-20 px-4 bg-gradient-to-br from-[#071428] via-[#0a1d38] to-[#071428] overflow-hidden">
-          {/* Animated Background Elements */}
-          <div className="absolute inset-0 opacity-10">
-            <div className="absolute top-20 left-10 w-64 h-64 bg-[#00C2D1] rounded-full blur-3xl animate-pulse" />
-            <div className="absolute bottom-20 right-10 w-96 h-96 bg-purple-500 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
-          </div>
+        <section className="relative py-20 px-4 overflow-hidden">
+          {/* Ambient Glow */}
+          <div className="absolute top-20 right-10 w-[400px] h-[400px] bg-[#00E5FF] opacity-20 blur-[150px] rounded-full" />
+          <div className="absolute bottom-20 left-10 w-[500px] h-[500px] bg-[#9C4AFF] opacity-20 blur-[150px] rounded-full" />
 
           <div className="container mx-auto max-w-6xl relative z-10">
             <motion.div 
@@ -375,11 +384,13 @@ export default function Home() {
                   animate={{ rotate: [0, 360] }}
                   transition={{ duration: 3, repeat: Infinity, ease: 'linear' }}
                 >
-                  <CircuitBoard className="h-12 w-12 text-[#00C2D1]" />
+                  <CircuitBoard className="h-12 w-12 text-[#00E5FF] glow-text-cyan" />
                 </motion.div>
-                <h2 className="text-4xl md:text-5xl font-bold text-white">AI-Powered Instrument Scanner</h2>
+                <h2 className="text-4xl md:text-5xl font-bold text-white glow-text-cyan" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>
+                  AI-Powered Instrument Scanner
+                </h2>
               </div>
-              <p className="text-xl text-gray-300 max-w-3xl mx-auto">
+              <p className="text-xl text-[#B8A7E0] max-w-3xl mx-auto">
                 Instantly identify any electrical or electronic instrument with advanced AI technology
               </p>
             </motion.div>
@@ -391,16 +402,16 @@ export default function Home() {
                 whileInView={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.8 }}
                 viewport={{ once: true }}
-                className="relative rounded-2xl overflow-hidden shadow-2xl"
+                className="relative rounded-2xl overflow-hidden border-2 border-[#00E5FF]/30 shadow-glowCyan"
               >
                 <img
                   src="https://images.unsplash.com/photo-1581092918056-0c4c3acd3789?w=800&h=600&fit=crop"
                   alt="Instrument Scanner"
                   className="w-full h-full object-cover"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#00C2D1]/80 to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#00E5FF]/80 to-transparent" />
                 <div className="absolute bottom-6 left-6 right-6">
-                  <h3 className="text-2xl font-bold text-white mb-2">Advanced Recognition</h3>
+                  <h3 className="text-2xl font-bold text-white mb-2 glow-text-cyan">Advanced Recognition</h3>
                   <p className="text-white/90 text-sm">Identify multimeters, oscilloscopes, power supplies, and more</p>
                 </div>
               </motion.div>
@@ -425,14 +436,14 @@ export default function Home() {
                     whileInView={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.4, delay: index * 0.1 }}
                     viewport={{ once: true }}
-                    className="flex items-start gap-4 bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-4 hover:bg-white/10 transition-colors"
+                    className="flex items-start gap-4 glass-surface border border-white/10 rounded-xl p-4 hover:border-[#00E5FF]/50 hover:shadow-glowCyan transition-all"
                   >
-                    <div className="p-3 bg-[#00C2D1]/20 rounded-lg">
-                      <feature.icon className="h-6 w-6 text-[#00C2D1]" />
+                    <div className="p-3 gradient-aqua rounded-lg">
+                      <feature.icon className="h-6 w-6 text-white" />
                     </div>
                     <div>
                       <h4 className="text-white font-semibold text-lg mb-1">{feature.title}</h4>
-                      <p className="text-gray-400 text-sm">{feature.desc}</p>
+                      <p className="text-[#B8A7E0] text-sm">{feature.desc}</p>
                     </div>
                   </motion.div>
                 ))}
@@ -451,14 +462,12 @@ export default function Home() {
         </section>
       )}
 
-      {/* Problem Solver Section - Enhanced with Image */}
+      {/* Problem Solver Section */}
       {!searchQuery && (
-        <section className="relative py-20 px-4 bg-gradient-to-br from-[#0a1d38] via-[#1a1f3a] to-[#0a1d38] overflow-hidden">
-          {/* Animated Background Elements */}
-          <div className="absolute inset-0 opacity-10">
-            <div className="absolute top-20 right-10 w-64 h-64 bg-purple-500 rounded-full blur-3xl animate-pulse" />
-            <div className="absolute bottom-20 left-10 w-96 h-96 bg-[#00C2D1] rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1.5s' }} />
-          </div>
+        <section className="relative py-20 px-4 overflow-hidden">
+          {/* Ambient Glow */}
+          <div className="absolute top-20 right-10 w-[400px] h-[400px] bg-[#FF00C8] opacity-20 blur-[150px] rounded-full animate-pulse-slow" />
+          <div className="absolute bottom-20 left-10 w-[500px] h-[500px] bg-[#9C4AFF] opacity-20 blur-[150px] rounded-full animate-pulse-slow" style={{ animationDelay: '1.5s' }} />
 
           <div className="container mx-auto max-w-6xl relative z-10">
             <motion.div 
@@ -473,11 +482,13 @@ export default function Home() {
                   animate={{ rotate: [0, 360] }}
                   transition={{ duration: 3, repeat: Infinity, ease: 'linear' }}
                 >
-                  <Sparkles className="h-12 w-12 text-purple-400" />
+                  <Sparkles className="h-12 w-12 text-[#FF00C8] glow-text-orange" />
                 </motion.div>
-                <h2 className="text-4xl md:text-5xl font-bold text-white">AI Problem Solver</h2>
+                <h2 className="text-4xl md:text-5xl font-bold text-white glow-text-violet" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>
+                  AI Problem Solver
+                </h2>
               </div>
-              <p className="text-xl text-gray-300 max-w-3xl mx-auto">
+              <p className="text-xl text-[#B8A7E0] max-w-3xl mx-auto">
                 Get detailed step-by-step solutions for electrical & electronics numerical problems
               </p>
             </motion.div>
@@ -503,14 +514,14 @@ export default function Home() {
                     whileInView={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.4, delay: index * 0.1 }}
                     viewport={{ once: true }}
-                    className="flex items-start gap-4 bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-4 hover:bg-white/10 transition-colors"
+                    className="flex items-start gap-4 glass-surface border border-white/10 rounded-xl p-4 hover:border-[#9C4AFF]/50 hover:shadow-glowViolet transition-all"
                   >
-                    <div className="p-3 bg-purple-500/20 rounded-lg">
-                      <feature.icon className="h-6 w-6 text-purple-400" />
+                    <div className="p-3 gradient-violet rounded-lg">
+                      <feature.icon className="h-6 w-6 text-white" />
                     </div>
                     <div>
                       <h4 className="text-white font-semibold text-lg mb-1">{feature.title}</h4>
-                      <p className="text-gray-400 text-sm">{feature.desc}</p>
+                      <p className="text-[#B8A7E0] text-sm">{feature.desc}</p>
                     </div>
                   </motion.div>
                 ))}
@@ -522,16 +533,16 @@ export default function Home() {
                 whileInView={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.8 }}
                 viewport={{ once: true }}
-                className="relative rounded-2xl overflow-hidden shadow-2xl order-1 lg:order-2"
+                className="relative rounded-2xl overflow-hidden border-2 border-[#9C4AFF]/30 shadow-glowViolet order-1 lg:order-2"
               >
                 <img
                   src="https://images.unsplash.com/photo-1635070041078-e363dbe005cb?w=800&h=600&fit=crop"
                   alt="Problem Solver"
                   className="w-full h-full object-cover"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-purple-500/80 to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#9C4AFF]/80 to-transparent" />
                 <div className="absolute bottom-6 left-6 right-6">
-                  <h3 className="text-2xl font-bold text-white mb-2">Smart Analysis</h3>
+                  <h3 className="text-2xl font-bold text-white mb-2 glow-text-violet">Smart Analysis</h3>
                   <p className="text-white/90 text-sm">AI-powered solutions for complex electrical problems</p>
                 </div>
               </motion.div>
@@ -551,52 +562,65 @@ export default function Home() {
 
       {/* Advanced Calculators & Tools */}
       {(!searchQuery || filteredTools.length > 0) && (
-        <section className="py-16 px-4 bg-white">
-          <div className="container mx-auto max-w-6xl">
+        <section className="py-16 px-4 relative overflow-hidden">
+          {/* Ambient Orb */}
+          <div className="absolute top-10 left-1/2 w-[400px] h-[400px] bg-[#FF6B00] opacity-15 blur-[150px] rounded-full" />
+          
+          <div className="container mx-auto max-w-6xl relative z-10">
             <div className="text-center mb-12">
-              <h2 className="text-4xl font-bold text-[#071428] mb-4">
+              <h2 className="text-4xl font-bold text-white mb-4 glow-text-violet" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>
                 {searchQuery ? 'Tool Categories' : 'Advanced Calculators & Tools'}
               </h2>
               {!searchQuery && (
-                <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+                <p className="text-lg text-[#B8A7E0] max-w-3xl mx-auto">
                   High-level design and analysis tools for power systems, motors, drives, and energy management
                 </p>
               )}
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
-              {filteredTools.slice(0, 3).map((tool) => {
+              {filteredTools.slice(0, 3).map((tool, index) => {
                 const Icon = tool.icon;
                 return (
-                  <Card key={tool.id} className="overflow-hidden hover:shadow-xl transition-shadow">
-                    <div className="relative h-48 overflow-hidden">
-                      <img
-                        src={tool.image}
-                        alt={tool.title}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                    <CardHeader>
-                      <CardTitle className="flex items-center gap-2">
-                        <Icon className="h-5 w-5 text-[#00C2D1]" />
-                        {tool.title}
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-2">
-                      <ul className="text-sm text-gray-600 space-y-1">
-                        {tool.description.split(', ').map((item, idx) => (
-                          <li key={idx}>• {item}</li>
-                        ))}
-                      </ul>
-                    </CardContent>
-                    <CardFooter>
-                      <Link href={tool.href} className="w-full">
-                        <Button className="w-full bg-[#071428] hover:bg-[#071428]/90">
-                          Explore Tools
-                        </Button>
-                      </Link>
-                    </CardFooter>
-                  </Card>
+                  <motion.div
+                    key={tool.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5, delay: index * 0.1 }}
+                    viewport={{ once: true }}
+                    whileHover={{ scale: 1.03, y: -5 }}
+                  >
+                    <Card className="overflow-hidden glass-surface border-white/10 hover:border-[#9C4AFF]/50 hover:shadow-glowViolet transition-all h-full">
+                      <div className="relative h-48 overflow-hidden">
+                        <img
+                          src={tool.image}
+                          alt={tool.title}
+                          className="w-full h-full object-cover"
+                        />
+                        <div className="absolute inset-0 gradient-violet opacity-20" />
+                      </div>
+                      <CardHeader>
+                        <CardTitle className="flex items-center gap-2 text-white">
+                          <Icon className="h-5 w-5 text-[#9C4AFF]" />
+                          {tool.title}
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent className="space-y-2">
+                        <ul className="text-sm text-[#B8A7E0] space-y-1">
+                          {tool.description.split(', ').map((item, idx) => (
+                            <li key={idx}>• {item}</li>
+                          ))}
+                        </ul>
+                      </CardContent>
+                      <CardFooter>
+                        <Link href={tool.href} className="w-full">
+                          <Button className="w-full gradient-violet hover:shadow-glowViolet text-white rounded-xl">
+                            Explore Tools
+                          </Button>
+                        </Link>
+                      </CardFooter>
+                    </Card>
+                  </motion.div>
                 );
               })}
             </div>
@@ -1073,24 +1097,51 @@ export default function Home() {
         </section>
       )}
 
-      {/* CTA Section - Hidden when searching */}
+      {/* CTA Section */}
       {!searchQuery && (
-        <section className="bg-[#071428] text-white py-16 px-4">
-          <div className="container mx-auto max-w-4xl text-center">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">
+        <section className="relative py-16 px-4 overflow-hidden">
+          {/* Animated Gradient Background */}
+          <div className="absolute inset-0 gradient-violet opacity-50 animate-gradient-move" style={{ backgroundSize: '400% 400%' }} />
+          <div className="absolute top-0 left-0 w-full h-full bg-[#0A0014]/50" />
+          
+          {/* Ambient Orbs */}
+          <div className="absolute top-10 right-10 w-[300px] h-[300px] bg-[#FF6B00] opacity-30 blur-[150px] rounded-full animate-pulse-slow" />
+          <div className="absolute bottom-10 left-10 w-[300px] h-[300px] bg-[#00E5FF] opacity-30 blur-[150px] rounded-full animate-pulse-slow" style={{ animationDelay: '1s' }} />
+
+          <div className="container mx-auto max-w-4xl text-center relative z-10">
+            <motion.h2 
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+              viewport={{ once: true }}
+              className="text-3xl md:text-4xl font-bold mb-4 text-white glow-text-violet"
+              style={{ fontFamily: 'Space Grotesk, sans-serif' }}
+            >
               Ready to Level Up Your EE Skills?
-            </h2>
-            <p className="text-lg text-gray-300 mb-8">
+            </motion.h2>
+            <motion.p 
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              viewport={{ once: true }}
+              className="text-lg text-[#B8A7E0] mb-8"
+            >
               Join thousands of professionals using EE Zone for their daily electrical engineering needs.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button size="lg" className="bg-[#00C2D1] text-[#071428] hover:bg-[#00C2D1]/90 font-semibold">
+            </motion.p>
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.4 }}
+              viewport={{ once: true }}
+              className="flex flex-col sm:flex-row gap-4 justify-center"
+            >
+              <Button size="lg" className="gradient-fire text-white hover:shadow-glowOrange font-semibold rounded-xl px-8 transition-all duration-300 hover:scale-105 uppercase tracking-wider">
                 Start Free Trial
               </Button>
-              <Button size="lg" variant="outline" className="border-white text-white hover:bg-white/10">
+              <Button size="lg" className="glass-surface border-2 border-white/20 text-white hover:border-[#9C4AFF] hover:shadow-glowViolet rounded-xl px-8 transition-all duration-300 hover:scale-105 uppercase tracking-wider">
                 Explore Features
               </Button>
-            </div>
+            </motion.div>
           </div>
         </section>
       )}
