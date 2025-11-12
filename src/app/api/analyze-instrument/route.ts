@@ -1,43 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-export async function POST(request: NextRequest) {
-  try {
-    const { image } = await request.json();
-
-    if (!image) {
-      return NextResponse.json(
-        { error: 'No image provided' },
-        { status: 400 }
-      );
-    }
-
-    const apiKey = process.env.OPENROUTER_API_KEY;
-
-    if (!apiKey) {
-      return NextResponse.json(
-        { error: 'OpenRouter API key not configured. Please add OPENROUTER_API_KEY to your environment variables.' },
-        { status: 500 }
-      );
-    }
-
-    // Call OpenRouter Vision API
-    const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${apiKey}`,
-        'HTTP-Referer': process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000',
-        'X-Title': 'EE Zone - Instrument Scanner'
-      },
-      body: JSON.stringify({
-        model: 'openai/gpt-4o',
-        messages: [
-          {
-            role: 'user',
-            content: [
-              {
-                type: 'text',
-                text: `You are an expert electrical and electronics engineer specializing in test equipment and instrumentation. Analyze this image carefully and identify any electrical or electronic instrument visible.
+const SYSTEM_PROMPT = `You are an expert electrical and electronics engineer specializing in test equipment and instrumentation. Analyze this image carefully and identify any electrical or electronic instrument visible.
 
 IMPORTANT: Provide COMPREHENSIVE and DETAILED information. Do not leave any arrays empty unless truly no information exists.
 
@@ -100,50 +63,135 @@ If NO electrical/electronic instrument is visible:
   "safetyNotes": []
 }
 
-Be extremely detailed and technical. Assume the user is an electrical engineer or technician who needs comprehensive information.`
-              },
-              {
-                type: 'image_url',
-                image_url: {
-                  url: image,
-                  detail: 'high'
-                }
-              }
-            ]
-          }
-        ],
-        max_tokens: 2500,
-        temperature: 0.5
-      })
-    });
+Be extremely detailed and technical. Assume the user is an electrical engineer or technician who needs comprehensive information.`;
 
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
-      console.error('OpenRouter API error:', {
-        status: response.status,
-        statusText: response.statusText,
-        error: errorData
-      });
+async function callOpenRouter(image: string) {
+  const apiKey = process.env.OPENROUTER_API_KEY;
+  if (!apiKey) {
+    throw new Error('OpenRouter API key not configured');
+  }
+
+  const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${apiKey}`,
+      'HTTP-Referer': process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000',
+      'X-Title': 'EE Zone - Instrument Scanner'
+    },
+    body: JSON.stringify({
+      model: 'openai/gpt-4o',
+      messages: [
+        {
+          role: 'user',
+          content: [
+            { type: 'text', text: SYSTEM_PROMPT },
+            { type: 'image_url', image_url: { url: image, detail: 'high' } }
+          ]
+        }
+      ],
+      max_tokens: 2500,
+      temperature: 0.5
+    })
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw { status: response.status, data: errorData };
+  }
+
+  return await response.json();
+}
+
+async function callOpenAI(image: string) {
+  const apiKey = process.env.OPENAI_API_KEY;
+  if (!apiKey) {
+    throw new Error('OpenAI API key not configured');
+  }
+
+  const response = await fetch('https://api.openai.com/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${apiKey}`,
+    },
+    body: JSON.stringify({
+      model: 'gpt-4o',
+      messages: [
+        {
+          role: 'user',
+          content: [
+            { type: 'text', text: SYSTEM_PROMPT },
+            { type: 'image_url', image_url: { url: image, detail: 'high' } }
+          ]
+        }
+      ],
+      max_tokens: 2500,
+      temperature: 0.5
+    })
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw { status: response.status, data: errorData };
+  }
+
+  return await response.json();
+}
+
+export async function POST(request: NextRequest) {
+  try {
+    const { image } = await request.json();
+
+    if (!image) {
+      return NextResponse.json(
+        { error: 'No image provided' },
+        { status: 400 }
+      );
+    }
+
+    let data;
+    let provider = 'openrouter';
+    let error: any = null;
+
+    // Try OpenRouter first
+    try {
+      data = await callOpenRouter(image);
+    } catch (err: any) {
+      console.error('OpenRouter error:', err);
+      error = err;
       
-      // Provide specific error messages based on status code
+      // If OpenRouter fails with rate limit or token issues, try OpenAI
+      if (err.status === 429 || err.status === 402 || err.data?.error?.code === 'insufficient_quota') {
+        console.log('OpenRouter limit reached, falling back to OpenAI...');
+        try {
+          data = await callOpenAI(image);
+          provider = 'openai';
+          error = null;
+        } catch (openaiErr: any) {
+          console.error('OpenAI error:', openaiErr);
+          error = openaiErr;
+        }
+      }
+    }
+
+    // If both failed, return error
+    if (error && !data) {
       let errorMessage = 'Failed to analyze image with AI';
-      if (response.status === 401) {
-        errorMessage = 'Invalid OpenRouter API key. Please check your OPENROUTER_API_KEY environment variable.';
-      } else if (response.status === 429) {
-        errorMessage = errorData.error?.message || 'OpenRouter API rate limit exceeded. Please check your API usage.';
-      } else if (response.status === 400) {
-        errorMessage = errorData.error?.message || 'Invalid request to OpenRouter API.';
-      } else if (errorData.error?.message) {
-        errorMessage = errorData.error.message;
+      if (error.status === 401) {
+        errorMessage = 'Invalid API key. Please check your configuration.';
+      } else if (error.status === 429 || error.status === 402) {
+        errorMessage = 'API rate limit exceeded for both providers. Please try again later.';
+      } else if (error.data?.error?.message) {
+        errorMessage = error.data.error.message;
       }
       
       return NextResponse.json(
         { error: errorMessage },
-        { status: response.status }
+        { status: error.status || 500 }
       );
     }
 
-    const data = await response.json();
     const content = data.choices[0]?.message?.content;
 
     if (!content) {
@@ -153,10 +201,9 @@ Be extremely detailed and technical. Assume the user is an electrical engineer o
       );
     }
 
-    // Parse the JSON response from GPT-4
+    // Parse the JSON response
     let instrumentInfo;
     try {
-      // Extract JSON from markdown code blocks if present
       const jsonMatch = content.match(/```json\n?([\s\S]*?)\n?```/) || content.match(/\{[\s\S]*\}/);
       const jsonString = jsonMatch ? (jsonMatch[1] || jsonMatch[0]) : content;
       instrumentInfo = JSON.parse(jsonString.trim());
@@ -179,7 +226,7 @@ Be extremely detailed and technical. Assume the user is an electrical engineer o
       );
     }
 
-    return NextResponse.json({ instrumentInfo });
+    return NextResponse.json({ instrumentInfo, provider });
   } catch (error) {
     console.error('Analysis error:', error);
     return NextResponse.json(
