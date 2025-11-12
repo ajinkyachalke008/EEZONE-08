@@ -37,29 +37,70 @@ export async function POST(request: NextRequest) {
             content: [
               {
                 type: 'text',
-                text: `You are an expert in electrical and electronic instruments. Analyze this image and identify the instrument shown. 
+                text: `You are an expert electrical and electronics engineer specializing in test equipment and instrumentation. Analyze this image carefully and identify any electrical or electronic instrument visible.
 
-Provide a detailed response in the following JSON format:
+IMPORTANT: Provide COMPREHENSIVE and DETAILED information. Do not leave any arrays empty unless truly no information exists.
+
+Return ONLY valid JSON in this EXACT format (no markdown, no extra text):
 {
-  "name": "Full name of the instrument",
-  "type": "Category (e.g., Multimeter, Oscilloscope, Power Supply, Function Generator, etc.)",
-  "specifications": ["Key spec 1", "Key spec 2", "Key spec 3"],
-  "applications": ["Application 1", "Application 2", "Application 3"],
-  "tutorials": ["How to use for task 1", "How to use for task 2", "Common troubleshooting tips"],
-  "safetyNotes": ["Safety note 1", "Safety note 2"]
+  "name": "Full specific name and model if visible (e.g., 'Fluke 87V Digital Multimeter' or 'Generic Digital Multimeter')",
+  "type": "Specific category (Multimeter, Oscilloscope, Power Supply, Function Generator, Spectrum Analyzer, LCR Meter, etc.)",
+  "specifications": [
+    "At least 5-8 detailed technical specifications",
+    "Include voltage/current ranges if applicable",
+    "Display type and resolution",
+    "Measurement accuracy",
+    "Special features (True RMS, Auto-ranging, etc.)",
+    "Input impedance",
+    "Sampling rate or bandwidth",
+    "Power requirements"
+  ],
+  "applications": [
+    "At least 5-7 practical real-world applications",
+    "Circuit troubleshooting and debugging",
+    "Component testing procedures",
+    "Industrial maintenance uses",
+    "Educational/laboratory applications",
+    "Quality control and testing",
+    "Field service applications",
+    "Research and development uses"
+  ],
+  "tutorials": [
+    "At least 5-7 step-by-step usage instructions",
+    "How to perform basic measurements",
+    "How to select appropriate measurement mode",
+    "How to connect test leads properly",
+    "How to interpret display readings",
+    "Common measurement techniques",
+    "Calibration and maintenance tips",
+    "Troubleshooting common issues"
+  ],
+  "safetyNotes": [
+    "At least 3-5 critical safety warnings",
+    "Voltage/current limitations and warnings",
+    "Proper connection procedures",
+    "Isolation and grounding requirements",
+    "What NOT to do with this instrument",
+    "Personal protective equipment needed"
+  ]
 }
 
-If you cannot identify an electrical/electronic instrument in the image, return:
+If the instrument is partially visible or generic:
+- Still provide detailed specifications for that TYPE of instrument
+- Give comprehensive applications and tutorials for the category
+- Always include safety information
+
+If NO electrical/electronic instrument is visible:
 {
-  "name": "Unknown Instrument",
+  "name": "No Electrical Instrument Detected",
   "type": "Not Identified",
-  "specifications": ["Unable to identify instrument from image"],
-  "applications": ["Please upload a clearer image of an electrical or electronic instrument"],
-  "tutorials": ["Make sure the instrument is clearly visible", "Ensure good lighting conditions"],
+  "specifications": ["No electrical or electronic instrument found in the image", "Please capture or upload an image showing a clear view of the instrument"],
+  "applications": ["Ensure the entire instrument is visible in the frame", "Use good lighting conditions", "Hold the camera steady for a clear shot"],
+  "tutorials": ["Position the instrument on a flat surface", "Ensure all labels and display screens are visible", "Take the photo from directly above or in front of the instrument"],
   "safetyNotes": []
 }
 
-Be specific and technical in your descriptions. Focus on practical information that would be useful for electrical engineers, students, and technicians.`
+Be extremely detailed and technical. Assume the user is an electrical engineer or technician who needs comprehensive information.`
               },
               {
                 type: 'image_url',
@@ -71,8 +112,8 @@ Be specific and technical in your descriptions. Focus on practical information t
             ]
           }
         ],
-        max_tokens: 1500,
-        temperature: 0.7
+        max_tokens: 2500,
+        temperature: 0.5
       })
     });
 
@@ -119,10 +160,21 @@ Be specific and technical in your descriptions. Focus on practical information t
       const jsonMatch = content.match(/```json\n?([\s\S]*?)\n?```/) || content.match(/\{[\s\S]*\}/);
       const jsonString = jsonMatch ? (jsonMatch[1] || jsonMatch[0]) : content;
       instrumentInfo = JSON.parse(jsonString.trim());
+      
+      // Ensure all required fields exist with defaults
+      instrumentInfo = {
+        name: instrumentInfo.name || 'Unknown Instrument',
+        type: instrumentInfo.type || 'Not Identified',
+        specifications: Array.isArray(instrumentInfo.specifications) ? instrumentInfo.specifications : [],
+        applications: Array.isArray(instrumentInfo.applications) ? instrumentInfo.applications : [],
+        tutorials: Array.isArray(instrumentInfo.tutorials) ? instrumentInfo.tutorials : [],
+        safetyNotes: Array.isArray(instrumentInfo.safetyNotes) ? instrumentInfo.safetyNotes : []
+      };
+      
     } catch (parseError) {
       console.error('Failed to parse AI response:', content);
       return NextResponse.json(
-        { error: 'Failed to parse instrument information' },
+        { error: 'Failed to parse instrument information. Please try again.' },
         { status: 500 }
       );
     }
