@@ -41,19 +41,35 @@ export const InstrumentScanner = () => {
   const startCamera = async () => {
     try {
       setError(null);
+      setIsCameraMode(true);
+      setIsScanning(true);
+      
       const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: 'environment', width: { ideal: 1920 }, height: { ideal: 1080 } }
+        video: { 
+          facingMode: 'environment', 
+          width: { ideal: 1920 }, 
+          height: { ideal: 1080 } 
+        }
       });
       
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
         streamRef.current = stream;
-        setIsCameraMode(true);
-        setIsScanning(true);
+        
+        // Wait for video metadata to load and then play
+        videoRef.current.onloadedmetadata = () => {
+          videoRef.current?.play().catch((err) => {
+            console.error('Video play error:', err);
+            setError('Failed to start video stream. Please try again.');
+            stopCamera();
+          });
+        };
       }
     } catch (err) {
-      setError('Unable to access camera. Please check permissions.');
       console.error('Camera error:', err);
+      setError('Unable to access camera. Please check permissions and try again.');
+      setIsCameraMode(false);
+      setIsScanning(false);
     }
   };
 
