@@ -38,12 +38,24 @@ export function Header({ onSearch, searchQuery, onSearchChange }: HeaderProps) {
           >
             <Zap className="h-5 w-5 text-white" />
           </motion.div>
-          <span 
-            className="font-bold text-xl text-white glow-text-violet transition-all group-hover:glow-text-orange" 
-            style={{ fontFamily: 'Orbitron, sans-serif' }}
+          <motion.div
+            className="relative px-4 py-2 border-2 border-[#9C4AFF]/50 rounded-xl glass-surface"
+            whileHover={{ 
+              boxShadow: "0 0 30px 5px rgba(156, 74, 255, 0.6), inset 0 0 20px rgba(156, 74, 255, 0.2)",
+              borderColor: "rgba(156, 74, 255, 0.8)"
+            }}
+            transition={{ duration: 0.3 }}
+            style={{
+              boxShadow: "0 0 20px 3px rgba(156, 74, 255, 0.4), inset 0 0 10px rgba(156, 74, 255, 0.1)"
+            }}
           >
-            EE ZONE
-          </span>
+            <span 
+              className="font-bold text-xl text-white glow-text-violet transition-all group-hover:glow-text-orange" 
+              style={{ fontFamily: 'Orbitron, sans-serif' }}
+            >
+              EE ZONE
+            </span>
+          </motion.div>
         </Link>
 
         {/* Desktop Navigation */}
