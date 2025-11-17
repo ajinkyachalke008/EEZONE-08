@@ -104,15 +104,22 @@ export default function Footer() {
 
         {/* Developer Credit */}
         <div className="mt-8 pt-6 border-t border-gray-800/50 text-center">
-          <div className="space-y-1">
-            <p className="text-sm text-[#B8A7E0]">
-              <span className="text-white font-semibold">Developer:</span>{' '}
-              <span className="text-[#00E5FF] font-medium glow-text-cyan">AJINKYA CHALKE</span>
-            </p>
-            <p className="text-sm text-[#B8A7E0]">
-              <span className="text-white font-semibold">College:</span>{' '}
-              <span className="text-[#9C4AFF] font-medium">Government College of Engineering, Karad</span>
-            </p>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
+            {/* Developer Box */}
+            <div className="glass-surface border-2 border-[#00E5FF]/30 rounded-xl px-6 py-3 shadow-glowCyan hover:border-[#00E5FF]/60 hover:shadow-[0_0_30px_5px_rgba(0,229,255,0.6)] transition-all duration-300">
+              <p className="text-sm text-[#B8A7E0]">
+                <span className="text-white font-semibold">Developer:</span>{' '}
+                <span className="text-[#00E5FF] font-medium glow-text-cyan">AJINKYA CHALKE</span>
+              </p>
+            </div>
+
+            {/* College Box */}
+            <div className="glass-surface border-2 border-[#9C4AFF]/30 rounded-xl px-6 py-3 shadow-glowViolet hover:border-[#9C4AFF]/60 hover:shadow-[0_0_30px_5px_rgba(156,74,255,0.6)] transition-all duration-300">
+              <p className="text-sm text-[#B8A7E0]">
+                <span className="text-white font-semibold">College:</span>{' '}
+                <span className="text-[#9C4AFF] font-medium glow-text-violet">Government College of Engineering, Karad</span>
+              </p>
+            </div>
           </div>
         </div>
       </div>
