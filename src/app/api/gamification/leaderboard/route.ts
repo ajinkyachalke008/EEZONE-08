@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/db';
-import { userPoints } from '@/db/schema';
+import { userStats } from '@/db/schema';
 import { eq, and, gte, desc, sql } from 'drizzle-orm';
 
 type Period = 'daily' | 'weekly' | 'monthly' | 'all_time';
@@ -52,20 +52,20 @@ export async function GET(request: NextRequest) {
 
     const { start, end } = calculateDateRange(period);
 
-    // Query userPoints table
+    // Query userStats table
     let statsQuery = db.select({
-      userId: userPoints.userId,
-      totalPoints: userPoints.totalPoints,
-      level: userPoints.level,
-      createdAt: userPoints.createdAt,
-    }).from(userPoints);
+      userId: userStats.userId,
+      totalPoints: userStats.totalPoints,
+      level: userStats.level,
+      createdAt: userStats.createdAt,
+    }).from(userStats);
 
     // Apply date filter for non-all_time periods
     if (start) {
-      statsQuery = statsQuery.where(gte(userPoints.createdAt, start)) as any;
+      statsQuery = statsQuery.where(gte(userStats.createdAt, start)) as any;
     }
 
-    const stats = await statsQuery.orderBy(desc(userPoints.totalPoints));
+    const stats = await statsQuery.orderBy(desc(userStats.totalPoints));
 
     // Calculate ranks and format response
     const leaderboard = stats.map((stat, index) => ({
