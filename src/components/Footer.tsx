@@ -77,7 +77,7 @@ export default function Footer() {
         {/* Bottom Section */}
         <div className="mt-12 pt-8 border-t border-gray-800 flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
           <p className="text-sm text-gray-400">
-            © 2024 EE Zone. All rights reserved.
+            © 2025 EE Zone. All rights reserved.
           </p>
           
           {/* Social Links */}
