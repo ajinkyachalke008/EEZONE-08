@@ -1223,6 +1223,85 @@ export default function Home() {
         </section>
       )}
 
+      {/* Projects Section */}
+      {!searchQuery && (
+        <section className="py-16 px-4 relative overflow-hidden">
+          {/* Ambient Glow */}
+          <div className="absolute top-10 right-10 w-[400px] h-[400px] bg-[#9C4AFF] opacity-20 blur-[150px] rounded-full" />
+          <div className="absolute bottom-10 left-10 w-[400px] h-[400px] bg-[#FF6B00] opacity-20 blur-[150px] rounded-full" />
+          
+          <div className="container mx-auto max-w-6xl relative z-10">
+            <div className="text-center mb-12">
+              <h2 className="text-4xl font-bold text-white mb-4 glow-text-violet" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>
+                🚀 Interactive Project Builder
+              </h2>
+              <p className="text-lg text-[#B8A7E0] max-w-3xl mx-auto">
+                Learn by doing! Build real electrical projects with step-by-step guided tutorials
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+              {[
+                { 
+                  title: 'Build a 3-Phase Motor Controller', 
+                  difficulty: 'Intermediate',
+                  time: '4 hours',
+                  color: '#9C4AFF'
+                },
+                { 
+                  title: 'Design a Solar Panel System', 
+                  difficulty: 'Advanced',
+                  time: '8 hours',
+                  color: '#FF6B00'
+                },
+                { 
+                  title: 'Create a Home Automation Circuit', 
+                  difficulty: 'Beginner',
+                  time: '2 hours',
+                  color: '#00E5FF'
+                },
+              ].map((project, index) => (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: index * 0.1 }}
+                  viewport={{ once: true }}
+                  whileHover={{ scale: 1.03, y: -5 }}
+                >
+                  <Card className="glass-surface border-white/10 hover:border-[#9C4AFF]/50 hover:shadow-glowViolet transition-all h-full">
+                    <CardHeader>
+                      <CardTitle className="text-white">{project.title}</CardTitle>
+                      <div className="flex items-center gap-2 mt-2">
+                        <Badge 
+                          style={{ 
+                            background: `${project.color}33`,
+                            color: project.color,
+                            border: `1px solid ${project.color}66`
+                          }}
+                        >
+                          {project.difficulty}
+                        </Badge>
+                        <span className="text-sm text-[#B8A7E0]">{project.time}</span>
+                      </div>
+                    </CardHeader>
+                  </Card>
+                </motion.div>
+              ))}
+            </div>
+
+            <div className="text-center">
+              <Link href="/projects">
+                <Button size="lg" className="gradient-fire text-white hover:shadow-glowOrange font-semibold rounded-xl px-8 transition-all duration-300 hover:scale-105 uppercase tracking-wider">
+                  Explore All Projects
+                  <ChevronRight className="h-5 w-5 ml-2" />
+                </Button>
+              </Link>
+            </div>
+          </div>
+        </section>
+      )}
+
       {/* CTA Section */}
       {!searchQuery && (
         <section className="relative py-16 px-4 overflow-hidden">
