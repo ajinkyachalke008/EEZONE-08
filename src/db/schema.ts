@@ -130,3 +130,53 @@ export const projectRatings = sqliteTable('project_ratings', {
   createdAt: text('created_at').notNull(),
   updatedAt: text('updated_at').notNull(),
 });
+
+// Add tutorials and learning resources tables
+export const videoTutorials = sqliteTable('video_tutorials', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  title: text('title').notNull(),
+  description: text('description').notNull(),
+  duration: text('duration').notNull(),
+  views: integer('views').notNull().default(0),
+  rating: real('rating').notNull().default(0.0),
+  category: text('category').notNull(),
+  level: text('level').notNull(),
+  thumbnailUrl: text('thumbnail_url').notNull(),
+  videoUrl: text('video_url').notNull(),
+  author: text('author').notNull(),
+  tags: text('tags'),
+  createdAt: text('created_at').notNull(),
+  updatedAt: text('updated_at').notNull(),
+});
+
+export const downloadableResources = sqliteTable('downloadable_resources', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  title: text('title').notNull(),
+  description: text('description').notNull(),
+  fileType: text('file_type').notNull(),
+  fileSize: text('file_size').notNull(),
+  fileUrl: text('file_url').notNull(),
+  downloads: integer('downloads').notNull().default(0),
+  category: text('category').notNull(),
+  tags: text('tags'),
+  createdAt: text('created_at').notNull(),
+  updatedAt: text('updated_at').notNull(),
+});
+
+export const articles = sqliteTable('articles', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  title: text('title').notNull(),
+  excerpt: text('excerpt').notNull(),
+  content: text('content').notNull(),
+  readTime: integer('read_time').notNull(),
+  category: text('category').notNull(),
+  author: text('author').notNull(),
+  authorAvatar: text('author_avatar'),
+  views: integer('views').notNull().default(0),
+  likes: integer('likes').notNull().default(0),
+  thumbnailUrl: text('thumbnail_url'),
+  tags: text('tags'),
+  publishedAt: text('published_at').notNull(),
+  createdAt: text('created_at').notNull(),
+  updatedAt: text('updated_at').notNull(),
+});
