@@ -1,13 +1,14 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { BookOpen, Video, Download, Clock, Users, Star, Play, FileText, ExternalLink, Loader2, AlertCircle, Search, TrendingUp, Award, Sparkles } from 'lucide-react';
+import { BookOpen, Video, Download, Clock, Users, Star, Play, FileText, ExternalLink, Loader2, AlertCircle, Search, TrendingUp, Award, Sparkles, X, Youtube } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Input } from '@/components/ui/input';
 import { AIAssistantChat } from '@/components/ai-assistant-chat';
+import { YouTubePlayer } from '@/components/youtube-player';
 import { toast } from 'sonner';
 
 interface VideoTutorial {
@@ -51,9 +52,24 @@ interface Article {
   tags: string;
 }
 
+interface YouTubeVideo {
+  id: string;
+  title: string;
+  description: string;
+  thumbnail: string;
+  channelTitle: string;
+  publishedAt: string;
+}
+
 export default function TutorialsPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedVideo, setSelectedVideo] = useState<VideoTutorial | null>(null);
+  
+  // YouTube videos state
+  const [youtubeVideos, setYoutubeVideos] = useState<YouTubeVideo[]>([]);
+  const [youtubeLoading, setYoutubeLoading] = useState(false);
+  const [youtubeError, setYoutubeError] = useState<string | null>(null);
+  const [selectedYouTubeVideo, setSelectedYouTubeVideo] = useState<YouTubeVideo | null>(null);
   
   // Videos state
   const [videos, setVideos] = useState<VideoTutorial[]>([]);
@@ -136,8 +152,44 @@ export default function TutorialsPage() {
       video.description.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  const fetchYouTubeVideos = async (query: string) => {
+    setYoutubeLoading(true);
+    setYoutubeError(null);
+    setYoutubeVideos([]);
+    
+    try {
+      const response = await fetch(
+        `/api/youtube/search?q=${encodeURIComponent(query + ' electrical engineering tutorial')}&maxResults=12`
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to fetch YouTube videos');
+      }
+
+      const data = await response.json();
+      setYoutubeVideos(data.videos);
+
+      if (data.videos.length === 0) {
+        setYoutubeError('No related YouTube videos found');
+      }
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Failed to load YouTube videos';
+      setYoutubeError(message);
+      toast.error(message);
+    } finally {
+      setYoutubeLoading(false);
+    }
+  };
+
   const handleVideoClick = async (video: VideoTutorial) => {
     setSelectedVideo(video);
+    setSelectedYouTubeVideo(null);
+    
+    // Fetch related YouTube videos
+    const searchQuery = `${video.title} ${video.category}`;
+    await fetchYouTubeVideos(searchQuery);
+    
     // Track view
     try {
       await fetch(`/api/tutorials/videos/${video.id}/view`, {
@@ -168,9 +220,6 @@ export default function TutorialsPage() {
       ));
       
       toast.success(`Downloading ${resource.title}`);
-      
-      // In a real application, this would trigger an actual download
-      // For now, we'll just show a success message
     } catch (error) {
       toast.error('Failed to download resource');
       console.error('Download error:', error);
@@ -189,6 +238,13 @@ export default function TutorialsPage() {
     } catch (error) {
       console.error('Failed to track article view:', error);
     }
+  };
+
+  const closeVideoModal = () => {
+    setSelectedVideo(null);
+    setYoutubeVideos([]);
+    setYoutubeError(null);
+    setSelectedYouTubeVideo(null);
   };
 
   return (
@@ -266,33 +322,117 @@ export default function TutorialsPage() {
               </div>
             </div>
 
-            {/* Video Modal */}
+            {/* Enhanced Video Modal with YouTube Integration */}
             {selectedVideo && (
-              <div className="fixed inset-0 bg-black/90 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={() => setSelectedVideo(null)}>
-                <div className="glass-surface border border-violet-500/50 rounded-2xl max-w-4xl w-full glow-violet overflow-hidden" onClick={(e) => e.stopPropagation()}>
-                  <div className="p-6 border-b border-violet-500/30 flex justify-between items-center bg-gradient-violet/20">
-                    <h3 className="font-semibold text-xl text-white">{selectedVideo.title}</h3>
-                    <Button variant="ghost" size="icon" onClick={() => setSelectedVideo(null)} className="hover:bg-violet-500/20">
-                      ✕
+              <div className="fixed inset-0 bg-black/95 backdrop-blur-md z-50 flex items-start justify-center p-4 overflow-y-auto" onClick={closeVideoModal}>
+                <div className="glass-surface border border-violet-500/50 rounded-2xl max-w-7xl w-full glow-violet my-8" onClick={(e) => e.stopPropagation()}>
+                  {/* Modal Header */}
+                  <div className="p-6 border-b border-violet-500/30 flex justify-between items-center bg-gradient-violet/20 sticky top-0 z-10">
+                    <div className="flex items-center gap-3">
+                      <Youtube className="h-6 w-6 text-red-500 glow-orange" />
+                      <h3 className="font-semibold text-xl text-white">{selectedVideo.title}</h3>
+                    </div>
+                    <Button variant="ghost" size="icon" onClick={closeVideoModal} className="hover:bg-violet-500/20">
+                      <X className="h-5 w-5" />
                     </Button>
                   </div>
-                  <div className="aspect-video bg-gradient-depth flex items-center justify-center relative overflow-hidden">
-                    <div className="absolute inset-0 bg-gradient-to-br from-violet-500/20 to-orange-500/20" />
-                    <div className="relative z-10 text-center px-4">
-                      <Video className="h-20 w-20 mx-auto mb-4 text-violet-400 glow-violet" />
-                      <p className="text-white/90 font-medium">
-                        Video player integration
-                      </p>
-                      <p className="text-white/60 text-sm mt-2">URL: {selectedVideo.videoUrl}</p>
+
+                  {/* Content Area */}
+                  <div className="p-6">
+                    {/* Tutorial Info */}
+                    <div className="mb-6 glass-surface border border-violet-500/30 rounded-xl p-4">
+                      <div className="flex items-center gap-3 mb-3">
+                        <Badge className="bg-violet-500/20 text-violet-300 border-violet-500/30">{selectedVideo.category}</Badge>
+                        <Badge variant="outline" className="border-orange-500/30 text-orange-300">{selectedVideo.level}</Badge>
+                        <span className="text-sm text-muted-foreground">By {selectedVideo.author}</span>
+                      </div>
+                      <p className="text-foreground/90">{selectedVideo.description}</p>
                     </div>
-                  </div>
-                  <div className="p-6 border-t border-violet-500/30 bg-surface/50">
-                    <div className="flex items-center gap-3 mb-3">
-                      <Badge className="bg-violet-500/20 text-violet-300 border-violet-500/30">{selectedVideo.category}</Badge>
-                      <Badge variant="outline" className="border-orange-500/30 text-orange-300">{selectedVideo.level}</Badge>
-                      <span className="text-sm text-muted-foreground">By {selectedVideo.author}</span>
-                    </div>
-                    <p className="text-foreground/90">{selectedVideo.description}</p>
+
+                    {/* YouTube Player Section */}
+                    {selectedYouTubeVideo ? (
+                      <div className="mb-6">
+                        <div className="flex items-center justify-between mb-4">
+                          <h4 className="text-lg font-semibold text-white flex items-center gap-2">
+                            <Play className="h-5 w-5 text-violet-400" />
+                            Now Playing
+                          </h4>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setSelectedYouTubeVideo(null)}
+                            className="border-violet-500/30 hover:bg-violet-500/20"
+                          >
+                            ← Back to Results
+                          </Button>
+                        </div>
+                        <YouTubePlayer videoId={selectedYouTubeVideo.id} title={selectedYouTubeVideo.title} />
+                        <div className="mt-4 glass-surface border border-violet-500/30 rounded-xl p-4">
+                          <h5 className="font-semibold text-white mb-2">{selectedYouTubeVideo.title}</h5>
+                          <p className="text-sm text-muted-foreground mb-2">Channel: {selectedYouTubeVideo.channelTitle}</p>
+                          <p className="text-sm text-foreground/80 line-clamp-3">{selectedYouTubeVideo.description}</p>
+                        </div>
+                      </div>
+                    ) : (
+                      <>
+                        {/* Related YouTube Videos Section */}
+                        <div className="mb-4">
+                          <h4 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+                            <Youtube className="h-5 w-5 text-red-500" />
+                            Related YouTube Videos
+                          </h4>
+                        </div>
+
+                        {youtubeLoading ? (
+                          <div className="flex flex-col justify-center items-center py-20">
+                            <div className="relative">
+                              <Loader2 className="h-12 w-12 animate-spin text-violet-500 glow-violet" />
+                              <div className="absolute inset-0 h-12 w-12 animate-ping text-violet-500/30">
+                                <Loader2 className="h-12 w-12" />
+                              </div>
+                            </div>
+                            <p className="text-muted-foreground mt-4">Searching YouTube videos...</p>
+                          </div>
+                        ) : youtubeError ? (
+                          <div className="flex flex-col items-center justify-center py-20 text-center glass-surface border border-red-500/30 rounded-xl">
+                            <AlertCircle className="h-12 w-12 text-red-400 mb-3" />
+                            <p className="text-white font-semibold mb-2">Unable to load YouTube videos</p>
+                            <p className="text-muted-foreground text-sm">{youtubeError}</p>
+                          </div>
+                        ) : youtubeVideos.length > 0 ? (
+                          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            {youtubeVideos.map((ytVideo) => (
+                              <Card 
+                                key={ytVideo.id}
+                                className="glass-surface border-violet-500/30 hover:border-red-500 hover:glow-orange transition-all duration-300 cursor-pointer group"
+                                onClick={() => setSelectedYouTubeVideo(ytVideo)}
+                              >
+                                <CardHeader className="p-0">
+                                  <div className="relative h-40 w-full overflow-hidden rounded-t-xl">
+                                    <img 
+                                      src={ytVideo.thumbnail} 
+                                      alt={ytVideo.title}
+                                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                                    />
+                                    <div className="absolute inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300">
+                                      <div className="h-14 w-14 rounded-full bg-red-600 flex items-center justify-center glow-orange">
+                                        <Play className="h-7 w-7 text-white ml-1" />
+                                      </div>
+                                    </div>
+                                  </div>
+                                </CardHeader>
+                                <CardContent className="p-4">
+                                  <h5 className="font-semibold text-sm text-white line-clamp-2 mb-2 group-hover:text-violet-300 transition-colors">
+                                    {ytVideo.title}
+                                  </h5>
+                                  <p className="text-xs text-muted-foreground">{ytVideo.channelTitle}</p>
+                                </CardContent>
+                              </Card>
+                            ))}
+                          </div>
+                        ) : null}
+                      </>
+                    )}
                   </div>
                 </div>
               </div>
