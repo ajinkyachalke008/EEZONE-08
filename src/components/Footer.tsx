@@ -101,6 +101,20 @@ export default function Footer() {
             Upgrade to Pro →
           </Link>
         </div>
+
+        {/* Developer Credit */}
+        <div className="mt-8 pt-6 border-t border-gray-800/50 text-center">
+          <div className="space-y-1">
+            <p className="text-sm text-[#B8A7E0]">
+              <span className="text-white font-semibold">Developer:</span>{' '}
+              <span className="text-[#00E5FF] font-medium glow-text-cyan">AJINKYA CHALKE</span>
+            </p>
+            <p className="text-sm text-[#B8A7E0]">
+              <span className="text-white font-semibold">College:</span>{' '}
+              <span className="text-[#9C4AFF] font-medium">Government College of Engineering, Karad</span>
+            </p>
+          </div>
+        </div>
       </div>
     </footer>
   );
