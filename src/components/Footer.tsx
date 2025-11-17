@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Zap, Github, Twitter, Linkedin, Youtube } from 'lucide-react';
+import { Zap, Github, Twitter, Linkedin, Youtube, User, GraduationCap } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useState } from 'react';
@@ -102,23 +102,52 @@ export default function Footer() {
           </Link>
         </div>
 
-        {/* Developer Credit */}
-        <div className="mt-8 pt-6 border-t border-gray-800/50 text-center">
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
-            {/* Developer Box */}
-            <div className="glass-surface border-2 border-[#00E5FF]/30 rounded-xl px-6 py-3 shadow-glowCyan hover:border-[#00E5FF]/60 hover:shadow-[0_0_30px_5px_rgba(0,229,255,0.6)] transition-all duration-300">
-              <p className="text-sm text-[#B8A7E0]">
-                <span className="text-white font-semibold">Developer:</span>{' '}
-                <span className="text-[#00E5FF] font-medium glow-text-cyan">AJINKYA CHALKE</span>
-              </p>
+        {/* Developer Credit - New Arrangement */}
+        <div className="mt-8 pt-6 border-t border-gray-800/50">
+          {/* Title */}
+          <div className="text-center mb-6">
+            <h3 className="text-lg font-semibold text-white glow-text-violet mb-1">
+              Crafted With Passion
+            </h3>
+            <p className="text-xs text-[#B8A7E0]">Building the future of electrical engineering education</p>
+          </div>
+
+          {/* Cards Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+            {/* Developer Card */}
+            <div className="relative group">
+              <div className="absolute inset-0 bg-gradient-to-r from-[#00E5FF]/20 to-[#9C4AFF]/20 rounded-2xl blur-xl group-hover:blur-2xl transition-all duration-300" />
+              <div className="relative glass-surface border-2 border-[#00E5FF]/40 rounded-2xl p-6 shadow-glowCyan hover:border-[#00E5FF]/70 hover:shadow-[0_0_35px_6px_rgba(0,229,255,0.7)] transition-all duration-300 hover:scale-[1.02]">
+                <div className="flex items-center gap-4">
+                  <div className="p-3 bg-[#00E5FF]/10 rounded-xl border border-[#00E5FF]/30">
+                    <User className="h-8 w-8 text-[#00E5FF]" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-xs text-[#B8A7E0] uppercase tracking-wider mb-1">Developer</p>
+                    <p className="text-lg font-bold text-[#00E5FF] glow-text-cyan">
+                      AJINKYA CHALKE
+                    </p>
+                  </div>
+                </div>
+              </div>
             </div>
 
-            {/* College Box */}
-            <div className="glass-surface border-2 border-[#9C4AFF]/30 rounded-xl px-6 py-3 shadow-glowViolet hover:border-[#9C4AFF]/60 hover:shadow-[0_0_30px_5px_rgba(156,74,255,0.6)] transition-all duration-300">
-              <p className="text-sm text-[#B8A7E0]">
-                <span className="text-white font-semibold">College:</span>{' '}
-                <span className="text-[#9C4AFF] font-medium glow-text-violet">Government College of Engineering, Karad</span>
-              </p>
+            {/* College Card */}
+            <div className="relative group">
+              <div className="absolute inset-0 bg-gradient-to-r from-[#9C4AFF]/20 to-[#FF6B00]/20 rounded-2xl blur-xl group-hover:blur-2xl transition-all duration-300" />
+              <div className="relative glass-surface border-2 border-[#9C4AFF]/40 rounded-2xl p-6 shadow-glowViolet hover:border-[#9C4AFF]/70 hover:shadow-[0_0_35px_6px_rgba(156,74,255,0.7)] transition-all duration-300 hover:scale-[1.02]">
+                <div className="flex items-center gap-4">
+                  <div className="p-3 bg-[#9C4AFF]/10 rounded-xl border border-[#9C4AFF]/30">
+                    <GraduationCap className="h-8 w-8 text-[#9C4AFF]" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-xs text-[#B8A7E0] uppercase tracking-wider mb-1">Institution</p>
+                    <p className="text-sm font-bold text-[#9C4AFF] glow-text-violet leading-tight">
+                      Government College of<br />Engineering, Karad
+                    </p>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
