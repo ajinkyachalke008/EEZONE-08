@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/db';
-import { projectsNew } from '@/db/schema';
+import { projects } from '@/db/schema';
 import { eq, like, and, or, desc } from 'drizzle-orm';
 
 export async function GET(request: NextRequest) {
@@ -17,34 +17,34 @@ export async function GET(request: NextRequest) {
     const conditions = [];
 
     if (category) {
-      conditions.push(eq(projectsNew.category, category));
+      conditions.push(eq(projects.category, category));
     }
 
     if (difficulty) {
-      conditions.push(eq(projectsNew.difficulty, difficulty));
+      conditions.push(eq(projects.difficulty, difficulty));
     }
 
     if (userId) {
-      conditions.push(eq(projectsNew.userId, userId));
+      conditions.push(eq(projects.authorId, userId));
     }
 
     if (search) {
       conditions.push(
         or(
-          like(projectsNew.title, `%${search}%`),
-          like(projectsNew.description, `%${search}%`)
+          like(projects.title, `%${search}%`),
+          like(projects.description, `%${search}%`)
         )
       );
     }
 
-    let query = db.select().from(projectsNew);
+    let query = db.select().from(projects);
 
     if (conditions.length > 0) {
       query = query.where(and(...conditions));
     }
 
     const results = await query
-      .orderBy(desc(projectsNew.createdAt))
+      .orderBy(desc(projects.createdAt))
       .limit(limit)
       .offset(offset);
 
@@ -62,18 +62,28 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     const {
-      userId,
+      authorId,
+      authorName,
       title,
       description,
       category,
       difficulty,
-      imageUrl,
-      featured = 0
+      estimatedTime,
+      thumbnailUrl,
+      tags,
+      status = 'draft'
     } = body;
 
-    if (!userId || !userId.trim()) {
+    if (!authorId || !authorId.trim()) {
       return NextResponse.json(
-        { error: 'userId is required', code: 'MISSING_USER_ID' },
+        { error: 'authorId is required', code: 'MISSING_AUTHOR_ID' },
+        { status: 400 }
+      );
+    }
+
+    if (!authorName || !authorName.trim()) {
+      return NextResponse.json(
+        { error: 'authorName is required', code: 'MISSING_AUTHOR_NAME' },
         { status: 400 }
       );
     }
@@ -106,6 +116,13 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    if (!estimatedTime || !estimatedTime.trim()) {
+      return NextResponse.json(
+        { error: 'Estimated time is required', code: 'MISSING_ESTIMATED_TIME' },
+        { status: 400 }
+      );
+    }
+
     const validDifficulties = ['beginner', 'intermediate', 'advanced'];
     if (!validDifficulties.includes(difficulty.toLowerCase())) {
       return NextResponse.json(
@@ -120,16 +137,22 @@ export async function POST(request: NextRequest) {
     const now = new Date().toISOString();
 
     const newProject = await db
-      .insert(projectsNew)
+      .insert(projects)
       .values({
-        userId: userId.trim(),
+        authorId: authorId.trim(),
+        authorName: authorName.trim(),
         title: title.trim(),
         description: description.trim(),
         category: category.trim(),
         difficulty: difficulty.toLowerCase(),
-        imageUrl: imageUrl?.trim() || null,
-        views: 0,
-        featured: featured ? 1 : 0,
+        estimatedTime: estimatedTime.trim(),
+        thumbnailUrl: thumbnailUrl?.trim() || null,
+        tags: tags || '',
+        status: status || 'draft',
+        viewsCount: 0,
+        likesCount: 0,
+        ratingAverage: 0.0,
+        ratingCount: 0,
         createdAt: now,
         updatedAt: now
       })

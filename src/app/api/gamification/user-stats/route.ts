@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/db';
-import { userPoints } from '@/db/schema';
+import { userStats } from '@/db/schema';
 import { eq } from 'drizzle-orm';
 
 export async function GET(request: NextRequest) {
@@ -16,8 +16,8 @@ export async function GET(request: NextRequest) {
     }
 
     const stats = await db.select()
-      .from(userPoints)
-      .where(eq(userPoints.userId, userId))
+      .from(userStats)
+      .where(eq(userStats.userId, userId))
       .limit(1);
 
     if (stats.length === 0) {
@@ -49,12 +49,12 @@ export async function POST(request: NextRequest) {
     }
 
     const existingStats = await db.select()
-      .from(userPoints)
-      .where(eq(userPoints.userId, userId))
+      .from(userStats)
+      .where(eq(userStats.userId, userId))
       .limit(1);
 
     if (existingStats.length === 0) {
-      const newStats = await db.insert(userPoints)
+      const newStats = await db.insert(userStats)
         .values({
           userId,
           totalPoints: updates.totalPoints ?? 0,
@@ -73,9 +73,9 @@ export async function POST(request: NextRequest) {
       if (updates.totalPoints !== undefined) updateData.totalPoints = updates.totalPoints;
       if (updates.level !== undefined) updateData.level = updates.level;
 
-      const updatedStats = await db.update(userPoints)
+      const updatedStats = await db.update(userStats)
         .set(updateData)
-        .where(eq(userPoints.userId, userId))
+        .where(eq(userStats.userId, userId))
         .returning();
 
       return NextResponse.json(updatedStats[0], { status: 200 });
