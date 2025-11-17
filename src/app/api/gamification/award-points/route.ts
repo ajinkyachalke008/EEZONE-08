@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/db';
-import { userStats, achievements } from '@/db/schema';
+import { userPoints, userActivities } from '@/db/schema';
 import { eq } from 'drizzle-orm';
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { userId, points, actionType, metadata } = body;
+    const { userId, points, activityType, metadata } = body;
 
     // Validate required fields
     if (!userId) {
@@ -23,9 +23,9 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (!actionType) {
+    if (!activityType) {
       return NextResponse.json(
-        { error: 'actionType is required', code: 'MISSING_ACTION_TYPE' },
+        { error: 'activityType is required', code: 'MISSING_ACTIVITY_TYPE' },
         { status: 400 }
       );
     }
@@ -42,8 +42,8 @@ export async function POST(request: NextRequest) {
     // Get or create user stats
     const existingStats = await db
       .select()
-      .from(userStats)
-      .where(eq(userStats.userId, userId))
+      .from(userPoints)
+      .where(eq(userPoints.userId, userId))
       .limit(1);
 
     let currentStats;
@@ -52,18 +52,11 @@ export async function POST(request: NextRequest) {
     if (existingStats.length === 0) {
       // Create new user stats
       const newStats = await db
-        .insert(userStats)
+        .insert(userPoints)
         .values({
           userId,
           totalPoints: 0,
           level: 'Beginner',
-          quizzesCompleted: 0,
-          questionsAsked: 0,
-          answersAccepted: 0,
-          calculatorsUsed: 0,
-          currentStreak: 0,
-          longestStreak: 0,
-          lastLoginDate: null,
           createdAt: now,
           updatedAt: now,
         })
@@ -78,63 +71,44 @@ export async function POST(request: NextRequest) {
 
     // Determine level based on total points
     let newLevel = 'Beginner';
-    if (newTotalPoints >= 1000) {
+    if (newTotalPoints >= 5000) {
       newLevel = 'Expert';
-    } else if (newTotalPoints >= 500) {
+    } else if (newTotalPoints >= 2001) {
       newLevel = 'Advanced';
-    } else if (newTotalPoints >= 100) {
+    } else if (newTotalPoints >= 501) {
       newLevel = 'Intermediate';
-    }
-
-    // Prepare counter updates based on actionType
-    const counterUpdates: Record<string, number> = {};
-    
-    switch (actionType) {
-      case 'quiz_completed':
-        counterUpdates.quizzesCompleted = currentStats.quizzesCompleted + 1;
-        break;
-      case 'question_asked':
-        counterUpdates.questionsAsked = currentStats.questionsAsked + 1;
-        break;
-      case 'answer_accepted':
-        counterUpdates.answersAccepted = currentStats.answersAccepted + 1;
-        break;
-      case 'calculator_used':
-        counterUpdates.calculatorsUsed = currentStats.calculatorsUsed + 1;
-        break;
     }
 
     // Update user stats
     const updatedStats = await db
-      .update(userStats)
+      .update(userPoints)
       .set({
         totalPoints: newTotalPoints,
         level: newLevel,
-        ...counterUpdates,
         updatedAt: now,
       })
-      .where(eq(userStats.userId, userId))
+      .where(eq(userPoints.userId, userId))
       .returning();
 
-    // Create achievement record
-    const achievementData = {
+    // Create activity record
+    const activityData = {
       userId,
-      achievementType: actionType,
-      pointsAwarded: pointsValue,
+      activityType,
+      pointsEarned: pointsValue,
       metadata: metadata ? JSON.stringify(metadata) : null,
       createdAt: now,
     };
 
-    const newAchievement = await db
-      .insert(achievements)
-      .values(achievementData)
+    const newActivity = await db
+      .insert(userActivities)
+      .values(activityData)
       .returning();
 
-    // Return updated stats and achievement
+    // Return updated stats and activity
     return NextResponse.json(
       {
         userStats: updatedStats[0],
-        achievement: newAchievement[0],
+        activity: newActivity[0],
       },
       { status: 201 }
     );

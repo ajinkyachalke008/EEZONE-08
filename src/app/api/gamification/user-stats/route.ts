@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/db';
-import { userStats } from '@/db/schema';
+import { userPoints } from '@/db/schema';
 import { eq } from 'drizzle-orm';
 
 export async function GET(request: NextRequest) {
@@ -16,8 +16,8 @@ export async function GET(request: NextRequest) {
     }
 
     const stats = await db.select()
-      .from(userStats)
-      .where(eq(userStats.userId, userId))
+      .from(userPoints)
+      .where(eq(userPoints.userId, userId))
       .limit(1);
 
     if (stats.length === 0) {
@@ -49,23 +49,16 @@ export async function POST(request: NextRequest) {
     }
 
     const existingStats = await db.select()
-      .from(userStats)
-      .where(eq(userStats.userId, userId))
+      .from(userPoints)
+      .where(eq(userPoints.userId, userId))
       .limit(1);
 
     if (existingStats.length === 0) {
-      const newStats = await db.insert(userStats)
+      const newStats = await db.insert(userPoints)
         .values({
           userId,
           totalPoints: updates.totalPoints ?? 0,
           level: updates.level ?? 'Beginner',
-          quizzesCompleted: updates.quizzesCompleted ?? 0,
-          questionsAsked: updates.questionsAsked ?? 0,
-          answersAccepted: updates.answersAccepted ?? 0,
-          calculatorsUsed: updates.calculatorsUsed ?? 0,
-          currentStreak: updates.currentStreak ?? 0,
-          longestStreak: updates.longestStreak ?? 0,
-          lastLoginDate: updates.lastLoginDate ?? null,
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
         })
@@ -79,17 +72,10 @@ export async function POST(request: NextRequest) {
 
       if (updates.totalPoints !== undefined) updateData.totalPoints = updates.totalPoints;
       if (updates.level !== undefined) updateData.level = updates.level;
-      if (updates.quizzesCompleted !== undefined) updateData.quizzesCompleted = updates.quizzesCompleted;
-      if (updates.questionsAsked !== undefined) updateData.questionsAsked = updates.questionsAsked;
-      if (updates.answersAccepted !== undefined) updateData.answersAccepted = updates.answersAccepted;
-      if (updates.calculatorsUsed !== undefined) updateData.calculatorsUsed = updates.calculatorsUsed;
-      if (updates.currentStreak !== undefined) updateData.currentStreak = updates.currentStreak;
-      if (updates.longestStreak !== undefined) updateData.longestStreak = updates.longestStreak;
-      if (updates.lastLoginDate !== undefined) updateData.lastLoginDate = updates.lastLoginDate;
 
-      const updatedStats = await db.update(userStats)
+      const updatedStats = await db.update(userPoints)
         .set(updateData)
-        .where(eq(userStats.userId, userId))
+        .where(eq(userPoints.userId, userId))
         .returning();
 
       return NextResponse.json(updatedStats[0], { status: 200 });

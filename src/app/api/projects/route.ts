@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/db';
-import { projects } from '@/db/schema';
+import { projectsNew } from '@/db/schema';
 import { eq, like, and, or, desc } from 'drizzle-orm';
 
 export async function GET(request: NextRequest) {
@@ -12,44 +12,39 @@ export async function GET(request: NextRequest) {
     const search = searchParams.get('search');
     const category = searchParams.get('category');
     const difficulty = searchParams.get('difficulty');
-    const status = searchParams.get('status') ?? 'published';
-    const authorId = searchParams.get('authorId');
+    const userId = searchParams.get('userId');
 
     const conditions = [];
 
-    if (status) {
-      conditions.push(eq(projects.status, status));
-    }
-
     if (category) {
-      conditions.push(eq(projects.category, category));
+      conditions.push(eq(projectsNew.category, category));
     }
 
     if (difficulty) {
-      conditions.push(eq(projects.difficulty, difficulty));
+      conditions.push(eq(projectsNew.difficulty, difficulty));
     }
 
-    if (authorId) {
-      conditions.push(eq(projects.authorId, authorId));
+    if (userId) {
+      conditions.push(eq(projectsNew.userId, userId));
     }
 
     if (search) {
       conditions.push(
         or(
-          like(projects.title, `%${search}%`),
-          like(projects.description, `%${search}%`)
+          like(projectsNew.title, `%${search}%`),
+          like(projectsNew.description, `%${search}%`)
         )
       );
     }
 
-    let query = db.select().from(projects);
+    let query = db.select().from(projectsNew);
 
     if (conditions.length > 0) {
       query = query.where(and(...conditions));
     }
 
     const results = await query
-      .orderBy(desc(projects.createdAt))
+      .orderBy(desc(projectsNew.createdAt))
       .limit(limit)
       .offset(offset);
 
@@ -67,17 +62,21 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     const {
+      userId,
       title,
       description,
       category,
       difficulty,
-      estimatedTime,
-      authorId,
-      authorName,
-      tags,
-      thumbnailUrl,
-      status = 'draft'
+      imageUrl,
+      featured = 0
     } = body;
+
+    if (!userId || !userId.trim()) {
+      return NextResponse.json(
+        { error: 'userId is required', code: 'MISSING_USER_ID' },
+        { status: 400 }
+      );
+    }
 
     if (!title || !title.trim()) {
       return NextResponse.json(
@@ -107,34 +106,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (!estimatedTime || !estimatedTime.trim()) {
-      return NextResponse.json(
-        { error: 'Estimated time is required', code: 'MISSING_ESTIMATED_TIME' },
-        { status: 400 }
-      );
-    }
-
-    if (!authorId || !authorId.trim()) {
-      return NextResponse.json(
-        { error: 'Author ID is required', code: 'MISSING_AUTHOR_ID' },
-        { status: 400 }
-      );
-    }
-
-    if (!authorName || !authorName.trim()) {
-      return NextResponse.json(
-        { error: 'Author name is required', code: 'MISSING_AUTHOR_NAME' },
-        { status: 400 }
-      );
-    }
-
-    if (!tags) {
-      return NextResponse.json(
-        { error: 'Tags are required', code: 'MISSING_TAGS' },
-        { status: 400 }
-      );
-    }
-
     const validDifficulties = ['beginner', 'intermediate', 'advanced'];
     if (!validDifficulties.includes(difficulty.toLowerCase())) {
       return NextResponse.json(
@@ -146,36 +117,19 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const validStatuses = ['draft', 'published', 'archived'];
-    if (!validStatuses.includes(status.toLowerCase())) {
-      return NextResponse.json(
-        {
-          error: 'Status must be one of: draft, published, archived',
-          code: 'INVALID_STATUS'
-        },
-        { status: 400 }
-      );
-    }
-
     const now = new Date().toISOString();
 
     const newProject = await db
-      .insert(projects)
+      .insert(projectsNew)
       .values({
+        userId: userId.trim(),
         title: title.trim(),
         description: description.trim(),
         category: category.trim(),
         difficulty: difficulty.toLowerCase(),
-        estimatedTime: estimatedTime.trim(),
-        authorId: authorId.trim(),
-        authorName: authorName.trim(),
-        tags: typeof tags === 'string' ? tags : JSON.stringify(tags),
-        thumbnailUrl: thumbnailUrl?.trim() || null,
-        status: status.toLowerCase(),
-        viewsCount: 0,
-        likesCount: 0,
-        ratingAverage: 0.0,
-        ratingCount: 0,
+        imageUrl: imageUrl?.trim() || null,
+        views: 0,
+        featured: featured ? 1 : 0,
         createdAt: now,
         updatedAt: now
       })

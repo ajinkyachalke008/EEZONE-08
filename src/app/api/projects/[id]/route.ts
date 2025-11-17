@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/db';
-import { projects, projectSteps, projectUploads, projectComments, projectRatings } from '@/db/schema';
+import { projectsNew, projectStepsNew, projectCommentsNew, projectRatingsNew } from '@/db/schema';
 import { eq, asc } from 'drizzle-orm';
 
 export async function GET(
@@ -25,8 +25,8 @@ export async function GET(
 
     // Get project by ID
     const project = await db.select()
-      .from(projects)
-      .where(eq(projects.id, projectId))
+      .from(projectsNew)
+      .where(eq(projectsNew.id, projectId))
       .limit(1);
 
     if (project.length === 0) {
@@ -38,9 +38,9 @@ export async function GET(
 
     // Get all project steps for this project (sorted by stepNumber)
     const steps = await db.select()
-      .from(projectSteps)
-      .where(eq(projectSteps.projectId, projectId))
-      .orderBy(asc(projectSteps.stepNumber));
+      .from(projectStepsNew)
+      .where(eq(projectStepsNew.projectId, projectId))
+      .orderBy(asc(projectStepsNew.stepNumber));
 
     // Return object with project details and steps array
     return NextResponse.json({
@@ -96,8 +96,8 @@ export async function PUT(
 
     // Check project exists
     const existingProject = await db.select()
-      .from(projects)
-      .where(eq(projects.id, projectId))
+      .from(projectsNew)
+      .where(eq(projectsNew.id, projectId))
       .limit(1);
 
     if (existingProject.length === 0) {
@@ -108,12 +108,12 @@ export async function PUT(
     }
 
     // Update project with provided fields and auto-update updatedAt
-    const updated = await db.update(projects)
+    const updated = await db.update(projectsNew)
       .set({
         ...updateFields,
         updatedAt: new Date().toISOString()
       })
-      .where(eq(projects.id, projectId))
+      .where(eq(projectsNew.id, projectId))
       .returning();
 
     return NextResponse.json(updated[0]);
@@ -149,8 +149,8 @@ export async function DELETE(
 
     // Check project exists
     const existingProject = await db.select()
-      .from(projects)
-      .where(eq(projects.id, projectId))
+      .from(projectsNew)
+      .where(eq(projectsNew.id, projectId))
       .limit(1);
 
     if (existingProject.length === 0) {
@@ -162,24 +162,20 @@ export async function DELETE(
 
     // Delete all related records in order
     // Delete project ratings
-    await db.delete(projectRatings)
-      .where(eq(projectRatings.projectId, projectId));
+    await db.delete(projectRatingsNew)
+      .where(eq(projectRatingsNew.projectId, projectId));
 
     // Delete project comments
-    await db.delete(projectComments)
-      .where(eq(projectComments.projectId, projectId));
-
-    // Delete project uploads
-    await db.delete(projectUploads)
-      .where(eq(projectUploads.projectId, projectId));
+    await db.delete(projectCommentsNew)
+      .where(eq(projectCommentsNew.projectId, projectId));
 
     // Delete project steps
-    await db.delete(projectSteps)
-      .where(eq(projectSteps.projectId, projectId));
+    await db.delete(projectStepsNew)
+      .where(eq(projectStepsNew.projectId, projectId));
 
     // Delete the project
-    const deleted = await db.delete(projects)
-      .where(eq(projects.id, projectId))
+    const deleted = await db.delete(projectsNew)
+      .where(eq(projectsNew.id, projectId))
       .returning();
 
     return NextResponse.json({
