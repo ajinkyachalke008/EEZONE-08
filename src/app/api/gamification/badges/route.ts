@@ -1,27 +1,26 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/db';
-import { badges } from '@/db/schema';
+import { userBadgesNew } from '@/db/schema';
 import { eq, and, asc } from 'drizzle-orm';
 
 export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams;
-    const limit = Math.min(parseInt(searchParams.get('limit') ?? '20'), 100);
-    const offset = parseInt(searchParams.get('offset') ?? '0');
-    const category = searchParams.get('category');
+    const userId = searchParams.get('userId');
 
-    let query = db.select().from(badges);
-
-    if (category) {
-      query = query.where(eq(badges.category, category));
+    if (!userId) {
+      return NextResponse.json({ 
+        error: "userId query parameter is required",
+        code: "MISSING_USER_ID" 
+      }, { status: 400 });
     }
 
-    const results = await query
-      .orderBy(asc(badges.category), asc(badges.name))
-      .limit(limit)
-      .offset(offset);
+    const badges = await db.select()
+      .from(userBadgesNew)
+      .where(eq(userBadgesNew.userId, userId))
+      .orderBy(asc(userBadgesNew.earnedAt));
 
-    return NextResponse.json(results, { status: 200 });
+    return NextResponse.json(badges, { status: 200 });
   } catch (error) {
     console.error('GET error:', error);
     return NextResponse.json(
@@ -35,16 +34,23 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     const {
+      userId,
       badgeId,
-      name,
-      description,
-      icon,
-      category,
-      requirementType,
-      requirementValue,
+      badgeName,
+      badgeDescription,
     } = body;
 
     // Validate all required fields
+    if (!userId) {
+      return NextResponse.json(
+        {
+          error: 'userId is required',
+          code: 'MISSING_USER_ID',
+        },
+        { status: 400 }
+      );
+    }
+
     if (!badgeId) {
       return NextResponse.json(
         {
@@ -55,89 +61,21 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (!name) {
+    if (!badgeName) {
       return NextResponse.json(
         {
-          error: 'name is required',
-          code: 'MISSING_NAME',
+          error: 'badgeName is required',
+          code: 'MISSING_BADGE_NAME',
         },
         { status: 400 }
       );
     }
 
-    if (!description) {
+    if (!badgeDescription) {
       return NextResponse.json(
         {
-          error: 'description is required',
-          code: 'MISSING_DESCRIPTION',
-        },
-        { status: 400 }
-      );
-    }
-
-    if (!icon) {
-      return NextResponse.json(
-        {
-          error: 'icon is required',
-          code: 'MISSING_ICON',
-        },
-        { status: 400 }
-      );
-    }
-
-    if (!category) {
-      return NextResponse.json(
-        {
-          error: 'category is required',
-          code: 'MISSING_CATEGORY',
-        },
-        { status: 400 }
-      );
-    }
-
-    if (!requirementType) {
-      return NextResponse.json(
-        {
-          error: 'requirementType is required',
-          code: 'MISSING_REQUIREMENT_TYPE',
-        },
-        { status: 400 }
-      );
-    }
-
-    if (requirementValue === undefined || requirementValue === null) {
-      return NextResponse.json(
-        {
-          error: 'requirementValue is required',
-          code: 'MISSING_REQUIREMENT_VALUE',
-        },
-        { status: 400 }
-      );
-    }
-
-    // Validate requirementValue is a valid integer
-    if (isNaN(parseInt(String(requirementValue)))) {
-      return NextResponse.json(
-        {
-          error: 'requirementValue must be a valid integer',
-          code: 'INVALID_REQUIREMENT_VALUE',
-        },
-        { status: 400 }
-      );
-    }
-
-    // Check if badgeId already exists
-    const existingBadge = await db
-      .select()
-      .from(badges)
-      .where(eq(badges.badgeId, badgeId.trim()))
-      .limit(1);
-
-    if (existingBadge.length > 0) {
-      return NextResponse.json(
-        {
-          error: 'Badge with this badgeId already exists',
-          code: 'DUPLICATE_BADGE_ID',
+          error: 'badgeDescription is required',
+          code: 'MISSING_BADGE_DESCRIPTION',
         },
         { status: 400 }
       );
@@ -145,16 +83,13 @@ export async function POST(request: NextRequest) {
 
     // Create new badge
     const newBadge = await db
-      .insert(badges)
+      .insert(userBadgesNew)
       .values({
+        userId: userId.trim(),
         badgeId: badgeId.trim(),
-        name: name.trim(),
-        description: description.trim(),
-        icon: icon.trim(),
-        category: category.trim(),
-        requirementType: requirementType.trim(),
-        requirementValue: parseInt(String(requirementValue)),
-        createdAt: new Date().toISOString(),
+        badgeName: badgeName.trim(),
+        badgeDescription: badgeDescription.trim(),
+        earnedAt: new Date().toISOString(),
       })
       .returning();
 
