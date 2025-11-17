@@ -1,190 +1,195 @@
 'use client';
 
-import { useState } from 'react';
-import { BookOpen, Video, Download, Clock, Users, Star, Play, FileText, ExternalLink } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { BookOpen, Video, Download, Clock, Users, Star, Play, FileText, ExternalLink, Loader2, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Input } from '@/components/ui/input';
 import { AIAssistantChat } from '@/components/ai-assistant-chat';
+import { toast } from 'sonner';
 
-const videoTutorials = [
-  {
-    id: 1,
-    title: 'Understanding Three-Phase Power Systems',
-    description: 'Comprehensive guide to three-phase electrical systems, including delta and wye configurations',
-    duration: '24:15',
-    views: 45600,
-    rating: 4.9,
-    category: 'Power Systems',
-    level: 'Intermediate',
-    thumbnail: 'https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?w=400&h=225&fit=crop',
-    videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
-  },
-  {
-    id: 2,
-    title: 'NEC Code Basics for Beginners',
-    description: 'Essential National Electrical Code requirements every electrician should know',
-    duration: '18:42',
-    views: 67800,
-    rating: 4.8,
-    category: 'Code & Safety',
-    level: 'Beginner',
-    thumbnail: 'https://images.unsplash.com/photo-1581092160562-40aa08e78837?w=400&h=225&fit=crop',
-    videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
-  },
-  {
-    id: 3,
-    title: 'Motor Control Circuits Explained',
-    description: 'Learn how to design and troubleshoot motor control circuits with practical examples',
-    duration: '31:20',
-    views: 32400,
-    rating: 4.7,
-    category: 'Motor Controls',
-    level: 'Advanced',
-    thumbnail: 'https://images.unsplash.com/photo-1581092918056-0c4c3acd3789?w=400&h=225&fit=crop',
-    videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
-  },
-  {
-    id: 4,
-    title: 'Grounding and Bonding Fundamentals',
-    description: 'Master the concepts of grounding and bonding for safe electrical installations',
-    duration: '22:35',
-    views: 54200,
-    rating: 4.9,
-    category: 'Code & Safety',
-    level: 'Intermediate',
-    thumbnail: 'https://images.unsplash.com/photo-1635070041078-e363dbe005cb?w=400&h=225&fit=crop',
-    videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
-  },
-  {
-    id: 5,
-    title: 'PLC Programming for Electricians',
-    description: 'Introduction to programmable logic controllers and ladder logic programming',
-    duration: '42:18',
-    views: 28900,
-    rating: 4.8,
-    category: 'Automation',
-    level: 'Advanced',
-    thumbnail: 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=400&h=225&fit=crop',
-    videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
-  },
-  {
-    id: 6,
-    title: 'Residential Wiring Best Practices',
-    description: 'Step-by-step guide to proper residential electrical installation techniques',
-    duration: '27:45',
-    views: 89300,
-    rating: 4.9,
-    category: 'Installation',
-    level: 'Beginner',
-    thumbnail: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=400&h=225&fit=crop',
-    videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
-  },
-];
+interface VideoTutorial {
+  id: number;
+  title: string;
+  description: string;
+  duration: string;
+  views: number;
+  rating: number;
+  category: string;
+  level: string;
+  thumbnailUrl: string;
+  videoUrl: string;
+  author: string;
+  tags: string;
+}
 
-const downloadableResources = [
-  {
-    id: 1,
-    title: 'Complete Wire Ampacity Chart',
-    description: 'Comprehensive reference for conductor ampacity ratings per NEC standards',
-    fileType: 'PDF',
-    fileSize: '2.4 MB',
-    downloads: 15600,
-    category: 'Reference',
-  },
-  {
-    id: 2,
-    title: 'Electrical Symbols Library',
-    description: 'Standard electrical schematic symbols for circuit diagrams',
-    fileType: 'PDF',
-    fileSize: '1.8 MB',
-    downloads: 23400,
-    category: 'Design',
-  },
-  {
-    id: 3,
-    title: 'Conduit Fill Tables',
-    description: 'NEC Chapter 9 conduit and tubing fill tables for easy reference',
-    fileType: 'PDF',
-    fileSize: '1.2 MB',
-    downloads: 18900,
-    category: 'Reference',
-  },
-  {
-    id: 4,
-    title: 'Motor Full-Load Current Tables',
-    description: 'Quick reference for motor full-load amperage calculations',
-    fileType: 'PDF',
-    fileSize: '950 KB',
-    downloads: 12300,
-    category: 'Reference',
-  },
-  {
-    id: 5,
-    title: 'Panel Schedule Template',
-    description: 'Professional electrical panel schedule template in Excel format',
-    fileType: 'XLSX',
-    fileSize: '125 KB',
-    downloads: 34500,
-    category: 'Templates',
-  },
-  {
-    id: 6,
-    title: 'Voltage Drop Calculation Guide',
-    description: 'Detailed guide with examples for calculating voltage drop',
-    fileType: 'PDF',
-    fileSize: '3.1 MB',
-    downloads: 21700,
-    category: 'Calculations',
-  },
-];
+interface DownloadableResource {
+  id: number;
+  title: string;
+  description: string;
+  fileType: string;
+  fileSize: string;
+  fileUrl: string;
+  downloads: number;
+  category: string;
+  tags: string;
+}
 
-const articles = [
-  {
-    id: 1,
-    title: 'Understanding Arc Flash Hazards',
-    excerpt: 'Learn about arc flash hazards, PPE requirements, and how to perform risk assessments',
-    readTime: 8,
-    category: 'Safety',
-    author: 'John Martinez',
-  },
-  {
-    id: 2,
-    title: 'Sizing Transformers for Commercial Buildings',
-    excerpt: 'A practical guide to selecting and sizing transformers for commercial electrical systems',
-    readTime: 12,
-    category: 'Design',
-    author: 'Sarah Johnson',
-  },
-  {
-    id: 3,
-    title: 'Solar Panel System Design Basics',
-    excerpt: 'Introduction to designing photovoltaic systems including sizing and component selection',
-    readTime: 15,
-    category: 'Renewable Energy',
-    author: 'Michael Chen',
-  },
-  {
-    id: 4,
-    title: 'Troubleshooting Common Electrical Faults',
-    excerpt: 'Systematic approach to diagnosing and resolving electrical system problems',
-    readTime: 10,
-    category: 'Troubleshooting',
-    author: 'Lisa Anderson',
-  },
-];
+interface Article {
+  id: number;
+  title: string;
+  excerpt: string;
+  readTime: number;
+  category: string;
+  author: string;
+  authorAvatar: string | null;
+  views: number;
+  likes: number;
+  thumbnailUrl: string | null;
+  tags: string;
+}
 
 export default function TutorialsPage() {
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedVideo, setSelectedVideo] = useState<number | null>(null);
+  const [selectedVideo, setSelectedVideo] = useState<VideoTutorial | null>(null);
+  
+  // Videos state
+  const [videos, setVideos] = useState<VideoTutorial[]>([]);
+  const [videosLoading, setVideosLoading] = useState(true);
+  const [videosError, setVideosError] = useState<string | null>(null);
+  
+  // Resources state
+  const [resources, setResources] = useState<DownloadableResource[]>([]);
+  const [resourcesLoading, setResourcesLoading] = useState(true);
+  const [resourcesError, setResourcesError] = useState<string | null>(null);
+  
+  // Articles state
+  const [articles, setArticles] = useState<Article[]>([]);
+  const [articlesLoading, setArticlesLoading] = useState(true);
+  const [articlesError, setArticlesError] = useState<string | null>(null);
 
-  const filteredVideos = videoTutorials.filter(
+  // Fetch videos
+  useEffect(() => {
+    const fetchVideos = async () => {
+      try {
+        setVideosLoading(true);
+        const response = await fetch('/api/tutorials/videos');
+        if (!response.ok) throw new Error('Failed to fetch videos');
+        const data = await response.json();
+        setVideos(data);
+        setVideosError(null);
+      } catch (error) {
+        setVideosError(error instanceof Error ? error.message : 'Failed to load videos');
+        toast.error('Failed to load video tutorials');
+      } finally {
+        setVideosLoading(false);
+      }
+    };
+    fetchVideos();
+  }, []);
+
+  // Fetch resources
+  useEffect(() => {
+    const fetchResources = async () => {
+      try {
+        setResourcesLoading(true);
+        const response = await fetch('/api/tutorials/resources');
+        if (!response.ok) throw new Error('Failed to fetch resources');
+        const data = await response.json();
+        setResources(data);
+        setResourcesError(null);
+      } catch (error) {
+        setResourcesError(error instanceof Error ? error.message : 'Failed to load resources');
+        toast.error('Failed to load downloadable resources');
+      } finally {
+        setResourcesLoading(false);
+      }
+    };
+    fetchResources();
+  }, []);
+
+  // Fetch articles
+  useEffect(() => {
+    const fetchArticles = async () => {
+      try {
+        setArticlesLoading(true);
+        const response = await fetch('/api/tutorials/articles');
+        if (!response.ok) throw new Error('Failed to fetch articles');
+        const data = await response.json();
+        setArticles(data);
+        setArticlesError(null);
+      } catch (error) {
+        setArticlesError(error instanceof Error ? error.message : 'Failed to load articles');
+        toast.error('Failed to load articles');
+      } finally {
+        setArticlesLoading(false);
+      }
+    };
+    fetchArticles();
+  }, []);
+
+  const filteredVideos = videos.filter(
     (video) =>
       video.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       video.description.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  const handleVideoClick = async (video: VideoTutorial) => {
+    setSelectedVideo(video);
+    // Track view
+    try {
+      await fetch(`/api/tutorials/videos/${video.id}/view`, {
+        method: 'POST',
+      });
+      // Update local state
+      setVideos(prev => prev.map(v => 
+        v.id === video.id ? { ...v, views: v.views + 1 } : v
+      ));
+    } catch (error) {
+      console.error('Failed to track video view:', error);
+    }
+  };
+
+  const handleDownload = async (resource: DownloadableResource) => {
+    try {
+      const response = await fetch(`/api/tutorials/resources/${resource.id}/download`, {
+        method: 'POST',
+      });
+      
+      if (!response.ok) throw new Error('Download failed');
+      
+      const data = await response.json();
+      
+      // Update local state
+      setResources(prev => prev.map(r => 
+        r.id === resource.id ? { ...r, downloads: data.downloads } : r
+      ));
+      
+      toast.success(`Downloading ${resource.title}`);
+      
+      // In a real application, this would trigger an actual download
+      // For now, we'll just show a success message
+    } catch (error) {
+      toast.error('Failed to download resource');
+      console.error('Download error:', error);
+    }
+  };
+
+  const handleArticleView = async (articleId: number) => {
+    try {
+      await fetch(`/api/tutorials/articles/${articleId}/view`, {
+        method: 'POST',
+      });
+      // Update local state
+      setArticles(prev => prev.map(a => 
+        a.id === articleId ? { ...a, views: a.views + 1 } : a
+      ));
+    } catch (error) {
+      console.error('Failed to track article view:', error);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 py-8 px-4">
@@ -231,85 +236,97 @@ export default function TutorialsPage() {
             </div>
 
             {/* Video Modal */}
-            {selectedVideo !== null && (
+            {selectedVideo && (
               <div className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4" onClick={() => setSelectedVideo(null)}>
                 <div className="bg-white rounded-lg max-w-4xl w-full" onClick={(e) => e.stopPropagation()}>
                   <div className="p-4 border-b flex justify-between items-center">
-                    <h3 className="font-semibold text-lg">{videoTutorials[selectedVideo - 1]?.title}</h3>
+                    <h3 className="font-semibold text-lg">{selectedVideo.title}</h3>
                     <Button variant="ghost" size="icon" onClick={() => setSelectedVideo(null)}>
                       ✕
                     </Button>
                   </div>
-                  <div className="aspect-video">
-                    <iframe
-                      width="100%"
-                      height="100%"
-                      src={videoTutorials[selectedVideo - 1]?.videoUrl}
-                      title={videoTutorials[selectedVideo - 1]?.title}
-                      frameBorder="0"
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                      allowFullScreen
-                    ></iframe>
+                  <div className="aspect-video bg-gray-900 flex items-center justify-center">
+                    <p className="text-white text-center px-4">
+                      Video player would be integrated here with URL: {selectedVideo.videoUrl}
+                    </p>
+                  </div>
+                  <div className="p-4 border-t">
+                    <p className="text-sm text-gray-600 mb-2">By {selectedVideo.author}</p>
+                    <p className="text-gray-700">{selectedVideo.description}</p>
                   </div>
                 </div>
               </div>
             )}
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredVideos.map((video) => (
-                <Card key={video.id} className="hover:shadow-lg transition-shadow group cursor-pointer">
-                  <CardHeader className="p-0">
-                    <div className="relative h-48 w-full overflow-hidden rounded-t-lg">
-                      <img
-                        src={video.thumbnail}
-                        alt={video.title}
-                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                      />
-                      <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                        <Button
-                          size="icon"
-                          className="h-16 w-16 rounded-full bg-[#00C2D1] text-[#071428] hover:bg-[#00C2D1]/90"
-                          onClick={() => setSelectedVideo(video.id)}
-                        >
-                          <Play className="h-8 w-8 ml-1" />
-                        </Button>
+            {videosLoading ? (
+              <div className="flex justify-center items-center py-20">
+                <Loader2 className="h-8 w-8 animate-spin text-[#00C2D1]" />
+              </div>
+            ) : videosError ? (
+              <div className="flex flex-col items-center justify-center py-20 text-center">
+                <AlertCircle className="h-12 w-12 text-red-500 mb-4" />
+                <p className="text-gray-700 font-semibold mb-2">Failed to load videos</p>
+                <p className="text-gray-600 text-sm">{videosError}</p>
+              </div>
+            ) : filteredVideos.length === 0 ? (
+              <div className="text-center py-20">
+                <p className="text-gray-600">No videos found matching your search.</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {filteredVideos.map((video) => (
+                  <Card key={video.id} className="hover:shadow-lg transition-shadow group cursor-pointer">
+                    <CardHeader className="p-0">
+                      <div className="relative h-48 w-full overflow-hidden rounded-t-lg bg-gray-200">
+                        <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-[#071428] to-[#0a1f3d]">
+                          <Video className="h-16 w-16 text-[#00C2D1] opacity-50" />
+                        </div>
+                        <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                          <Button
+                            size="icon"
+                            className="h-16 w-16 rounded-full bg-[#00C2D1] text-[#071428] hover:bg-[#00C2D1]/90"
+                            onClick={() => handleVideoClick(video)}
+                          >
+                            <Play className="h-8 w-8 ml-1" />
+                          </Button>
+                        </div>
+                        <Badge className="absolute top-3 right-3 bg-[#071428]">
+                          <Clock className="h-3 w-3 mr-1" />
+                          {video.duration}
+                        </Badge>
                       </div>
-                      <Badge className="absolute top-3 right-3 bg-[#071428]">
-                        <Clock className="h-3 w-3 mr-1" />
-                        {video.duration}
-                      </Badge>
-                    </div>
-                  </CardHeader>
-                  <CardContent className="pt-4">
-                    <div className="flex gap-2 mb-2">
-                      <Badge variant="secondary">{video.category}</Badge>
-                      <Badge variant="outline">{video.level}</Badge>
-                    </div>
-                    <CardTitle className="text-lg mb-2">{video.title}</CardTitle>
-                    <CardDescription className="line-clamp-2 mb-3">{video.description}</CardDescription>
-                    <div className="flex items-center justify-between text-sm text-gray-600">
-                      <div className="flex items-center gap-1">
-                        <Users className="h-4 w-4" />
-                        <span>{video.views.toLocaleString()} views</span>
+                    </CardHeader>
+                    <CardContent className="pt-4">
+                      <div className="flex gap-2 mb-2">
+                        <Badge variant="secondary">{video.category}</Badge>
+                        <Badge variant="outline">{video.level}</Badge>
                       </div>
-                      <div className="flex items-center gap-1">
-                        <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                        <span>{video.rating}</span>
+                      <CardTitle className="text-lg mb-2">{video.title}</CardTitle>
+                      <CardDescription className="line-clamp-2 mb-3">{video.description}</CardDescription>
+                      <div className="flex items-center justify-between text-sm text-gray-600">
+                        <div className="flex items-center gap-1">
+                          <Users className="h-4 w-4" />
+                          <span>{video.views.toLocaleString()} views</span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                          <span>{video.rating.toFixed(1)}</span>
+                        </div>
                       </div>
-                    </div>
-                  </CardContent>
-                  <CardFooter>
-                    <Button 
-                      className="w-full bg-[#071428] hover:bg-[#071428]/90"
-                      onClick={() => setSelectedVideo(video.id)}
-                    >
-                      <Play className="h-4 w-4 mr-2" />
-                      Watch Tutorial
-                    </Button>
-                  </CardFooter>
-                </Card>
-              ))}
-            </div>
+                    </CardContent>
+                    <CardFooter>
+                      <Button 
+                        className="w-full bg-[#071428] hover:bg-[#071428]/90"
+                        onClick={() => handleVideoClick(video)}
+                      >
+                        <Play className="h-4 w-4 mr-2" />
+                        Watch Tutorial
+                      </Button>
+                    </CardFooter>
+                  </Card>
+                ))}
+              </div>
+            )}
           </TabsContent>
 
           {/* Downloadable Resources */}
@@ -319,38 +336,53 @@ export default function TutorialsPage() {
               <p className="text-gray-600 mt-1">Free reference materials, templates, and calculation guides</p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {downloadableResources.map((resource) => (
-                <Card key={resource.id} className="hover:shadow-lg transition-shadow">
-                  <CardHeader>
-                    <div className="flex items-start justify-between mb-2">
-                      <div className="bg-[#00C2D1]/10 p-3 rounded-lg">
-                        <FileText className="h-8 w-8 text-[#00C2D1]" />
+            {resourcesLoading ? (
+              <div className="flex justify-center items-center py-20">
+                <Loader2 className="h-8 w-8 animate-spin text-[#00C2D1]" />
+              </div>
+            ) : resourcesError ? (
+              <div className="flex flex-col items-center justify-center py-20 text-center">
+                <AlertCircle className="h-12 w-12 text-red-500 mb-4" />
+                <p className="text-gray-700 font-semibold mb-2">Failed to load resources</p>
+                <p className="text-gray-600 text-sm">{resourcesError}</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {resources.map((resource) => (
+                  <Card key={resource.id} className="hover:shadow-lg transition-shadow">
+                    <CardHeader>
+                      <div className="flex items-start justify-between mb-2">
+                        <div className="bg-[#00C2D1]/10 p-3 rounded-lg">
+                          <FileText className="h-8 w-8 text-[#00C2D1]" />
+                        </div>
+                        <Badge>{resource.fileType}</Badge>
                       </div>
-                      <Badge>{resource.fileType}</Badge>
-                    </div>
-                    <CardTitle className="text-lg">{resource.title}</CardTitle>
-                    <CardDescription className="line-clamp-2">{resource.description}</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="flex items-center justify-between text-sm text-gray-600">
-                      <span>{resource.fileSize}</span>
-                      <div className="flex items-center gap-1">
-                        <Download className="h-4 w-4" />
-                        <span>{resource.downloads.toLocaleString()} downloads</span>
+                      <CardTitle className="text-lg">{resource.title}</CardTitle>
+                      <CardDescription className="line-clamp-2">{resource.description}</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="flex items-center justify-between text-sm text-gray-600">
+                        <span>{resource.fileSize}</span>
+                        <div className="flex items-center gap-1">
+                          <Download className="h-4 w-4" />
+                          <span>{resource.downloads.toLocaleString()} downloads</span>
+                        </div>
                       </div>
-                    </div>
-                    <Badge variant="secondary" className="mt-3">{resource.category}</Badge>
-                  </CardContent>
-                  <CardFooter>
-                    <Button className="w-full bg-[#00C2D1] text-[#071428] hover:bg-[#00C2D1]/90">
-                      <Download className="h-4 w-4 mr-2" />
-                      Download
-                    </Button>
-                  </CardFooter>
-                </Card>
-              ))}
-            </div>
+                      <Badge variant="secondary" className="mt-3">{resource.category}</Badge>
+                    </CardContent>
+                    <CardFooter>
+                      <Button 
+                        className="w-full bg-[#00C2D1] text-[#071428] hover:bg-[#00C2D1]/90"
+                        onClick={() => handleDownload(resource)}
+                      >
+                        <Download className="h-4 w-4 mr-2" />
+                        Download
+                      </Button>
+                    </CardFooter>
+                  </Card>
+                ))}
+              </div>
+            )}
 
             <Card className="bg-[#071428] text-white border-none">
               <CardContent className="p-6 text-center">
@@ -372,32 +404,59 @@ export default function TutorialsPage() {
               <p className="text-gray-600 mt-1">In-depth articles on electrical engineering topics</p>
             </div>
 
-            <div className="space-y-4">
-              {articles.map((article) => (
-                <Card key={article.id} className="hover:shadow-lg transition-shadow">
-                  <CardHeader>
-                    <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
-                      <div className="flex-1">
-                        <div className="flex gap-2 mb-2">
-                          <Badge variant="secondary">{article.category}</Badge>
-                          <Badge variant="outline" className="flex items-center gap-1">
-                            <Clock className="h-3 w-3" />
-                            {article.readTime} min read
-                          </Badge>
+            {articlesLoading ? (
+              <div className="flex justify-center items-center py-20">
+                <Loader2 className="h-8 w-8 animate-spin text-[#00C2D1]" />
+              </div>
+            ) : articlesError ? (
+              <div className="flex flex-col items-center justify-center py-20 text-center">
+                <AlertCircle className="h-12 w-12 text-red-500 mb-4" />
+                <p className="text-gray-700 font-semibold mb-2">Failed to load articles</p>
+                <p className="text-gray-600 text-sm">{articlesError}</p>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {articles.map((article) => (
+                  <Card key={article.id} className="hover:shadow-lg transition-shadow">
+                    <CardHeader>
+                      <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
+                        <div className="flex-1">
+                          <div className="flex gap-2 mb-2">
+                            <Badge variant="secondary">{article.category}</Badge>
+                            <Badge variant="outline" className="flex items-center gap-1">
+                              <Clock className="h-3 w-3" />
+                              {article.readTime} min read
+                            </Badge>
+                          </div>
+                          <CardTitle className="text-xl mb-2">{article.title}</CardTitle>
+                          <CardDescription className="text-base">{article.excerpt}</CardDescription>
+                          <div className="flex items-center gap-4 mt-3 text-sm text-gray-600">
+                            <p>By {article.author}</p>
+                            <div className="flex items-center gap-3">
+                              <span className="flex items-center gap-1">
+                                <Users className="h-4 w-4" />
+                                {article.views.toLocaleString()}
+                              </span>
+                              <span className="flex items-center gap-1">
+                                <Star className="h-4 w-4" />
+                                {article.likes}
+                              </span>
+                            </div>
+                          </div>
                         </div>
-                        <CardTitle className="text-xl mb-2">{article.title}</CardTitle>
-                        <CardDescription className="text-base">{article.excerpt}</CardDescription>
-                        <p className="text-sm text-gray-500 mt-2">By {article.author}</p>
+                        <Button 
+                          className="bg-[#071428] hover:bg-[#071428]/90 whitespace-nowrap"
+                          onClick={() => handleArticleView(article.id)}
+                        >
+                          Read Article
+                          <ExternalLink className="h-4 w-4 ml-2" />
+                        </Button>
                       </div>
-                      <Button className="bg-[#071428] hover:bg-[#071428]/90 whitespace-nowrap">
-                        Read Article
-                        <ExternalLink className="h-4 w-4 ml-2" />
-                      </Button>
-                    </div>
-                  </CardHeader>
-                </Card>
-              ))}
-            </div>
+                    </CardHeader>
+                  </Card>
+                ))}
+              </div>
+            )}
 
             <Card className="bg-gradient-to-r from-[#071428] to-[#0a1f3d] text-white border-none">
               <CardContent className="p-8">
