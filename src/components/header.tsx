@@ -1,11 +1,13 @@
 'use client';
 
 import Link from 'next/link';
-import { Zap, Menu, Search } from 'lucide-react';
+import { Zap, Menu, Search, Trophy } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Input } from '@/components/ui/input';
 import { motion } from 'framer-motion';
+import { useState, useEffect } from 'react';
+import { Badge } from '@/components/ui/badge';
 
 interface HeaderProps {
   onSearch: (query: string) => void;
@@ -14,14 +16,47 @@ interface HeaderProps {
 }
 
 export function Header({ onSearch, searchQuery, onSearchChange }: HeaderProps) {
+  const [userStats, setUserStats] = useState<any>(null);
+  const userId = 'demo_user'; // In production, get from auth
+
+  useEffect(() => {
+    fetchUserStats();
+  }, []);
+
+  const fetchUserStats = async () => {
+    try {
+      const response = await fetch(`/api/gamification/user-stats?userId=${userId}`);
+      if (response.ok) {
+        const data = await response.json();
+        setUserStats(data);
+      }
+    } catch (error) {
+      console.error('Failed to fetch user stats:', error);
+    }
+  };
+
   const navLinks = [
     { href: '/', label: 'Home' },
     { href: '/apps', label: 'Apps' },
     { href: '/calculators', label: 'Calculators' },
     { href: '/tutorials', label: 'Tutorials' },
+    { href: '/projects', label: 'Projects' },
     { href: '/assessments', label: 'Assessments' },
-    { href: '/career', label: 'Career' },
   ];
+
+  const levelColors: Record<string, string> = {
+    Beginner: '#00E5FF',
+    Intermediate: '#9C4AFF',
+    Advanced: '#FF6B00',
+    Expert: '#FF00C8',
+  };
+
+  const levelIcons: Record<string, string> = {
+    Beginner: '🌱',
+    Intermediate: '⚡',
+    Advanced: '🔥',
+    Expert: '👑',
+  };
 
   return (
     <header className="sticky top-0 z-50 w-full glass-surface backdrop-blur-glass border-b border-white/10">
@@ -70,6 +105,31 @@ export function Header({ onSearch, searchQuery, onSearchChange }: HeaderProps) {
               <span className="absolute bottom-0 left-0 w-0 h-0.5 gradient-fire transition-all group-hover:w-full" />
             </Link>
           ))}
+          
+          {/* Gamification Stats Display */}
+          {userStats && (
+            <Link href="/gamification">
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                className="ml-4 flex items-center gap-2 px-3 py-1.5 glass-surface border-2 border-[#9C4AFF]/30 rounded-xl hover:border-[#9C4AFF]/60 hover:shadow-glowViolet transition-all cursor-pointer"
+              >
+                <div 
+                  className="w-8 h-8 rounded-full flex items-center justify-center text-lg"
+                  style={{ 
+                    background: `linear-gradient(135deg, ${levelColors[userStats.level]}33, ${levelColors[userStats.level]}66)`,
+                    boxShadow: `0 0 10px ${levelColors[userStats.level]}66`
+                  }}
+                >
+                  {levelIcons[userStats.level]}
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-xs text-[#B8A7E0]">{userStats.level}</span>
+                  <span className="text-sm font-bold text-white">{userStats.totalPoints.toLocaleString()} XP</span>
+                </div>
+              </motion.div>
+            </Link>
+          )}
+
           <motion.div
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
@@ -93,6 +153,29 @@ export function Header({ onSearch, searchQuery, onSearchChange }: HeaderProps) {
             <div className="absolute bottom-10 left-10 w-[150px] h-[150px] bg-[#FF6B00] opacity-20 blur-[60px] rounded-full" />
             
             <nav className="flex flex-col space-y-4 mt-8 relative z-10">
+              {/* Gamification Stats in Mobile */}
+              {userStats && (
+                <Link href="/gamification">
+                  <div className="mb-4 p-4 glass-surface border-2 border-[#9C4AFF]/30 rounded-xl">
+                    <div className="flex items-center gap-3">
+                      <div 
+                        className="w-12 h-12 rounded-full flex items-center justify-center text-2xl"
+                        style={{ 
+                          background: `linear-gradient(135deg, ${levelColors[userStats.level]}33, ${levelColors[userStats.level]}66)`,
+                          boxShadow: `0 0 15px ${levelColors[userStats.level]}66`
+                        }}
+                      >
+                        {levelIcons[userStats.level]}
+                      </div>
+                      <div>
+                        <p className="text-sm text-[#B8A7E0]">{userStats.level}</p>
+                        <p className="text-lg font-bold text-white">{userStats.totalPoints.toLocaleString()} XP</p>
+                      </div>
+                    </div>
+                  </div>
+                </Link>
+              )}
+
               {navLinks.map((link) => (
                 <Link
                   key={link.href}
