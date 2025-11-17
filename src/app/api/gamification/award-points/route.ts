@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/db';
-import { userPoints, userActivities } from '@/db/schema';
+import { userStats, achievements } from '@/db/schema';
 import { eq } from 'drizzle-orm';
 
 export async function POST(request: NextRequest) {
@@ -42,8 +42,8 @@ export async function POST(request: NextRequest) {
     // Get or create user stats
     const existingStats = await db
       .select()
-      .from(userPoints)
-      .where(eq(userPoints.userId, userId))
+      .from(userStats)
+      .where(eq(userStats.userId, userId))
       .limit(1);
 
     let currentStats;
@@ -52,7 +52,7 @@ export async function POST(request: NextRequest) {
     if (existingStats.length === 0) {
       // Create new user stats
       const newStats = await db
-        .insert(userPoints)
+        .insert(userStats)
         .values({
           userId,
           totalPoints: 0,
@@ -81,34 +81,34 @@ export async function POST(request: NextRequest) {
 
     // Update user stats
     const updatedStats = await db
-      .update(userPoints)
+      .update(userStats)
       .set({
         totalPoints: newTotalPoints,
         level: newLevel,
         updatedAt: now,
       })
-      .where(eq(userPoints.userId, userId))
+      .where(eq(userStats.userId, userId))
       .returning();
 
-    // Create activity record
-    const activityData = {
+    // Create achievement record
+    const achievementData = {
       userId,
-      activityType,
-      pointsEarned: pointsValue,
+      achievementType: activityType,
+      pointsAwarded: pointsValue,
       metadata: metadata ? JSON.stringify(metadata) : null,
       createdAt: now,
     };
 
-    const newActivity = await db
-      .insert(userActivities)
-      .values(activityData)
+    const newAchievement = await db
+      .insert(achievements)
+      .values(achievementData)
       .returning();
 
-    // Return updated stats and activity
+    // Return updated stats and achievement
     return NextResponse.json(
       {
         userStats: updatedStats[0],
-        activity: newActivity[0],
+        achievement: newAchievement[0],
       },
       { status: 201 }
     );

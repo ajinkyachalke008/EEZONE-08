@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/db';
-import { userBadgesNew } from '@/db/schema';
+import { userBadges } from '@/db/schema';
 import { eq, and, asc } from 'drizzle-orm';
 
 export async function GET(request: NextRequest) {
@@ -15,12 +15,12 @@ export async function GET(request: NextRequest) {
       }, { status: 400 });
     }
 
-    const badges = await db.select()
-      .from(userBadgesNew)
-      .where(eq(userBadgesNew.userId, userId))
-      .orderBy(asc(userBadgesNew.earnedAt));
+    const userBadgesList = await db.select()
+      .from(userBadges)
+      .where(eq(userBadges.userId, userId))
+      .orderBy(asc(userBadges.earnedAt));
 
-    return NextResponse.json(badges, { status: 200 });
+    return NextResponse.json(userBadgesList, { status: 200 });
   } catch (error) {
     console.error('GET error:', error);
     return NextResponse.json(
@@ -36,8 +36,6 @@ export async function POST(request: NextRequest) {
     const {
       userId,
       badgeId,
-      badgeName,
-      badgeDescription,
     } = body;
 
     // Validate all required fields
@@ -61,35 +59,14 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (!badgeName) {
-      return NextResponse.json(
-        {
-          error: 'badgeName is required',
-          code: 'MISSING_BADGE_NAME',
-        },
-        { status: 400 }
-      );
-    }
-
-    if (!badgeDescription) {
-      return NextResponse.json(
-        {
-          error: 'badgeDescription is required',
-          code: 'MISSING_BADGE_DESCRIPTION',
-        },
-        { status: 400 }
-      );
-    }
-
     // Create new badge
     const newBadge = await db
-      .insert(userBadgesNew)
+      .insert(userBadges)
       .values({
         userId: userId.trim(),
         badgeId: badgeId.trim(),
-        badgeName: badgeName.trim(),
-        badgeDescription: badgeDescription.trim(),
         earnedAt: new Date().toISOString(),
+        createdAt: new Date().toISOString(),
       })
       .returning();
 
