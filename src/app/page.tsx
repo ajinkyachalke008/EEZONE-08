@@ -9,7 +9,6 @@ import { Badge } from '@/components/ui/badge';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 import { InstrumentScanner } from '@/components/instrument-scanner';
 import { ProblemSolver } from '@/components/problem-solver';
-import { Header } from '@/components/header';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 
@@ -212,12 +211,6 @@ export default function Home() {
 
   return (
     <div className="min-h-screen gradient-depth">
-      <Header 
-        onSearch={handleSearch}
-        searchQuery={searchQuery}
-        onSearchChange={setSearchQuery}
-      />
-
       {/* Search Results Section */}
       {hasSearchResults && (
         <section className="glass-surface py-8 px-4 border-b border-white/10">
