@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import { Search, Briefcase, GraduationCap, Wrench, ChevronRight, Star, Zap, Calculator, BookOpen, Cpu, Settings, Lightbulb, CircuitBoard, FileText, Gauge, GraduationCap as EducationIcon, ClipboardList, Scale, Wrench as DiagnosticIcon, Code, Sparkles, Headphones, Globe, Beaker, Box, Shield, Clock, Calendar, TrendingUp, MapPin, FileCheck, BarChart, Thermometer, PlayCircle, Smartphone, Camera, Brain } from 'lucide-react';
+import { Search, Briefcase, GraduationCap, Wrench, ChevronRight, Star, Zap, Calculator, BookOpen, Cpu, Settings, Lightbulb, CircuitBoard, FileText, Gauge, GraduationCap as EducationIcon, ClipboardList, Scale, Wrench as DiagnosticIcon, Code, Sparkles, Headphones, Globe, Beaker, Box, Shield, Clock, Calendar, TrendingUp, MapPin, FileCheck, BarChart, Thermometer, PlayCircle, Smartphone, Camera, Brain, Award, Building2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -791,6 +791,7 @@ export default function Home() {
         <section className="py-16 px-4 relative overflow-hidden">
           {/* Ambient Glow */}
           <div className="absolute top-10 left-1/2 w-[400px] h-[400px] bg-[#FF6B00] opacity-15 blur-[150px] rounded-full" />
+          <div className="absolute bottom-10 right-10 w-[400px] h-[400px] bg-[#FF6B00] opacity-20 blur-[150px] rounded-full" />
           
           <div className="container mx-auto max-w-6xl relative z-10">
             <div className="text-center mb-12">
@@ -1048,7 +1049,6 @@ export default function Home() {
                   {[
                     { icon: BookOpen, title: 'Interactive Tutorials', desc: 'Step-by-step guides with embedded calculators and real-world examples', href: '/tutorials' },
                     { icon: Brain, title: 'Practice & Assessment', desc: 'Smart quizzes, mock exams, and personalized skill tracking', href: '/assessments' },
-                    { icon: Briefcase, title: 'Career Center', desc: 'Certification prep, resume builder, interview practice, and job board', href: '/career' },
                   ].map((item, index) => (
                     <motion.div
                       key={index}
@@ -1078,11 +1078,6 @@ export default function Home() {
                   <Link href="/assessments" className="flex-1">
                     <Button size="lg" className="w-full gradient-violet hover:shadow-glowViolet text-white font-semibold rounded-xl py-3 uppercase tracking-wider">
                       Start Practicing
-                    </Button>
-                  </Link>
-                  <Link href="/career" className="flex-1">
-                    <Button size="lg" className="w-full gradient-fire hover:shadow-glowOrange text-white font-semibold rounded-xl py-3 uppercase tracking-wider">
-                      Advance Career
                     </Button>
                   </Link>
                 </div>
