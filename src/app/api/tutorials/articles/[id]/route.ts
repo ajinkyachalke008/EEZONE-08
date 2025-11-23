@@ -3,36 +3,37 @@ import { db } from '@/db';
 import { articles } from '@/db/schema';
 import { eq } from 'drizzle-orm';
 
-export async function GET(request: NextRequest) {
+export async function GET(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
   try {
-    const { searchParams } = new URL(request.url);
-    const id = searchParams.get('id');
+    const { id } = await params;
+    const articleId = parseInt(id);
 
-    if (!id || isNaN(parseInt(id))) {
+    if (isNaN(articleId)) {
       return NextResponse.json(
-        { 
-          error: 'Valid ID is required',
-          code: 'INVALID_ID'
-        },
+        { error: 'Invalid article ID' },
         { status: 400 }
       );
     }
 
-    const article = await db.select()
+    const result = await db
+      .select()
       .from(articles)
-      .where(eq(articles.id, parseInt(id)))
+      .where(eq(articles.id, articleId))
       .limit(1);
 
-    if (article.length === 0) {
+    if (result.length === 0) {
       return NextResponse.json(
         { error: 'Article not found' },
         { status: 404 }
       );
     }
 
-    return NextResponse.json(article[0], { status: 200 });
+    return NextResponse.json(result[0], { status: 200 });
   } catch (error) {
-    console.error('GET error:', error);
+    console.error('GET article error:', error);
     return NextResponse.json(
       { error: 'Internal server error: ' + (error as Error).message },
       { status: 500 }
@@ -40,24 +41,24 @@ export async function GET(request: NextRequest) {
   }
 }
 
-export async function PUT(request: NextRequest) {
+export async function PUT(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
   try {
-    const { searchParams } = new URL(request.url);
-    const id = searchParams.get('id');
+    const { id } = await params;
+    const articleId = parseInt(id);
 
-    if (!id || isNaN(parseInt(id))) {
+    if (isNaN(articleId)) {
       return NextResponse.json(
-        { 
-          error: 'Valid ID is required',
-          code: 'INVALID_ID'
-        },
+        { error: 'Invalid article ID' },
         { status: 400 }
       );
     }
 
     const existingArticle = await db.select()
       .from(articles)
-      .where(eq(articles.id, parseInt(id)))
+      .where(eq(articles.id, articleId))
       .limit(1);
 
     if (existingArticle.length === 0) {
@@ -76,6 +77,7 @@ export async function PUT(request: NextRequest) {
       category,
       author,
       authorAvatar,
+      institution,
       thumbnailUrl,
       tags,
       publishedAt
@@ -88,10 +90,7 @@ export async function PUT(request: NextRequest) {
     if (title !== undefined) {
       if (typeof title !== 'string' || title.trim().length === 0) {
         return NextResponse.json(
-          { 
-            error: 'Title must be a non-empty string',
-            code: 'INVALID_TITLE'
-          },
+          { error: 'Title must be a non-empty string', code: 'INVALID_TITLE' },
           { status: 400 }
         );
       }
@@ -101,10 +100,7 @@ export async function PUT(request: NextRequest) {
     if (excerpt !== undefined) {
       if (typeof excerpt !== 'string') {
         return NextResponse.json(
-          { 
-            error: 'Excerpt must be a string',
-            code: 'INVALID_EXCERPT'
-          },
+          { error: 'Excerpt must be a string', code: 'INVALID_EXCERPT' },
           { status: 400 }
         );
       }
@@ -114,10 +110,7 @@ export async function PUT(request: NextRequest) {
     if (content !== undefined) {
       if (typeof content !== 'string') {
         return NextResponse.json(
-          { 
-            error: 'Content must be a string',
-            code: 'INVALID_CONTENT'
-          },
+          { error: 'Content must be a string', code: 'INVALID_CONTENT' },
           { status: 400 }
         );
       }
@@ -125,25 +118,19 @@ export async function PUT(request: NextRequest) {
     }
 
     if (readTime !== undefined) {
-      if (typeof readTime !== 'string') {
+      if (typeof readTime !== 'number') {
         return NextResponse.json(
-          { 
-            error: 'Read time must be a string',
-            code: 'INVALID_READ_TIME'
-          },
+          { error: 'Read time must be a number', code: 'INVALID_READ_TIME' },
           { status: 400 }
         );
       }
-      updates.readTime = readTime.trim();
+      updates.readTime = readTime;
     }
 
     if (category !== undefined) {
       if (typeof category !== 'string' || category.trim().length === 0) {
         return NextResponse.json(
-          { 
-            error: 'Category must be a non-empty string',
-            code: 'INVALID_CATEGORY'
-          },
+          { error: 'Category must be a non-empty string', code: 'INVALID_CATEGORY' },
           { status: 400 }
         );
       }
@@ -153,10 +140,7 @@ export async function PUT(request: NextRequest) {
     if (author !== undefined) {
       if (typeof author !== 'string' || author.trim().length === 0) {
         return NextResponse.json(
-          { 
-            error: 'Author must be a non-empty string',
-            code: 'INVALID_AUTHOR'
-          },
+          { error: 'Author must be a non-empty string', code: 'INVALID_AUTHOR' },
           { status: 400 }
         );
       }
@@ -164,51 +148,25 @@ export async function PUT(request: NextRequest) {
     }
 
     if (authorAvatar !== undefined) {
-      if (typeof authorAvatar !== 'string') {
-        return NextResponse.json(
-          { 
-            error: 'Author avatar must be a string',
-            code: 'INVALID_AUTHOR_AVATAR'
-          },
-          { status: 400 }
-        );
-      }
-      updates.authorAvatar = authorAvatar.trim();
+      updates.authorAvatar = authorAvatar ? authorAvatar.trim() : null;
+    }
+
+    if (institution !== undefined) {
+      updates.institution = institution ? institution.trim() : null;
     }
 
     if (thumbnailUrl !== undefined) {
-      if (typeof thumbnailUrl !== 'string') {
-        return NextResponse.json(
-          { 
-            error: 'Thumbnail URL must be a string',
-            code: 'INVALID_THUMBNAIL_URL'
-          },
-          { status: 400 }
-        );
-      }
-      updates.thumbnailUrl = thumbnailUrl.trim();
+      updates.thumbnailUrl = thumbnailUrl ? thumbnailUrl.trim() : null;
     }
 
     if (tags !== undefined) {
-      if (typeof tags !== 'string') {
-        return NextResponse.json(
-          { 
-            error: 'Tags must be a string',
-            code: 'INVALID_TAGS'
-          },
-          { status: 400 }
-        );
-      }
-      updates.tags = tags.trim();
+      updates.tags = tags ? tags.trim() : null;
     }
 
     if (publishedAt !== undefined) {
       if (typeof publishedAt !== 'string') {
         return NextResponse.json(
-          { 
-            error: 'Published at must be a string',
-            code: 'INVALID_PUBLISHED_AT'
-          },
+          { error: 'Published at must be a string', code: 'INVALID_PUBLISHED_AT' },
           { status: 400 }
         );
       }
@@ -217,7 +175,7 @@ export async function PUT(request: NextRequest) {
 
     const updatedArticle = await db.update(articles)
       .set(updates)
-      .where(eq(articles.id, parseInt(id)))
+      .where(eq(articles.id, articleId))
       .returning();
 
     return NextResponse.json(updatedArticle[0], { status: 200 });
@@ -230,24 +188,24 @@ export async function PUT(request: NextRequest) {
   }
 }
 
-export async function DELETE(request: NextRequest) {
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
   try {
-    const { searchParams } = new URL(request.url);
-    const id = searchParams.get('id');
+    const { id } = await params;
+    const articleId = parseInt(id);
 
-    if (!id || isNaN(parseInt(id))) {
+    if (isNaN(articleId)) {
       return NextResponse.json(
-        { 
-          error: 'Valid ID is required',
-          code: 'INVALID_ID'
-        },
+        { error: 'Invalid article ID' },
         { status: 400 }
       );
     }
 
     const existingArticle = await db.select()
       .from(articles)
-      .where(eq(articles.id, parseInt(id)))
+      .where(eq(articles.id, articleId))
       .limit(1);
 
     if (existingArticle.length === 0) {
@@ -258,7 +216,7 @@ export async function DELETE(request: NextRequest) {
     }
 
     const deletedArticle = await db.delete(articles)
-      .where(eq(articles.id, parseInt(id)))
+      .where(eq(articles.id, articleId))
       .returning();
 
     return NextResponse.json(
