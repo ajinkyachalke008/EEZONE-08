@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import { Search, Briefcase, GraduationCap, Wrench, ChevronRight, Star, Zap, Calculator, BookOpen, Cpu, Settings, Lightbulb, CircuitBoard, FileText, Gauge, GraduationCap as EducationIcon, ClipboardList, Scale, Wrench as DiagnosticIcon, Code, Sparkles, Headphones, Globe, Beaker, Box, Shield, Clock, Calendar, TrendingUp, MapPin, FileCheck, BarChart, Thermometer, PlayCircle, Smartphone, Camera, Brain, Award, Building2 } from 'lucide-react';
+import { Search, Briefcase, GraduationCap, Wrench, ChevronRight, Star, Zap, Calculator, BookOpen, Cpu, Settings, Lightbulb, CircuitBoard, FileText, Gauge, GraduationCap as EducationIcon, ClipboardList, Scale, Wrench as DiagnosticIcon, Code, Sparkles, Headphones, Globe, Beaker, Box, Shield, Clock, Calendar, TrendingUp, MapPin, FileCheck, BarChart, Thermometer, PlayCircle, Smartphone, Camera, Brain, Award, Building2, Users, CheckCircle2, Target, DollarSign, MessageSquare, FileCheck as FileCheckIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -1083,6 +1083,238 @@ export default function Home() {
                 </div>
               </motion.div>
             </div>
+          </div>
+        </section>
+      )}
+
+      {/* Advance Your Career Section */}
+      {!searchQuery && (
+        <section className="py-20 px-4 relative overflow-hidden">
+          {/* Animated Gradient Background */}
+          <div className="absolute inset-0 gradient-fire opacity-30 animate-gradient-move" style={{ backgroundSize: '400% 400%' }} />
+          <div className="absolute top-0 left-0 w-full h-full bg-[#0A0014]/40" />
+          
+          {/* Ambient Orbs */}
+          <div className="absolute top-10 right-10 w-[500px] h-[500px] bg-[#FF6B00] opacity-25 blur-[150px] rounded-full animate-pulse-slow" />
+          <div className="absolute bottom-10 left-10 w-[400px] h-[400px] bg-[#9C4AFF] opacity-25 blur-[150px] rounded-full animate-pulse-slow" style={{ animationDelay: '1.5s' }} />
+          <div className="absolute top-1/2 left-1/2 w-[300px] h-[300px] bg-[#00E5FF] opacity-20 blur-[150px] rounded-full animate-pulse-slow" style={{ animationDelay: '3s' }} />
+
+          <div className="container mx-auto max-w-6xl relative z-10">
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+              viewport={{ once: true }}
+              className="text-center mb-16"
+            >
+              <div className="flex items-center justify-center gap-3 mb-4">
+                <motion.div
+                  animate={{ rotate: [0, 360] }}
+                  transition={{ duration: 3, repeat: Infinity, ease: 'linear' }}
+                >
+                  <Briefcase className="h-14 w-14 text-[#FF6B00] glow-text-orange" />
+                </motion.div>
+                <h2 className="text-4xl md:text-5xl font-bold text-white glow-text-orange" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>
+                  Advance Your Career
+                </h2>
+              </div>
+              <p className="text-xl text-[#B8A7E0] max-w-3xl mx-auto">
+                Professional certifications, career tools, and curated job opportunities to accelerate your electrical engineering career
+              </p>
+            </motion.div>
+
+            {/* Three Feature Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+              {/* Professional Certifications Card */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+                viewport={{ once: true }}
+                whileHover={{ scale: 1.03, y: -5 }}
+              >
+                <Card className="glass-surface border-2 border-[#9C4AFF]/30 hover:border-[#9C4AFF]/60 hover:shadow-glowViolet transition-all h-full">
+                  <CardHeader>
+                    <div className="p-4 w-fit rounded-xl gradient-violet mb-4">
+                      <Award className="h-8 w-8 text-white" />
+                    </div>
+                    <CardTitle className="text-white text-2xl mb-2">Professional Certifications</CardTitle>
+                    <CardDescription className="text-[#B8A7E0]">
+                      FE Electrical, PE Power, Journeyman, Master
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="flex items-center gap-4 text-sm">
+                      <div className="flex items-center gap-2">
+                        <TrendingUp className="h-5 w-5 text-[#9C4AFF]" />
+                        <span className="text-white font-semibold">87% Success Rate</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Users className="h-5 w-5 text-[#9C4AFF]" />
+                        <span className="text-[#B8A7E0]">12.5k+ Students</span>
+                      </div>
+                    </div>
+                    <ul className="space-y-2">
+                      {['Full exam simulators', 'Video solutions', 'AI study plans', 'Progress tracking'].map((feature, idx) => (
+                        <li key={idx} className="flex items-center gap-2 text-[#B8A7E0] text-sm">
+                          <CheckCircle2 className="h-4 w-4 text-[#9C4AFF]" />
+                          {feature}
+                        </li>
+                      ))}
+                    </ul>
+                  </CardContent>
+                  <CardFooter>
+                    <Link href="/career?tab=certifications" className="w-full">
+                      <Button className="w-full gradient-violet hover:shadow-glowViolet text-white font-semibold rounded-xl">
+                        Explore Certifications
+                      </Button>
+                    </Link>
+                  </CardFooter>
+                </Card>
+              </motion.div>
+
+              {/* Career Tools Card */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.1 }}
+                viewport={{ once: true }}
+                whileHover={{ scale: 1.03, y: -5 }}
+              >
+                <Card className="glass-surface border-2 border-[#FF6B00]/30 hover:border-[#FF6B00]/60 hover:shadow-glowOrange transition-all h-full">
+                  <CardHeader>
+                    <div className="p-4 w-fit rounded-xl gradient-fire mb-4">
+                      <FileText className="h-8 w-8 text-white" />
+                    </div>
+                    <CardTitle className="text-white text-2xl mb-2">Career Tools</CardTitle>
+                    <CardDescription className="text-[#B8A7E0]">
+                      Resume Builder, Portfolio, Interview Coach
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="flex items-center gap-4 text-sm">
+                      <div className="flex items-center gap-2">
+                        <FileText className="h-5 w-5 text-[#FF6B00]" />
+                        <span className="text-white font-semibold">50+ Templates</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <MessageSquare className="h-5 w-5 text-[#FF6B00]" />
+                        <span className="text-[#B8A7E0]">200+ Questions</span>
+                      </div>
+                    </div>
+                    <ul className="space-y-2">
+                      {['ATS-friendly resumes', 'Portfolio generator', 'Interview prep AI', 'Salary negotiation'].map((feature, idx) => (
+                        <li key={idx} className="flex items-center gap-2 text-[#B8A7E0] text-sm">
+                          <CheckCircle2 className="h-4 w-4 text-[#FF6B00]" />
+                          {feature}
+                        </li>
+                      ))}
+                    </ul>
+                  </CardContent>
+                  <CardFooter>
+                    <Link href="/career?tab=career-tools" className="w-full">
+                      <Button className="w-full gradient-fire hover:shadow-glowOrange text-white font-semibold rounded-xl">
+                        Access Career Tools
+                      </Button>
+                    </Link>
+                  </CardFooter>
+                </Card>
+              </motion.div>
+
+              {/* Job Opportunities Card */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.2 }}
+                viewport={{ once: true }}
+                whileHover={{ scale: 1.03, y: -5 }}
+              >
+                <Card className="glass-surface border-2 border-[#00E5FF]/30 hover:border-[#00E5FF]/60 hover:shadow-glowCyan transition-all h-full">
+                  <CardHeader>
+                    <div className="p-4 w-fit rounded-xl gradient-aqua mb-4">
+                      <Building2 className="h-8 w-8 text-white" />
+                    </div>
+                    <CardTitle className="text-white text-2xl mb-2">Job Opportunities</CardTitle>
+                    <CardDescription className="text-[#B8A7E0]">
+                      Tesla, Siemens, Apple, SpaceX & more
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="flex items-center gap-4 text-sm">
+                      <div className="flex items-center gap-2">
+                        <Briefcase className="h-5 w-5 text-[#00E5FF]" />
+                        <span className="text-white font-semibold">1,247 Listings</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <DollarSign className="h-5 w-5 text-[#00E5FF]" />
+                        <span className="text-[#B8A7E0]">$118k Avg</span>
+                      </div>
+                    </div>
+                    <ul className="space-y-2">
+                      {['Curated opportunities', 'Salary insights', 'Company reviews', 'Application tracking'].map((feature, idx) => (
+                        <li key={idx} className="flex items-center gap-2 text-[#B8A7E0] text-sm">
+                          <CheckCircle2 className="h-4 w-4 text-[#00E5FF]" />
+                          {feature}
+                        </li>
+                      ))}
+                    </ul>
+                  </CardContent>
+                  <CardFooter>
+                    <Link href="/career?tab=job-board" className="w-full">
+                      <Button className="w-full gradient-aqua hover:shadow-glowCyan text-white font-semibold rounded-xl">
+                        Browse Jobs
+                      </Button>
+                    </Link>
+                  </CardFooter>
+                </Card>
+              </motion.div>
+            </div>
+
+            {/* Stats Banner */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.3 }}
+              viewport={{ once: true }}
+              className="glass-surface border border-white/10 rounded-2xl p-8 mb-8"
+            >
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+                {[
+                  { label: 'Active Users', value: '12,500+', icon: Users },
+                  { label: 'Success Rate', value: '87%', icon: Target },
+                  { label: 'Certifications', value: '4', icon: Award },
+                  { label: 'Job Listings', value: '1,247', icon: Briefcase },
+                ].map((stat, index) => (
+                  <motion.div
+                    key={stat.label}
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    whileInView={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.4, delay: 0.4 + index * 0.1 }}
+                    viewport={{ once: true }}
+                  >
+                    <stat.icon className="h-8 w-8 text-[#FF6B00] mx-auto mb-2" />
+                    <div className="text-3xl font-bold text-white mb-1">{stat.value}</div>
+                    <div className="text-sm text-[#B8A7E0]">{stat.label}</div>
+                  </motion.div>
+                ))}
+              </div>
+            </motion.div>
+
+            {/* CTA Button */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.5 }}
+              viewport={{ once: true }}
+              className="text-center"
+            >
+              <Link href="/career">
+                <Button size="lg" className="gradient-fire text-white hover:shadow-glowOrange font-semibold rounded-xl px-12 py-6 text-lg transition-all duration-300 hover:scale-105 uppercase tracking-wider">
+                  Explore Career Center
+                  <ChevronRight className="h-6 w-6 ml-2" />
+                </Button>
+              </Link>
+            </motion.div>
           </div>
         </section>
       )}
