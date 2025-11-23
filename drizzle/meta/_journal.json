@@ -15,6 +15,13 @@
       "when": 1763400746242,
       "tag": "0001_pale_deadpool",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1763909544231,
+      "tag": "0002_vengeful_mongoose",
+      "breakpoints": true
     }
   ]
 }
