@@ -21,6 +21,7 @@ export async function GET(request: NextRequest) {
       category: articles.category,
       author: articles.author,
       authorAvatar: articles.authorAvatar,
+      institution: articles.institution,
       views: articles.views,
       likes: articles.likes,
       thumbnailUrl: articles.thumbnailUrl,
@@ -77,6 +78,7 @@ export async function POST(request: NextRequest) {
       category, 
       author,
       authorAvatar,
+      institution,
       thumbnailUrl,
       tags,
       publishedAt
@@ -146,6 +148,7 @@ export async function POST(request: NextRequest) {
         category: category.trim(),
         author: author.trim(),
         authorAvatar: authorAvatar ? authorAvatar.trim() : null,
+        institution: institution ? institution.trim() : null,
         thumbnailUrl: thumbnailUrl ? thumbnailUrl.trim() : null,
         tags: tags ? tags.trim() : null,
         publishedAt: publishedAt || currentTimestamp,

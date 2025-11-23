@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { BookOpen, Video, Download, Clock, Users, Star, Play, FileText, ExternalLink, Loader2, AlertCircle, Search, TrendingUp, Award, Sparkles } from 'lucide-react';
+import { BookOpen, Video, Download, Clock, Users, Star, Play, FileText, ExternalLink, Loader2, AlertCircle, Search, TrendingUp, Award, Sparkles, GraduationCap, Building2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -9,6 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Input } from '@/components/ui/input';
 import { AIAssistantChat } from '@/components/ai-assistant-chat';
 import { toast } from 'sonner';
+import { useRouter } from 'next/navigation';
 
 interface VideoTutorial {
   id: number;
@@ -45,6 +46,7 @@ interface Article {
   category: string;
   author: string;
   authorAvatar: string | null;
+  institution: string | null;
   views: number;
   likes: number;
   thumbnailUrl: string | null;
@@ -52,6 +54,7 @@ interface Article {
 }
 
 export default function TutorialsPage() {
+  const router = useRouter();
   const [searchQuery, setSearchQuery] = useState('');
   
   // Videos state
@@ -181,17 +184,7 @@ export default function TutorialsPage() {
   };
 
   const handleArticleView = async (articleId: number) => {
-    try {
-      await fetch(`/api/tutorials/articles/${articleId}/view`, {
-        method: 'POST',
-      });
-      // Update local state
-      setArticles(prev => prev.map(a => 
-        a.id === articleId ? { ...a, views: a.views + 1 } : a
-      ));
-    } catch (error) {
-      console.error('Failed to track article view:', error);
-    }
+    router.push(`/tutorials/articles/${articleId}`);
   };
 
   return (
@@ -484,8 +477,14 @@ export default function TutorialsPage() {
             ) : (
               <div className="space-y-6">
                 {articles.map((article) => (
-                  <Card key={article.id} className="glass-surface border-cyan-500/30 hover:border-cyan-500 hover:glow-cyan transition-all duration-300 group">
-                    <CardHeader>
+                  <Card 
+                    key={article.id} 
+                    className="glass-surface border-cyan-500/30 hover:border-cyan-500 hover:glow-cyan transition-all duration-300 group relative overflow-hidden"
+                  >
+                    {/* Glowing border effect */}
+                    <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/0 via-cyan-500/20 to-cyan-500/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 animate-gradient-move" />
+                    
+                    <CardHeader className="relative z-10">
                       <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
                         <div className="flex-1">
                           <div className="flex gap-2 mb-3">
@@ -501,11 +500,29 @@ export default function TutorialsPage() {
                           <CardDescription className="text-base text-muted-foreground mb-4">
                             {article.excerpt}
                           </CardDescription>
+                          
+                          {/* Author and Institution Info Box with Glow */}
+                          <div className="glass-surface border border-violet-500/40 rounded-xl p-4 mb-4 group-hover:border-violet-500 group-hover:glow-violet transition-all duration-300">
+                            <div className="flex items-start gap-3">
+                              <div className="p-2 bg-gradient-violet rounded-lg glow-violet">
+                                <GraduationCap className="h-5 w-5 text-white" />
+                              </div>
+                              <div className="flex-1">
+                                <p className="text-white font-semibold mb-1 flex items-center gap-2">
+                                  {article.author}
+                                  <span className="w-1.5 h-1.5 rounded-full bg-violet-400 animate-pulse" />
+                                </p>
+                                {article.institution && (
+                                  <p className="text-sm text-violet-300 flex items-center gap-1.5">
+                                    <Building2 className="h-3.5 w-3.5" />
+                                    {article.institution}
+                                  </p>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                          
                           <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                            <p className="flex items-center gap-2">
-                              <span className="w-2 h-2 rounded-full bg-gradient-aqua" />
-                              {article.author}
-                            </p>
                             <div className="flex items-center gap-3">
                               <span className="flex items-center gap-1">
                                 <Users className="h-4 w-4" />
