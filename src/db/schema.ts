@@ -172,6 +172,7 @@ export const articles = sqliteTable('articles', {
   category: text('category').notNull(),
   author: text('author').notNull(),
   authorAvatar: text('author_avatar'),
+  institution: text('institution'),
   views: integer('views').notNull().default(0),
   likes: integer('likes').notNull().default(0),
   thumbnailUrl: text('thumbnail_url'),
