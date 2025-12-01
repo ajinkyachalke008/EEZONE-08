@@ -178,7 +178,7 @@ export default function AppsPage() {
   const FilterSidebar = () => (
     <div className="space-y-6">
       <div>
-        <h3 className="font-semibold text-lg mb-3">Pricing</h3>
+        <h3 className="font-semibold text-lg mb-3 text-white">Pricing</h3>
         <div className="space-y-2">
           <div className="flex items-center space-x-2">
             <Checkbox
@@ -186,7 +186,7 @@ export default function AppsPage() {
               checked={selectedPricing.includes('free')}
               onCheckedChange={() => toggleFilter(selectedPricing, setSelectedPricing, 'free')}
             />
-            <Label htmlFor="free" className="cursor-pointer">Free</Label>
+            <Label htmlFor="free" className="cursor-pointer text-[#B8A7E0]">Free</Label>
           </div>
           <div className="flex items-center space-x-2">
             <Checkbox
@@ -194,13 +194,13 @@ export default function AppsPage() {
               checked={selectedPricing.includes('pro')}
               onCheckedChange={() => toggleFilter(selectedPricing, setSelectedPricing, 'pro')}
             />
-            <Label htmlFor="pro" className="cursor-pointer">Pro</Label>
+            <Label htmlFor="pro" className="cursor-pointer text-[#B8A7E0]">Pro</Label>
           </div>
         </div>
       </div>
 
       <div>
-        <h3 className="font-semibold text-lg mb-3">Purpose</h3>
+        <h3 className="font-semibold text-lg mb-3 text-white">Purpose</h3>
         <div className="space-y-2">
           {purposes.map((purpose) => (
             <div key={purpose} className="flex items-center space-x-2">
@@ -209,14 +209,14 @@ export default function AppsPage() {
                 checked={selectedPurpose.includes(purpose)}
                 onCheckedChange={() => toggleFilter(selectedPurpose, setSelectedPurpose, purpose)}
               />
-              <Label htmlFor={purpose} className="cursor-pointer text-sm">{purpose}</Label>
+              <Label htmlFor={purpose} className="cursor-pointer text-sm text-[#B8A7E0]">{purpose}</Label>
             </div>
           ))}
         </div>
       </div>
 
       <div>
-        <h3 className="font-semibold text-lg mb-3">NEC Version</h3>
+        <h3 className="font-semibold text-lg mb-3 text-white">NEC Version</h3>
         <div className="space-y-2">
           {necVersions.map((version) => (
             <div key={version} className="flex items-center space-x-2">
@@ -225,19 +225,19 @@ export default function AppsPage() {
                 checked={selectedNEC.includes(version)}
                 onCheckedChange={() => toggleFilter(selectedNEC, setSelectedNEC, version)}
               />
-              <Label htmlFor={version} className="cursor-pointer">{version}</Label>
+              <Label htmlFor={version} className="cursor-pointer text-[#B8A7E0]">{version}</Label>
             </div>
           ))}
         </div>
       </div>
 
       <div>
-        <h3 className="font-semibold text-lg mb-3">Minimum Rating</h3>
+        <h3 className="font-semibold text-lg mb-3 text-white">Minimum Rating</h3>
         <Select value={minRating.toString()} onValueChange={(v) => setMinRating(Number(v))}>
-          <SelectTrigger>
+          <SelectTrigger className="glass-surface text-white border-white/20">
             <SelectValue />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent className="glass-surface border-white/20 text-white">
             <SelectItem value="0">All Ratings</SelectItem>
             <SelectItem value="4">4+ Stars</SelectItem>
             <SelectItem value="4.5">4.5+ Stars</SelectItem>
@@ -246,7 +246,7 @@ export default function AppsPage() {
         </Select>
       </div>
 
-      <Button variant="outline" onClick={clearFilters} className="w-full">
+      <Button variant="outline" onClick={clearFilters} className="w-full border-white/20 text-[#B8A7E0] hover:text-white hover:bg-white/10">
         Clear Filters
       </Button>
     </div>
