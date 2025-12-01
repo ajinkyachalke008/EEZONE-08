@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Calculator, Zap, TrendingDown, Activity, Download, RotateCcw, Radio, Gauge, Lightbulb, Timer, Cpu } from 'lucide-react';
+import { Calculator, Zap, TrendingDown, Activity, Download, RotateCcw, Radio, Gauge, Lightbulb, Timer, Cpu, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -9,6 +9,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
+import { motion } from 'framer-motion';
 
 export default function CalculatorsPage() {
   // Ohm's Law Calculator
@@ -436,45 +437,65 @@ export default function CalculatorsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8 px-4">
-      <div className="container mx-auto max-w-6xl">
+    <div className="min-h-screen gradient-depth">
+      {/* Ambient Background Orbs */}
+      <div className="absolute top-20 left-10 w-[500px] h-[500px] bg-[#9C4AFF] opacity-20 blur-[150px] rounded-full animate-float" />
+      <div className="absolute top-40 right-10 w-[400px] h-[400px] bg-[#FF6B00] opacity-20 blur-[150px] rounded-full animate-float" style={{ animationDelay: '2s' }} />
+      <div className="absolute bottom-20 left-1/2 w-[300px] h-[300px] bg-[#00E5FF] opacity-20 blur-[150px] rounded-full animate-float" style={{ animationDelay: '4s' }} />
+
+      <div className="container mx-auto max-w-6xl py-8 px-4 relative z-10">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold text-[#071428] mb-2">Calculators & Tools</h1>
-          <p className="text-gray-600">Professional electrical engineering calculators for everyday use</p>
-        </div>
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="mb-8"
+        >
+          <div className="flex items-center gap-3 mb-3">
+            <motion.div
+              animate={{ rotate: [0, 360] }}
+              transition={{ duration: 3, repeat: Infinity, ease: 'linear' }}
+            >
+              <Calculator className="h-10 w-10 text-[#FF6B00] glow-text-orange" />
+            </motion.div>
+            <h1 className="text-4xl md:text-5xl font-bold text-white glow-text-orange" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>
+              Calculators & Tools
+            </h1>
+          </div>
+          <p className="text-lg text-[#B8A7E0]">Professional electrical engineering calculators for everyday use</p>
+        </motion.div>
 
         <Tabs defaultValue="ohms-law" className="space-y-6" id="calculators">
-          <TabsList className="grid w-full grid-cols-2 lg:grid-cols-4 gap-2">
-            <TabsTrigger value="ohms-law">
+          <TabsList className="grid w-full grid-cols-2 lg:grid-cols-4 gap-2 glass-surface border border-white/10 p-2">
+            <TabsTrigger value="ohms-law" className="data-[state=active]:gradient-violet data-[state=active]:text-white text-[#B8A7E0]">
               <Zap className="h-4 w-4 mr-2" />
               Ohm's Law
             </TabsTrigger>
-            <TabsTrigger value="voltage-drop">
+            <TabsTrigger value="voltage-drop" className="data-[state=active]:gradient-fire data-[state=active]:text-white text-[#B8A7E0]">
               <TrendingDown className="h-4 w-4 mr-2" />
               Voltage Drop
             </TabsTrigger>
-            <TabsTrigger value="power-factor">
+            <TabsTrigger value="power-factor" className="data-[state=active]:gradient-aqua data-[state=active]:text-white text-[#B8A7E0]">
               <Activity className="h-4 w-4 mr-2" />
               Power Factor
             </TabsTrigger>
-            <TabsTrigger value="capacitor">
+            <TabsTrigger value="capacitor" className="data-[state=active]:gradient-violet data-[state=active]:text-white text-[#B8A7E0]">
               <Radio className="h-4 w-4 mr-2" />
               Capacitor
             </TabsTrigger>
-            <TabsTrigger value="inductor">
+            <TabsTrigger value="inductor" className="data-[state=active]:gradient-fire data-[state=active]:text-white text-[#B8A7E0]">
               <Gauge className="h-4 w-4 mr-2" />
               Inductor
             </TabsTrigger>
-            <TabsTrigger value="led-resistor">
+            <TabsTrigger value="led-resistor" className="data-[state=active]:gradient-aqua data-[state=active]:text-white text-[#B8A7E0]">
               <Lightbulb className="h-4 w-4 mr-2" />
               LED Resistor
             </TabsTrigger>
-            <TabsTrigger value="rc-time">
+            <TabsTrigger value="rc-time" className="data-[state=active]:gradient-violet data-[state=active]:text-white text-[#B8A7E0]">
               <Timer className="h-4 w-4 mr-2" />
               RC Time
             </TabsTrigger>
-            <TabsTrigger value="transformer">
+            <TabsTrigger value="transformer" className="data-[state=active]:gradient-fire data-[state=active]:text-white text-[#B8A7E0]">
               <Cpu className="h-4 w-4 mr-2" />
               Transformer
             </TabsTrigger>
@@ -482,935 +503,1018 @@ export default function CalculatorsPage() {
 
           {/* Ohm's Law Calculator */}
           <TabsContent value="ohms-law">
-            <Card>
-              <CardHeader>
-                <div className="flex items-start justify-between">
-                  <div>
-                    <CardTitle className="text-2xl flex items-center gap-2">
-                      <Zap className="h-6 w-6 text-[#00C2D1]" />
-                      Ohm's Law Calculator
-                    </CardTitle>
-                    <CardDescription className="mt-2">
-                      Calculate voltage, current, resistance, and power using Ohm's Law
-                    </CardDescription>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4 }}
+            >
+              <Card className="glass-surface border-white/10">
+                <CardHeader>
+                  <div className="flex items-start justify-between">
+                    <div>
+                      <CardTitle className="text-2xl flex items-center gap-2 text-white">
+                        <Zap className="h-6 w-6 text-[#9C4AFF]" />
+                        Ohm's Law Calculator
+                      </CardTitle>
+                      <CardDescription className="mt-2 text-[#B8A7E0]">
+                        Calculate voltage, current, resistance, and power using Ohm's Law
+                      </CardDescription>
+                    </div>
+                    <Badge className="gradient-violet text-white border-0">V = I × R</Badge>
                   </div>
-                  <Badge variant="secondary">V = I × R</Badge>
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-2">
-                    <Label htmlFor="voltage">Voltage (V)</Label>
-                    <div className="flex gap-2">
-                      <Input
-                        id="voltage"
-                        type="number"
-                        placeholder="Volts"
-                        value={ohmsVoltage}
-                        onChange={(e) => setOhmsVoltage(e.target.value)}
-                      />
-                      <Button
-                        variant="outline"
-                        size="icon"
-                        onClick={() => calculateOhmsLaw('voltage')}
-                        title="Calculate Voltage"
-                      >
-                        <Calculator className="h-4 w-4" />
-                      </Button>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-2">
+                      <Label htmlFor="voltage" className="text-white">Voltage (V)</Label>
+                      <div className="flex gap-2">
+                        <Input
+                          id="voltage"
+                          type="number"
+                          placeholder="Volts"
+                          value={ohmsVoltage}
+                          onChange={(e) => setOhmsVoltage(e.target.value)}
+                          className="glass-surface text-white border-white/20 placeholder:text-[#B8A7E0]"
+                        />
+                        <Button
+                          variant="outline"
+                          size="icon"
+                          onClick={() => calculateOhmsLaw('voltage')}
+                          title="Calculate Voltage"
+                          className="border-[#9C4AFF]/50 text-[#9C4AFF] hover:bg-[#9C4AFF]/20"
+                        >
+                          <Calculator className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="current" className="text-white">Current (I)</Label>
+                      <div className="flex gap-2">
+                        <Input
+                          id="current"
+                          type="number"
+                          placeholder="Amperes"
+                          value={ohmsCurrent}
+                          onChange={(e) => setOhmsCurrent(e.target.value)}
+                          className="glass-surface text-white border-white/20 placeholder:text-[#B8A7E0]"
+                        />
+                        <Button
+                          variant="outline"
+                          size="icon"
+                          onClick={() => calculateOhmsLaw('current')}
+                          title="Calculate Current"
+                          className="border-[#9C4AFF]/50 text-[#9C4AFF] hover:bg-[#9C4AFF]/20"
+                        >
+                          <Calculator className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="resistance" className="text-white">Resistance (R)</Label>
+                      <div className="flex gap-2">
+                        <Input
+                          id="resistance"
+                          type="number"
+                          placeholder="Ohms"
+                          value={ohmsResistance}
+                          onChange={(e) => setOhmsResistance(e.target.value)}
+                          className="glass-surface text-white border-white/20 placeholder:text-[#B8A7E0]"
+                        />
+                        <Button
+                          variant="outline"
+                          size="icon"
+                          onClick={() => calculateOhmsLaw('resistance')}
+                          title="Calculate Resistance"
+                          className="border-[#9C4AFF]/50 text-[#9C4AFF] hover:bg-[#9C4AFF]/20"
+                        >
+                          <Calculator className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="power" className="text-white">Power (P)</Label>
+                      <div className="flex gap-2">
+                        <Input
+                          id="power"
+                          type="number"
+                          placeholder="Watts"
+                          value={ohmsPower}
+                          onChange={(e) => setOhmsPower(e.target.value)}
+                          className="glass-surface text-white border-white/20 placeholder:text-[#B8A7E0]"
+                        />
+                        <Button
+                          variant="outline"
+                          size="icon"
+                          onClick={() => calculateOhmsLaw('power')}
+                          title="Calculate Power"
+                          className="border-[#9C4AFF]/50 text-[#9C4AFF] hover:bg-[#9C4AFF]/20"
+                        >
+                          <Calculator className="h-4 w-4" />
+                        </Button>
+                      </div>
                     </div>
                   </div>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="current">Current (I)</Label>
-                    <div className="flex gap-2">
-                      <Input
-                        id="current"
-                        type="number"
-                        placeholder="Amperes"
-                        value={ohmsCurrent}
-                        onChange={(e) => setOhmsCurrent(e.target.value)}
-                      />
-                      <Button
-                        variant="outline"
-                        size="icon"
-                        onClick={() => calculateOhmsLaw('current')}
-                        title="Calculate Current"
-                      >
-                        <Calculator className="h-4 w-4" />
-                      </Button>
-                    </div>
+                  <div className="glass-surface border border-[#9C4AFF]/30 p-4 rounded-lg">
+                    <h4 className="font-semibold mb-2 text-white flex items-center gap-2">
+                      <Sparkles className="h-4 w-4 text-[#9C4AFF]" />
+                      Formulas:
+                    </h4>
+                    <ul className="text-sm space-y-1 text-[#B8A7E0]">
+                      <li>• V = I × R (Voltage = Current × Resistance)</li>
+                      <li>• I = V ÷ R (Current = Voltage ÷ Resistance)</li>
+                      <li>• R = V ÷ I (Resistance = Voltage ÷ Current)</li>
+                      <li>• P = V × I (Power = Voltage × Current)</li>
+                    </ul>
                   </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="resistance">Resistance (R)</Label>
-                    <div className="flex gap-2">
-                      <Input
-                        id="resistance"
-                        type="number"
-                        placeholder="Ohms"
-                        value={ohmsResistance}
-                        onChange={(e) => setOhmsResistance(e.target.value)}
-                      />
-                      <Button
-                        variant="outline"
-                        size="icon"
-                        onClick={() => calculateOhmsLaw('resistance')}
-                        title="Calculate Resistance"
-                      >
-                        <Calculator className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="power">Power (P)</Label>
-                    <div className="flex gap-2">
-                      <Input
-                        id="power"
-                        type="number"
-                        placeholder="Watts"
-                        value={ohmsPower}
-                        onChange={(e) => setOhmsPower(e.target.value)}
-                      />
-                      <Button
-                        variant="outline"
-                        size="icon"
-                        onClick={() => calculateOhmsLaw('power')}
-                        title="Calculate Power"
-                      >
-                        <Calculator className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="bg-gray-100 p-4 rounded-lg">
-                  <h4 className="font-semibold mb-2">Formulas:</h4>
-                  <ul className="text-sm space-y-1 text-gray-700">
-                    <li>• V = I × R (Voltage = Current × Resistance)</li>
-                    <li>• I = V ÷ R (Current = Voltage ÷ Resistance)</li>
-                    <li>• R = V ÷ I (Resistance = Voltage ÷ Current)</li>
-                    <li>• P = V × I (Power = Voltage × Current)</li>
-                  </ul>
-                </div>
-              </CardContent>
-              <CardFooter className="flex gap-2">
-                <Button onClick={resetOhmsLaw} variant="outline">
-                  <RotateCcw className="h-4 w-4 mr-2" />
-                  Reset
-                </Button>
-                <Button
-                  onClick={() => exportResults('Ohms Law Calculator', {
-                    voltage: ohmsVoltage,
-                    current: ohmsCurrent,
-                    resistance: ohmsResistance,
-                    power: ohmsPower,
-                  })}
-                  className="bg-[#00C2D1] text-[#071428] hover:bg-[#00C2D1]/90"
-                >
-                  <Download className="h-4 w-4 mr-2" />
-                  Export Results
-                </Button>
-              </CardFooter>
-            </Card>
+                </CardContent>
+                <CardFooter className="flex gap-2">
+                  <Button onClick={resetOhmsLaw} variant="outline" className="border-white/20 text-[#B8A7E0] hover:text-white hover:bg-white/10">
+                    <RotateCcw className="h-4 w-4 mr-2" />
+                    Reset
+                  </Button>
+                  <Button
+                    onClick={() => exportResults('Ohms Law Calculator', {
+                      voltage: ohmsVoltage,
+                      current: ohmsCurrent,
+                      resistance: ohmsResistance,
+                      power: ohmsPower,
+                    })}
+                    className="gradient-violet text-white hover:shadow-glowViolet"
+                  >
+                    <Download className="h-4 w-4 mr-2" />
+                    Export Results
+                  </Button>
+                </CardFooter>
+              </Card>
+            </motion.div>
           </TabsContent>
 
           {/* Voltage Drop Calculator */}
           <TabsContent value="voltage-drop">
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-2xl flex items-center gap-2">
-                  <TrendingDown className="h-6 w-6 text-[#00C2D1]" />
-                  Voltage Drop Calculator
-                </CardTitle>
-                <CardDescription className="mt-2">
-                  Calculate voltage drop for copper wire conductors
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-2">
-                    <Label htmlFor="vd-current">Current (Amperes)</Label>
-                    <Input
-                      id="vd-current"
-                      type="number"
-                      placeholder="Amperes"
-                      value={vdCurrent}
-                      onChange={(e) => setVdCurrent(e.target.value)}
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="vd-length">One-Way Length (feet)</Label>
-                    <Input
-                      id="vd-length"
-                      type="number"
-                      placeholder="Feet"
-                      value={vdLength}
-                      onChange={(e) => setVdLength(e.target.value)}
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="vd-wire">Wire Size (AWG)</Label>
-                    <Select value={vdWireSize} onValueChange={setVdWireSize}>
-                      <SelectTrigger id="vd-wire">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="14">14 AWG</SelectItem>
-                        <SelectItem value="12">12 AWG</SelectItem>
-                        <SelectItem value="10">10 AWG</SelectItem>
-                        <SelectItem value="8">8 AWG</SelectItem>
-                        <SelectItem value="6">6 AWG</SelectItem>
-                        <SelectItem value="4">4 AWG</SelectItem>
-                        <SelectItem value="2">2 AWG</SelectItem>
-                        <SelectItem value="1">1 AWG</SelectItem>
-                        <SelectItem value="1/0">1/0 AWG</SelectItem>
-                        <SelectItem value="2/0">2/0 AWG</SelectItem>
-                        <SelectItem value="3/0">3/0 AWG</SelectItem>
-                        <SelectItem value="4/0">4/0 AWG</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="vd-phase">Phase</Label>
-                    <Select value={vdPhase} onValueChange={setVdPhase}>
-                      <SelectTrigger id="vd-phase">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="single">Single Phase</SelectItem>
-                        <SelectItem value="three">Three Phase</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="vd-voltage">System Voltage</Label>
-                    <Select value={vdVoltage} onValueChange={setVdVoltage}>
-                      <SelectTrigger id="vd-voltage">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="120">120V</SelectItem>
-                        <SelectItem value="208">208V</SelectItem>
-                        <SelectItem value="240">240V</SelectItem>
-                        <SelectItem value="277">277V</SelectItem>
-                        <SelectItem value="480">480V</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-
-                <Button onClick={calculateVoltageDrop} className="w-full bg-[#071428] hover:bg-[#071428]/90">
-                  Calculate Voltage Drop
-                </Button>
-
-                {voltageDropResult && (
-                  <div className="bg-[#071428] text-white p-6 rounded-lg space-y-3">
-                    <h4 className="font-semibold text-lg text-[#00C2D1]">Results:</h4>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                      <div>
-                        <p className="text-gray-400 text-sm">Voltage Drop</p>
-                        <p className="text-2xl font-bold">{voltageDropResult.drop}V</p>
-                      </div>
-                      <div>
-                        <p className="text-gray-400 text-sm">Percentage Drop</p>
-                        <p className="text-2xl font-bold">{voltageDropResult.percentage}%</p>
-                      </div>
-                      <div>
-                        <p className="text-gray-400 text-sm">End Voltage</p>
-                        <p className="text-2xl font-bold">{voltageDropResult.endVoltage}V</p>
-                      </div>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4 }}
+            >
+              <Card className="glass-surface border-white/10">
+                <CardHeader>
+                  <CardTitle className="text-2xl flex items-center gap-2 text-white">
+                    <TrendingDown className="h-6 w-6 text-[#FF6B00]" />
+                    Voltage Drop Calculator
+                  </CardTitle>
+                  <CardDescription className="mt-2 text-[#B8A7E0]">
+                    Calculate voltage drop for copper wire conductors
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-2">
+                      <Label htmlFor="vd-current" className="text-white">Current (Amperes)</Label>
+                      <Input
+                        id="vd-current"
+                        type="number"
+                        placeholder="Amperes"
+                        value={vdCurrent}
+                        onChange={(e) => setVdCurrent(e.target.value)}
+                        className="glass-surface text-white border-white/20 placeholder:text-[#B8A7E0]"
+                      />
                     </div>
-                    {voltageDropResult.percentage > 3 && (
-                      <div className="bg-red-500/20 border border-red-500 p-3 rounded">
-                        <p className="text-sm">⚠️ Warning: Voltage drop exceeds 3% NEC recommendation</p>
-                      </div>
-                    )}
+
+                    <div className="space-y-2">
+                      <Label htmlFor="vd-length" className="text-white">One-Way Length (feet)</Label>
+                      <Input
+                        id="vd-length"
+                        type="number"
+                        placeholder="Feet"
+                        value={vdLength}
+                        onChange={(e) => setVdLength(e.target.value)}
+                        className="glass-surface text-white border-white/20 placeholder:text-[#B8A7E0]"
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="vd-wire" className="text-white">Wire Size (AWG)</Label>
+                      <Select value={vdWireSize} onValueChange={setVdWireSize}>
+                        <SelectTrigger id="vd-wire" className="glass-surface text-white border-white/20">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="14">14 AWG</SelectItem>
+                          <SelectItem value="12">12 AWG</SelectItem>
+                          <SelectItem value="10">10 AWG</SelectItem>
+                          <SelectItem value="8">8 AWG</SelectItem>
+                          <SelectItem value="6">6 AWG</SelectItem>
+                          <SelectItem value="4">4 AWG</SelectItem>
+                          <SelectItem value="2">2 AWG</SelectItem>
+                          <SelectItem value="1">1 AWG</SelectItem>
+                          <SelectItem value="1/0">1/0 AWG</SelectItem>
+                          <SelectItem value="2/0">2/0 AWG</SelectItem>
+                          <SelectItem value="3/0">3/0 AWG</SelectItem>
+                          <SelectItem value="4/0">4/0 AWG</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="vd-phase" className="text-white">Phase</Label>
+                      <Select value={vdPhase} onValueChange={setVdPhase}>
+                        <SelectTrigger id="vd-phase" className="glass-surface text-white border-white/20">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="single">Single Phase</SelectItem>
+                          <SelectItem value="three">Three Phase</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="vd-voltage" className="text-white">System Voltage</Label>
+                      <Select value={vdVoltage} onValueChange={setVdVoltage}>
+                        <SelectTrigger id="vd-voltage" className="glass-surface text-white border-white/20">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="120">120V</SelectItem>
+                          <SelectItem value="208">208V</SelectItem>
+                          <SelectItem value="240">240V</SelectItem>
+                          <SelectItem value="277">277V</SelectItem>
+                          <SelectItem value="480">480V</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
                   </div>
-                )}
-              </CardContent>
-              <CardFooter className="flex gap-2">
-                <Button onClick={resetVoltageDrop} variant="outline">
-                  <RotateCcw className="h-4 w-4 mr-2" />
-                  Reset
-                </Button>
-                {voltageDropResult && (
-                  <Button
-                    onClick={() => exportResults('Voltage Drop Calculator', voltageDropResult)}
-                    className="bg-[#00C2D1] text-[#071428] hover:bg-[#00C2D1]/90"
-                  >
-                    <Download className="h-4 w-4 mr-2" />
-                    Export Results
+
+                  <Button onClick={calculateVoltageDrop} className="w-full bg-[#FF6B00] hover:bg-[#FF6B00]/90 text-white">
+                    Calculate Voltage Drop
                   </Button>
-                )}
-              </CardFooter>
-            </Card>
+
+                  {voltageDropResult && (
+                    <div className="glass-surface border border-[#FF6B00]/30 p-6 rounded-lg space-y-3">
+                      <h4 className="font-semibold text-lg text-[#9C4AFF]">Results:</h4>
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                          <p className="text-gray-400 text-sm">Voltage Drop</p>
+                          <p className="text-2xl font-bold">{voltageDropResult.drop}V</p>
+                        </div>
+                        <div>
+                          <p className="text-gray-400 text-sm">Percentage Drop</p>
+                          <p className="text-2xl font-bold">{voltageDropResult.percentage}%</p>
+                        </div>
+                        <div>
+                          <p className="text-gray-400 text-sm">End Voltage</p>
+                          <p className="text-2xl font-bold">{voltageDropResult.endVoltage}V</p>
+                        </div>
+                      </div>
+                      {voltageDropResult.percentage > 3 && (
+                        <div className="bg-red-500/20 border border-red-500 p-3 rounded">
+                          <p className="text-sm">⚠️ Warning: Voltage drop exceeds 3% NEC recommendation</p>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </CardContent>
+                <CardFooter className="flex gap-2">
+                  <Button onClick={resetVoltageDrop} variant="outline" className="border-white/20 text-[#B8A7E0] hover:text-white hover:bg-white/10">
+                    <RotateCcw className="h-4 w-4 mr-2" />
+                    Reset
+                  </Button>
+                  {voltageDropResult && (
+                    <Button
+                      onClick={() => exportResults('Voltage Drop Calculator', voltageDropResult)}
+                      className="gradient-fire text-white hover:shadow-glowFire"
+                    >
+                      <Download className="h-4 w-4 mr-2" />
+                      Export Results
+                    </Button>
+                  )}
+                </CardFooter>
+              </Card>
+            </motion.div>
           </TabsContent>
 
           {/* Power Factor Calculator */}
           <TabsContent value="power-factor">
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-2xl flex items-center gap-2">
-                  <Activity className="h-6 w-6 text-[#00C2D1]" />
-                  Power Factor Calculator
-                </CardTitle>
-                <CardDescription className="mt-2">
-                  Calculate power factor and power triangle values
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  <div className="space-y-2">
-                    <Label htmlFor="pf-real">Real Power (kW)</Label>
-                    <Input
-                      id="pf-real"
-                      type="number"
-                      placeholder="Kilowatts"
-                      value={pfRealPower}
-                      onChange={(e) => setPfRealPower(e.target.value)}
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="pf-apparent">Apparent Power (kVA)</Label>
-                    <Input
-                      id="pf-apparent"
-                      type="number"
-                      placeholder="Kilovolt-amperes"
-                      value={pfApparentPower}
-                      onChange={(e) => setPfApparentPower(e.target.value)}
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="pf-reactive">Reactive Power (kVAR)</Label>
-                    <Input
-                      id="pf-reactive"
-                      type="number"
-                      placeholder="Kilovolt-amperes reactive"
-                      value={pfReactivePower}
-                      onChange={(e) => setPfReactivePower(e.target.value)}
-                    />
-                  </div>
-                </div>
-
-                <div className="bg-gray-100 p-4 rounded-lg">
-                  <p className="text-sm text-gray-700">
-                    <strong>Note:</strong> Enter any two values to calculate the power factor and remaining values.
-                  </p>
-                </div>
-
-                <Button onClick={calculatePowerFactor} className="w-full bg-[#071428] hover:bg-[#071428]/90">
-                  Calculate Power Factor
-                </Button>
-
-                {powerFactorResult && (
-                  <div className="bg-[#071428] text-white p-6 rounded-lg space-y-4">
-                    <h4 className="font-semibold text-lg text-[#00C2D1]">Results:</h4>
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                      <div className="col-span-2 md:col-span-1">
-                        <p className="text-gray-400 text-sm">Power Factor</p>
-                        <p className="text-3xl font-bold">{powerFactorResult.powerFactor}</p>
-                        <p className="text-sm text-gray-400">({(powerFactorResult.powerFactor * 100).toFixed(1)}%)</p>
-                      </div>
-                      <div>
-                        <p className="text-gray-400 text-sm">Phase Angle</p>
-                        <p className="text-2xl font-bold">{powerFactorResult.angle}°</p>
-                      </div>
-                      <div>
-                        <p className="text-gray-400 text-sm">Real Power</p>
-                        <p className="text-2xl font-bold">{powerFactorResult.realPower} kW</p>
-                      </div>
-                      <div>
-                        <p className="text-gray-400 text-sm">Apparent Power</p>
-                        <p className="text-2xl font-bold">{powerFactorResult.apparentPower} kVA</p>
-                      </div>
-                      <div>
-                        <p className="text-gray-400 text-sm">Reactive Power</p>
-                        <p className="text-2xl font-bold">{powerFactorResult.reactivePower} kVAR</p>
-                      </div>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4 }}
+            >
+              <Card className="glass-surface border-white/10">
+                <CardHeader>
+                  <CardTitle className="text-2xl flex items-center gap-2 text-white">
+                    <Activity className="h-6 w-6 text-[#00E5FF]" />
+                    Power Factor Calculator
+                  </CardTitle>
+                  <CardDescription className="mt-2 text-[#B8A7E0]">
+                    Calculate power factor and power triangle values
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div className="space-y-2">
+                      <Label htmlFor="pf-real" className="text-white">Real Power (kW)</Label>
+                      <Input
+                        id="pf-real"
+                        type="number"
+                        placeholder="Kilowatts"
+                        value={pfRealPower}
+                        onChange={(e) => setPfRealPower(e.target.value)}
+                        className="glass-surface text-white border-white/20 placeholder:text-[#B8A7E0]"
+                      />
                     </div>
-                    {powerFactorResult.powerFactor < 0.85 && (
-                      <div className="bg-yellow-500/20 border border-yellow-500 p-3 rounded">
-                        <p className="text-sm">⚠️ Low power factor detected. Consider power factor correction.</p>
-                      </div>
-                    )}
+
+                    <div className="space-y-2">
+                      <Label htmlFor="pf-apparent" className="text-white">Apparent Power (kVA)</Label>
+                      <Input
+                        id="pf-apparent"
+                        type="number"
+                        placeholder="Kilovolt-amperes"
+                        value={pfApparentPower}
+                        onChange={(e) => setPfApparentPower(e.target.value)}
+                        className="glass-surface text-white border-white/20 placeholder:text-[#B8A7E0]"
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="pf-reactive" className="text-white">Reactive Power (kVAR)</Label>
+                      <Input
+                        id="pf-reactive"
+                        type="number"
+                        placeholder="Kilovolt-amperes reactive"
+                        value={pfReactivePower}
+                        onChange={(e) => setPfReactivePower(e.target.value)}
+                        className="glass-surface text-white border-white/20 placeholder:text-[#B8A7E0]"
+                      />
+                    </div>
                   </div>
-                )}
-              </CardContent>
-              <CardFooter className="flex gap-2">
-                <Button onClick={resetPowerFactor} variant="outline">
-                  <RotateCcw className="h-4 w-4 mr-2" />
-                  Reset
-                </Button>
-                {powerFactorResult && (
-                  <Button
-                    onClick={() => exportResults('Power Factor Calculator', powerFactorResult)}
-                    className="bg-[#00C2D1] text-[#071428] hover:bg-[#00C2D1]/90"
-                  >
-                    <Download className="h-4 w-4 mr-2" />
-                    Export Results
+
+                  <div className="glass-surface border border-[#00E5FF]/30 p-4 rounded-lg">
+                    <p className="text-sm text-[#B8A7E0]">
+                      <strong>Note:</strong> Enter any two values to calculate the power factor and remaining values.
+                    </p>
+                  </div>
+
+                  <Button onClick={calculatePowerFactor} className="w-full bg-[#00E5FF] hover:bg-[#00E5FF]/90 text-white">
+                    Calculate Power Factor
                   </Button>
-                )}
-              </CardFooter>
-            </Card>
+
+                  {powerFactorResult && (
+                    <div className="glass-surface border border-[#00E5FF]/30 p-6 rounded-lg space-y-4">
+                      <h4 className="font-semibold text-lg text-[#9C4AFF]">Results:</h4>
+                      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                        <div className="col-span-2 md:col-span-1">
+                          <p className="text-gray-400 text-sm">Power Factor</p>
+                          <p className="text-3xl font-bold">{powerFactorResult.powerFactor}</p>
+                          <p className="text-sm text-gray-400">({(powerFactorResult.powerFactor * 100).toFixed(1)}%)</p>
+                        </div>
+                        <div>
+                          <p className="text-gray-400 text-sm">Phase Angle</p>
+                          <p className="text-2xl font-bold">{powerFactorResult.angle}°</p>
+                        </div>
+                        <div>
+                          <p className="text-gray-400 text-sm">Real Power</p>
+                          <p className="text-2xl font-bold">{powerFactorResult.realPower} kW</p>
+                        </div>
+                        <div>
+                          <p className="text-gray-400 text-sm">Apparent Power</p>
+                          <p className="text-2xl font-bold">{powerFactorResult.apparentPower} kVA</p>
+                        </div>
+                        <div>
+                          <p className="text-gray-400 text-sm">Reactive Power</p>
+                          <p className="text-2xl font-bold">{powerFactorResult.reactivePower} kVAR</p>
+                        </div>
+                      </div>
+                      {powerFactorResult.powerFactor < 0.85 && (
+                        <div className="bg-yellow-500/20 border border-yellow-500 p-3 rounded">
+                          <p className="text-sm">⚠️ Low power factor detected. Consider power factor correction.</p>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </CardContent>
+                <CardFooter className="flex gap-2">
+                  <Button onClick={resetPowerFactor} variant="outline" className="border-white/20 text-[#B8A7E0] hover:text-white hover:bg-white/10">
+                    <RotateCcw className="h-4 w-4 mr-2" />
+                    Reset
+                  </Button>
+                  {powerFactorResult && (
+                    <Button
+                      onClick={() => exportResults('Power Factor Calculator', powerFactorResult)}
+                      className="gradient-aqua text-white hover:shadow-glowAqua"
+                    >
+                      <Download className="h-4 w-4 mr-2" />
+                      Export Results
+                    </Button>
+                  )}
+                </CardFooter>
+              </Card>
+            </motion.div>
           </TabsContent>
 
           {/* Capacitor Calculator */}
           <TabsContent value="capacitor">
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-2xl flex items-center gap-2">
-                  <Radio className="h-6 w-6 text-[#00C2D1]" />
-                  Capacitor Calculator
-                </CardTitle>
-                <CardDescription className="mt-2">
-                  Calculate capacitive reactance, charge, and energy storage
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-2">
-                    <Label htmlFor="cap-capacitance">Capacitance</Label>
-                    <div className="flex gap-2">
-                      <Input
-                        id="cap-capacitance"
-                        type="number"
-                        placeholder="Value"
-                        value={capCapacitance}
-                        onChange={(e) => setCapCapacitance(e.target.value)}
-                      />
-                      <Select value={capCapacitanceUnit} onValueChange={setCapCapacitanceUnit}>
-                        <SelectTrigger className="w-24">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="pF">pF</SelectItem>
-                          <SelectItem value="nF">nF</SelectItem>
-                          <SelectItem value="uF">µF</SelectItem>
-                          <SelectItem value="mF">mF</SelectItem>
-                          <SelectItem value="F">F</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="cap-frequency">Frequency (Hz)</Label>
-                    <Input
-                      id="cap-frequency"
-                      type="number"
-                      placeholder="Hertz"
-                      value={capFrequency}
-                      onChange={(e) => setCapFrequency(e.target.value)}
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="cap-voltage">Voltage (V) - Optional</Label>
-                    <Input
-                      id="cap-voltage"
-                      type="number"
-                      placeholder="Volts"
-                      value={capVoltage}
-                      onChange={(e) => setCapVoltage(e.target.value)}
-                    />
-                  </div>
-                </div>
-
-                <Button onClick={calculateCapacitor} className="w-full bg-[#071428] hover:bg-[#071428]/90">
-                  Calculate
-                </Button>
-
-                {capacitorResult && (
-                  <div className="bg-[#071428] text-white p-6 rounded-lg space-y-3">
-                    <h4 className="font-semibold text-lg text-[#00C2D1]">Results:</h4>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                      <div>
-                        <p className="text-gray-400 text-sm">Reactance (Xc)</p>
-                        <p className="text-2xl font-bold">{capacitorResult.reactance} Ω</p>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4 }}
+            >
+              <Card className="glass-surface border-white/10">
+                <CardHeader>
+                  <CardTitle className="text-2xl flex items-center gap-2 text-white">
+                    <Radio className="h-6 w-6 text-[#9C4AFF]" />
+                    Capacitor Calculator
+                  </CardTitle>
+                  <CardDescription className="mt-2 text-[#B8A7E0]">
+                    Calculate capacitive reactance, charge, and energy storage
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-2">
+                      <Label htmlFor="cap-capacitance" className="text-white">Capacitance</Label>
+                      <div className="flex gap-2">
+                        <Input
+                          id="cap-capacitance"
+                          type="number"
+                          placeholder="Value"
+                          value={capCapacitance}
+                          onChange={(e) => setCapCapacitance(e.target.value)}
+                          className="glass-surface text-white border-white/20 placeholder:text-[#B8A7E0]"
+                        />
+                        <Select value={capCapacitanceUnit} onValueChange={setCapCapacitanceUnit}>
+                          <SelectTrigger className="w-24 glass-surface text-white border-white/20">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="pF">pF</SelectItem>
+                            <SelectItem value="nF">nF</SelectItem>
+                            <SelectItem value="uF">µF</SelectItem>
+                            <SelectItem value="mF">mF</SelectItem>
+                            <SelectItem value="F">F</SelectItem>
+                          </SelectContent>
+                        </Select>
                       </div>
-                      {capacitorResult.charge > 0 && (
-                        <div>
-                          <p className="text-gray-400 text-sm">Charge (Q)</p>
-                          <p className="text-2xl font-bold">{capacitorResult.charge} µC</p>
-                        </div>
-                      )}
-                      {capacitorResult.energy > 0 && (
-                        <div>
-                          <p className="text-gray-400 text-sm">Energy (E)</p>
-                          <p className="text-2xl font-bold">{capacitorResult.energy} µJ</p>
-                        </div>
-                      )}
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="cap-frequency" className="text-white">Frequency (Hz)</Label>
+                      <Input
+                        id="cap-frequency"
+                        type="number"
+                        placeholder="Hertz"
+                        value={capFrequency}
+                        onChange={(e) => setCapFrequency(e.target.value)}
+                        className="glass-surface text-white border-white/20 placeholder:text-[#B8A7E0]"
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="cap-voltage" className="text-white">Voltage (V) - Optional</Label>
+                      <Input
+                        id="cap-voltage"
+                        type="number"
+                        placeholder="Volts"
+                        value={capVoltage}
+                        onChange={(e) => setCapVoltage(e.target.value)}
+                        className="glass-surface text-white border-white/20 placeholder:text-[#B8A7E0]"
+                      />
                     </div>
                   </div>
-                )}
-              </CardContent>
-              <CardFooter className="flex gap-2">
-                <Button onClick={resetCapacitor} variant="outline">
-                  <RotateCcw className="h-4 w-4 mr-2" />
-                  Reset
-                </Button>
-                {capacitorResult && (
-                  <Button
-                    onClick={() => exportResults('Capacitor Calculator', capacitorResult)}
-                    className="bg-[#00C2D1] text-[#071428] hover:bg-[#00C2D1]/90"
-                  >
-                    <Download className="h-4 w-4 mr-2" />
-                    Export Results
+
+                  <Button onClick={calculateCapacitor} className="w-full bg-[#9C4AFF] hover:bg-[#9C4AFF]/90 text-white">
+                    Calculate
                   </Button>
-                )}
-              </CardFooter>
-            </Card>
+
+                  {capacitorResult && (
+                    <div className="glass-surface border border-[#9C4AFF]/30 p-6 rounded-lg space-y-3">
+                      <h4 className="font-semibold text-lg text-[#9C4AFF]">Results:</h4>
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                          <p className="text-gray-400 text-sm">Reactance (Xc)</p>
+                          <p className="text-2xl font-bold">{capacitorResult.reactance} Ω</p>
+                        </div>
+                        {capacitorResult.charge > 0 && (
+                          <div>
+                            <p className="text-gray-400 text-sm">Charge (Q)</p>
+                            <p className="text-2xl font-bold">{capacitorResult.charge} µC</p>
+                          </div>
+                        )}
+                        {capacitorResult.energy > 0 && (
+                          <div>
+                            <p className="text-gray-400 text-sm">Energy (E)</p>
+                            <p className="text-2xl font-bold">{capacitorResult.energy} µJ</p>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </CardContent>
+                <CardFooter className="flex gap-2">
+                  <Button onClick={resetCapacitor} variant="outline" className="border-white/20 text-[#B8A7E0] hover:text-white hover:bg-white/10">
+                    <RotateCcw className="h-4 w-4 mr-2" />
+                    Reset
+                  </Button>
+                  {capacitorResult && (
+                    <Button
+                      onClick={() => exportResults('Capacitor Calculator', capacitorResult)}
+                      className="gradient-violet text-white hover:shadow-glowViolet"
+                    >
+                      <Download className="h-4 w-4 mr-2" />
+                      Export Results
+                    </Button>
+                  )}
+                </CardFooter>
+              </Card>
+            </motion.div>
           </TabsContent>
 
           {/* Inductor Calculator */}
           <TabsContent value="inductor">
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-2xl flex items-center gap-2">
-                  <Gauge className="h-6 w-6 text-[#00C2D1]" />
-                  Inductor Calculator
-                </CardTitle>
-                <CardDescription className="mt-2">
-                  Calculate inductive reactance and energy storage
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-2">
-                    <Label htmlFor="ind-inductance">Inductance</Label>
-                    <div className="flex gap-2">
-                      <Input
-                        id="ind-inductance"
-                        type="number"
-                        placeholder="Value"
-                        value={indInductance}
-                        onChange={(e) => setIndInductance(e.target.value)}
-                      />
-                      <Select value={indInductanceUnit} onValueChange={setIndInductanceUnit}>
-                        <SelectTrigger className="w-24">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="uH">µH</SelectItem>
-                          <SelectItem value="mH">mH</SelectItem>
-                          <SelectItem value="H">H</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="ind-frequency">Frequency (Hz)</Label>
-                    <Input
-                      id="ind-frequency"
-                      type="number"
-                      placeholder="Hertz"
-                      value={indFrequency}
-                      onChange={(e) => setIndFrequency(e.target.value)}
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="ind-current">Current (A) - Optional</Label>
-                    <Input
-                      id="ind-current"
-                      type="number"
-                      placeholder="Amperes"
-                      value={indCurrent}
-                      onChange={(e) => setIndCurrent(e.target.value)}
-                    />
-                  </div>
-                </div>
-
-                <Button onClick={calculateInductor} className="w-full bg-[#071428] hover:bg-[#071428]/90">
-                  Calculate
-                </Button>
-
-                {inductorResult && (
-                  <div className="bg-[#071428] text-white p-6 rounded-lg space-y-3">
-                    <h4 className="font-semibold text-lg text-[#00C2D1]">Results:</h4>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <p className="text-gray-400 text-sm">Reactance (XL)</p>
-                        <p className="text-2xl font-bold">{inductorResult.reactance} Ω</p>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4 }}
+            >
+              <Card className="glass-surface border-white/10">
+                <CardHeader>
+                  <CardTitle className="text-2xl flex items-center gap-2 text-white">
+                    <Gauge className="h-6 w-6 text-[#FF6B00]" />
+                    Inductor Calculator
+                  </CardTitle>
+                  <CardDescription className="mt-2 text-[#B8A7E0]">
+                    Calculate inductive reactance and energy storage
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-2">
+                      <Label htmlFor="ind-inductance" className="text-white">Inductance</Label>
+                      <div className="flex gap-2">
+                        <Input
+                          id="ind-inductance"
+                          type="number"
+                          placeholder="Value"
+                          value={indInductance}
+                          onChange={(e) => setIndInductance(e.target.value)}
+                          className="glass-surface text-white border-white/20 placeholder:text-[#B8A7E0]"
+                        />
+                        <Select value={indInductanceUnit} onValueChange={setIndInductanceUnit}>
+                          <SelectTrigger className="w-24 glass-surface text-white border-white/20">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="uH">µH</SelectItem>
+                            <SelectItem value="mH">mH</SelectItem>
+                            <SelectItem value="H">H</SelectItem>
+                          </SelectContent>
+                        </Select>
                       </div>
-                      {inductorResult.energy > 0 && (
-                        <div>
-                          <p className="text-gray-400 text-sm">Energy (E)</p>
-                          <p className="text-2xl font-bold">{inductorResult.energy} mJ</p>
-                        </div>
-                      )}
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="ind-frequency" className="text-white">Frequency (Hz)</Label>
+                      <Input
+                        id="ind-frequency"
+                        type="number"
+                        placeholder="Hertz"
+                        value={indFrequency}
+                        onChange={(e) => setIndFrequency(e.target.value)}
+                        className="glass-surface text-white border-white/20 placeholder:text-[#B8A7E0]"
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="ind-current" className="text-white">Current (A) - Optional</Label>
+                      <Input
+                        id="ind-current"
+                        type="number"
+                        placeholder="Amperes"
+                        value={indCurrent}
+                        onChange={(e) => setIndCurrent(e.target.value)}
+                        className="glass-surface text-white border-white/20 placeholder:text-[#B8A7E0]"
+                      />
                     </div>
                   </div>
-                )}
-              </CardContent>
-              <CardFooter className="flex gap-2">
-                <Button onClick={resetInductor} variant="outline">
-                  <RotateCcw className="h-4 w-4 mr-2" />
-                  Reset
-                </Button>
-                {inductorResult && (
-                  <Button
-                    onClick={() => exportResults('Inductor Calculator', inductorResult)}
-                    className="bg-[#00C2D1] text-[#071428] hover:bg-[#00C2D1]/90"
-                  >
-                    <Download className="h-4 w-4 mr-2" />
-                    Export Results
+
+                  <Button onClick={calculateInductor} className="w-full bg-[#FF6B00] hover:bg-[#FF6B00]/90 text-white">
+                    Calculate
                   </Button>
-                )}
-              </CardFooter>
-            </Card>
+
+                  {inductorResult && (
+                    <div className="glass-surface border border-[#FF6B00]/30 p-6 rounded-lg space-y-3">
+                      <h4 className="font-semibold text-lg text-[#9C4AFF]">Results:</h4>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <p className="text-gray-400 text-sm">Reactance (XL)</p>
+                          <p className="text-2xl font-bold">{inductorResult.reactance} Ω</p>
+                        </div>
+                        {inductorResult.energy > 0 && (
+                          <div>
+                            <p className="text-gray-400 text-sm">Energy (E)</p>
+                            <p className="text-2xl font-bold">{inductorResult.energy} mJ</p>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </CardContent>
+                <CardFooter className="flex gap-2">
+                  <Button onClick={resetInductor} variant="outline" className="border-white/20 text-[#B8A7E0] hover:text-white hover:bg-white/10">
+                    <RotateCcw className="h-4 w-4 mr-2" />
+                    Reset
+                  </Button>
+                  {inductorResult && (
+                    <Button
+                      onClick={() => exportResults('Inductor Calculator', inductorResult)}
+                      className="gradient-fire text-white hover:shadow-glowFire"
+                    >
+                      <Download className="h-4 w-4 mr-2" />
+                      Export Results
+                    </Button>
+                  )}
+                </CardFooter>
+              </Card>
+            </motion.div>
           </TabsContent>
 
           {/* LED Resistor Calculator */}
           <TabsContent value="led-resistor">
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-2xl flex items-center gap-2">
-                  <Lightbulb className="h-6 w-6 text-[#00C2D1]" />
-                  LED Current Limiting Resistor Calculator
-                </CardTitle>
-                <CardDescription className="mt-2">
-                  Calculate the required resistor for LED circuits
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-2">
-                    <Label htmlFor="led-source">Source Voltage (V)</Label>
-                    <Input
-                      id="led-source"
-                      type="number"
-                      placeholder="e.g., 9"
-                      value={ledSourceVoltage}
-                      onChange={(e) => setLedSourceVoltage(e.target.value)}
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="led-forward">LED Forward Voltage (V)</Label>
-                    <Input
-                      id="led-forward"
-                      type="number"
-                      placeholder="e.g., 2.1"
-                      value={ledForwardVoltage}
-                      onChange={(e) => setLedForwardVoltage(e.target.value)}
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="led-current">LED Forward Current (mA)</Label>
-                    <Input
-                      id="led-current"
-                      type="number"
-                      placeholder="e.g., 20"
-                      value={ledForwardCurrent}
-                      onChange={(e) => setLedForwardCurrent(e.target.value)}
-                    />
-                  </div>
-                </div>
-
-                <div className="bg-gray-100 p-4 rounded-lg">
-                  <h4 className="font-semibold mb-2">Typical LED Values:</h4>
-                  <ul className="text-sm space-y-1 text-gray-700">
-                    <li>• Red LED: 1.8-2.2V, 20mA</li>
-                    <li>• Green LED: 2.0-3.0V, 20mA</li>
-                    <li>• Blue/White LED: 3.0-3.6V, 20mA</li>
-                  </ul>
-                </div>
-
-                <Button onClick={calculateLEDResistor} className="w-full bg-[#071428] hover:bg-[#071428]/90">
-                  Calculate
-                </Button>
-
-                {ledResult && (
-                  <div className="bg-[#071428] text-white p-6 rounded-lg space-y-3">
-                    <h4 className="font-semibold text-lg text-[#00C2D1]">Results:</h4>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                      <div>
-                        <p className="text-gray-400 text-sm">Required Resistance</p>
-                        <p className="text-2xl font-bold">{ledResult.resistance} Ω</p>
-                      </div>
-                      <div>
-                        <p className="text-gray-400 text-sm">Standard Resistor</p>
-                        <p className="text-2xl font-bold">{ledResult.standardResistor} Ω</p>
-                      </div>
-                      <div>
-                        <p className="text-gray-400 text-sm">Power Dissipation</p>
-                        <p className="text-2xl font-bold">{ledResult.power} W</p>
-                      </div>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4 }}
+            >
+              <Card className="glass-surface border-white/10">
+                <CardHeader>
+                  <CardTitle className="text-2xl flex items-center gap-2 text-white">
+                    <Lightbulb className="h-6 w-6 text-[#00E5FF]" />
+                    LED Current Limiting Resistor Calculator
+                  </CardTitle>
+                  <CardDescription className="mt-2 text-[#B8A7E0]">
+                    Calculate the required resistor for LED circuits
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-2">
+                      <Label htmlFor="led-source" className="text-white">Source Voltage (V)</Label>
+                      <Input
+                        id="led-source"
+                        type="number"
+                        placeholder="e.g., 9"
+                        value={ledSourceVoltage}
+                        onChange={(e) => setLedSourceVoltage(e.target.value)}
+                        className="glass-surface text-white border-white/20 placeholder:text-[#B8A7E0]"
+                      />
                     </div>
-                    <div className="bg-[#00C2D1]/20 border border-[#00C2D1] p-3 rounded">
-                      <p className="text-sm">💡 Use a resistor rated for at least {(ledResult.power * 2).toFixed(2)}W for safety margin</p>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="led-forward" className="text-white">LED Forward Voltage (V)</Label>
+                      <Input
+                        id="led-forward"
+                        type="number"
+                        placeholder="e.g., 2.1"
+                        value={ledForwardVoltage}
+                        onChange={(e) => setLedForwardVoltage(e.target.value)}
+                        className="glass-surface text-white border-white/20 placeholder:text-[#B8A7E0]"
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="led-current" className="text-white">LED Forward Current (mA)</Label>
+                      <Input
+                        id="led-current"
+                        type="number"
+                        placeholder="e.g., 20"
+                        value={ledForwardCurrent}
+                        onChange={(e) => setLedForwardCurrent(e.target.value)}
+                        className="glass-surface text-white border-white/20 placeholder:text-[#B8A7E0]"
+                      />
                     </div>
                   </div>
-                )}
-              </CardContent>
-              <CardFooter className="flex gap-2">
-                <Button onClick={resetLEDResistor} variant="outline">
-                  <RotateCcw className="h-4 w-4 mr-2" />
-                  Reset
-                </Button>
-                {ledResult && (
-                  <Button
-                    onClick={() => exportResults('LED Resistor Calculator', ledResult)}
-                    className="bg-[#00C2D1] text-[#071428] hover:bg-[#00C2D1]/90"
-                  >
-                    <Download className="h-4 w-4 mr-2" />
-                    Export Results
+
+                  <div className="glass-surface border border-[#00E5FF]/30 p-4 rounded-lg">
+                    <h4 className="font-semibold mb-2 text-white flex items-center gap-2">
+                      <Sparkles className="h-4 w-4 text-[#00E5FF]" />
+                      Typical LED Values:
+                    </h4>
+                    <ul className="text-sm space-y-1 text-[#B8A7E0]">
+                      <li>• Red LED: 1.8-2.2V, 20mA</li>
+                      <li>• Green LED: 2.0-3.0V, 20mA</li>
+                      <li>• Blue/White LED: 3.0-3.6V, 20mA</li>
+                    </ul>
+                  </div>
+
+                  <Button onClick={calculateLEDResistor} className="w-full bg-[#00E5FF] hover:bg-[#00E5FF]/90 text-white">
+                    Calculate
                   </Button>
-                )}
-              </CardFooter>
-            </Card>
+
+                  {ledResult && (
+                    <div className="glass-surface border border-[#00E5FF]/30 p-6 rounded-lg space-y-3">
+                      <h4 className="font-semibold text-lg text-[#9C4AFF]">Results:</h4>
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                          <p className="text-gray-400 text-sm">Required Resistance</p>
+                          <p className="text-2xl font-bold">{ledResult.resistance} Ω</p>
+                        </div>
+                        <div>
+                          <p className="text-gray-400 text-sm">Standard Resistor</p>
+                          <p className="text-2xl font-bold">{ledResult.standardResistor} Ω</p>
+                        </div>
+                        <div>
+                          <p className="text-gray-400 text-sm">Power Dissipation</p>
+                          <p className="text-2xl font-bold">{ledResult.power} W</p>
+                        </div>
+                      </div>
+                      <div className="bg-[#00E5FF]/20 border border-[#00E5FF] p-3 rounded">
+                        <p className="text-sm">💡 Use a resistor rated for at least {(ledResult.power * 2).toFixed(2)}W for safety margin</p>
+                      </div>
+                    </div>
+                  )}
+                </CardContent>
+                <CardFooter className="flex gap-2">
+                  <Button onClick={resetLEDResistor} variant="outline" className="border-white/20 text-[#B8A7E0] hover:text-white hover:bg-white/10">
+                    <RotateCcw className="h-4 w-4 mr-2" />
+                    Reset
+                  </Button>
+                  {ledResult && (
+                    <Button
+                      onClick={() => exportResults('LED Resistor Calculator', ledResult)}
+                      className="gradient-aqua text-white hover:shadow-glowAqua"
+                    >
+                      <Download className="h-4 w-4 mr-2" />
+                      Export Results
+                    </Button>
+                  )}
+                </CardFooter>
+              </Card>
+            </motion.div>
           </TabsContent>
 
           {/* RC Time Constant Calculator */}
           <TabsContent value="rc-time">
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-2xl flex items-center gap-2">
-                  <Timer className="h-6 w-6 text-[#00C2D1]" />
-                  RC Time Constant Calculator
-                </CardTitle>
-                <CardDescription className="mt-2">
-                  Calculate time constant and charging times for RC circuits
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-2">
-                    <Label htmlFor="rc-resistance">Resistance</Label>
-                    <div className="flex gap-2">
-                      <Input
-                        id="rc-resistance"
-                        type="number"
-                        placeholder="Value"
-                        value={rcResistance}
-                        onChange={(e) => setRcResistance(e.target.value)}
-                      />
-                      <Select value={rcResistanceUnit} onValueChange={setRcResistanceUnit}>
-                        <SelectTrigger className="w-24">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="Ω">Ω</SelectItem>
-                          <SelectItem value="kΩ">kΩ</SelectItem>
-                          <SelectItem value="MΩ">MΩ</SelectItem>
-                        </SelectContent>
-                      </Select>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4 }}
+            >
+              <Card className="glass-surface border-white/10">
+                <CardHeader>
+                  <CardTitle className="text-2xl flex items-center gap-2 text-white">
+                    <Timer className="h-6 w-6 text-[#9C4AFF]" />
+                    RC Time Constant Calculator
+                  </CardTitle>
+                  <CardDescription className="mt-2 text-[#B8A7E0]">
+                    Calculate time constant and charging times for RC circuits
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-2">
+                      <Label htmlFor="rc-resistance" className="text-white">Resistance</Label>
+                      <div className="flex gap-2">
+                        <Input
+                          id="rc-resistance"
+                          type="number"
+                          placeholder="Value"
+                          value={rcResistance}
+                          onChange={(e) => setRcResistance(e.target.value)}
+                          className="glass-surface text-white border-white/20 placeholder:text-[#B8A7E0]"
+                        />
+                        <Select value={rcResistanceUnit} onValueChange={setRcResistanceUnit}>
+                          <SelectTrigger className="w-24 glass-surface text-white border-white/20">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="Ω">Ω</SelectItem>
+                            <SelectItem value="kΩ">kΩ</SelectItem>
+                            <SelectItem value="MΩ">MΩ</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="rc-capacitance" className="text-white">Capacitance</Label>
+                      <div className="flex gap-2">
+                        <Input
+                          id="rc-capacitance"
+                          type="number"
+                          placeholder="Value"
+                          value={rcCapacitance}
+                          onChange={(e) => setRcCapacitance(e.target.value)}
+                          className="glass-surface text-white border-white/20 placeholder:text-[#B8A7E0]"
+                        />
+                        <Select value={rcCapacitanceUnit} onValueChange={setRcCapacitanceUnit}>
+                          <SelectTrigger className="w-24 glass-surface text-white border-white/20">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="pF">pF</SelectItem>
+                            <SelectItem value="nF">nF</SelectItem>
+                            <SelectItem value="uF">µF</SelectItem>
+                            <SelectItem value="mF">mF</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
                     </div>
                   </div>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="rc-capacitance">Capacitance</Label>
-                    <div className="flex gap-2">
-                      <Input
-                        id="rc-capacitance"
-                        type="number"
-                        placeholder="Value"
-                        value={rcCapacitance}
-                        onChange={(e) => setRcCapacitance(e.target.value)}
-                      />
-                      <Select value={rcCapacitanceUnit} onValueChange={setRcCapacitanceUnit}>
-                        <SelectTrigger className="w-24">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="pF">pF</SelectItem>
-                          <SelectItem value="nF">nF</SelectItem>
-                          <SelectItem value="uF">µF</SelectItem>
-                          <SelectItem value="mF">mF</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
+                  <div className="glass-surface border border-[#9C4AFF]/30 p-4 rounded-lg">
+                    <p className="text-sm text-[#B8A7E0]">
+                      <strong>Time Constant (τ):</strong> The time it takes for the capacitor to charge to 63.2% of the supply voltage.
+                    </p>
                   </div>
-                </div>
 
-                <div className="bg-gray-100 p-4 rounded-lg">
-                  <p className="text-sm text-gray-700">
-                    <strong>Time Constant (τ):</strong> The time it takes for the capacitor to charge to 63.2% of the supply voltage.
-                  </p>
-                </div>
-
-                <Button onClick={calculateRCTimeConstant} className="w-full bg-[#071428] hover:bg-[#071428]/90">
-                  Calculate
-                </Button>
-
-                {rcResult && (
-                  <div className="bg-[#071428] text-white p-6 rounded-lg space-y-3">
-                    <h4 className="font-semibold text-lg text-[#00C2D1]">Results:</h4>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <p className="text-gray-400 text-sm">Time Constant (τ)</p>
-                        <p className="text-2xl font-bold">{rcResult.timeConstant} ms</p>
-                      </div>
-                      <div>
-                        <p className="text-gray-400 text-sm">63.2% Charge Time</p>
-                        <p className="text-2xl font-bold">{rcResult.charge63} ms</p>
-                      </div>
-                      <div>
-                        <p className="text-gray-400 text-sm">95% Charge Time (3τ)</p>
-                        <p className="text-2xl font-bold">{rcResult.charge95} ms</p>
-                      </div>
-                      <div>
-                        <p className="text-gray-400 text-sm">99% Charge Time (5τ)</p>
-                        <p className="text-2xl font-bold">{rcResult.charge99} ms</p>
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </CardContent>
-              <CardFooter className="flex gap-2">
-                <Button onClick={resetRCTimeConstant} variant="outline">
-                  <RotateCcw className="h-4 w-4 mr-2" />
-                  Reset
-                </Button>
-                {rcResult && (
-                  <Button
-                    onClick={() => exportResults('RC Time Constant Calculator', rcResult)}
-                    className="bg-[#00C2D1] text-[#071428] hover:bg-[#00C2D1]/90"
-                  >
-                    <Download className="h-4 w-4 mr-2" />
-                    Export Results
+                  <Button onClick={calculateRCTimeConstant} className="w-full bg-[#9C4AFF] hover:bg-[#9C4AFF]/90 text-white">
+                    Calculate
                   </Button>
-                )}
-              </CardFooter>
-            </Card>
+
+                  {rcResult && (
+                    <div className="glass-surface border border-[#9C4AFF]/30 p-6 rounded-lg space-y-3">
+                      <h4 className="font-semibold text-lg text-[#9C4AFF]">Results:</h4>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <p className="text-gray-400 text-sm">Time Constant (τ)</p>
+                          <p className="text-2xl font-bold">{rcResult.timeConstant} ms</p>
+                        </div>
+                        <div>
+                          <p className="text-gray-400 text-sm">63.2% Charge Time</p>
+                          <p className="text-2xl font-bold">{rcResult.charge63} ms</p>
+                        </div>
+                        <div>
+                          <p className="text-gray-400 text-sm">95% Charge Time (3τ)</p>
+                          <p className="text-2xl font-bold">{rcResult.charge95} ms</p>
+                        </div>
+                        <div>
+                          <p className="text-gray-400 text-sm">99% Charge Time (5τ)</p>
+                          <p className="text-2xl font-bold">{rcResult.charge99} ms</p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </CardContent>
+                <CardFooter className="flex gap-2">
+                  <Button onClick={resetRCTimeConstant} variant="outline" className="border-white/20 text-[#B8A7E0] hover:text-white hover:bg-white/10">
+                    <RotateCcw className="h-4 w-4 mr-2" />
+                    Reset
+                  </Button>
+                  {rcResult && (
+                    <Button
+                      onClick={() => exportResults('RC Time Constant Calculator', rcResult)}
+                      className="gradient-violet text-white hover:shadow-glowViolet"
+                    >
+                      <Download className="h-4 w-4 mr-2" />
+                      Export Results
+                    </Button>
+                  )}
+                </CardFooter>
+              </Card>
+            </motion.div>
           </TabsContent>
 
           {/* Transformer Calculator */}
           <TabsContent value="transformer">
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-2xl flex items-center gap-2">
-                  <Cpu className="h-6 w-6 text-[#00C2D1]" />
-                  Transformer Calculator
-                </CardTitle>
-                <CardDescription className="mt-2">
-                  Calculate transformer turns ratio, voltages, and currents
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-2">
-                    <Label htmlFor="trans-primary-v">Primary Voltage (V)</Label>
-                    <Input
-                      id="trans-primary-v"
-                      type="number"
-                      placeholder="Volts"
-                      value={transPrimaryVoltage}
-                      onChange={(e) => setTransPrimaryVoltage(e.target.value)}
-                    />
-                  </div>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4 }}
+            >
+              <Card className="glass-surface border-white/10">
+                <CardHeader>
+                  <CardTitle className="text-2xl flex items-center gap-2 text-white">
+                    <Cpu className="h-6 w-6 text-[#FF6B00]" />
+                    Transformer Calculator
+                  </CardTitle>
+                  <CardDescription className="mt-2 text-[#B8A7E0]">
+                    Calculate transformer turns ratio, voltages, and currents
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-2">
+                      <Label htmlFor="trans-primary-v" className="text-white">Primary Voltage (V)</Label>
+                      <Input
+                        id="trans-primary-v"
+                        type="number"
+                        placeholder="Volts"
+                        value={transPrimaryVoltage}
+                        onChange={(e) => setTransPrimaryVoltage(e.target.value)}
+                        className="glass-surface text-white border-white/20 placeholder:text-[#B8A7E0]"
+                      />
+                    </div>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="trans-secondary-v">Secondary Voltage (V)</Label>
-                    <Input
-                      id="trans-secondary-v"
-                      type="number"
-                      placeholder="Volts"
-                      value={transSecondaryVoltage}
-                      onChange={(e) => setTransSecondaryVoltage(e.target.value)}
-                    />
-                  </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="trans-secondary-v" className="text-white">Secondary Voltage (V)</Label>
+                      <Input
+                        id="trans-secondary-v"
+                        type="number"
+                        placeholder="Volts"
+                        value={transSecondaryVoltage}
+                        onChange={(e) => setTransSecondaryVoltage(e.target.value)}
+                        className="glass-surface text-white border-white/20 placeholder:text-[#B8A7E0]"
+                      />
+                    </div>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="trans-primary-turns">Primary Turns</Label>
-                    <Input
-                      id="trans-primary-turns"
-                      type="number"
-                      placeholder="Number of turns"
-                      value={transPrimaryTurns}
-                      onChange={(e) => setTransPrimaryTurns(e.target.value)}
-                    />
-                  </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="trans-primary-turns" className="text-white">Primary Turns</Label>
+                      <Input
+                        id="trans-primary-turns"
+                        type="number"
+                        placeholder="Number of turns"
+                        value={transPrimaryTurns}
+                        onChange={(e) => setTransPrimaryTurns(e.target.value)}
+                        className="glass-surface text-white border-white/20 placeholder:text-[#B8A7E0]"
+                      />
+                    </div>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="trans-secondary-turns">Secondary Turns</Label>
-                    <Input
-                      id="trans-secondary-turns"
-                      type="number"
-                      placeholder="Number of turns"
-                      value={transSecondaryTurns}
-                      onChange={(e) => setTransSecondaryTurns(e.target.value)}
-                    />
-                  </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="trans-secondary-turns" className="text-white">Secondary Turns</Label>
+                      <Input
+                        id="trans-secondary-turns"
+                        type="number"
+                        placeholder="Number of turns"
+                        value={transSecondaryTurns}
+                        onChange={(e) => setTransSecondaryTurns(e.target.value)}
+                        className="glass-surface text-white border-white/20 placeholder:text-[#B8A7E0]"
+                      />
+                    </div>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="trans-power">Power Rating (VA)</Label>
-                    <Input
-                      id="trans-power"
-                      type="number"
-                      placeholder="Volt-Amperes"
-                      value={transPower}
-                      onChange={(e) => setTransPower(e.target.value)}
-                    />
-                  </div>
-                </div>
-
-                <div className="bg-gray-100 p-4 rounded-lg">
-                  <p className="text-sm text-gray-700">
-                    <strong>Note:</strong> Enter either voltages OR turns (or both) to calculate the turns ratio.
-                  </p>
-                </div>
-
-                <Button onClick={calculateTransformer} className="w-full bg-[#071428] hover:bg-[#071428]/90">
-                  Calculate
-                </Button>
-
-                {transformerResult && (
-                  <div className="bg-[#071428] text-white p-6 rounded-lg space-y-3">
-                    <h4 className="font-semibold text-lg text-[#00C2D1]">Results:</h4>
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                      <div>
-                        <p className="text-gray-400 text-sm">Turns Ratio</p>
-                        <p className="text-2xl font-bold">{transformerResult.turnsRatio.toFixed(2)}:1</p>
-                      </div>
-                      {transformerResult.voltage > 0 && (
-                        <div>
-                          <p className="text-gray-400 text-sm">Secondary Voltage</p>
-                          <p className="text-2xl font-bold">{transformerResult.voltage} V</p>
-                        </div>
-                      )}
-                      {transformerResult.primaryCurrent > 0 && (
-                        <div>
-                          <p className="text-gray-400 text-sm">Primary Current</p>
-                          <p className="text-2xl font-bold">{transformerResult.primaryCurrent} A</p>
-                        </div>
-                      )}
-                      {transformerResult.secondaryCurrent > 0 && (
-                        <div>
-                          <p className="text-gray-400 text-sm">Secondary Current</p>
-                          <p className="text-2xl font-bold">{transformerResult.secondaryCurrent} A</p>
-                        </div>
-                      )}
+                    <div className="space-y-2">
+                      <Label htmlFor="trans-power" className="text-white">Power Rating (VA)</Label>
+                      <Input
+                        id="trans-power"
+                        type="number"
+                        placeholder="Volt-Amperes"
+                        value={transPower}
+                        onChange={(e) => setTransPower(e.target.value)}
+                        className="glass-surface text-white border-white/20 placeholder:text-[#B8A7E0]"
+                      />
                     </div>
                   </div>
-                )}
-              </CardContent>
-              <CardFooter className="flex gap-2">
-                <Button onClick={resetTransformer} variant="outline">
-                  <RotateCcw className="h-4 w-4 mr-2" />
-                  Reset
-                </Button>
-                {transformerResult && (
-                  <Button
-                    onClick={() => exportResults('Transformer Calculator', transformerResult)}
-                    className="bg-[#00C2D1] text-[#071428] hover:bg-[#00C2D1]/90"
-                  >
-                    <Download className="h-4 w-4 mr-2" />
-                    Export Results
+
+                  <div className="glass-surface border border-[#FF6B00]/30 p-4 rounded-lg">
+                    <p className="text-sm text-[#B8A7E0]">
+                      <strong>Note:</strong> Enter either voltages OR turns (or both) to calculate the turns ratio.
+                    </p>
+                  </div>
+
+                  <Button onClick={calculateTransformer} className="w-full bg-[#FF6B00] hover:bg-[#FF6B00]/90 text-white">
+                    Calculate
                   </Button>
-                )}
-              </CardFooter>
-            </Card>
+
+                  {transformerResult && (
+                    <div className="glass-surface border border-[#FF6B00]/30 p-6 rounded-lg space-y-3">
+                      <h4 className="font-semibold text-lg text-[#9C4AFF]">Results:</h4>
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <div>
+                          <p className="text-gray-400 text-sm">Turns Ratio</p>
+                          <p className="text-2xl font-bold">{transformerResult.turnsRatio.toFixed(2)}:1</p>
+                        </div>
+                        {transformerResult.voltage > 0 && (
+                          <div>
+                            <p className="text-gray-400 text-sm">Secondary Voltage</p>
+                            <p className="text-2xl font-bold">{transformerResult.voltage} V</p>
+                          </div>
+                        )}
+                        {transformerResult.primaryCurrent > 0 && (
+                          <div>
+                            <p className="text-gray-400 text-sm">Primary Current</p>
+                            <p className="text-2xl font-bold">{transformerResult.primaryCurrent} A</p>
+                          </div>
+                        )}
+                        {transformerResult.secondaryCurrent > 0 && (
+                          <div>
+                            <p className="text-gray-400 text-sm">Secondary Current</p>
+                            <p className="text-2xl font-bold">{transformerResult.secondaryCurrent} A</p>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </CardContent>
+                <CardFooter className="flex gap-2">
+                  <Button onClick={resetTransformer} variant="outline" className="border-white/20 text-[#B8A7E0] hover:text-white hover:bg-white/10">
+                    <RotateCcw className="h-4 w-4 mr-2" />
+                    Reset
+                  </Button>
+                  {transformerResult && (
+                    <Button
+                      onClick={() => exportResults('Transformer Calculator', transformerResult)}
+                      className="gradient-fire text-white hover:shadow-glowFire"
+                    >
+                      <Download className="h-4 w-4 mr-2" />
+                      Export Results
+                    </Button>
+                  )}
+                </CardFooter>
+              </Card>
+            </motion.div>
           </TabsContent>
         </Tabs>
       </div>
