@@ -24,6 +24,7 @@ const featuredApps = [
     category: 'Design',
     isPro: true,
     image: 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=400&h=300&fit=crop',
+    targetRoles: ['professional', 'student'] as Role[],
   },
   {
     id: 2,
@@ -34,6 +35,7 @@ const featuredApps = [
     category: 'Reference',
     isPro: false,
     image: 'https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?w=400&h=300&fit=crop',
+    targetRoles: ['professional', 'technician'] as Role[],
   },
   {
     id: 3,
@@ -44,6 +46,7 @@ const featuredApps = [
     category: 'Calculator',
     isPro: false,
     image: 'https://images.unsplash.com/photo-1635070041078-e363dbe005cb?w=400&h=300&fit=crop',
+    targetRoles: ['professional', 'technician', 'student'] as Role[],
   },
   {
     id: 4,
@@ -54,14 +57,39 @@ const featuredApps = [
     category: 'Analysis',
     isPro: true,
     image: 'https://images.unsplash.com/photo-1581092160562-40aa08e78837?w=400&h=300&fit=crop',
+    targetRoles: ['professional'] as Role[],
+  },
+  {
+    id: 5,
+    name: 'Basic Electronics Tutor',
+    description: 'Interactive lessons for beginners',
+    rating: 4.9,
+    reviews: 4521,
+    category: 'Learning',
+    isPro: false,
+    image: 'https://images.unsplash.com/photo-1581092918056-0c4c3acd3789?w=400&h=300&fit=crop',
+    targetRoles: ['student'] as Role[],
+  },
+  {
+    id: 6,
+    name: 'Field Service Toolkit',
+    description: 'Essential tools for on-site electrical work',
+    rating: 4.7,
+    reviews: 1234,
+    category: 'Tools',
+    isPro: false,
+    image: 'https://images.unsplash.com/photo-1581092160562-40aa08e78837?w=400&h=300&fit=crop',
+    targetRoles: ['technician'] as Role[],
   },
 ];
 
 const quickTools = [
-  { icon: Calculator, name: 'Ohm\'s Law', href: '/calculators#ohms-law' },
-  { icon: Zap, name: 'Voltage Drop', href: '/calculators#voltage-drop' },
-  { icon: Cpu, name: 'Power Factor', href: '/calculators#power-factor' },
-  { icon: BookOpen, name: 'Tutorials', href: '/tutorials' },
+  { icon: Calculator, name: 'Ohm\'s Law', href: '/calculators#ohms-law', targetRoles: ['professional', 'student', 'technician'] as Role[] },
+  { icon: Zap, name: 'Voltage Drop', href: '/calculators#voltage-drop', targetRoles: ['professional', 'technician'] as Role[] },
+  { icon: Cpu, name: 'Power Factor', href: '/calculators#power-factor', targetRoles: ['professional', 'technician'] as Role[] },
+  { icon: BookOpen, name: 'Tutorials', href: '/tutorials', targetRoles: ['student', 'professional'] as Role[] },
+  { icon: Wrench, name: 'Field Guide', href: '/tools/quick-utilities', targetRoles: ['technician'] as Role[] },
+  { icon: GraduationCap, name: 'Learn Basics', href: '/tutorials', targetRoles: ['student'] as Role[] },
 ];
 
 const toolCategories = [
@@ -72,6 +100,7 @@ const toolCategories = [
     href: '/tools/power-systems',
     icon: Zap,
     image: 'https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/project-uploads/e24d0c9e-e4fc-4077-96b8-bf644fe969e3/generated_images/professional-electrical-power-systems-da-d3d6b005-20251026042843.jpg',
+    targetRoles: ['professional', 'technician'] as Role[],
   },
   {
     id: 'motor-drives',
@@ -80,6 +109,7 @@ const toolCategories = [
     href: '/tools/motor-drives',
     icon: Settings,
     image: 'https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/project-uploads/e24d0c9e-e4fc-4077-96b8-bf644fe969e3/generated_images/industrial-motor-and-drive-systems-with--51cf91fa-20251026042846.jpg',
+    targetRoles: ['professional', 'technician'] as Role[],
   },
   {
     id: 'lighting-energy',
@@ -88,6 +118,7 @@ const toolCategories = [
     href: '/tools/lighting-energy',
     icon: Lightbulb,
     image: 'https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/project-uploads/e24d0c9e-e4fc-4077-96b8-bf644fe969e3/generated_images/modern-lighting-design-and-solar-energy--d5951729-20251026042847.jpg',
+    targetRoles: ['professional', 'student'] as Role[],
   },
   {
     id: 'circuit-simulator',
@@ -96,6 +127,7 @@ const toolCategories = [
     href: '/tools/circuit-simulator',
     icon: CircuitBoard,
     image: 'https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/project-uploads/e24d0c9e-e4fc-4077-96b8-bf644fe969e3/generated_images/interactive-circuit-simulation-interface-cf8d5da5-20251026042847.jpg',
+    targetRoles: ['professional', 'student'] as Role[],
   },
   {
     id: 'schematic',
@@ -104,6 +136,7 @@ const toolCategories = [
     href: '/tools/schematic-wiring',
     icon: FileText,
     image: 'https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/project-uploads/e24d0c9e-e4fc-4077-96b8-bf644fe969e3/generated_images/electrical-schematic-editor-and-wiring-d-edc888a6-20251026042846.jpg',
+    targetRoles: ['professional', 'technician'] as Role[],
   },
 ];
 
@@ -172,35 +205,82 @@ export default function Home() {
     },
   ];
 
-  // Filter content based on search query
+  // Role-based filtering
+  const roleFilteredApps = useMemo(() => {
+    if (!selectedRole) return featuredApps;
+    return featuredApps.filter(app => app.targetRoles.includes(selectedRole));
+  }, [selectedRole]);
+
+  const roleFilteredTools = useMemo(() => {
+    if (!selectedRole) return toolCategories;
+    return toolCategories.filter(tool => tool.targetRoles.includes(selectedRole));
+  }, [selectedRole]);
+
+  const roleFilteredQuickTools = useMemo(() => {
+    if (!selectedRole) return quickTools;
+    return quickTools.filter(tool => tool.targetRoles.includes(selectedRole));
+  }, [selectedRole]);
+
+  // Search filtering (applied on top of role filtering)
   const filteredApps = useMemo(() => {
-    if (!searchQuery) return featuredApps;
+    const baseApps = roleFilteredApps;
+    if (!searchQuery) return baseApps;
     const query = searchQuery.toLowerCase();
-    return featuredApps.filter(
+    return baseApps.filter(
       (app) =>
         app.name.toLowerCase().includes(query) ||
         app.description.toLowerCase().includes(query) ||
         app.category.toLowerCase().includes(query)
     );
-  }, [searchQuery]);
+  }, [searchQuery, roleFilteredApps]);
 
   const filteredTools = useMemo(() => {
-    if (!searchQuery) return toolCategories;
+    const baseTools = roleFilteredTools;
+    if (!searchQuery) return baseTools;
     const query = searchQuery.toLowerCase();
-    return toolCategories.filter(
+    return baseTools.filter(
       (tool) =>
         tool.title.toLowerCase().includes(query) ||
         tool.description.toLowerCase().includes(query)
     );
-  }, [searchQuery]);
+  }, [searchQuery, roleFilteredTools]);
 
   const filteredQuickTools = useMemo(() => {
-    if (!searchQuery) return quickTools;
+    const baseQuickTools = roleFilteredQuickTools;
+    if (!searchQuery) return baseQuickTools;
     const query = searchQuery.toLowerCase();
-    return quickTools.filter((tool) =>
+    return baseQuickTools.filter((tool) =>
       tool.name.toLowerCase().includes(query)
     );
-  }, [searchQuery]);
+  }, [searchQuery, roleFilteredQuickTools]);
+
+  // Role-specific welcome messages
+  const getRoleMessage = () => {
+    switch (selectedRole) {
+      case 'professional':
+        return {
+          title: 'Professional Engineering Tools',
+          subtitle: 'Advanced analysis, design tools, and compliance resources for licensed electrical engineers'
+        };
+      case 'student':
+        return {
+          title: 'Learn Electrical Engineering',
+          subtitle: 'Interactive tutorials, simulators, and practice tools to master EE fundamentals'
+        };
+      case 'technician':
+        return {
+          title: 'Field-Ready Tools',
+          subtitle: 'Practical calculators, code references, and diagnostic tools for on-site work'
+        };
+      default:
+        return {
+          title: 'Your Complete Electrical & Electronics Platform',
+          subtitle: 'Access professional tools, calculators, tutorials, and resources designed for EEE professionals, students, and technicians.'
+        };
+    }
+  };
+
+  const roleMessage = getRoleMessage();
 
   const hasSearchResults = searchQuery && (filteredApps.length > 0 || filteredTools.length > 0 || filteredQuickTools.length > 0);
   const hasNoResults = searchQuery && filteredApps.length === 0 && filteredTools.length === 0 && filteredQuickTools.length === 0;
@@ -216,9 +296,16 @@ export default function Home() {
         <section className="glass-surface py-8 px-4 border-b border-white/10">
           <div className="container mx-auto max-w-6xl">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-2xl font-bold text-white glow-text-violet">
-                Search Results for "{searchQuery}"
-              </h2>
+              <div>
+                <h2 className="text-2xl font-bold text-white glow-text-violet">
+                  Search Results for "{searchQuery}"
+                </h2>
+                {selectedRole && (
+                  <p className="text-sm text-[#B8A7E0] mt-1">
+                    Filtered for: <span className="font-semibold capitalize">{selectedRole}</span>
+                  </p>
+                )}
+              </div>
               <Button
                 variant="ghost"
                 onClick={() => setSearchQuery('')}
@@ -242,15 +329,31 @@ export default function Home() {
             <h2 className="text-2xl font-bold text-white mb-2">
               No results found for "{searchQuery}"
             </h2>
+            {selectedRole && (
+              <p className="text-[#B8A7E0] mb-4">
+                in <span className="font-semibold capitalize">{selectedRole}</span> content
+              </p>
+            )}
             <p className="text-[#B8A7E0] mb-6">
               Try searching with different keywords or browse our categories below
             </p>
-            <Button
-              onClick={() => setSearchQuery('')}
-              className="gradient-fire text-white hover:shadow-glowOrange"
-            >
-              Clear Search
-            </Button>
+            <div className="flex gap-3 justify-center">
+              <Button
+                onClick={() => setSearchQuery('')}
+                className="gradient-fire text-white hover:shadow-glowOrange"
+              >
+                Clear Search
+              </Button>
+              {selectedRole && (
+                <Button
+                  onClick={() => setSelectedRole(null)}
+                  variant="outline"
+                  className="border-white/20 text-white hover:bg-white/10"
+                >
+                  Show All Roles
+                </Button>
+              )}
+            </div>
           </div>
         </section>
       )}
@@ -272,7 +375,9 @@ export default function Home() {
                 className="text-4xl md:text-6xl font-bold leading-tight text-white"
                 style={{ fontFamily: 'Space Grotesk, sans-serif' }}
               >
-                Your Complete <span className="gradient-text-violet glow-text-violet">Electrical & Electronics</span> Platform
+                {selectedRole ? roleMessage.title : (
+                  <>Your Complete <span className="gradient-text-violet glow-text-violet">Electrical & Electronics</span> Platform</>
+                )}
               </motion.h1>
               <motion.p 
                 initial={{ opacity: 0, y: 20 }}
@@ -280,7 +385,7 @@ export default function Home() {
                 transition={{ duration: 0.6, delay: 0.2 }}
                 className="text-lg md:text-xl text-[#B8A7E0] max-w-3xl mx-auto"
               >
-                Access professional tools, calculators, tutorials, and resources designed for EEE professionals, students, and technicians.
+                {roleMessage.subtitle}
               </motion.p>
 
               {/* Search Bar */}
@@ -296,7 +401,7 @@ export default function Home() {
                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#B8A7E0] h-5 w-5" />
                     <Input
                       type="text"
-                      placeholder="Search apps, calculators, tutorials..."
+                      placeholder={selectedRole ? `Search ${selectedRole} resources...` : "Search apps, calculators, tutorials..."}
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
                       className="pl-10 h-12 glass-surface backdrop-blur-glass text-white border-white/20 focus:border-[#9C4AFF] focus:ring-[#9C4AFF] placeholder:text-[#B8A7E0]"
@@ -336,7 +441,7 @@ export default function Home() {
                             ? 'gradient-fire border-[#FF6B00] shadow-glowOrange'
                             : 'glass-surface border-white/20 hover:border-[#9C4AFF] hover:shadow-glowViolet'
                         }`}
-                        onClick={() => setSelectedRole(role.type)}
+                        onClick={() => setSelectedRole(isSelected ? null : role.type)}
                       >
                         <CardHeader>
                           <Icon className={`h-10 w-10 mb-2 ${isSelected ? 'text-white' : 'text-[#9C4AFF]'}`} />
@@ -352,6 +457,27 @@ export default function Home() {
                   );
                 })}
               </motion.div>
+
+              {/* Show active filter badge */}
+              {selectedRole && (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  className="flex items-center justify-center gap-2 mt-6"
+                >
+                  <Badge className="gradient-violet text-white text-base px-4 py-2">
+                    Showing content for: {selectedRole}
+                  </Badge>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setSelectedRole(null)}
+                    className="text-[#B8A7E0] hover:text-white"
+                  >
+                    Clear filter
+                  </Button>
+                </motion.div>
+              )}
             </div>
           </div>
         </section>
