@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Search, Star, Filter, X } from 'lucide-react';
+import { Search, Star, Filter, X, Sparkles, Zap } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -11,6 +11,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
+import { motion } from 'framer-motion';
 
 const apps = [
   {
@@ -252,31 +253,56 @@ export default function AppsPage() {
   );
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8 px-4">
-      <div className="container mx-auto max-w-7xl">
+    <div className="min-h-screen gradient-depth">
+      {/* Ambient Background Orbs */}
+      <div className="absolute top-20 left-10 w-[500px] h-[500px] bg-[#9C4AFF] opacity-20 blur-[150px] rounded-full animate-float" />
+      <div className="absolute top-40 right-10 w-[400px] h-[400px] bg-[#FF6B00] opacity-20 blur-[150px] rounded-full animate-float" style={{ animationDelay: '2s' }} />
+      <div className="absolute bottom-20 left-1/2 w-[300px] h-[300px] bg-[#00E5FF] opacity-20 blur-[150px] rounded-full animate-float" style={{ animationDelay: '4s' }} />
+
+      <div className="container mx-auto max-w-7xl py-8 px-4 relative z-10">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold text-[#071428] mb-2">Apps Library</h1>
-          <p className="text-gray-600">Discover professional electrical engineering applications</p>
-        </div>
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="mb-8"
+        >
+          <div className="flex items-center gap-3 mb-3">
+            <motion.div
+              animate={{ rotate: [0, 360] }}
+              transition={{ duration: 3, repeat: Infinity, ease: 'linear' }}
+            >
+              <Sparkles className="h-10 w-10 text-[#9C4AFF] glow-text-violet" />
+            </motion.div>
+            <h1 className="text-4xl md:text-5xl font-bold text-white glow-text-violet" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>
+              Apps Library
+            </h1>
+          </div>
+          <p className="text-lg text-[#B8A7E0]">Discover professional electrical engineering applications</p>
+        </motion.div>
 
         {/* Search and Sort */}
-        <div className="flex flex-col md:flex-row gap-4 mb-6">
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+          className="flex flex-col md:flex-row gap-4 mb-6"
+        >
           <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#B8A7E0] h-5 w-5" />
             <Input
               type="text"
               placeholder="Search apps..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10"
+              className="pl-10 glass-surface backdrop-blur-glass text-white border-white/20 focus:border-[#9C4AFF] focus:ring-[#9C4AFF] placeholder:text-[#B8A7E0]"
             />
           </div>
           <Select value={sortBy} onValueChange={setSortBy}>
-            <SelectTrigger className="w-full md:w-[200px]">
+            <SelectTrigger className="w-full md:w-[200px] glass-surface text-white border-white/20">
               <SelectValue />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="glass-surface border-white/20 text-white">
               <SelectItem value="popular">Most Popular</SelectItem>
               <SelectItem value="rating">Highest Rated</SelectItem>
               <SelectItem value="name">Name (A-Z)</SelectItem>
@@ -284,31 +310,36 @@ export default function AppsPage() {
           </Select>
           <Sheet>
             <SheetTrigger asChild>
-              <Button variant="outline" className="md:hidden">
+              <Button variant="outline" className="md:hidden glass-surface border-white/20 text-white hover:bg-white/10">
                 <Filter className="h-4 w-4 mr-2" />
                 Filters
               </Button>
             </SheetTrigger>
-            <SheetContent>
+            <SheetContent className="glass-surface border-white/10">
               <SheetHeader>
-                <SheetTitle>Filter Apps</SheetTitle>
+                <SheetTitle className="text-white">Filter Apps</SheetTitle>
               </SheetHeader>
               <div className="mt-6">
                 <FilterSidebar />
               </div>
             </SheetContent>
           </Sheet>
-        </div>
+        </motion.div>
 
         <div className="flex gap-6">
           {/* Desktop Sidebar */}
-          <aside className="hidden md:block w-64 flex-shrink-0">
-            <Card className="sticky top-20">
+          <motion.aside 
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.6, delay: 0.3 }}
+            className="hidden md:block w-64 flex-shrink-0"
+          >
+            <Card className="sticky top-20 glass-surface border-white/10">
               <CardHeader>
-                <CardTitle className="flex items-center justify-between">
+                <CardTitle className="flex items-center justify-between text-white">
                   <span>Filters</span>
                   {(selectedPricing.length > 0 || selectedPurpose.length > 0 || selectedNEC.length > 0 || minRating > 0) && (
-                    <Button variant="ghost" size="sm" onClick={clearFilters}>
+                    <Button variant="ghost" size="sm" onClick={clearFilters} className="text-[#B8A7E0] hover:text-white">
                       <X className="h-4 w-4" />
                     </Button>
                   )}
@@ -318,68 +349,88 @@ export default function AppsPage() {
                 <FilterSidebar />
               </CardContent>
             </Card>
-          </aside>
+          </motion.aside>
 
           {/* Apps Grid */}
           <div className="flex-1">
-            <div className="mb-4 text-sm text-gray-600">
-              Showing {sortedApps.length} of {apps.length} apps
-            </div>
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.4, delay: 0.4 }}
+              className="mb-4 text-sm text-[#B8A7E0]"
+            >
+              Showing <span className="text-white font-semibold">{sortedApps.length}</span> of <span className="text-white font-semibold">{apps.length}</span> apps
+            </motion.div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {sortedApps.map((app) => (
-                <Card key={app.id} className="h-full hover:shadow-xl transition-all hover:scale-105 group">
-                  <CardHeader className="p-0">
-                    <div className="relative h-48 w-full overflow-hidden rounded-t-lg">
-                      <img
-                        src={app.image}
-                        alt={app.name}
-                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                      />
-                      {app.isPro && (
-                        <Badge className="absolute top-3 right-3 bg-[#00C2D1] text-[#071428]">
-                          Pro
-                        </Badge>
-                      )}
-                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors" />
-                    </div>
-                  </CardHeader>
-                  <CardContent className="pt-4">
-                    <CardTitle className="text-lg mb-2">{app.name}</CardTitle>
-                    <CardDescription className="mb-3 line-clamp-2">{app.description}</CardDescription>
-                    <div className="flex items-center gap-4 text-sm mb-3">
-                      <div className="flex items-center gap-1">
-                        <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                        <span className="font-medium">{app.rating}</span>
-                        <span className="text-gray-500">({app.reviews})</span>
+              {sortedApps.map((app, index) => (
+                <motion.div
+                  key={app.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4, delay: 0.1 * index }}
+                  whileHover={{ scale: 1.03, y: -5 }}
+                >
+                  <Card className="h-full glass-surface border-white/10 hover:border-[#9C4AFF]/50 hover:shadow-glowViolet transition-all group">
+                    <CardHeader className="p-0">
+                      <div className="relative h-48 w-full overflow-hidden rounded-t-lg">
+                        <img
+                          src={app.image}
+                          alt={app.name}
+                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                          loading="lazy"
+                        />
+                        {app.isPro && (
+                          <Badge className="absolute top-3 right-3 gradient-violet text-white border-0">
+                            <Zap className="h-3 w-3 mr-1" />
+                            Pro
+                          </Badge>
+                        )}
+                        <div className="absolute inset-0 bg-gradient-to-t from-[#0A0014]/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                       </div>
-                    </div>
-                    <div className="flex flex-wrap gap-2">
-                      <Badge variant="secondary">{app.category}</Badge>
-                      <Badge variant="outline">NEC {app.necVersion}</Badge>
-                    </div>
-                  </CardContent>
-                  <CardFooter className="flex gap-2">
-                    <Button 
-                      className="flex-1 bg-[#071428] hover:bg-[#071428]/90"
-                      onClick={() => handleLaunchApp(app.id)}
-                    >
-                      Launch
-                    </Button>
-                    <Button variant="outline" size="icon">
-                      <Star className="h-4 w-4" />
-                    </Button>
-                  </CardFooter>
-                </Card>
+                    </CardHeader>
+                    <CardContent className="pt-4">
+                      <CardTitle className="text-lg mb-2 text-white">{app.name}</CardTitle>
+                      <CardDescription className="mb-3 line-clamp-2 text-[#B8A7E0]">{app.description}</CardDescription>
+                      <div className="flex items-center gap-4 text-sm mb-3">
+                        <div className="flex items-center gap-1">
+                          <Star className="h-4 w-4 fill-[#FF6B00] text-[#FF6B00]" />
+                          <span className="font-medium text-white">{app.rating}</span>
+                          <span className="text-[#B8A7E0]">({app.reviews})</span>
+                        </div>
+                      </div>
+                      <div className="flex flex-wrap gap-2">
+                        <Badge className="glass-surface text-[#B8A7E0] border-white/20">{app.category}</Badge>
+                        <Badge className="glass-surface text-[#00E5FF] border-[#00E5FF]/30">NEC {app.necVersion}</Badge>
+                      </div>
+                    </CardContent>
+                    <CardFooter className="flex gap-2">
+                      <Button 
+                        className="flex-1 gradient-violet hover:shadow-glowViolet text-white"
+                        onClick={() => handleLaunchApp(app.id)}
+                      >
+                        Launch
+                      </Button>
+                      <Button variant="outline" size="icon" className="border-white/20 text-[#B8A7E0] hover:text-white hover:bg-white/10">
+                        <Star className="h-4 w-4" />
+                      </Button>
+                    </CardFooter>
+                  </Card>
+                </motion.div>
               ))}
             </div>
 
             {sortedApps.length === 0 && (
-              <div className="text-center py-12">
-                <p className="text-gray-500 text-lg">No apps found matching your criteria</p>
-                <Button variant="outline" onClick={clearFilters} className="mt-4">
+              <motion.div 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="text-center py-12 glass-surface border border-white/10 rounded-2xl"
+              >
+                <Search className="h-16 w-16 text-[#9C4AFF] mx-auto mb-4" />
+                <p className="text-[#B8A7E0] text-lg mb-4">No apps found matching your criteria</p>
+                <Button onClick={clearFilters} className="gradient-fire text-white hover:shadow-glowOrange">
                   Clear Filters
                 </Button>
-              </div>
+              </motion.div>
             )}
           </div>
         </div>
