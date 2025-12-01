@@ -49,9 +49,14 @@ interface ResumeData {
 }
 
 const templates = [
-  { id: 'modern', name: 'Modern Tech', color: 'violet', preview: '📄' },
-  { id: 'professional', name: 'Professional', color: 'cyan', preview: '📋' },
-  { id: 'minimalist', name: 'Minimalist', color: 'orange', preview: '📝' },
+  { id: 'modern', name: 'Modern Tech', color: 'violet', preview: '📄', description: 'Clean and contemporary design' },
+  { id: 'professional', name: 'Professional', color: 'cyan', preview: '📋', description: 'Classic business style' },
+  { id: 'minimalist', name: 'Minimalist', color: 'orange', preview: '📝', description: 'Simple and elegant' },
+  { id: 'creative', name: 'Creative', color: 'violet', preview: '🎨', description: 'Bold and colorful layout' },
+  { id: 'technical', name: 'Technical', color: 'cyan', preview: '⚙️', description: 'Engineering-focused design' },
+  { id: 'executive', name: 'Executive', color: 'orange', preview: '💼', description: 'Senior-level professional' },
+  { id: 'compact', name: 'Compact', color: 'violet', preview: '📰', description: 'Dense information layout' },
+  { id: 'academic', name: 'Academic', color: 'cyan', preview: '🎓', description: 'Research and publication focus' },
 ];
 
 export function ResumeBuilder() {
