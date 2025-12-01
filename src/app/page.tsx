@@ -140,6 +140,39 @@ const toolCategories = [
   },
 ];
 
+const tutorialContent = [
+  { type: 'tutorial-video', title: 'Circuit Analysis Fundamentals', description: 'Learn basic circuit analysis techniques', category: 'tutorials', section: 'Video Tutorial' },
+  { type: 'tutorial-video', title: 'Power Systems Design', description: 'Complete guide to power system design', category: 'tutorials', section: 'Video Tutorial' },
+  { type: 'tutorial-article', title: 'Understanding Three-Phase Power', description: 'Deep dive into three-phase electrical systems', category: 'tutorials', section: 'Article' },
+  { type: 'tutorial-article', title: 'NEC Code Guide 2023', description: 'Comprehensive NEC code reference', category: 'tutorials', section: 'Article' },
+  { type: 'tutorial-resource', title: 'Electrical Symbols Library', description: 'Complete electrical symbol reference', category: 'tutorials', section: 'Resource' },
+];
+
+const projectContent = [
+  { type: 'project', title: 'Build a 3-Phase Motor Controller', description: 'Step-by-step motor controller project', category: 'projects', difficulty: 'Intermediate' },
+  { type: 'project', title: 'Solar Panel System Design', description: 'Design and build a solar power system', category: 'projects', difficulty: 'Advanced' },
+  { type: 'project', title: 'Home Automation Circuit', description: 'IoT-based home automation', category: 'projects', difficulty: 'Beginner' },
+  { type: 'project', title: 'Industrial PLC Programming', description: 'Learn PLC programming with real projects', category: 'projects', difficulty: 'Advanced' },
+];
+
+const assessmentContent = [
+  { type: 'assessment', title: 'Circuit Analysis Quiz', description: 'Test your circuit analysis knowledge', category: 'assessments', topic: 'Circuits' },
+  { type: 'assessment', title: 'Power Systems Quiz', description: 'Comprehensive power systems assessment', category: 'assessments', topic: 'Power' },
+  { type: 'assessment', title: 'NEC Code Practice Test', description: 'Practice NEC code questions', category: 'assessments', topic: 'NEC' },
+  { type: 'mock-exam', title: 'FE Electrical Exam', description: 'Full-length FE exam simulator', category: 'assessments', topic: 'Certification' },
+  { type: 'mock-exam', title: 'PE Power Exam', description: 'Professional Engineer practice exam', category: 'assessments', topic: 'Certification' },
+];
+
+const careerContent = [
+  { type: 'certification', title: 'FE Electrical Certification', description: 'Fundamentals of Engineering prep course', category: 'career', level: 'Entry Level' },
+  { type: 'certification', title: 'PE Power Certification', description: 'Professional Engineer Power Systems', category: 'career', level: 'Professional' },
+  { type: 'certification', title: 'Journeyman Electrician', description: 'State electrician certification prep', category: 'career', level: 'Intermediate' },
+  { type: 'job', title: 'Senior Power Systems Engineer', description: 'Tesla Energy - Austin, TX', category: 'career', company: 'Tesla' },
+  { type: 'job', title: 'Controls Engineer', description: 'Siemens - Chicago, IL', category: 'career', company: 'Siemens' },
+  { type: 'career-tool', title: 'Resume Builder', description: 'Create professional EE resumes', category: 'career' },
+  { type: 'career-tool', title: 'Interview Prep', description: 'Practice technical interviews', category: 'career' },
+];
+
 const projectManagementTools = [
   { icon: Calculator, name: 'Material Cost Estimator', description: 'Calculate component and material costs for projects', href: '/tools/project-management#cost-estimator' },
   { icon: Clock, name: 'Labor Time Calculator', description: 'Estimate labor hours and project duration', href: '/tools/project-management#labor-calculator' },
@@ -221,6 +254,85 @@ export default function Home() {
     return quickTools.filter(tool => tool.targetRoles.includes(selectedRole));
   }, [selectedRole]);
 
+  // UNIFIED SEARCH across ALL sections
+  const unifiedSearchResults = useMemo(() => {
+    if (!searchQuery) return null;
+    
+    const query = searchQuery.toLowerCase();
+    const results: any = {
+      apps: [],
+      tools: [],
+      quickTools: [],
+      tutorials: [],
+      projects: [],
+      assessments: [],
+      career: [],
+    };
+
+    // Search in role-filtered apps
+    results.apps = roleFilteredApps.filter(
+      (app) =>
+        app.name.toLowerCase().includes(query) ||
+        app.description.toLowerCase().includes(query) ||
+        app.category.toLowerCase().includes(query)
+    );
+
+    // Search in role-filtered tools
+    results.tools = roleFilteredTools.filter(
+      (tool) =>
+        tool.title.toLowerCase().includes(query) ||
+        tool.description.toLowerCase().includes(query)
+    );
+
+    // Search in role-filtered quick tools
+    results.quickTools = roleFilteredQuickTools.filter((tool) =>
+      tool.name.toLowerCase().includes(query)
+    );
+
+    // Search in tutorials
+    results.tutorials = tutorialContent.filter(
+      (item) =>
+        item.title.toLowerCase().includes(query) ||
+        item.description.toLowerCase().includes(query) ||
+        item.section.toLowerCase().includes(query)
+    );
+
+    // Search in projects
+    results.projects = projectContent.filter(
+      (item) =>
+        item.title.toLowerCase().includes(query) ||
+        item.description.toLowerCase().includes(query) ||
+        item.difficulty.toLowerCase().includes(query)
+    );
+
+    // Search in assessments
+    results.assessments = assessmentContent.filter(
+      (item) =>
+        item.title.toLowerCase().includes(query) ||
+        item.description.toLowerCase().includes(query) ||
+        item.topic.toLowerCase().includes(query)
+    );
+
+    // Search in career content
+    results.career = careerContent.filter(
+      (item) =>
+        item.title.toLowerCase().includes(query) ||
+        item.description.toLowerCase().includes(query) ||
+        (item.company && item.company.toLowerCase().includes(query)) ||
+        (item.level && item.level.toLowerCase().includes(query))
+    );
+
+    return results;
+  }, [searchQuery, roleFilteredApps, roleFilteredTools, roleFilteredQuickTools]);
+
+  // Calculate total results
+  const totalResults = unifiedSearchResults
+    ? Object.values(unifiedSearchResults).reduce((acc: number, arr: any) => acc + arr.length, 0)
+    : 0;
+
+  const hasSearchResults = searchQuery && totalResults > 0;
+  const hasNoResults = searchQuery && totalResults === 0;
+
   // Search filtering (applied on top of role filtering)
   const filteredApps = useMemo(() => {
     const baseApps = roleFilteredApps;
@@ -282,20 +394,28 @@ export default function Home() {
 
   const roleMessage = getRoleMessage();
 
-  const hasSearchResults = searchQuery && (filteredApps.length > 0 || filteredTools.length > 0 || filteredQuickTools.length > 0);
-  const hasNoResults = searchQuery && filteredApps.length === 0 && filteredTools.length === 0 && filteredQuickTools.length === 0;
-
   const handleSearch = (query: string) => {
     setSearchQuery(query);
   };
 
+  // Helper function to get category icon
+  const getCategoryIcon = (category: string) => {
+    switch (category) {
+      case 'tutorials': return BookOpen;
+      case 'projects': return Wrench;
+      case 'assessments': return Brain;
+      case 'career': return Briefcase;
+      default: return Zap;
+    }
+  };
+
   return (
     <div className="min-h-screen gradient-depth">
-      {/* Search Results Section */}
+      {/* Unified Search Results Section */}
       {hasSearchResults && (
         <section className="glass-surface py-8 px-4 border-b border-white/10">
           <div className="container mx-auto max-w-6xl">
-            <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center justify-between mb-6">
               <div>
                 <h2 className="text-2xl font-bold text-white glow-text-violet">
                   Search Results for "{searchQuery}"
@@ -314,9 +434,209 @@ export default function Home() {
                 Clear Search
               </Button>
             </div>
-            <p className="text-[#B8A7E0]">
-              Found {filteredApps.length + filteredTools.length + filteredQuickTools.length} results
-            </p>
+            
+            <div className="mb-6">
+              <p className="text-[#B8A7E0]">
+                Found <span className="text-white font-semibold">{totalResults}</span> results across all sections
+              </p>
+            </div>
+
+            {/* Results by Category */}
+            <div className="space-y-6">
+              {/* Apps Results */}
+              {unifiedSearchResults.apps.length > 0 && (
+                <div>
+                  <h3 className="text-lg font-semibold text-white mb-3 flex items-center gap-2">
+                    <Zap className="h-5 w-5 text-[#9C4AFF]" />
+                    Apps ({unifiedSearchResults.apps.length})
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {unifiedSearchResults.apps.slice(0, 3).map((app: any) => (
+                      <Card key={app.id} className="glass-surface border-white/10 hover:border-[#9C4AFF]/50 hover:shadow-glowViolet transition-all">
+                        <CardHeader className="pb-3">
+                          <CardTitle className="text-white text-base">{app.name}</CardTitle>
+                          <CardDescription className="text-[#B8A7E0] text-sm line-clamp-2">{app.description}</CardDescription>
+                        </CardHeader>
+                        <CardFooter className="pt-0">
+                          <Button size="sm" className="w-full gradient-violet text-white">View App</Button>
+                        </CardFooter>
+                      </Card>
+                    ))}
+                  </div>
+                  {unifiedSearchResults.apps.length > 3 && (
+                    <Link href="/apps">
+                      <Button variant="ghost" className="mt-3 text-[#9C4AFF] hover:text-white">
+                        View all {unifiedSearchResults.apps.length} apps →
+                      </Button>
+                    </Link>
+                  )}
+                </div>
+              )}
+
+              {/* Tools Results */}
+              {unifiedSearchResults.tools.length > 0 && (
+                <div>
+                  <h3 className="text-lg font-semibold text-white mb-3 flex items-center gap-2">
+                    <Settings className="h-5 w-5 text-[#FF6B00]" />
+                    Tools ({unifiedSearchResults.tools.length})
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {unifiedSearchResults.tools.slice(0, 2).map((tool: any) => (
+                      <Card key={tool.id} className="glass-surface border-white/10 hover:border-[#FF6B00]/50 hover:shadow-glowOrange transition-all">
+                        <CardHeader className="pb-3">
+                          <CardTitle className="text-white text-base">{tool.title}</CardTitle>
+                          <CardDescription className="text-[#B8A7E0] text-sm line-clamp-2">{tool.description}</CardDescription>
+                        </CardHeader>
+                        <CardFooter className="pt-0">
+                          <Link href={tool.href} className="w-full">
+                            <Button size="sm" className="w-full gradient-fire text-white">Explore Tools</Button>
+                          </Link>
+                        </CardFooter>
+                      </Card>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Tutorials Results */}
+              {unifiedSearchResults.tutorials.length > 0 && (
+                <div>
+                  <h3 className="text-lg font-semibold text-white mb-3 flex items-center gap-2">
+                    <BookOpen className="h-5 w-5 text-[#00E5FF]" />
+                    Tutorials ({unifiedSearchResults.tutorials.length})
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {unifiedSearchResults.tutorials.slice(0, 3).map((item: any, idx: number) => (
+                      <Card key={idx} className="glass-surface border-white/10 hover:border-[#00E5FF]/50 hover:shadow-glowCyan transition-all">
+                        <CardHeader className="pb-3">
+                          <Badge className="w-fit mb-2 bg-[#00E5FF]/20 text-[#00E5FF] border-[#00E5FF]/30">{item.section}</Badge>
+                          <CardTitle className="text-white text-base">{item.title}</CardTitle>
+                          <CardDescription className="text-[#B8A7E0] text-sm line-clamp-2">{item.description}</CardDescription>
+                        </CardHeader>
+                        <CardFooter className="pt-0">
+                          <Link href="/tutorials" className="w-full">
+                            <Button size="sm" className="w-full gradient-aqua text-white">View Tutorial</Button>
+                          </Link>
+                        </CardFooter>
+                      </Card>
+                    ))}
+                  </div>
+                  {unifiedSearchResults.tutorials.length > 3 && (
+                    <Link href="/tutorials">
+                      <Button variant="ghost" className="mt-3 text-[#00E5FF] hover:text-white">
+                        View all {unifiedSearchResults.tutorials.length} tutorials →
+                      </Button>
+                    </Link>
+                  )}
+                </div>
+              )}
+
+              {/* Projects Results */}
+              {unifiedSearchResults.projects.length > 0 && (
+                <div>
+                  <h3 className="text-lg font-semibold text-white mb-3 flex items-center gap-2">
+                    <Wrench className="h-5 w-5 text-[#9C4AFF]" />
+                    Projects ({unifiedSearchResults.projects.length})
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {unifiedSearchResults.projects.slice(0, 2).map((item: any, idx: number) => (
+                      <Card key={idx} className="glass-surface border-white/10 hover:border-[#9C4AFF]/50 hover:shadow-glowViolet transition-all">
+                        <CardHeader className="pb-3">
+                          <div className="flex items-center gap-2 mb-2">
+                            <Badge className="bg-[#9C4AFF]/20 text-[#9C4AFF] border-[#9C4AFF]/30">{item.difficulty}</Badge>
+                          </div>
+                          <CardTitle className="text-white text-base">{item.title}</CardTitle>
+                          <CardDescription className="text-[#B8A7E0] text-sm line-clamp-2">{item.description}</CardDescription>
+                        </CardHeader>
+                        <CardFooter className="pt-0">
+                          <Link href="/projects" className="w-full">
+                            <Button size="sm" className="w-full gradient-violet text-white">Start Building</Button>
+                          </Link>
+                        </CardFooter>
+                      </Card>
+                    ))}
+                  </div>
+                  {unifiedSearchResults.projects.length > 2 && (
+                    <Link href="/projects">
+                      <Button variant="ghost" className="mt-3 text-[#9C4AFF] hover:text-white">
+                        View all {unifiedSearchResults.projects.length} projects →
+                      </Button>
+                    </Link>
+                  )}
+                </div>
+              )}
+
+              {/* Assessments Results */}
+              {unifiedSearchResults.assessments.length > 0 && (
+                <div>
+                  <h3 className="text-lg font-semibold text-white mb-3 flex items-center gap-2">
+                    <Brain className="h-5 w-5 text-[#FF6B00]" />
+                    Assessments ({unifiedSearchResults.assessments.length})
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {unifiedSearchResults.assessments.slice(0, 3).map((item: any, idx: number) => (
+                      <Card key={idx} className="glass-surface border-white/10 hover:border-[#FF6B00]/50 hover:shadow-glowOrange transition-all">
+                        <CardHeader className="pb-3">
+                          <Badge className="w-fit mb-2 bg-[#FF6B00]/20 text-[#FF6B00] border-[#FF6B00]/30">{item.topic}</Badge>
+                          <CardTitle className="text-white text-base">{item.title}</CardTitle>
+                          <CardDescription className="text-[#B8A7E0] text-sm line-clamp-2">{item.description}</CardDescription>
+                        </CardHeader>
+                        <CardFooter className="pt-0">
+                          <Link href="/assessments" className="w-full">
+                            <Button size="sm" className="w-full gradient-fire text-white">Start Quiz</Button>
+                          </Link>
+                        </CardFooter>
+                      </Card>
+                    ))}
+                  </div>
+                  {unifiedSearchResults.assessments.length > 3 && (
+                    <Link href="/assessments">
+                      <Button variant="ghost" className="mt-3 text-[#FF6B00] hover:text-white">
+                        View all {unifiedSearchResults.assessments.length} assessments →
+                      </Button>
+                    </Link>
+                  )}
+                </div>
+              )}
+
+              {/* Career Results */}
+              {unifiedSearchResults.career.length > 0 && (
+                <div>
+                  <h3 className="text-lg font-semibold text-white mb-3 flex items-center gap-2">
+                    <Briefcase className="h-5 w-5 text-[#00E5FF]" />
+                    Career Resources ({unifiedSearchResults.career.length})
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {unifiedSearchResults.career.slice(0, 3).map((item: any, idx: number) => (
+                      <Card key={idx} className="glass-surface border-white/10 hover:border-[#00E5FF]/50 hover:shadow-glowCyan transition-all">
+                        <CardHeader className="pb-3">
+                          {item.level && (
+                            <Badge className="w-fit mb-2 bg-[#00E5FF]/20 text-[#00E5FF] border-[#00E5FF]/30">{item.level}</Badge>
+                          )}
+                          {item.company && (
+                            <Badge className="w-fit mb-2 bg-[#00E5FF]/20 text-[#00E5FF] border-[#00E5FF]/30">{item.company}</Badge>
+                          )}
+                          <CardTitle className="text-white text-base">{item.title}</CardTitle>
+                          <CardDescription className="text-[#B8A7E0] text-sm line-clamp-2">{item.description}</CardDescription>
+                        </CardHeader>
+                        <CardFooter className="pt-0">
+                          <Link href="/career" className="w-full">
+                            <Button size="sm" className="w-full gradient-aqua text-white">View Details</Button>
+                          </Link>
+                        </CardFooter>
+                      </Card>
+                    ))}
+                  </div>
+                  {unifiedSearchResults.career.length > 3 && (
+                    <Link href="/career">
+                      <Button variant="ghost" className="mt-3 text-[#00E5FF] hover:text-white">
+                        View all {unifiedSearchResults.career.length} career resources →
+                      </Button>
+                    </Link>
+                  )}
+                </div>
+              )}
+            </div>
           </div>
         </section>
       )}
