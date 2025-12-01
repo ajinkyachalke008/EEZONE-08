@@ -1,16 +1,31 @@
 'use client';
 
-import { useState, useMemo } from 'react';
-import { Search, Briefcase, GraduationCap, Wrench, ChevronRight, Star, Zap, Calculator, BookOpen, Cpu, Settings, Lightbulb, CircuitBoard, FileText, Gauge, GraduationCap as EducationIcon, ClipboardList, Scale, Wrench as DiagnosticIcon, Code, Sparkles, Headphones, Globe, Beaker, Box, Shield, Clock, Calendar, TrendingUp, MapPin, FileCheck, BarChart, Thermometer, PlayCircle, Smartphone, Camera, Brain, Award, Building2, Users, CheckCircle2, Target, DollarSign, MessageSquare, FileCheck as FileCheckIcon } from 'lucide-react';
+import { useState, useMemo, lazy, Suspense } from 'react';
+import { Search, Briefcase, GraduationCap, Wrench, ChevronRight, Star, Zap, Calculator, BookOpen, Cpu, Settings, Lightbulb, CircuitBoard, FileText, Gauge, GraduationCap as EducationIcon, ClipboardList, Scale, Wrench as DiagnosticIcon, Code, Sparkles, Headphones, Globe, Beaker, Box, Shield, Clock, Calendar, TrendingUp, MapPin, FileCheck, BarChart, Thermometer, PlayCircle, Smartphone, Camera, Brain, Award, Building2, Users, CheckCircle2, Target, DollarSign, MessageSquare, FileCheck as FileCheckIcon, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
-import { InstrumentScanner } from '@/components/instrument-scanner';
-import { ProblemSolver } from '@/components/problem-solver';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
+
+// Lazy load heavy components
+const InstrumentScanner = lazy(() => import('@/components/instrument-scanner').then(mod => ({ default: mod.InstrumentScanner })));
+const ProblemSolver = lazy(() => import('@/components/problem-solver').then(mod => ({ default: mod.ProblemSolver })));
+
+// Loading fallback component
+const SectionLoader = () => (
+  <div className="flex flex-col items-center justify-center py-12 glass-surface border border-white/10 rounded-2xl">
+    <div className="relative">
+      <Loader2 className="h-12 w-12 animate-spin text-[#9C4AFF] glow-violet" />
+      <div className="absolute inset-0 h-12 w-12 animate-ping text-[#9C4AFF]/30">
+        <Loader2 className="h-12 w-12" />
+      </div>
+    </div>
+    <p className="text-[#B8A7E0] mt-4">Loading...</p>
+  </div>
+);
 
 type Role = 'professional' | 'student' | 'technician' | null;
 
@@ -803,7 +818,7 @@ export default function Home() {
         </section>
       )}
 
-      {/* Instrument Scanner Section */}
+      {/* Instrument Scanner Section - Lazy Loaded */}
       {!searchQuery && (
         <section className="relative py-20 px-4 overflow-hidden">
           {/* Ambient Glow */}
@@ -847,6 +862,7 @@ export default function Home() {
                   src="https://images.unsplash.com/photo-1581092918056-0c4c3acd3789?w=800&h=600&fit=crop"
                   alt="Instrument Scanner"
                   className="w-full h-full object-cover"
+                  loading="lazy"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-[#00E5FF]/80 to-transparent" />
                 <div className="absolute bottom-6 left-6 right-6">
@@ -895,13 +911,15 @@ export default function Home() {
               transition={{ duration: 0.6, delay: 0.4 }}
               viewport={{ once: true }}
             >
-              <InstrumentScanner />
+              <Suspense fallback={<SectionLoader />}>
+                <InstrumentScanner />
+              </Suspense>
             </motion.div>
           </div>
         </section>
       )}
 
-      {/* Problem Solver Section */}
+      {/* Problem Solver Section - Lazy Loaded */}
       {!searchQuery && (
         <section className="relative py-20 px-4 overflow-hidden">
           {/* Ambient Glow */}
@@ -978,6 +996,7 @@ export default function Home() {
                   src="https://images.unsplash.com/photo-1635070041078-e363dbe005cb?w=800&h=600&fit=crop"
                   alt="Problem Solver"
                   className="w-full h-full object-cover"
+                  loading="lazy"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-[#9C4AFF]/80 to-transparent" />
                 <div className="absolute bottom-6 left-6 right-6">
@@ -993,7 +1012,9 @@ export default function Home() {
               transition={{ duration: 0.6, delay: 0.4 }}
               viewport={{ once: true }}
             >
-              <ProblemSolver />
+              <Suspense fallback={<SectionLoader />}>
+                <ProblemSolver />
+              </Suspense>
             </motion.div>
           </div>
         </section>
@@ -1035,6 +1056,7 @@ export default function Home() {
                           src={tool.image}
                           alt={tool.title}
                           className="w-full h-full object-cover"
+                          loading="lazy"
                         />
                         <div className="absolute inset-0 gradient-violet opacity-20" />
                       </div>
@@ -1102,6 +1124,7 @@ export default function Home() {
                           src={tool.image}
                           alt={tool.title}
                           className="w-full h-full object-cover"
+                          loading="lazy"
                         />
                         <div className="absolute inset-0 gradient-fire opacity-20" />
                       </div>
@@ -1144,14 +1167,19 @@ export default function Home() {
           <div className="absolute top-10 left-1/2 w-[400px] h-[400px] bg-[#9C4AFF] opacity-15 blur-[150px] rounded-full" />
           
           <div className="container mx-auto max-w-6xl relative z-10">
-            <div className="text-center mb-12">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "100px" }}
+              className="text-center mb-12"
+            >
               <h2 className="text-4xl font-bold text-white mb-4 glow-text-violet" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>
                 📋 Project Management Suite
               </h2>
               <p className="text-lg text-[#B8A7E0] max-w-3xl mx-auto">
                 Professional tools for planning, estimation, and project execution
               </p>
-            </div>
+            </motion.div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {projectManagementTools.map((tool, index) => {
@@ -1162,7 +1190,7 @@ export default function Home() {
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.4, delay: index * 0.1 }}
-                    viewport={{ once: true }}
+                    viewport={{ once: true, margin: "50px" }}
                     whileHover={{ scale: 1.05, y: -5 }}
                   >
                     <Link href={tool.href}>
@@ -1411,6 +1439,7 @@ export default function Home() {
                   src="https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/project-uploads/e24d0c9e-e4fc-4077-96b8-bf644fe969e3/generated_images/quick-access-electrical-utilities-dashbo-31822a66-20251026042846.jpg"
                   alt="Quick Utilities"
                   className="w-full h-full object-cover"
+                  loading="lazy"
                 />
                 <div className="absolute inset-0 gradient-fire opacity-60" />
                 <div className="absolute inset-0 flex items-center">
@@ -1480,6 +1509,7 @@ export default function Home() {
                   src="https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/project-uploads/e24d0c9e-e4fc-4077-96b8-bf644fe969e3/generated_images/educational-electrical-engineering-learn-74ff25a4-20251026042846.jpg"
                   alt="Educational Resources"
                   className="w-full h-full object-cover"
+                  loading="lazy"
                 />
                 <div className="absolute inset-0 gradient-violet opacity-40" />
               </motion.div>
@@ -1803,6 +1833,7 @@ export default function Home() {
                             src={app.image}
                             alt={app.name}
                             className="w-full h-full object-cover"
+                            loading="lazy"
                           />
                           <div className="absolute inset-0 gradient-fire opacity-20" />
                           {app.isPro && (
