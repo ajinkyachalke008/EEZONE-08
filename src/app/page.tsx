@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useMemo, lazy, Suspense } from 'react';
-import { Search, Briefcase, GraduationCap, Wrench, ChevronRight, Star, Zap, Calculator, BookOpen, Cpu, Settings, Lightbulb, CircuitBoard, FileText, Gauge, GraduationCap as EducationIcon, ClipboardList, Scale, Wrench as DiagnosticIcon, Code, Sparkles, Headphones, Globe, Beaker, Box, Shield, Clock, Calendar, TrendingUp, MapPin, FileCheck, BarChart, Thermometer, PlayCircle, Smartphone, Camera, Brain, Award, Building2, Users, CheckCircle2, Target, DollarSign, MessageSquare, FileCheck as FileCheckIcon, Loader2 } from 'lucide-react';
+import { useState, useMemo, lazy, Suspense, useEffect } from 'react';
+import { Search, Briefcase, GraduationCap, Wrench, ChevronRight, Star, Zap, Calculator, BookOpen, Cpu, Settings, Lightbulb, CircuitBoard, FileText, Gauge, GraduationCap as EducationIcon, ClipboardList, Scale, Wrench as DiagnosticIcon, Code, Sparkles, Headphones, Globe, Beaker, Box, Shield, Clock, Calendar, TrendingUp, MapPin, FileCheck, BarChart, Thermometer, PlayCircle, Smartphone, Camera, Brain, Award, Building2, Users, CheckCircle2, Target, DollarSign, MessageSquare, FileCheck as FileCheckIcon, Loader2, Battery, RotateCw, Activity, Plug } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -26,6 +26,11 @@ const SectionLoader = () => (
     <p className="text-[#B8A7E0] mt-4">Loading...</p>
   </div>
 );
+
+// Add icon map for topics
+const topicIconMap: { [key: string]: any } = {
+  Battery, RotateCw, Zap, Cable: CircuitBoard, CircuitBoard, Activity, Cpu, Plug, Gauge, FileCheck
+};
 
 type Role = 'professional' | 'student' | 'technician' | null;
 
@@ -231,6 +236,69 @@ const interactiveSimulations = [
 export default function Home() {
   const [selectedRole, setSelectedRole] = useState<Role>(null);
   const [searchQuery, setSearchQuery] = useState('');
+  
+  // Add state for continue learning
+  const [continueTopics, setContinueTopics] = useState<any[]>([]);
+  const [bookmarkedTopics, setBookmarkedTopics] = useState<any[]>([]);
+  const [loadingLearning, setLoadingLearning] = useState(true);
+
+  // Fetch learning data on mount
+  useEffect(() => {
+    fetchLearningData();
+  }, []);
+
+  const fetchLearningData = async () => {
+    try {
+      const userId = typeof window !== 'undefined' 
+        ? localStorage.getItem('ee_zone_user_id') || ''
+        : '';
+      
+      if (!userId) {
+        setLoadingLearning(false);
+        return;
+      }
+
+      const [progressRes, bookmarksRes, topicsRes] = await Promise.all([
+        fetch(`/api/learn/progress/${userId}`),
+        fetch(`/api/learn/bookmarks/${userId}`),
+        fetch('/api/learn/topics')
+      ]);
+
+      let topics: any[] = [];
+      if (topicsRes.ok) {
+        topics = await topicsRes.json();
+      }
+
+      if (progressRes.ok) {
+        const progressData = await progressRes.json();
+        // Get in-progress topics (not 100% complete)
+        const inProgress = progressData
+          .filter((p: any) => p.completionPercent < 100)
+          .slice(0, 3)
+          .map((p: any) => ({
+            ...p,
+            topic: p.topic || topics.find((t: any) => t.id === p.topicId)
+          }));
+        setContinueTopics(inProgress);
+      }
+
+      if (bookmarksRes.ok) {
+        const bookmarksData = await bookmarksRes.json();
+        const topicBookmarks = bookmarksData
+          .filter((b: any) => b.contentType === 'topic')
+          .slice(0, 3)
+          .map((b: any) => ({
+            ...b,
+            topic: topics.find((t: any) => t.id === b.contentId)
+          }));
+        setBookmarkedTopics(topicBookmarks);
+      }
+    } catch (error) {
+      console.error('Error fetching learning data:', error);
+    } finally {
+      setLoadingLearning(false);
+    }
+  };
 
   const roles = [
     {
@@ -811,6 +879,155 @@ export default function Home() {
                   >
                     Clear filter
                   </Button>
+                </motion.div>
+              )}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Continue Learning Section - Add after Hero Section */}
+      {!searchQuery && (continueTopics.length > 0 || bookmarkedTopics.length > 0) && (
+        <section className="py-12 px-4 relative overflow-hidden">
+          <div className="absolute top-10 left-10 w-[400px] h-[400px] bg-[#FF6B00] opacity-15 blur-[150px] rounded-full" />
+          
+          <div className="container mx-auto max-w-6xl relative z-10">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+              className="mb-8"
+            >
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <BookOpen className="h-8 w-8 text-[#FF6B00]" />
+                  <h2 className="text-3xl font-bold text-white glow-text-orange" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>
+                    Continue Learning
+                  </h2>
+                </div>
+                <Link href="/learn">
+                  <Button variant="ghost" className="text-[#B8A7E0] hover:text-white">
+                    View All <ChevronRight className="h-4 w-4 ml-1" />
+                  </Button>
+                </Link>
+              </div>
+              <p className="text-[#B8A7E0] mt-2">Pick up where you left off or continue with saved topics</p>
+            </motion.div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {/* In Progress Topics */}
+              {continueTopics.map((item, index) => {
+                const topic = item.topic;
+                if (!topic) return null;
+                const Icon = topicIconMap[topic.icon] || BookOpen;
+                
+                return (
+                  <motion.div
+                    key={item.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.4, delay: index * 0.1 }}
+                    whileHover={{ scale: 1.03, y: -5 }}
+                  >
+                    <Link href={`/learn/${topic.slug}`}>
+                      <Card className="h-full glass-surface border-[#FF6B00]/30 hover:border-[#FF6B00]/60 hover:shadow-glowOrange transition-all cursor-pointer">
+                        <CardHeader className="pb-2">
+                          <div className="flex items-center gap-3">
+                            <div className="p-2 gradient-fire rounded-lg">
+                              <Icon className="h-5 w-5 text-white" />
+                            </div>
+                            <Badge className="bg-[#FF6B00]/20 text-[#FF6B00] border-[#FF6B00]/30">
+                              In Progress
+                            </Badge>
+                          </div>
+                          <CardTitle className="text-white text-lg mt-2">{topic.title}</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <div className="space-y-2">
+                            <div className="flex justify-between text-sm">
+                              <span className="text-[#B8A7E0]">Progress</span>
+                              <span className="text-[#FF6B00]">{item.completionPercent}%</span>
+                            </div>
+                            <div className="w-full bg-white/10 rounded-full h-2">
+                              <div 
+                                className="gradient-fire h-2 rounded-full transition-all"
+                                style={{ width: `${item.completionPercent}%` }}
+                              />
+                            </div>
+                          </div>
+                        </CardContent>
+                        <CardFooter>
+                          <Button className="w-full gradient-fire hover:shadow-glowOrange text-white text-sm">
+                            Resume Learning
+                          </Button>
+                        </CardFooter>
+                      </Card>
+                    </Link>
+                  </motion.div>
+                );
+              })}
+
+              {/* Bookmarked Topics */}
+              {bookmarkedTopics.map((item, index) => {
+                const topic = item.topic;
+                if (!topic) return null;
+                const Icon = topicIconMap[topic.icon] || BookOpen;
+                
+                return (
+                  <motion.div
+                    key={item.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.4, delay: (continueTopics.length + index) * 0.1 }}
+                    whileHover={{ scale: 1.03, y: -5 }}
+                  >
+                    <Link href={`/learn/${topic.slug}`}>
+                      <Card className="h-full glass-surface border-[#9C4AFF]/30 hover:border-[#9C4AFF]/60 hover:shadow-glowViolet transition-all cursor-pointer">
+                        <CardHeader className="pb-2">
+                          <div className="flex items-center gap-3">
+                            <div className="p-2 gradient-violet rounded-lg">
+                              <Icon className="h-5 w-5 text-white" />
+                            </div>
+                            <Badge className="bg-[#9C4AFF]/20 text-[#9C4AFF] border-[#9C4AFF]/30">
+                              <Star className="h-3 w-3 mr-1" /> Bookmarked
+                            </Badge>
+                          </div>
+                          <CardTitle className="text-white text-lg mt-2">{topic.title}</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <p className="text-[#B8A7E0] text-sm line-clamp-2">{topic.description}</p>
+                        </CardContent>
+                        <CardFooter>
+                          <Button className="w-full gradient-violet hover:shadow-glowViolet text-white text-sm">
+                            Start Learning
+                          </Button>
+                        </CardFooter>
+                      </Card>
+                    </Link>
+                  </motion.div>
+                );
+              })}
+
+              {/* Quick Quiz CTA if we have space */}
+              {(continueTopics.length + bookmarkedTopics.length) < 3 && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4, delay: 0.3 }}
+                  whileHover={{ scale: 1.03, y: -5 }}
+                >
+                  <Link href="/learn/quiz">
+                    <Card className="h-full glass-surface border-[#00E5FF]/30 hover:border-[#00E5FF]/60 hover:shadow-glowCyan transition-all cursor-pointer">
+                      <CardContent className="pt-6 flex flex-col items-center justify-center text-center h-full min-h-[200px]">
+                        <Brain className="h-12 w-12 text-[#00E5FF] mb-4" />
+                        <h3 className="text-xl font-bold text-white mb-2">Quick Quiz</h3>
+                        <p className="text-[#B8A7E0] text-sm mb-4">Test your knowledge across all topics</p>
+                        <Button className="gradient-aqua hover:shadow-glowCyan text-white">
+                          Start Quiz
+                        </Button>
+                      </CardContent>
+                    </Card>
+                  </Link>
                 </motion.div>
               )}
             </div>
