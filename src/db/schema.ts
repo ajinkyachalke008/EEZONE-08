@@ -181,3 +181,64 @@ export const articles = sqliteTable('articles', {
   createdAt: text('created_at').notNull(),
   updatedAt: text('updated_at').notNull(),
 });
+
+// Learning platform tables
+export const topics = sqliteTable('topics', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  slug: text('slug').notNull().unique(),
+  title: text('title').notNull(),
+  description: text('description').notNull(),
+  icon: text('icon').notNull(),
+  orderIndex: integer('order_index').notNull().default(0),
+  createdAt: text('created_at').notNull(),
+});
+
+export const questions = sqliteTable('questions', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  topicId: integer('topic_id').notNull().references(() => topics.id),
+  difficulty: text('difficulty').notNull(),
+  questionText: text('question_text').notNull(),
+  optionA: text('option_a').notNull(),
+  optionB: text('option_b').notNull(),
+  optionC: text('option_c').notNull(),
+  optionD: text('option_d').notNull(),
+  correctOption: text('correct_option').notNull(),
+  explanation: text('explanation').notNull(),
+  createdAt: text('created_at').notNull(),
+});
+
+export const quizAttempts = sqliteTable('quiz_attempts', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  userId: text('user_id').notNull(),
+  topicId: integer('topic_id').references(() => topics.id),
+  score: integer('score').notNull().default(0),
+  totalQuestions: integer('total_questions').notNull(),
+  startedAt: text('started_at').notNull(),
+  finishedAt: text('finished_at'),
+});
+
+export const questionAttempts = sqliteTable('question_attempts', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  attemptId: integer('attempt_id').notNull().references(() => quizAttempts.id),
+  questionId: integer('question_id').notNull().references(() => questions.id),
+  selectedOption: text('selected_option'),
+  isCorrect: integer('is_correct', { mode: 'boolean' }).notNull().default(false),
+});
+
+export const userTopicsProgress = sqliteTable('user_topics_progress', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  userId: text('user_id').notNull(),
+  topicId: integer('topic_id').notNull().references(() => topics.id),
+  completionPercent: integer('completion_percent').notNull().default(0),
+  sectionsCompleted: text('sections_completed').notNull().default('[]'),
+  lastVisitedAt: text('last_visited_at').notNull(),
+  createdAt: text('created_at').notNull(),
+});
+
+export const bookmarks = sqliteTable('bookmarks', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  userId: text('user_id').notNull(),
+  contentType: text('content_type').notNull(),
+  contentId: integer('content_id').notNull(),
+  createdAt: text('created_at').notNull(),
+});
