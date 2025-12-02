@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Zap, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
+import { motion } from 'framer-motion';
 
 export default function PowerSystemsPage() {
   // Three-Phase Power Calculator
@@ -114,79 +115,96 @@ export default function PowerSystemsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12 px-4">
-      <div className="container mx-auto max-w-6xl">
+    <div className="min-h-screen gradient-depth">
+      {/* Ambient Background Orbs */}
+      <div className="absolute top-20 left-10 w-[500px] h-[500px] bg-[#9C4AFF] opacity-20 blur-[150px] rounded-full animate-float" />
+      <div className="absolute top-40 right-10 w-[400px] h-[400px] bg-[#FF6B00] opacity-20 blur-[150px] rounded-full animate-float" style={{ animationDelay: '2s' }} />
+      
+      <div className="container mx-auto max-w-6xl px-4 py-12 relative z-10">
         <Link href="/">
-          <Button variant="outline" className="mb-6">
+          <Button variant="outline" className="mb-6 glass-surface border-white/20 text-white hover:bg-white/20">
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back to Home
           </Button>
         </Link>
 
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold text-[#071428] mb-2 flex items-center gap-3">
-            <Zap className="h-10 w-10 text-[#00C2D1]" />
-            Power Systems Tools
-          </h1>
-          <p className="text-gray-600 text-lg">
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mb-8"
+        >
+          <div className="flex items-center gap-3 mb-4">
+            <motion.div
+              animate={{ rotate: [0, 360] }}
+              transition={{ duration: 3, repeat: Infinity, ease: 'linear' }}
+            >
+              <Zap className="h-12 w-12 text-[#9C4AFF] glow-text-violet" />
+            </motion.div>
+            <h1 className="text-4xl md:text-5xl font-bold text-white glow-text-violet" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>
+              Power Systems Tools
+            </h1>
+          </div>
+          <p className="text-xl text-[#B8A7E0]">
             Professional calculators for power analysis, fault calculations, and system design
           </p>
-        </div>
+        </motion.div>
 
         <Tabs defaultValue="three-phase" className="w-full">
-          <TabsList className="grid w-full grid-cols-3 mb-8">
-            <TabsTrigger value="three-phase">Three-Phase Power</TabsTrigger>
-            <TabsTrigger value="short-circuit">Short Circuit</TabsTrigger>
-            <TabsTrigger value="voltage-drop">Voltage Drop</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-3 mb-8 glass-surface backdrop-blur-glass border border-white/10 p-2">
+            <TabsTrigger value="three-phase" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#9C4AFF] data-[state=active]:to-[#FF6B00] data-[state=active]:text-white text-[#B8A7E0]">Three-Phase Power</TabsTrigger>
+            <TabsTrigger value="short-circuit" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#9C4AFF] data-[state=active]:to-[#FF6B00] data-[state=active]:text-white text-[#B8A7E0]">Short Circuit</TabsTrigger>
+            <TabsTrigger value="voltage-drop" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#9C4AFF] data-[state=active]:to-[#FF6B00] data-[state=active]:text-white text-[#B8A7E0]">Voltage Drop</TabsTrigger>
           </TabsList>
 
           {/* Three-Phase Power Calculator */}
           <TabsContent value="three-phase">
-            <Card>
+            <Card className="glass-surface border-white/10 backdrop-blur-glass">
               <CardHeader>
-                <CardTitle>Three-Phase Power Calculator</CardTitle>
-                <CardDescription>Calculate real, apparent, and reactive power for three-phase systems</CardDescription>
+                <CardTitle className="text-white">Three-Phase Power Calculator</CardTitle>
+                <CardDescription className="text-[#B8A7E0]">Calculate real, apparent, and reactive power for three-phase systems</CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="grid md:grid-cols-2 gap-6">
                   <div className="space-y-4">
                     <div>
-                      <Label htmlFor="phase-type">System Type</Label>
-                      <Select value={phaseType} onValueChange={setPhaseType}>
-                        <SelectTrigger id="phase-type">
+                      <Label htmlFor="phase-type" className="text-white">System Type</Label>
+                      <Select value={phaseType} onValueChange={setPhaseType} className="glass-surface text-white bg-white/10 backdrop-blur-glass border-white/20">
+                        <SelectTrigger id="phase-type" className="glass-surface text-white bg-white/10 backdrop-blur-glass border-white/20">
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="3phase">Three-Phase</SelectItem>
-                          <SelectItem value="1phase">Single-Phase</SelectItem>
+                          <SelectItem value="3phase" className="text-white hover:bg-white/20">Three-Phase</SelectItem>
+                          <SelectItem value="1phase" className="text-white hover:bg-white/20">Single-Phase</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
 
                     <div>
-                      <Label htmlFor="voltage">Voltage (V)</Label>
+                      <Label htmlFor="voltage" className="text-white">Voltage (V)</Label>
                       <Input
                         id="voltage"
                         type="number"
                         placeholder="480"
                         value={voltage}
                         onChange={(e) => setVoltage(e.target.value)}
+                        className="glass-surface text-white bg-white/10 backdrop-blur-glass border-white/20"
                       />
                     </div>
 
                     <div>
-                      <Label htmlFor="current">Current (A)</Label>
+                      <Label htmlFor="current" className="text-white">Current (A)</Label>
                       <Input
                         id="current"
                         type="number"
                         placeholder="100"
                         value={current}
                         onChange={(e) => setCurrent(e.target.value)}
+                        className="glass-surface text-white bg-white/10 backdrop-blur-glass border-white/20"
                       />
                     </div>
 
                     <div>
-                      <Label htmlFor="power-factor">Power Factor (0-1)</Label>
+                      <Label htmlFor="power-factor" className="text-white">Power Factor (0-1)</Label>
                       <Input
                         id="power-factor"
                         type="number"
@@ -194,17 +212,18 @@ export default function PowerSystemsPage() {
                         placeholder="0.85"
                         value={powerFactor}
                         onChange={(e) => setPowerFactor(e.target.value)}
+                        className="glass-surface text-white bg-white/10 backdrop-blur-glass border-white/20"
                       />
                     </div>
 
-                    <Button onClick={calculateThreePhasePower} className="w-full bg-[#071428] hover:bg-[#071428]/90">
+                    <Button onClick={calculateThreePhasePower} className="w-full gradient-violet text-white hover:shadow-glowViolet">
                       Calculate Power
                     </Button>
                   </div>
 
                   {powerResult && (
-                    <div className="bg-[#071428] text-white p-6 rounded-lg space-y-3">
-                      <h3 className="text-xl font-bold mb-4 text-[#00C2D1]">Results</h3>
+                    <div className="gradient-violet p-6 rounded-lg space-y-3">
+                      <h3 className="text-xl font-bold mb-4 text-white">Results</h3>
                       <div className="space-y-2">
                         <div className="flex justify-between border-b border-white/20 pb-2">
                           <span>Real Power (P):</span>
@@ -232,38 +251,40 @@ export default function PowerSystemsPage() {
 
           {/* Short Circuit Calculator */}
           <TabsContent value="short-circuit">
-            <Card>
+            <Card className="glass-surface border-white/10 backdrop-blur-glass">
               <CardHeader>
-                <CardTitle>Short Circuit Analysis</CardTitle>
-                <CardDescription>Calculate fault current and breaker requirements</CardDescription>
+                <CardTitle className="text-white">Short Circuit Analysis</CardTitle>
+                <CardDescription className="text-[#B8A7E0]">Calculate fault current and breaker requirements</CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="grid md:grid-cols-2 gap-6">
                   <div className="space-y-4">
                     <div>
-                      <Label htmlFor="system-voltage">System Voltage (V)</Label>
+                      <Label htmlFor="system-voltage" className="text-white">System Voltage (V)</Label>
                       <Input
                         id="system-voltage"
                         type="number"
                         placeholder="480"
                         value={systemVoltage}
                         onChange={(e) => setSystemVoltage(e.target.value)}
+                        className="glass-surface text-white bg-white/10 backdrop-blur-glass border-white/20"
                       />
                     </div>
 
                     <div>
-                      <Label htmlFor="transformer-kva">Transformer kVA</Label>
+                      <Label htmlFor="transformer-kva" className="text-white">Transformer kVA</Label>
                       <Input
                         id="transformer-kva"
                         type="number"
                         placeholder="1000"
                         value={transformerKVA}
                         onChange={(e) => setTransformerKVA(e.target.value)}
+                        className="glass-surface text-white bg-white/10 backdrop-blur-glass border-white/20"
                       />
                     </div>
 
                     <div>
-                      <Label htmlFor="impedance">Transformer Impedance (%)</Label>
+                      <Label htmlFor="impedance" className="text-white">Transformer Impedance (%)</Label>
                       <Input
                         id="impedance"
                         type="number"
@@ -271,17 +292,18 @@ export default function PowerSystemsPage() {
                         placeholder="5.75"
                         value={impedance}
                         onChange={(e) => setImpedance(e.target.value)}
+                        className="glass-surface text-white bg-white/10 backdrop-blur-glass border-white/20"
                       />
                     </div>
 
-                    <Button onClick={calculateShortCircuit} className="w-full bg-[#071428] hover:bg-[#071428]/90">
+                    <Button onClick={calculateShortCircuit} className="w-full gradient-violet text-white hover:shadow-glowViolet">
                       Calculate Fault Current
                     </Button>
                   </div>
 
                   {shortCircuitResult && (
-                    <div className="bg-[#071428] text-white p-6 rounded-lg space-y-3">
-                      <h3 className="text-xl font-bold mb-4 text-[#00C2D1]">Results</h3>
+                    <div className="gradient-violet p-6 rounded-lg space-y-3">
+                      <h3 className="text-xl font-bold mb-4 text-white">Results</h3>
                       <div className="space-y-2">
                         <div className="flex justify-between border-b border-white/20 pb-2">
                           <span>Fault Current:</span>
@@ -312,80 +334,82 @@ export default function PowerSystemsPage() {
 
           {/* Voltage Drop Calculator */}
           <TabsContent value="voltage-drop">
-            <Card>
+            <Card className="glass-surface border-white/10 backdrop-blur-glass">
               <CardHeader>
-                <CardTitle>Voltage Drop Calculator</CardTitle>
-                <CardDescription>Calculate voltage drop and NEC compliance for wire sizing</CardDescription>
+                <CardTitle className="text-white">Voltage Drop Calculator</CardTitle>
+                <CardDescription className="text-[#B8A7E0]">Calculate voltage drop and NEC compliance for wire sizing</CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="grid md:grid-cols-2 gap-6">
                   <div className="space-y-4">
                     <div>
-                      <Label htmlFor="system-voltage-vd">System Voltage (V)</Label>
-                      <Select value={systemVoltageVD} onValueChange={setSystemVoltageVD}>
-                        <SelectTrigger id="system-voltage-vd">
+                      <Label htmlFor="system-voltage-vd" className="text-white">System Voltage (V)</Label>
+                      <Select value={systemVoltageVD} onValueChange={setSystemVoltageVD} className="glass-surface text-white bg-white/10 backdrop-blur-glass border-white/20">
+                        <SelectTrigger id="system-voltage-vd" className="glass-surface text-white bg-white/10 backdrop-blur-glass border-white/20">
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="120">120V</SelectItem>
-                          <SelectItem value="208">208V</SelectItem>
-                          <SelectItem value="240">240V</SelectItem>
-                          <SelectItem value="277">277V</SelectItem>
-                          <SelectItem value="480">480V</SelectItem>
+                          <SelectItem value="120" className="text-white hover:bg-white/20">120V</SelectItem>
+                          <SelectItem value="208" className="text-white hover:bg-white/20">208V</SelectItem>
+                          <SelectItem value="240" className="text-white hover:bg-white/20">240V</SelectItem>
+                          <SelectItem value="277" className="text-white hover:bg-white/20">277V</SelectItem>
+                          <SelectItem value="480" className="text-white hover:bg-white/20">480V</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
 
                     <div>
-                      <Label htmlFor="wire-length">Wire Length (feet, one-way)</Label>
+                      <Label htmlFor="wire-length" className="text-white">Wire Length (feet, one-way)</Label>
                       <Input
                         id="wire-length"
                         type="number"
                         placeholder="150"
                         value={wireLength}
                         onChange={(e) => setWireLength(e.target.value)}
+                        className="glass-surface text-white bg-white/10 backdrop-blur-glass border-white/20"
                       />
                     </div>
 
                     <div>
-                      <Label htmlFor="load-current">Load Current (A)</Label>
+                      <Label htmlFor="load-current" className="text-white">Load Current (A)</Label>
                       <Input
                         id="load-current"
                         type="number"
                         placeholder="20"
                         value={loadCurrent}
                         onChange={(e) => setLoadCurrent(e.target.value)}
+                        className="glass-surface text-white bg-white/10 backdrop-blur-glass border-white/20"
                       />
                     </div>
 
                     <div>
-                      <Label htmlFor="wire-gauge">Wire Gauge (AWG)</Label>
-                      <Select value={wireGauge} onValueChange={setWireGauge}>
-                        <SelectTrigger id="wire-gauge">
+                      <Label htmlFor="wire-gauge" className="text-white">Wire Gauge (AWG)</Label>
+                      <Select value={wireGauge} onValueChange={setWireGauge} className="glass-surface text-white bg-white/10 backdrop-blur-glass border-white/20">
+                        <SelectTrigger id="wire-gauge" className="glass-surface text-white bg-white/10 backdrop-blur-glass border-white/20">
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="14">14 AWG</SelectItem>
-                          <SelectItem value="12">12 AWG</SelectItem>
-                          <SelectItem value="10">10 AWG</SelectItem>
-                          <SelectItem value="8">8 AWG</SelectItem>
-                          <SelectItem value="6">6 AWG</SelectItem>
-                          <SelectItem value="4">4 AWG</SelectItem>
-                          <SelectItem value="2">2 AWG</SelectItem>
-                          <SelectItem value="1">1 AWG</SelectItem>
-                          <SelectItem value="0">1/0 AWG</SelectItem>
+                          <SelectItem value="14" className="text-white hover:bg-white/20">14 AWG</SelectItem>
+                          <SelectItem value="12" className="text-white hover:bg-white/20">12 AWG</SelectItem>
+                          <SelectItem value="10" className="text-white hover:bg-white/20">10 AWG</SelectItem>
+                          <SelectItem value="8" className="text-white hover:bg-white/20">8 AWG</SelectItem>
+                          <SelectItem value="6" className="text-white hover:bg-white/20">6 AWG</SelectItem>
+                          <SelectItem value="4" className="text-white hover:bg-white/20">4 AWG</SelectItem>
+                          <SelectItem value="2" className="text-white hover:bg-white/20">2 AWG</SelectItem>
+                          <SelectItem value="1" className="text-white hover:bg-white/20">1 AWG</SelectItem>
+                          <SelectItem value="0" className="text-white hover:bg-white/20">1/0 AWG</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
 
-                    <Button onClick={calculateVoltageDrop} className="w-full bg-[#071428] hover:bg-[#071428]/90">
+                    <Button onClick={calculateVoltageDrop} className="w-full gradient-violet text-white hover:shadow-glowViolet">
                       Calculate Voltage Drop
                     </Button>
                   </div>
 
                   {voltageDropResult && (
-                    <div className="bg-[#071428] text-white p-6 rounded-lg space-y-3">
-                      <h3 className="text-xl font-bold mb-4 text-[#00C2D1]">Results</h3>
+                    <div className="gradient-violet p-6 rounded-lg space-y-3">
+                      <h3 className="text-xl font-bold mb-4 text-white">Results</h3>
                       <div className="space-y-2">
                         <div className="flex justify-between border-b border-white/20 pb-2">
                           <span>Voltage Drop:</span>
