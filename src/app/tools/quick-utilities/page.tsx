@@ -473,8 +473,121 @@ export default function QuickUtilitiesPage() {
                 <CardTitle className="text-white">555 Timer Designer</CardTitle>
                 <CardDescription className="text-[#B8A7E0]">Calculate component values for astable/monostable configurations</CardDescription>
               </CardHeader>
-              <CardContent>
-                <p className="text-[#B8A7E0] text-center py-12">Component calculator with NeoLumen theme</p>
+              <CardContent className="space-y-6">
+                <div className="grid md:grid-cols-2 gap-6">
+                  <div className="space-y-4">
+                    <div>
+                      <Label htmlFor="timer-mode" className="text-white">Timer Mode</Label>
+                      <Select value={timerMode} onValueChange={setTimerMode}>
+                        <SelectTrigger id="timer-mode" className="glass-surface border-white/20 text-white">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="astable">Astable (Oscillator)</SelectItem>
+                          <SelectItem value="monostable">Monostable (One-Shot)</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div>
+                      <Label htmlFor="frequency" className="text-white">
+                        {timerMode === 'astable' ? 'Frequency (Hz)' : 'Pulse Frequency (Hz)'}
+                      </Label>
+                      <Input
+                        id="frequency"
+                        type="number"
+                        placeholder="1000"
+                        value={frequency}
+                        onChange={(e) => setFrequency(e.target.value)}
+                        className="glass-surface border-white/20 text-white placeholder:text-[#B8A7E0]"
+                      />
+                      <p className="text-xs text-[#B8A7E0] mt-1">
+                        {timerMode === 'astable' ? 'Output oscillation frequency' : 'Rate of trigger pulses'}
+                      </p>
+                    </div>
+
+                    {timerMode === 'astable' && (
+                      <div>
+                        <Label htmlFor="duty-cycle" className="text-white">Duty Cycle (%)</Label>
+                        <Input
+                          id="duty-cycle"
+                          type="number"
+                          placeholder="50"
+                          value={dutyCycle}
+                          onChange={(e) => setDutyCycle(e.target.value)}
+                          className="glass-surface border-white/20 text-white placeholder:text-[#B8A7E0]"
+                        />
+                        <p className="text-xs text-[#B8A7E0] mt-1">
+                          Percentage of time output is HIGH (50-99%)
+                        </p>
+                      </div>
+                    )}
+
+                    <Button onClick={calculate555Timer} className="w-full gradient-fire text-white hover:shadow-glowOrange">
+                      Calculate Components
+                    </Button>
+
+                    <div className="glass-surface border border-[#00E5FF]/30 rounded-lg p-4 mt-4">
+                      <p className="text-sm text-[#00E5FF] mb-2 font-semibold">💡 Quick Guide:</p>
+                      <ul className="text-xs text-[#B8A7E0] space-y-1">
+                        <li>• <span className="text-white">Astable:</span> Continuous square wave output</li>
+                        <li>• <span className="text-white">Monostable:</span> Single pulse on trigger</li>
+                        <li>• Use standard resistor values (1%, 5%)</li>
+                        <li>• Add 0.01µF bypass cap on pin 5</li>
+                      </ul>
+                    </div>
+                  </div>
+
+                  {timerResult && (
+                    <div className="gradient-fire p-6 rounded-lg space-y-3">
+                      <h3 className="text-xl font-bold mb-4 text-white">Component Values</h3>
+                      <div className="space-y-2">
+                        <div className="flex justify-between border-b border-white/20 pb-2">
+                          <span className="text-white/90">Mode:</span>
+                          <span className="font-bold text-white">{timerResult.mode}</span>
+                        </div>
+                        <div className="flex justify-between border-b border-white/20 pb-2">
+                          <span className="text-white/90">R1 (Timing):</span>
+                          <span className="font-bold text-white">{timerResult.r1}</span>
+                        </div>
+                        <div className="flex justify-between border-b border-white/20 pb-2">
+                          <span className="text-white/90">R2 (Timing):</span>
+                          <span className="font-bold text-white">{timerResult.r2}</span>
+                        </div>
+                        <div className="flex justify-between border-b border-white/20 pb-2">
+                          <span className="text-white/90">C (Timing):</span>
+                          <span className="font-bold text-white">{timerResult.c}</span>
+                        </div>
+                        <div className="flex justify-between border-b border-white/20 pb-2">
+                          <span className="text-white/90">Frequency:</span>
+                          <span className="font-bold text-white">{timerResult.frequency} Hz</span>
+                        </div>
+                        <div className="flex justify-between border-b border-white/20 pb-2">
+                          <span className="text-white/90">Duty Cycle:</span>
+                          <span className="font-bold text-white">{timerResult.dutyCycle}%</span>
+                        </div>
+                        <div className="flex justify-between border-b border-white/20 pb-2">
+                          <span className="text-white/90">Time HIGH:</span>
+                          <span className="font-bold text-white">{timerResult.tHigh} ms</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-white/90">Time LOW:</span>
+                          <span className="font-bold text-white">{timerResult.tLow}</span>
+                        </div>
+                      </div>
+                      
+                      <div className="mt-4 pt-4 border-t border-white/20">
+                        <p className="text-sm text-white/80 mb-2">📌 Pin Connections:</p>
+                        <ul className="text-xs text-white/70 space-y-1">
+                          <li>• Pin 1: GND | Pin 8: Vcc (+5-15V)</li>
+                          <li>• Pin 2: Trigger | Pin 3: Output</li>
+                          <li>• Pin 4: Reset (to Vcc) | Pin 5: Control (0.01µF to GND)</li>
+                          <li>• Pin 6: Threshold | Pin 7: Discharge</li>
+                        </ul>
+                      </div>
+                    </div>
+                  )}
+                </div>
               </CardContent>
             </Card>
           </TabsContent>
@@ -486,8 +599,117 @@ export default function QuickUtilitiesPage() {
                 <CardTitle className="text-white">OpAmp Circuit Calculator</CardTitle>
                 <CardDescription className="text-[#B8A7E0]">Calculate gain, resistor values, and output voltage</CardDescription>
               </CardHeader>
-              <CardContent>
-                <p className="text-[#B8A7E0] text-center py-12">OpAmp calculator with NeoLumen theme</p>
+              <CardContent className="space-y-6">
+                <div className="grid md:grid-cols-2 gap-6">
+                  <div className="space-y-4">
+                    <div>
+                      <Label htmlFor="opamp-config" className="text-white">Configuration</Label>
+                      <Select value={opampConfig} onValueChange={setOpampConfig}>
+                        <SelectTrigger id="opamp-config" className="glass-surface border-white/20 text-white">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="noninverting">Non-Inverting Amplifier</SelectItem>
+                          <SelectItem value="inverting">Inverting Amplifier</SelectItem>
+                          <SelectItem value="summing">Summing Amplifier</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div>
+                      <Label htmlFor="input-volt" className="text-white">Input Voltage (V)</Label>
+                      <Input
+                        id="input-volt"
+                        type="number"
+                        placeholder="1.0"
+                        value={inputVolt}
+                        onChange={(e) => setInputVolt(e.target.value)}
+                        className="glass-surface border-white/20 text-white placeholder:text-[#B8A7E0]"
+                      />
+                      <p className="text-xs text-[#B8A7E0] mt-1">
+                        Input signal voltage
+                      </p>
+                    </div>
+
+                    <div>
+                      <Label htmlFor="desired-gain" className="text-white">Desired Gain</Label>
+                      <Input
+                        id="desired-gain"
+                        type="number"
+                        placeholder="10"
+                        value={desiredGain}
+                        onChange={(e) => setDesiredGain(e.target.value)}
+                        className="glass-surface border-white/20 text-white placeholder:text-[#B8A7E0]"
+                      />
+                      <p className="text-xs text-[#B8A7E0] mt-1">
+                        {opampConfig === 'noninverting' 
+                          ? 'Gain must be ≥ 1 (1 = unity gain/buffer)'
+                          : 'Absolute gain value (magnitude)'}
+                      </p>
+                    </div>
+
+                    <Button onClick={calculateOpAmp} className="w-full gradient-fire text-white hover:shadow-glowOrange">
+                      Calculate Circuit
+                    </Button>
+
+                    <div className="glass-surface border border-[#9C4AFF]/30 rounded-lg p-4 mt-4">
+                      <p className="text-sm text-[#9C4AFF] mb-2 font-semibold">💡 Configuration Notes:</p>
+                      <ul className="text-xs text-[#B8A7E0] space-y-1">
+                        <li>• <span className="text-white">Non-Inverting:</span> High input impedance, no phase shift</li>
+                        <li>• <span className="text-white">Inverting:</span> 180° phase shift, gain can be &lt;1</li>
+                        <li>• <span className="text-white">Summing:</span> Adds multiple inputs (inverted)</li>
+                        <li>• Use 1% metal film resistors for precision</li>
+                      </ul>
+                    </div>
+                  </div>
+
+                  {opampResult && (
+                    <div className="gradient-fire p-6 rounded-lg space-y-3">
+                      <h3 className="text-xl font-bold mb-4 text-white">Circuit Design</h3>
+                      <div className="space-y-2">
+                        <div className="flex justify-between border-b border-white/20 pb-2">
+                          <span className="text-white/90">Configuration:</span>
+                          <span className="font-bold text-sm text-white">{opampResult.config}</span>
+                        </div>
+                        <div className="flex justify-between border-b border-white/20 pb-2">
+                          <span className="text-white/90">R1 (Input):</span>
+                          <span className="font-bold text-white">{opampResult.r1}</span>
+                        </div>
+                        <div className="flex justify-between border-b border-white/20 pb-2">
+                          <span className="text-white/90">R2 (Feedback):</span>
+                          <span className="font-bold text-white">{opampResult.r2}</span>
+                        </div>
+                        <div className="flex justify-between border-b border-white/20 pb-2">
+                          <span className="text-white/90">Calculated Gain:</span>
+                          <span className="font-bold text-white">{opampResult.gain}</span>
+                        </div>
+                        <div className="flex justify-between border-b border-white/20 pb-2">
+                          <span className="text-white/90">Input Impedance:</span>
+                          <span className="font-bold text-white">{opampResult.inputImpedance}</span>
+                        </div>
+                        <div className="flex justify-between border-b border-white/20 pb-2">
+                          <span className="text-white/90">Output Voltage:</span>
+                          <span className="font-bold text-white">{opampResult.outputVoltage} V</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-white/90">Phase Shift:</span>
+                          <span className="font-bold text-white">{opampResult.phase}</span>
+                        </div>
+                      </div>
+                      
+                      <div className="mt-4 pt-4 border-t border-white/20">
+                        <p className="text-sm text-white/80 mb-2">📌 Design Tips:</p>
+                        <ul className="text-xs text-white/70 space-y-1">
+                          <li>• Use ±15V or ±12V dual supply for audio</li>
+                          <li>• Add 0.1µF bypass caps on power pins</li>
+                          <li>• Keep resistors in 1kΩ-100kΩ range</li>
+                          <li>• Check op-amp GBW for high-freq signals</li>
+                          <li>• TL072/TL082 good for audio, LM358 for general use</li>
+                        </ul>
+                      </div>
+                    </div>
+                  )}
+                </div>
               </CardContent>
             </Card>
           </TabsContent>
