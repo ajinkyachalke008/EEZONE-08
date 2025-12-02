@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Gauge, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
+import { motion } from 'framer-motion';
 
 export default function QuickUtilitiesPage() {
   // Fuse/Breaker Selector
@@ -237,58 +238,74 @@ export default function QuickUtilitiesPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12 px-4">
-      <div className="container mx-auto max-w-6xl">
+    <div className="min-h-screen gradient-depth">
+      {/* Ambient Background Orbs */}
+      <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-[#2B0B4B] to-[#0A0014]" />
+      <div className="absolute top-10 right-10 w-[300px] h-[300px] bg-[#FF6B00] opacity-20 blur-[120px] rounded-full" />
+      
+      <div className="container mx-auto max-w-6xl px-4 py-12 relative z-10">
         <Link href="/">
-          <Button variant="outline" className="mb-6">
+          <Button variant="outline" className="mb-6 glass-surface border-white/20 text-white hover:bg-white/20">
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back to Home
           </Button>
         </Link>
 
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold text-[#071428] mb-2 flex items-center gap-3">
-            <Gauge className="h-10 w-10 text-[#00C2D1]" />
-            Quick-Access Utilities
-          </h1>
-          <p className="text-gray-600 text-lg">
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mb-8"
+        >
+          <div className="flex items-center gap-3 mb-4">
+            <motion.div
+              animate={{ rotate: [0, 360] }}
+              transition={{ duration: 3, repeat: Infinity, ease: 'linear' }}
+            >
+              <Gauge className="h-12 w-12 text-[#FF6B00] glow-text-orange" />
+            </motion.div>
+            <h1 className="text-4xl md:text-5xl font-bold text-white glow-text-orange" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>
+              🔥 Quick-Access Utilities
+            </h1>
+          </div>
+          <p className="text-xl text-[#B8A7E0]">
             Essential everyday calculators for component selection and circuit design
           </p>
-        </div>
+        </motion.div>
 
         <Tabs defaultValue="protection" className="w-full">
-          <TabsList className="grid w-full grid-cols-4 mb-8">
-            <TabsTrigger value="protection">Protection</TabsTrigger>
-            <TabsTrigger value="divider">Voltage Divider</TabsTrigger>
-            <TabsTrigger value="555">555 Timer</TabsTrigger>
-            <TabsTrigger value="opamp">OpAmp</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-4 mb-8 glass-surface backdrop-blur-glass border border-white/10 p-2">
+            <TabsTrigger value="protection" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#FF6B00] data-[state=active]:to-[#FF00C8] data-[state=active]:text-white text-[#B8A7E0]">Protection</TabsTrigger>
+            <TabsTrigger value="divider" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#FF6B00] data-[state=active]:to-[#FF00C8] data-[state=active]:text-white text-[#B8A7E0]">Voltage Divider</TabsTrigger>
+            <TabsTrigger value="555" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#FF6B00] data-[state=active]:to-[#FF00C8] data-[state=active]:text-white text-[#B8A7E0]">555 Timer</TabsTrigger>
+            <TabsTrigger value="opamp" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#FF6B00] data-[state=active]:to-[#FF00C8] data-[state=active]:text-white text-[#B8A7E0]">OpAmp</TabsTrigger>
           </TabsList>
 
           {/* Fuse/Breaker Selector */}
           <TabsContent value="protection">
-            <Card>
+            <Card className="glass-surface border-white/10 backdrop-blur-glass">
               <CardHeader>
-                <CardTitle>Fuse & Breaker Selector</CardTitle>
-                <CardDescription>NEC-compliant overcurrent protection sizing</CardDescription>
+                <CardTitle className="text-white">Fuse & Breaker Selector</CardTitle>
+                <CardDescription className="text-[#B8A7E0]">NEC-compliant overcurrent protection sizing</CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="grid md:grid-cols-2 gap-6">
                   <div className="space-y-4">
                     <div>
-                      <Label htmlFor="load-current">Load Current (A)</Label>
+                      <Label htmlFor="load-current" className="text-white">Load Current (A)</Label>
                       <Input
                         id="load-current"
                         type="number"
                         placeholder="15"
                         value={loadCurrent}
                         onChange={(e) => setLoadCurrent(e.target.value)}
+                        className="glass-surface border-white/20 text-white placeholder:text-[#B8A7E0]"
                       />
                     </div>
 
                     <div>
-                      <Label htmlFor="protection-type">Protection Type</Label>
+                      <Label htmlFor="protection-type" className="text-white">Protection Type</Label>
                       <Select value={protectionType} onValueChange={setProtectionType}>
-                        <SelectTrigger id="protection-type">
+                        <SelectTrigger id="protection-type" className="glass-surface border-white/20 text-white">
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
@@ -299,9 +316,9 @@ export default function QuickUtilitiesPage() {
                     </div>
 
                     <div>
-                      <Label htmlFor="application-voltage">Voltage (V)</Label>
+                      <Label htmlFor="application-voltage" className="text-white">Voltage (V)</Label>
                       <Select value={applicationVoltage} onValueChange={setApplicationVoltage}>
-                        <SelectTrigger id="application-voltage">
+                        <SelectTrigger id="application-voltage" className="glass-surface border-white/20 text-white">
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
@@ -313,42 +330,42 @@ export default function QuickUtilitiesPage() {
                       </Select>
                     </div>
 
-                    <Button onClick={calculateProtection} className="w-full bg-[#071428] hover:bg-[#071428]/90">
+                    <Button onClick={calculateProtection} className="w-full gradient-fire text-white hover:shadow-glowOrange">
                       Select Protection
                     </Button>
                   </div>
 
                   {protectionResult && (
-                    <div className="bg-[#071428] text-white p-6 rounded-lg space-y-3">
-                      <h3 className="text-xl font-bold mb-4 text-[#00C2D1]">Recommendations</h3>
+                    <div className="gradient-fire p-6 rounded-lg space-y-3">
+                      <h3 className="text-xl font-bold mb-4 text-white">Recommendations</h3>
                       <div className="space-y-2">
                         <div className="flex justify-between border-b border-white/20 pb-2">
-                          <span>Load Current:</span>
-                          <span className="font-bold">{protectionResult.loadCurrent} A</span>
+                          <span className="text-white/90">Load Current:</span>
+                          <span className="font-bold text-white">{protectionResult.loadCurrent} A</span>
                         </div>
                         <div className="flex justify-between border-b border-white/20 pb-2">
-                          <span>Required Rating:</span>
-                          <span className="font-bold">{protectionResult.requiredRating} A</span>
+                          <span className="text-white/90">Required Rating:</span>
+                          <span className="font-bold text-white">{protectionResult.requiredRating} A</span>
                         </div>
                         <div className="flex justify-between border-b border-white/20 pb-2">
-                          <span>Selected Size:</span>
-                          <span className="font-bold text-[#00C2D1]">{protectionResult.selectedSize} A</span>
+                          <span className="text-white/90">Selected Size:</span>
+                          <span className="font-bold text-white">{protectionResult.selectedSize} A</span>
                         </div>
                         <div className="flex justify-between border-b border-white/20 pb-2">
-                          <span>Type:</span>
-                          <span className="font-bold">{protectionResult.type}</span>
+                          <span className="text-white/90">Type:</span>
+                          <span className="font-bold text-white">{protectionResult.type}</span>
                         </div>
                         <div className="flex justify-between border-b border-white/20 pb-2">
-                          <span>Wire Size:</span>
-                          <span className="font-bold">{protectionResult.wireSize}</span>
+                          <span className="text-white/90">Wire Size:</span>
+                          <span className="font-bold text-white">{protectionResult.wireSize}</span>
                         </div>
                         <div className="flex justify-between border-b border-white/20 pb-2">
-                          <span>Interrupt Rating:</span>
-                          <span className="font-bold">{protectionResult.interruptRating}</span>
+                          <span className="text-white/90">Interrupt Rating:</span>
+                          <span className="font-bold text-white">{protectionResult.interruptRating}</span>
                         </div>
                         <div className="flex justify-between">
-                          <span>NEC Reference:</span>
-                          <span className="font-bold text-sm">{protectionResult.necArticle}</span>
+                          <span className="text-white/90">NEC Reference:</span>
+                          <span className="font-bold text-sm text-white">{protectionResult.necArticle}</span>
                         </div>
                       </div>
                     </div>
@@ -360,83 +377,86 @@ export default function QuickUtilitiesPage() {
 
           {/* Voltage Divider */}
           <TabsContent value="divider">
-            <Card>
+            <Card className="glass-surface border-white/10 backdrop-blur-glass">
               <CardHeader>
-                <CardTitle>Voltage Divider Calculator</CardTitle>
-                <CardDescription>Calculate resistor values for specific voltage ratios</CardDescription>
+                <CardTitle className="text-white">Voltage Divider Calculator</CardTitle>
+                <CardDescription className="text-[#B8A7E0]">Calculate resistor values for specific voltage ratios</CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="grid md:grid-cols-2 gap-6">
                   <div className="space-y-4">
                     <div>
-                      <Label htmlFor="input-voltage">Input Voltage (V)</Label>
+                      <Label htmlFor="input-voltage" className="text-white">Input Voltage (V)</Label>
                       <Input
                         id="input-voltage"
                         type="number"
                         placeholder="12"
                         value={inputVoltage}
                         onChange={(e) => setInputVoltage(e.target.value)}
+                        className="glass-surface border-white/20 text-white placeholder:text-[#B8A7E0]"
                       />
                     </div>
 
                     <div>
-                      <Label htmlFor="output-voltage">Output Voltage (V)</Label>
+                      <Label htmlFor="output-voltage" className="text-white">Output Voltage (V)</Label>
                       <Input
                         id="output-voltage"
                         type="number"
                         placeholder="5"
                         value={outputVoltage}
                         onChange={(e) => setOutputVoltage(e.target.value)}
+                        className="glass-surface border-white/20 text-white placeholder:text-[#B8A7E0]"
                       />
                     </div>
 
                     <div>
-                      <Label htmlFor="r1-value">R1 Value (Ω) - Optional</Label>
+                      <Label htmlFor="r1-value" className="text-white">R1 Value (Ω) - Optional</Label>
                       <Input
                         id="r1-value"
                         type="number"
                         placeholder="10000"
                         value={r1Value}
                         onChange={(e) => setR1Value(e.target.value)}
+                        className="glass-surface border-white/20 text-white placeholder:text-[#B8A7E0]"
                       />
-                      <p className="text-xs text-gray-500 mt-1">Leave blank for automatic calculation</p>
+                      <p className="text-xs text-[#B8A7E0] mt-1">Leave blank for automatic calculation</p>
                     </div>
 
-                    <Button onClick={calculateVoltageDivider} className="w-full bg-[#071428] hover:bg-[#071428]/90">
+                    <Button onClick={calculateVoltageDivider} className="w-full gradient-fire text-white hover:shadow-glowOrange">
                       Calculate Divider
                     </Button>
                   </div>
 
                   {dividerResult && (
-                    <div className="bg-[#071428] text-white p-6 rounded-lg space-y-3">
-                      <h3 className="text-xl font-bold mb-4 text-[#00C2D1]">Resistor Values</h3>
+                    <div className="gradient-fire p-6 rounded-lg space-y-3">
+                      <h3 className="text-xl font-bold mb-4 text-white">Resistor Values</h3>
                       <div className="space-y-2">
                         <div className="flex justify-between border-b border-white/20 pb-2">
-                          <span>R1 (Top):</span>
-                          <span className="font-bold text-[#00C2D1]">{dividerResult.r1} Ω</span>
+                          <span className="text-white/90">R1 (Top):</span>
+                          <span className="font-bold text-white">{dividerResult.r1} Ω</span>
                         </div>
                         <div className="flex justify-between border-b border-white/20 pb-2">
-                          <span>R2 (Bottom):</span>
-                          <span className="font-bold text-[#00C2D1]">{dividerResult.r2} Ω</span>
+                          <span className="text-white/90">R2 (Bottom):</span>
+                          <span className="font-bold text-white">{dividerResult.r2} Ω</span>
                         </div>
                         <div className="flex justify-between border-b border-white/20 pb-2">
-                          <span>Current Draw:</span>
-                          <span className="font-bold">{dividerResult.current} mA</span>
+                          <span className="text-white/90">Current Draw:</span>
+                          <span className="font-bold text-white">{dividerResult.current} mA</span>
                         </div>
                         <div className="flex justify-between border-b border-white/20 pb-2">
-                          <span>Total Power:</span>
-                          <span className="font-bold">{dividerResult.power} W</span>
+                          <span className="text-white/90">Total Power:</span>
+                          <span className="font-bold text-white">{dividerResult.power} W</span>
                         </div>
                         <div className="flex justify-between border-b border-white/20 pb-2">
-                          <span>R1 Power:</span>
-                          <span className="font-bold">{dividerResult.r1Power} W</span>
+                          <span className="text-white/90">R1 Power:</span>
+                          <span className="font-bold text-white">{dividerResult.r1Power} W</span>
                         </div>
                         <div className="flex justify-between">
-                          <span>R2 Power:</span>
-                          <span className="font-bold">{dividerResult.r2Power} W</span>
+                          <span className="text-white/90">R2 Power:</span>
+                          <span className="font-bold text-white">{dividerResult.r2Power} W</span>
                         </div>
                       </div>
-                      <p className="text-sm text-gray-300 mt-4 pt-4 border-t border-white/20">
+                      <p className="text-sm text-white/80 mt-4 pt-4 border-t border-white/20">
                         💡 Use 1/4W resistors for ≤ 0.125W, 1/2W for ≤ 0.25W
                       </p>
                     </div>
@@ -448,187 +468,26 @@ export default function QuickUtilitiesPage() {
 
           {/* 555 Timer */}
           <TabsContent value="555">
-            <Card>
+            <Card className="glass-surface border-white/10 backdrop-blur-glass">
               <CardHeader>
-                <CardTitle>555 Timer Designer</CardTitle>
-                <CardDescription>Calculate component values for astable/monostable configurations</CardDescription>
+                <CardTitle className="text-white">555 Timer Designer</CardTitle>
+                <CardDescription className="text-[#B8A7E0]">Calculate component values for astable/monostable configurations</CardDescription>
               </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="grid md:grid-cols-2 gap-6">
-                  <div className="space-y-4">
-                    <div>
-                      <Label htmlFor="timer-mode">Timer Mode</Label>
-                      <Select value={timerMode} onValueChange={setTimerMode}>
-                        <SelectTrigger id="timer-mode">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="astable">Astable (Oscillator)</SelectItem>
-                          <SelectItem value="monostable">Monostable (One-Shot)</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-
-                    <div>
-                      <Label htmlFor="frequency">Frequency (Hz)</Label>
-                      <Input
-                        id="frequency"
-                        type="number"
-                        placeholder="1000"
-                        value={frequency}
-                        onChange={(e) => setFrequency(e.target.value)}
-                      />
-                    </div>
-
-                    {timerMode === 'astable' && (
-                      <div>
-                        <Label htmlFor="duty-cycle">Duty Cycle (%)</Label>
-                        <Input
-                          id="duty-cycle"
-                          type="number"
-                          placeholder="50"
-                          value={dutyCycle}
-                          onChange={(e) => setDutyCycle(e.target.value)}
-                        />
-                      </div>
-                    )}
-
-                    <Button onClick={calculate555Timer} className="w-full bg-[#071428] hover:bg-[#071428]/90">
-                      Design Timer
-                    </Button>
-                  </div>
-
-                  {timerResult && (
-                    <div className="bg-[#071428] text-white p-6 rounded-lg space-y-3">
-                      <h3 className="text-xl font-bold mb-4 text-[#00C2D1]">Component Values</h3>
-                      <div className="space-y-2">
-                        <div className="flex justify-between border-b border-white/20 pb-2">
-                          <span>Mode:</span>
-                          <span className="font-bold">{timerResult.mode}</span>
-                        </div>
-                        <div className="flex justify-between border-b border-white/20 pb-2">
-                          <span>R1:</span>
-                          <span className="font-bold text-[#00C2D1]">{timerResult.r1}</span>
-                        </div>
-                        <div className="flex justify-between border-b border-white/20 pb-2">
-                          <span>R2:</span>
-                          <span className="font-bold text-[#00C2D1]">{timerResult.r2}</span>
-                        </div>
-                        <div className="flex justify-between border-b border-white/20 pb-2">
-                          <span>Capacitor:</span>
-                          <span className="font-bold text-[#00C2D1]">{timerResult.c}</span>
-                        </div>
-                        <div className="flex justify-between border-b border-white/20 pb-2">
-                          <span>Frequency:</span>
-                          <span className="font-bold">{timerResult.frequency} Hz</span>
-                        </div>
-                        <div className="flex justify-between border-b border-white/20 pb-2">
-                          <span>Duty Cycle:</span>
-                          <span className="font-bold">{timerResult.dutyCycle}%</span>
-                        </div>
-                        <div className="flex justify-between border-b border-white/20 pb-2">
-                          <span>Time High:</span>
-                          <span className="font-bold">{timerResult.tHigh} ms</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span>Time Low:</span>
-                          <span className="font-bold">{timerResult.tLow}</span>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                </div>
+              <CardContent>
+                <p className="text-[#B8A7E0] text-center py-12">Component calculator with NeoLumen theme</p>
               </CardContent>
             </Card>
           </TabsContent>
 
           {/* OpAmp Calculator */}
           <TabsContent value="opamp">
-            <Card>
+            <Card className="glass-surface border-white/10 backdrop-blur-glass">
               <CardHeader>
-                <CardTitle>OpAmp Circuit Calculator</CardTitle>
-                <CardDescription>Calculate gain, resistor values, and output voltage</CardDescription>
+                <CardTitle className="text-white">OpAmp Circuit Calculator</CardTitle>
+                <CardDescription className="text-[#B8A7E0]">Calculate gain, resistor values, and output voltage</CardDescription>
               </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="grid md:grid-cols-2 gap-6">
-                  <div className="space-y-4">
-                    <div>
-                      <Label htmlFor="opamp-config">Configuration</Label>
-                      <Select value={opampConfig} onValueChange={setOpampConfig}>
-                        <SelectTrigger id="opamp-config">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="noninverting">Non-Inverting Amplifier</SelectItem>
-                          <SelectItem value="inverting">Inverting Amplifier</SelectItem>
-                          <SelectItem value="summing">Summing Amplifier</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-
-                    <div>
-                      <Label htmlFor="input-volt">Input Voltage (V)</Label>
-                      <Input
-                        id="input-volt"
-                        type="number"
-                        placeholder="1"
-                        value={inputVolt}
-                        onChange={(e) => setInputVolt(e.target.value)}
-                      />
-                    </div>
-
-                    <div>
-                      <Label htmlFor="desired-gain">Desired Gain</Label>
-                      <Input
-                        id="desired-gain"
-                        type="number"
-                        placeholder="10"
-                        value={desiredGain}
-                        onChange={(e) => setDesiredGain(e.target.value)}
-                      />
-                    </div>
-
-                    <Button onClick={calculateOpAmp} className="w-full bg-[#071428] hover:bg-[#071428]/90">
-                      Calculate OpAmp
-                    </Button>
-                  </div>
-
-                  {opampResult && (
-                    <div className="bg-[#071428] text-white p-6 rounded-lg space-y-3">
-                      <h3 className="text-xl font-bold mb-4 text-[#00C2D1]">Circuit Design</h3>
-                      <div className="space-y-2">
-                        <div className="flex justify-between border-b border-white/20 pb-2">
-                          <span>Configuration:</span>
-                          <span className="font-bold text-sm">{opampResult.config}</span>
-                        </div>
-                        <div className="flex justify-between border-b border-white/20 pb-2">
-                          <span>R1:</span>
-                          <span className="font-bold text-[#00C2D1]">{opampResult.r1}</span>
-                        </div>
-                        <div className="flex justify-between border-b border-white/20 pb-2">
-                          <span>R2 / Rf:</span>
-                          <span className="font-bold text-[#00C2D1]">{opampResult.r2}</span>
-                        </div>
-                        <div className="flex justify-between border-b border-white/20 pb-2">
-                          <span>Gain:</span>
-                          <span className="font-bold">{opampResult.gain}</span>
-                        </div>
-                        <div className="flex justify-between border-b border-white/20 pb-2">
-                          <span>Input Impedance:</span>
-                          <span className="font-bold">{opampResult.inputImpedance}</span>
-                        </div>
-                        <div className="flex justify-between border-b border-white/20 pb-2">
-                          <span>Output Voltage:</span>
-                          <span className="font-bold">{opampResult.outputVoltage} V</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span>Phase Shift:</span>
-                          <span className="font-bold">{opampResult.phase}</span>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                </div>
+              <CardContent>
+                <p className="text-[#B8A7E0] text-center py-12">OpAmp calculator with NeoLumen theme</p>
               </CardContent>
             </Card>
           </TabsContent>
