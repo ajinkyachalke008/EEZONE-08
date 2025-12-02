@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Lightbulb, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
+import { motion } from 'framer-motion';
 
 export default function LightingEnergyPage() {
   // Lighting Design Calculator
@@ -157,69 +158,86 @@ export default function LightingEnergyPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12 px-4">
-      <div className="container mx-auto max-w-6xl">
+    <div className="min-h-screen gradient-depth">
+      {/* Ambient Background Orbs */}
+      <div className="absolute top-20 left-10 w-[400px] h-[400px] bg-[#00E5FF] opacity-20 blur-[150px] rounded-full animate-pulse-slow" />
+      <div className="absolute bottom-20 right-10 w-[400px] h-[400px] bg-[#9C4AFF] opacity-20 blur-[150px] rounded-full animate-pulse-slow" style={{ animationDelay: '1s' }} />
+      
+      <div className="container mx-auto max-w-6xl px-4 py-12 relative z-10">
         <Link href="/">
-          <Button variant="outline" className="mb-6">
+          <Button variant="outline" className="mb-6 glass-surface border-white/20 text-white hover:bg-white/20">
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back to Home
           </Button>
         </Link>
 
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold text-[#071428] mb-2 flex items-center gap-3">
-            <Lightbulb className="h-10 w-10 text-[#00C2D1]" />
-            Lighting & Energy Tools
-          </h1>
-          <p className="text-gray-600 text-lg">
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mb-8"
+        >
+          <div className="flex items-center gap-3 mb-4">
+            <motion.div
+              animate={{ rotate: [0, 360] }}
+              transition={{ duration: 3, repeat: Infinity, ease: 'linear' }}
+            >
+              <Lightbulb className="h-12 w-12 text-[#00E5FF] glow-text-cyan" />
+            </motion.div>
+            <h1 className="text-4xl md:text-5xl font-bold text-white glow-text-cyan" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>
+              Lighting & Energy Tools
+            </h1>
+          </div>
+          <p className="text-xl text-[#B8A7E0]">
             Professional calculators for lighting design, energy analysis, and solar system sizing
           </p>
-        </div>
+        </motion.div>
 
         <Tabs defaultValue="lighting" className="w-full">
-          <TabsList className="grid w-full grid-cols-3 mb-8">
-            <TabsTrigger value="lighting">Lighting Design</TabsTrigger>
-            <TabsTrigger value="energy">Energy Cost</TabsTrigger>
-            <TabsTrigger value="solar">Solar PV</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-3 mb-8 glass-surface backdrop-blur-glass border border-white/10 p-2">
+            <TabsTrigger value="lighting" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#00E5FF] data-[state=active]:to-[#9C4AFF] data-[state=active]:text-white text-[#B8A7E0]">Lighting Design</TabsTrigger>
+            <TabsTrigger value="energy" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#00E5FF] data-[state=active]:to-[#9C4AFF] data-[state=active]:text-white text-[#B8A7E0]">Energy Cost</TabsTrigger>
+            <TabsTrigger value="solar" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#00E5FF] data-[state=active]:to-[#9C4AFF] data-[state=active]:text-white text-[#B8A7E0]">Solar PV</TabsTrigger>
           </TabsList>
 
           {/* Lighting Design Calculator */}
           <TabsContent value="lighting">
-            <Card>
+            <Card className="glass-surface border-white/10 backdrop-blur-glass">
               <CardHeader>
-                <CardTitle>Lighting Design Calculator</CardTitle>
-                <CardDescription>Calculate fixture requirements, spacing, and energy costs</CardDescription>
+                <CardTitle className="text-white">Lighting Design Calculator</CardTitle>
+                <CardDescription className="text-[#B8A7E0]">Calculate fixture requirements, spacing, and energy costs</CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="grid md:grid-cols-2 gap-6">
                   <div className="space-y-4">
                     <div className="grid grid-cols-2 gap-4">
                       <div>
-                        <Label htmlFor="room-length">Room Length (ft)</Label>
+                        <Label htmlFor="room-length" className="text-white">Room Length (ft)</Label>
                         <Input
                           id="room-length"
                           type="number"
                           placeholder="40"
                           value={roomLength}
                           onChange={(e) => setRoomLength(e.target.value)}
+                          className="glass-surface border-white/20 text-white placeholder:text-[#B8A7E0]"
                         />
                       </div>
                       <div>
-                        <Label htmlFor="room-width">Room Width (ft)</Label>
+                        <Label htmlFor="room-width" className="text-white">Room Width (ft)</Label>
                         <Input
                           id="room-width"
                           type="number"
                           placeholder="30"
                           value={roomWidth}
                           onChange={(e) => setRoomWidth(e.target.value)}
+                          className="glass-surface border-white/20 text-white placeholder:text-[#B8A7E0]"
                         />
                       </div>
                     </div>
 
                     <div>
-                      <Label htmlFor="room-type">Room Type</Label>
+                      <Label htmlFor="room-type" className="text-white">Room Type</Label>
                       <Select value={roomType} onValueChange={setRoomType}>
-                        <SelectTrigger id="room-type">
+                        <SelectTrigger id="room-type" className="glass-surface border-white/20 text-white">
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
@@ -234,71 +252,73 @@ export default function LightingEnergyPage() {
                     </div>
 
                     <div>
-                      <Label htmlFor="fixture-wattage">Fixture Wattage (W)</Label>
+                      <Label htmlFor="fixture-wattage" className="text-white">Fixture Wattage (W)</Label>
                       <Input
                         id="fixture-wattage"
                         type="number"
                         placeholder="40"
                         value={fixtureWattage}
                         onChange={(e) => setFixtureWattage(e.target.value)}
+                        className="glass-surface border-white/20 text-white placeholder:text-[#B8A7E0]"
                       />
                     </div>
 
                     <div>
-                      <Label htmlFor="fixture-lumens">Fixture Output (Lumens)</Label>
+                      <Label htmlFor="fixture-lumens" className="text-white">Fixture Output (Lumens)</Label>
                       <Input
                         id="fixture-lumens"
                         type="number"
                         placeholder="4000"
                         value={fixtureLumens}
                         onChange={(e) => setFixtureLumens(e.target.value)}
+                        className="glass-surface border-white/20 text-white placeholder:text-[#B8A7E0]"
                       />
                     </div>
 
-                    <Button onClick={calculateLighting} className="w-full bg-[#071428] hover:bg-[#071428]/90">
+                    <Button onClick={calculateLighting} className="w-full gradient-aqua text-white hover:shadow-glowCyan">
                       Calculate Lighting Design
                     </Button>
                   </div>
 
                   {lightingResult && (
-                    <div className="bg-[#071428] text-white p-6 rounded-lg space-y-3">
-                      <h3 className="text-xl font-bold mb-4 text-[#00C2D1]">Design Results</h3>
+                    <div className="gradient-aqua p-6 rounded-lg space-y-3">
+                      <h3 className="text-xl font-bold mb-4 text-white">Design Results</h3>
                       <div className="space-y-2">
                         <div className="flex justify-between border-b border-white/20 pb-2">
-                          <span>Room Area:</span>
-                          <span className="font-bold">{lightingResult.area} sq ft</span>
+                          <span className="text-white/90">Room Area:</span>
+                          <span className="font-bold text-white">{lightingResult.area} sq ft</span>
                         </div>
                         <div className="flex justify-between border-b border-white/20 pb-2">
-                          <span>Required Illuminance:</span>
-                          <span className="font-bold">{lightingResult.requiredFC} FC</span>
+                          <span className="text-white/90">Required Illuminance:</span>
+                          <span className="font-bold text-white">{lightingResult.requiredFC} FC</span>
                         </div>
                         <div className="flex justify-between border-b border-white/20 pb-2">
-                          <span>Total Lumens Needed:</span>
-                          <span className="font-bold">{lightingResult.requiredLumens} lm</span>
+                          <span className="text-white/90">Total Lumens Needed:</span>
+                          <span className="font-bold text-white">{lightingResult.requiredLumens} lm</span>
                         </div>
                         <div className="flex justify-between border-b border-white/20 pb-2">
-                          <span>Fixtures Required:</span>
+                          <span className="text-white/90">Fixtures Required:</span>
                           <span className="font-bold text-[#00C2D1]">{lightingResult.fixturesNeeded}</span>
                         </div>
                         <div className="flex justify-between border-b border-white/20 pb-2">
-                          <span>Spacing:</span>
-                          <span className="font-bold">{lightingResult.spacing} ft</span>
+                          <span className="text-white/90">Spacing:</span>
+                          <span className="font-bold text-white">{lightingResult.spacing} ft</span>
                         </div>
                         <div className="flex justify-between border-b border-white/20 pb-2">
-                          <span>Total Power:</span>
-                          <span className="font-bold">{lightingResult.totalWattage} W</span>
+                          <span className="text-white/90">Total Power:</span>
+                          <span className="font-bold text-white">{lightingResult.totalWattage} W</span>
                         </div>
                         <div className="flex justify-between border-b border-white/20 pb-2">
-                          <span>Power Density:</span>
-                          <span className="font-bold">{lightingResult.powerDensity} W/sq ft</span>
+                          <span className="text-white/90">Power Density:</span>
+                          <span className="font-bold text-white">{lightingResult.powerDensity} W/sq ft</span>
                         </div>
                         <div className="flex justify-between border-b border-white/20 pb-2">
-                          <span>Annual Energy:</span>
-                          <span className="font-bold">{lightingResult.annualKWh} kWh</span>
+                          <span className="text-white/90">Annual Energy:</span>
+                          <span className="font-bold text-white">{lightingResult.annualKWh} kWh</span>
                         </div>
                         <div className="flex justify-between">
-                          <span>Annual Cost:</span>
-                          <span className="font-bold">${lightingResult.annualCost}</span>
+                          <span className="text-white/90">Annual Cost:</span>
+                          <span className="font-bold text-[#00C2D1]">${lightingResult.annualCost}</span>
                         </div>
                       </div>
                     </div>
@@ -310,38 +330,40 @@ export default function LightingEnergyPage() {
 
           {/* Energy Cost Calculator */}
           <TabsContent value="energy">
-            <Card>
+            <Card className="glass-surface border-white/10 backdrop-blur-glass">
               <CardHeader>
-                <CardTitle>Energy Cost Calculator</CardTitle>
-                <CardDescription>Calculate electricity costs and LED replacement savings</CardDescription>
+                <CardTitle className="text-white">Energy Cost Calculator</CardTitle>
+                <CardDescription className="text-[#B8A7E0]">Calculate electricity costs and LED replacement savings</CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="grid md:grid-cols-2 gap-6">
                   <div className="space-y-4">
                     <div>
-                      <Label htmlFor="device-wattage">Device Wattage (W)</Label>
+                      <Label htmlFor="device-wattage" className="text-white">Device Wattage (W)</Label>
                       <Input
                         id="device-wattage"
                         type="number"
                         placeholder="100"
                         value={deviceWattage}
                         onChange={(e) => setDeviceWattage(e.target.value)}
+                        className="glass-surface border-white/20 text-white placeholder:text-[#B8A7E0]"
                       />
                     </div>
 
                     <div>
-                      <Label htmlFor="hours-per-day">Hours Per Day</Label>
+                      <Label htmlFor="hours-per-day" className="text-white">Hours Per Day</Label>
                       <Input
                         id="hours-per-day"
                         type="number"
                         placeholder="8"
                         value={hoursPerDay}
                         onChange={(e) => setHoursPerDay(e.target.value)}
+                        className="glass-surface border-white/20 text-white placeholder:text-[#B8A7E0]"
                       />
                     </div>
 
                     <div>
-                      <Label htmlFor="electricity-rate">Electricity Rate ($/kWh)</Label>
+                      <Label htmlFor="electricity-rate" className="text-white">Electricity Rate ($/kWh)</Label>
                       <Input
                         id="electricity-rate"
                         type="number"
@@ -349,49 +371,50 @@ export default function LightingEnergyPage() {
                         placeholder="0.12"
                         value={electricityRate}
                         onChange={(e) => setElectricityRate(e.target.value)}
+                        className="glass-surface border-white/20 text-white placeholder:text-[#B8A7E0]"
                       />
                     </div>
 
-                    <Button onClick={calculateEnergyCost} className="w-full bg-[#071428] hover:bg-[#071428]/90">
+                    <Button onClick={calculateEnergyCost} className="w-full gradient-aqua text-white hover:shadow-glowCyan">
                       Calculate Energy Cost
                     </Button>
                   </div>
 
                   {energyResult && (
-                    <div className="bg-[#071428] text-white p-6 rounded-lg space-y-3">
-                      <h3 className="text-xl font-bold mb-4 text-[#00C2D1]">Energy Analysis</h3>
+                    <div className="gradient-aqua p-6 rounded-lg space-y-3">
+                      <h3 className="text-xl font-bold mb-4 text-white">Energy Analysis</h3>
                       <div className="space-y-2">
                         <div className="flex justify-between border-b border-white/20 pb-2">
-                          <span>Daily Energy:</span>
-                          <span className="font-bold">{energyResult.dailyKWh} kWh</span>
+                          <span className="text-white/90">Daily Energy:</span>
+                          <span className="font-bold text-white">{energyResult.dailyKWh} kWh</span>
                         </div>
                         <div className="flex justify-between border-b border-white/20 pb-2">
-                          <span>Daily Cost:</span>
-                          <span className="font-bold">${energyResult.dailyCost}</span>
+                          <span className="text-white/90">Daily Cost:</span>
+                          <span className="font-bold text-white">${energyResult.dailyCost}</span>
                         </div>
                         <div className="flex justify-between border-b border-white/20 pb-2">
-                          <span>Monthly Energy:</span>
-                          <span className="font-bold">{energyResult.monthlyKWh} kWh</span>
+                          <span className="text-white/90">Monthly Energy:</span>
+                          <span className="font-bold text-white">{energyResult.monthlyKWh} kWh</span>
                         </div>
                         <div className="flex justify-between border-b border-white/20 pb-2">
-                          <span>Monthly Cost:</span>
-                          <span className="font-bold">${energyResult.monthlyCost}</span>
+                          <span className="text-white/90">Monthly Cost:</span>
+                          <span className="font-bold text-white">${energyResult.monthlyCost}</span>
                         </div>
                         <div className="flex justify-between border-b border-white/20 pb-2">
-                          <span>Annual Energy:</span>
-                          <span className="font-bold">{energyResult.annualKWh} kWh</span>
+                          <span className="text-white/90">Annual Energy:</span>
+                          <span className="font-bold text-white">{energyResult.annualKWh} kWh</span>
                         </div>
                         <div className="flex justify-between border-b border-white/20 pb-2">
-                          <span>Annual Cost:</span>
-                          <span className="font-bold text-[#00C2D1]">${energyResult.annualCost}</span>
+                          <span className="text-white/90">Annual Cost:</span>
+                          <span className="font-bold text-[#00C2D1] text-white">${energyResult.annualCost}</span>
                         </div>
                         <div className="flex justify-between border-b border-white/20 pb-2">
-                          <span>LED Annual Savings:</span>
-                          <span className="font-bold text-green-400">${energyResult.ledSavings}</span>
+                          <span className="text-white/90">LED Annual Savings:</span>
+                          <span className="font-bold text-green-400 text-white">${energyResult.ledSavings}</span>
                         </div>
                         <div className="flex justify-between">
-                          <span>LED Payback Period:</span>
-                          <span className="font-bold">{energyResult.paybackMonths} months</span>
+                          <span className="text-white/90">LED Payback Period:</span>
+                          <span className="font-bold text-white">{energyResult.paybackMonths} months</span>
                         </div>
                       </div>
                     </div>
@@ -403,29 +426,30 @@ export default function LightingEnergyPage() {
 
           {/* Solar PV Calculator */}
           <TabsContent value="solar">
-            <Card>
+            <Card className="glass-surface border-white/10 backdrop-blur-glass">
               <CardHeader>
-                <CardTitle>Solar PV System Designer</CardTitle>
-                <CardDescription>Calculate solar array sizing, battery requirements, and ROI</CardDescription>
+                <CardTitle className="text-white">Solar PV System Designer</CardTitle>
+                <CardDescription className="text-[#B8A7E0]">Calculate solar array sizing, battery requirements, and ROI</CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="grid md:grid-cols-2 gap-6">
                   <div className="space-y-4">
                     <div>
-                      <Label htmlFor="daily-usage">Daily Energy Usage (kWh)</Label>
+                      <Label htmlFor="daily-usage" className="text-white">Daily Energy Usage (kWh)</Label>
                       <Input
                         id="daily-usage"
                         type="number"
                         placeholder="30"
                         value={dailyUsage}
                         onChange={(e) => setDailyUsage(e.target.value)}
+                        className="glass-surface border-white/20 text-white placeholder:text-[#B8A7E0]"
                       />
                     </div>
 
                     <div>
-                      <Label htmlFor="sun-hours">Peak Sun Hours/Day</Label>
+                      <Label htmlFor="sun-hours" className="text-white">Peak Sun Hours/Day</Label>
                       <Select value={sunHours} onValueChange={setSunHours}>
-                        <SelectTrigger id="sun-hours">
+                        <SelectTrigger id="sun-hours" className="glass-surface border-white/20 text-white">
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
@@ -439,9 +463,9 @@ export default function LightingEnergyPage() {
                     </div>
 
                     <div>
-                      <Label htmlFor="system-voltage">System Voltage (V)</Label>
+                      <Label htmlFor="system-voltage" className="text-white">System Voltage (V)</Label>
                       <Select value={systemVoltage} onValueChange={setSystemVoltage}>
-                        <SelectTrigger id="system-voltage">
+                        <SelectTrigger id="system-voltage" className="glass-surface border-white/20 text-white">
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
@@ -452,46 +476,46 @@ export default function LightingEnergyPage() {
                       </Select>
                     </div>
 
-                    <Button onClick={calculateSolar} className="w-full bg-[#071428] hover:bg-[#071428]/90">
+                    <Button onClick={calculateSolar} className="w-full gradient-aqua text-white hover:shadow-glowCyan">
                       Design Solar System
                     </Button>
                   </div>
 
                   {solarResult && (
-                    <div className="bg-[#071428] text-white p-6 rounded-lg space-y-3">
-                      <h3 className="text-xl font-bold mb-4 text-[#00C2D1]">System Specifications</h3>
+                    <div className="gradient-aqua p-6 rounded-lg space-y-3">
+                      <h3 className="text-xl font-bold mb-4 text-white">System Specifications</h3>
                       <div className="space-y-2">
                         <div className="flex justify-between border-b border-white/20 pb-2">
-                          <span>Array Size:</span>
-                          <span className="font-bold">{solarResult.arraySize} kW</span>
+                          <span className="text-white/90">Array Size:</span>
+                          <span className="font-bold text-white">{solarResult.arraySize} kW</span>
                         </div>
                         <div className="flex justify-between border-b border-white/20 pb-2">
-                          <span>Number of Panels:</span>
+                          <span className="text-white/90">Number of Panels:</span>
                           <span className="font-bold text-[#00C2D1]">{solarResult.panelCount} × 300W</span>
                         </div>
                         <div className="flex justify-between border-b border-white/20 pb-2">
-                          <span>Battery Bank:</span>
-                          <span className="font-bold">{solarResult.batteryAh} Ah</span>
+                          <span className="text-white/90">Battery Bank:</span>
+                          <span className="font-bold text-white">{solarResult.batteryAh} Ah</span>
                         </div>
                         <div className="flex justify-between border-b border-white/20 pb-2">
-                          <span>Inverter Size:</span>
-                          <span className="font-bold">{solarResult.inverterSize} kW</span>
+                          <span className="text-white/90">Inverter Size:</span>
+                          <span className="font-bold text-white">{solarResult.inverterSize} kW</span>
                         </div>
                         <div className="flex justify-between border-b border-white/20 pb-2">
-                          <span>Charge Controller:</span>
-                          <span className="font-bold">{solarResult.chargeController} A</span>
+                          <span className="text-white/90">Charge Controller:</span>
+                          <span className="font-bold text-white">{solarResult.chargeController} A</span>
                         </div>
                         <div className="flex justify-between border-b border-white/20 pb-2">
-                          <span>System Cost:</span>
-                          <span className="font-bold">${solarResult.systemCost}</span>
+                          <span className="text-white/90">System Cost:</span>
+                          <span className="font-bold text-white">${solarResult.systemCost}</span>
                         </div>
                         <div className="flex justify-between border-b border-white/20 pb-2">
-                          <span>Annual Savings:</span>
-                          <span className="font-bold text-green-400">${solarResult.annualSavings}</span>
+                          <span className="text-white/90">Annual Savings:</span>
+                          <span className="font-bold text-green-400 text-white">${solarResult.annualSavings}</span>
                         </div>
                         <div className="flex justify-between">
-                          <span>Payback Period:</span>
-                          <span className="font-bold">{solarResult.paybackYears} years</span>
+                          <span className="text-white/90">Payback Period:</span>
+                          <span className="font-bold text-white">{solarResult.paybackYears} years</span>
                         </div>
                       </div>
                       <p className="text-sm text-gray-300 mt-4 pt-4 border-t border-white/20">
