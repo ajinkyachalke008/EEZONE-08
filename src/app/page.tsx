@@ -497,7 +497,7 @@ export default function Home() {
       {/* Unified Search Results Section */}
       {hasSearchResults && (
         <section className="glass-surface py-8 px-4 border-b border-white/10">
-          <div className="container mx-auto max-w-6xl">
+          <div className="container mx-auto max-w-6xl border-2 border-white/10 rounded-2xl p-8 glass-surface">
             <div className="flex items-center justify-between mb-6">
               <div>
                 <h2 className="text-2xl font-bold text-white glow-text-violet">
@@ -727,35 +727,37 @@ export default function Home() {
       {/* No Results Message */}
       {hasNoResults && (
         <section className="glass-surface py-16 px-4">
-          <div className="container mx-auto max-w-6xl text-center">
-            <Search className="h-16 w-16 text-[#9C4AFF] mx-auto mb-4" />
-            <h2 className="text-2xl font-bold text-white mb-2">
-              No results found for "{searchQuery}"
-            </h2>
-            {selectedRole && (
-              <p className="text-[#B8A7E0] mb-4">
-                in <span className="font-semibold capitalize">{selectedRole}</span> content
-              </p>
-            )}
-            <p className="text-[#B8A7E0] mb-6">
-              Try searching with different keywords or browse our categories below
-            </p>
-            <div className="flex gap-3 justify-center">
-              <Button
-                onClick={() => setSearchQuery('')}
-                className="gradient-fire text-white hover:shadow-glowOrange"
-              >
-                Clear Search
-              </Button>
+          <div className="container mx-auto max-w-6xl border-2 border-white/10 rounded-2xl p-8 glass-surface">
+            <div className="flex flex-col items-center text-center">
+              <Search className="h-16 w-16 text-[#9C4AFF] mx-auto mb-4" />
+              <h2 className="text-2xl font-bold text-white mb-2">
+                No results found for "{searchQuery}"
+              </h2>
               {selectedRole && (
-                <Button
-                  onClick={() => setSelectedRole(null)}
-                  variant="outline"
-                  className="border-white/20 text-white hover:bg-white/10"
-                >
-                  Show All Roles
-                </Button>
+                <p className="text-[#B8A7E0] mb-4">
+                  in <span className="font-semibold capitalize">{selectedRole}</span> content
+                </p>
               )}
+              <p className="text-[#B8A7E0] mb-6">
+                Try searching with different keywords or browse our categories below
+              </p>
+              <div className="flex gap-3 justify-center">
+                <Button
+                  onClick={() => setSearchQuery('')}
+                  className="gradient-fire text-white hover:shadow-glowOrange"
+                >
+                  Clear Search
+                </Button>
+                {selectedRole && (
+                  <Button
+                    onClick={() => setSelectedRole(null)}
+                    variant="outline"
+                    className="border-white/20 text-white hover:bg-white/10"
+                  >
+                    Show All Roles
+                  </Button>
+                )}
+              </div>
             </div>
           </div>
         </section>
@@ -886,12 +888,12 @@ export default function Home() {
         </section>
       )}
 
-      {/* Continue Learning Section - Add after Hero Section */}
+      {/* Continue Learning Section */}
       {!searchQuery && (continueTopics.length > 0 || bookmarkedTopics.length > 0) && (
         <section className="py-12 px-4 relative overflow-hidden">
           <div className="absolute top-10 left-10 w-[400px] h-[400px] bg-[#FF6B00] opacity-15 blur-[150px] rounded-full" />
           
-          <div className="container mx-auto max-w-6xl relative z-10">
+          <div className="container mx-auto max-w-6xl relative z-10 border-2 border-[#FF6B00]/20 rounded-3xl p-8 glass-surface hover:border-[#FF6B00]/40 transition-all">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -1035,14 +1037,13 @@ export default function Home() {
         </section>
       )}
 
-      {/* Instrument Scanner Section - Lazy Loaded */}
+      {/* Instrument Scanner Section */}
       {!searchQuery && (
         <section className="relative py-20 px-4 overflow-hidden">
-          {/* Ambient Glow */}
           <div className="absolute top-20 right-10 w-[400px] h-[400px] bg-[#00E5FF] opacity-20 blur-[150px] rounded-full" />
           <div className="absolute bottom-20 left-10 w-[500px] h-[500px] bg-[#9C4AFF] opacity-20 blur-[150px] rounded-full" />
 
-          <div className="container mx-auto max-w-6xl relative z-10">
+          <div className="container mx-auto max-w-6xl relative z-10 border-2 border-[#00E5FF]/20 rounded-3xl p-8 glass-surface hover:border-[#00E5FF]/40 transition-all">
             <motion.div 
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -1136,14 +1137,13 @@ export default function Home() {
         </section>
       )}
 
-      {/* Problem Solver Section - Lazy Loaded */}
+      {/* Problem Solver Section */}
       {!searchQuery && (
         <section className="relative py-20 px-4 overflow-hidden">
-          {/* Ambient Glow */}
           <div className="absolute top-20 right-10 w-[400px] h-[400px] bg-[#FF00C8] opacity-20 blur-[150px] rounded-full animate-pulse-slow" />
           <div className="absolute bottom-20 left-10 w-[500px] h-[500px] bg-[#9C4AFF] opacity-20 blur-[150px] rounded-full animate-pulse-slow" style={{ animationDelay: '1.5s' }} />
 
-          <div className="container mx-auto max-w-6xl relative z-10">
+          <div className="container mx-auto max-w-6xl relative z-10 border-2 border-[#9C4AFF]/20 rounded-3xl p-8 glass-surface hover:border-[#9C4AFF]/40 transition-all">
             <motion.div 
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -1240,10 +1240,9 @@ export default function Home() {
       {/* Advanced Calculators & Tools */}
       {(!searchQuery || filteredTools.length > 0) && (
         <section className="py-16 px-4 relative overflow-hidden">
-          {/* Ambient Orb */}
           <div className="absolute top-10 left-1/2 w-[400px] h-[400px] bg-[#FF6B00] opacity-15 blur-[150px] rounded-full" />
           
-          <div className="container mx-auto max-w-6xl relative z-10">
+          <div className="container mx-auto max-w-6xl relative z-10 border-2 border-[#9C4AFF]/20 rounded-3xl p-8 glass-surface hover:border-[#9C4AFF]/40 transition-all">
             <div className="text-center mb-12">
               <h2 className="text-4xl font-bold text-white mb-4 glow-text-violet" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>
                 {searchQuery ? 'Tool Categories' : 'Advanced Calculators & Tools'}
@@ -1306,14 +1305,13 @@ export default function Home() {
         </section>
       )}
 
-      {/* Interactive Design Tools - Show only 2 remaining categories when not searching */}
+      {/* Interactive Design Tools */}
       {!searchQuery && filteredTools.length > 3 && (
         <section className="py-16 px-4 relative overflow-hidden">
-          {/* Ambient Glow */}
           <div className="absolute top-10 right-10 w-[400px] h-[400px] bg-[#FF6B00] opacity-20 blur-[150px] rounded-full" />
           <div className="absolute bottom-10 left-10 w-[400px] h-[400px] bg-[#00E5FF] opacity-20 blur-[150px] rounded-full" />
           
-          <div className="container mx-auto max-w-6xl relative z-10">
+          <div className="container mx-auto max-w-6xl relative z-10 border-2 border-[#FF6B00]/20 rounded-3xl p-8 glass-surface hover:border-[#FF6B00]/40 transition-all">
             <div className="text-center mb-12">
               <h2 className="text-4xl font-bold text-white mb-4 glow-text-orange" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>
                 🎨 Interactive Design Tools
@@ -1380,10 +1378,9 @@ export default function Home() {
       {/* Project Management Suite */}
       {!searchQuery && (
         <section className="py-16 px-4 relative overflow-hidden">
-          {/* Ambient Glow */}
           <div className="absolute top-10 left-1/2 w-[400px] h-[400px] bg-[#9C4AFF] opacity-15 blur-[150px] rounded-full" />
           
-          <div className="container mx-auto max-w-6xl relative z-10">
+          <div className="container mx-auto max-w-6xl relative z-10 border-2 border-[#9C4AFF]/20 rounded-3xl p-8 glass-surface hover:border-[#9C4AFF]/40 transition-all">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -1432,11 +1429,10 @@ export default function Home() {
       {/* Code Compliance Tools */}
       {!searchQuery && (
         <section className="py-16 px-4 relative overflow-hidden">
-          {/* Ambient Glow */}
           <div className="absolute top-10 right-10 w-[400px] h-[400px] bg-[#00E5FF] opacity-20 blur-[150px] rounded-full animate-pulse-slow" />
           <div className="absolute bottom-10 left-10 w-[400px] h-[400px] bg-[#9C4AFF] opacity-20 blur-[150px] rounded-full animate-pulse-slow" style={{ animationDelay: '1s' }} />
           
-          <div className="container mx-auto max-w-6xl relative z-10">
+          <div className="container mx-auto max-w-6xl relative z-10 border-2 border-[#00E5FF]/20 rounded-3xl p-8 glass-surface hover:border-[#00E5FF]/40 transition-all">
             <div className="text-center mb-12">
               <h2 className="text-4xl font-bold text-white mb-4 glow-text-cyan" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>
                 ⚖️ Code Compliance Tools
@@ -1480,11 +1476,10 @@ export default function Home() {
       {/* Diagnostic & Testing Tools */}
       {!searchQuery && (
         <section className="py-16 px-4 relative overflow-hidden">
-          {/* Ambient Glow */}
           <div className="absolute top-10 left-1/2 w-[400px] h-[400px] bg-[#FF6B00] opacity-15 blur-[150px] rounded-full" />
           <div className="absolute bottom-10 right-10 w-[400px] h-[400px] bg-[#FF6B00] opacity-20 blur-[150px] rounded-full" />
           
-          <div className="container mx-auto max-w-6xl relative z-10">
+          <div className="container mx-auto max-w-6xl relative z-10 border-2 border-[#FF6B00]/20 rounded-3xl p-8 glass-surface hover:border-[#FF6B00]/40 transition-all">
             <div className="text-center mb-12">
               <h2 className="text-4xl font-bold text-white mb-4 glow-text-orange" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>
                 🔧 Diagnostic & Testing Tools
@@ -1528,12 +1523,11 @@ export default function Home() {
       {/* Advanced AI Features */}
       {!searchQuery && (
         <section className="py-16 px-4 relative overflow-hidden">
-          {/* Animated Gradient Background */}
           <div className="absolute inset-0 gradient-violet opacity-30 animate-gradient-move" style={{ backgroundSize: '400% 400%' }} />
           <div className="absolute top-10 right-10 w-[400px] h-[400px] bg-[#FF00C8] opacity-25 blur-[150px] rounded-full animate-pulse-slow" />
           <div className="absolute bottom-10 left-10 w-[400px] h-[400px] bg-[#9C4AFF] opacity-25 blur-[150px] rounded-full animate-pulse-slow" style={{ animationDelay: '1.5s' }} />
           
-          <div className="container mx-auto max-w-6xl relative z-10">
+          <div className="container mx-auto max-w-6xl relative z-10 border-2 border-[#9C4AFF]/20 rounded-3xl p-8 glass-surface hover:border-[#9C4AFF]/40 transition-all">
             <div className="text-center mb-12">
               <h2 className="text-4xl font-bold text-white mb-4 glow-text-violet" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>
                 ✨ Advanced AI Features
@@ -1582,11 +1576,10 @@ export default function Home() {
       {/* Interactive Simulations */}
       {!searchQuery && (
         <section className="py-16 px-4 relative overflow-hidden">
-          {/* Ambient Glow */}
           <div className="absolute top-10 left-10 w-[400px] h-[400px] bg-[#00E5FF] opacity-20 blur-[150px] rounded-full" />
           <div className="absolute bottom-10 right-10 w-[400px] h-[400px] bg-[#FF6B00] opacity-20 blur-[150px] rounded-full" />
           
-          <div className="container mx-auto max-w-6xl relative z-10">
+          <div className="container mx-auto max-w-6xl relative z-10 border-2 border-[#00E5FF]/20 rounded-3xl p-8 glass-surface hover:border-[#00E5FF]/40 transition-all">
             <div className="text-center mb-12">
               <h2 className="text-4xl font-bold text-white mb-4 glow-text-cyan" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>
                 🎮 Interactive Simulations
@@ -1630,11 +1623,10 @@ export default function Home() {
       {/* Quick-Access Utilities */}
       {!searchQuery && (
         <section className="py-16 px-4 relative overflow-hidden">
-          {/* Ambient Glow */}
           <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-[#2B0B4B] to-[#0A0014]" />
           <div className="absolute top-10 right-10 w-[300px] h-[300px] bg-[#FF6B00] opacity-20 blur-[120px] rounded-full" />
           
-          <div className="container mx-auto max-w-6xl relative z-10">
+          <div className="container mx-auto max-w-6xl relative z-10 border-2 border-[#FF6B00]/20 rounded-3xl p-8 glass-surface hover:border-[#FF6B00]/40 transition-all">
             <div className="text-center mb-12">
               <h2 className="text-4xl font-bold text-white mb-4 glow-text-orange" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>
                 🔥 Quick-Access Utilities
@@ -1700,11 +1692,10 @@ export default function Home() {
       {/* Educational & Training */}
       {!searchQuery && (
         <section className="py-16 px-4 relative overflow-hidden">
-          {/* Ambient Glow */}
           <div className="absolute top-10 left-10 w-[400px] h-[400px] bg-[#9C4AFF] opacity-20 blur-[150px] rounded-full" />
           <div className="absolute bottom-10 right-10 w-[400px] h-[400px] bg-[#00E5FF] opacity-20 blur-[150px] rounded-full" />
           
-          <div className="container mx-auto max-w-6xl relative z-10">
+          <div className="container mx-auto max-w-6xl relative z-10 border-2 border-[#9C4AFF]/20 rounded-3xl p-8 glass-surface hover:border-[#9C4AFF]/40 transition-all">
             <div className="text-center mb-12">
               <h2 className="text-4xl font-bold text-white mb-4 glow-text-violet" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>
                 🎓 Educational & Training
@@ -1783,16 +1774,14 @@ export default function Home() {
       {/* Advance Your Career Section */}
       {!searchQuery && (
         <section className="py-20 px-4 relative overflow-hidden">
-          {/* Animated Gradient Background */}
           <div className="absolute inset-0 gradient-fire opacity-30 animate-gradient-move" style={{ backgroundSize: '400% 400%' }} />
           <div className="absolute top-0 left-0 w-full h-full bg-[#0A0014]/40" />
           
-          {/* Ambient Orbs */}
           <div className="absolute top-10 right-10 w-[500px] h-[500px] bg-[#FF6B00] opacity-25 blur-[150px] rounded-full animate-pulse-slow" />
           <div className="absolute bottom-10 left-10 w-[400px] h-[400px] bg-[#9C4AFF] opacity-25 blur-[150px] rounded-full animate-pulse-slow" style={{ animationDelay: '1.5s' }} />
           <div className="absolute top-1/2 left-1/2 w-[300px] h-[300px] bg-[#00E5FF] opacity-20 blur-[150px] rounded-full animate-pulse-slow" style={{ animationDelay: '3s' }} />
 
-          <div className="container mx-auto max-w-6xl relative z-10">
+          <div className="container mx-auto max-w-6xl relative z-10 border-2 border-[#FF6B00]/20 rounded-3xl p-8 glass-surface hover:border-[#FF6B00]/40 transition-all">
             <motion.div 
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -2015,10 +2004,9 @@ export default function Home() {
       {/* Featured Apps Carousel */}
       {(!searchQuery || filteredApps.length > 0) && (
         <section className="py-16 px-4 relative overflow-hidden">
-          {/* Ambient Glow */}
           <div className="absolute top-10 right-10 w-[400px] h-[400px] bg-[#FF6B00] opacity-15 blur-[150px] rounded-full" />
           
-          <div className="container mx-auto max-w-6xl relative z-10">
+          <div className="container mx-auto max-w-6xl relative z-10 border-2 border-[#FF6B00]/20 rounded-3xl p-8 glass-surface hover:border-[#FF6B00]/40 transition-all">
             <div className="flex justify-between items-center mb-8">
               <div>
                 <h2 className="text-3xl font-bold text-white glow-text-orange" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>
@@ -2102,10 +2090,9 @@ export default function Home() {
       {/* Quick Tools */}
       {(!searchQuery || filteredQuickTools.length > 0) && (
         <section className="py-16 px-4 relative overflow-hidden">
-          {/* Ambient Glow */}
           <div className="absolute top-10 left-10 w-[400px] h-[400px] bg-[#00E5FF] opacity-15 blur-[150px] rounded-full" />
           
-          <div className="container mx-auto max-w-6xl relative z-10">
+          <div className="container mx-auto max-w-6xl relative z-10 border-2 border-[#00E5FF]/20 rounded-3xl p-8 glass-surface hover:border-[#00E5FF]/40 transition-all">
             <h2 className="text-3xl font-bold text-white text-center mb-8 glow-text-cyan" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>
               {searchQuery ? 'Quick Tools' : 'Quick Access Tools'}
             </h2>
@@ -2140,11 +2127,10 @@ export default function Home() {
       {/* Projects Section */}
       {!searchQuery && (
         <section className="py-16 px-4 relative overflow-hidden">
-          {/* Ambient Glow */}
           <div className="absolute top-10 right-10 w-[400px] h-[400px] bg-[#9C4AFF] opacity-20 blur-[150px] rounded-full" />
           <div className="absolute bottom-10 left-10 w-[400px] h-[400px] bg-[#FF6B00] opacity-20 blur-[150px] rounded-full" />
           
-          <div className="container mx-auto max-w-6xl relative z-10">
+          <div className="container mx-auto max-w-6xl relative z-10 border-2 border-[#9C4AFF]/20 rounded-3xl p-8 glass-surface hover:border-[#9C4AFF]/40 transition-all">
             <div className="text-center mb-12">
               <h2 className="text-4xl font-bold text-white mb-4 glow-text-violet" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>
                 🚀 Interactive Project Builder
@@ -2219,15 +2205,13 @@ export default function Home() {
       {/* CTA Section */}
       {!searchQuery && (
         <section className="relative py-16 px-4 overflow-hidden">
-          {/* Animated Gradient Background */}
           <div className="absolute inset-0 gradient-violet opacity-50 animate-gradient-move" style={{ backgroundSize: '400% 400%' }} />
           <div className="absolute top-0 left-0 w-full h-full bg-[#0A0014]/50" />
           
-          {/* Ambient Orbs */}
           <div className="absolute top-10 right-10 w-[300px] h-[300px] bg-[#FF6B00] opacity-30 blur-[150px] rounded-full animate-pulse-slow" />
           <div className="absolute bottom-10 left-10 w-[300px] h-[300px] bg-[#00E5FF] opacity-30 blur-[150px] rounded-full animate-pulse-slow" style={{ animationDelay: '1s' }} />
 
-          <div className="container mx-auto max-w-4xl text-center relative z-10">
+          <div className="container mx-auto max-w-4xl text-center relative z-10 border-2 border-[#9C4AFF]/20 rounded-3xl p-12 glass-surface hover:border-[#9C4AFF]/40 transition-all">
             <motion.h2 
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
