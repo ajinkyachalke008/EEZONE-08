@@ -1525,57 +1525,20 @@ export default function Home() {
         </section>
       )}
 
-      {/* Advanced AI Features */}
+      {/* Advanced AI Features - Using Neon Feature Cards */}
       {!searchQuery && (
-        <section className="py-16 px-4 relative overflow-hidden">
-          <div className="absolute inset-0 gradient-violet opacity-30 animate-gradient-move" style={{ backgroundSize: '400% 400%' }} />
-          <div className="absolute top-10 right-10 w-[400px] h-[400px] bg-[#FF00C8] opacity-25 blur-[150px] rounded-full animate-pulse-slow" />
-          <div className="absolute bottom-10 left-10 w-[400px] h-[400px] bg-[#9C4AFF] opacity-25 blur-[150px] rounded-full animate-pulse-slow" style={{ animationDelay: '1.5s' }} />
-          
-          <div className="container mx-auto max-w-6xl relative z-10 border-[3px] border-[#9C4AFF]/20 rounded-3xl p-8 glass-surface hover:border-[#9C4AFF]/40 transition-all">
-            <div className="text-center mb-12">
-              <h2 className="text-4xl font-bold text-white mb-4 glow-text-violet" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>
-                ✨ Advanced AI Features
-              </h2>
-              <p className="text-lg text-[#B8A7E0] max-w-3xl mx-auto">
-                Leverage artificial intelligence for code assistance, design, and troubleshooting
-              </p>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {aiFeatures.map((feature, index) => {
-                const Icon = feature.icon;
-                return (
-                  <motion.div
-                    key={feature.name}
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.4, delay: index * 0.1 }}
-                    viewport={{ once: true }}
-                    whileHover={{ scale: 1.05, y: -5 }}
-                  >
-                    <Link href={feature.href}>
-                      <Card className="glass-surface border-white/10 hover:border-[#9C4AFF]/50 hover:shadow-glowViolet transition-all cursor-pointer h-full">
-                        <CardHeader>
-                          <div className="flex items-start justify-between mb-2">
-                            <Icon className="h-10 w-10 text-[#9C4AFF]" />
-                            {feature.isPro && (
-                              <Badge className="gradient-fire text-white border-0">Pro</Badge>
-                            )}
-                          </div>
-                          <CardTitle className="text-white text-lg">{feature.name}</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                          <p className="text-[#B8A7E0] text-sm">{feature.description}</p>
-                        </CardContent>
-                      </Card>
-                    </Link>
-                  </motion.div>
-                );
-              })}
-            </div>
-          </div>
-        </section>
+        <SectionFeatures
+          sectionTitle="✨ Advanced AI Features"
+          sectionSubtitle="Leverage artificial intelligence for code assistance, design, and troubleshooting"
+          features={aiFeatures.map(feature => ({
+            icon: feature.icon,
+            featureTitle: feature.name,
+            tag: feature.isPro ? 'Pro' : 'Free',
+            shortDescription: feature.description,
+            ctaLabel: 'Learn More',
+            ctaLink: feature.href,
+          }))}
+        />
       )}
 
       {/* Interactive Simulations */}
