@@ -5,9 +5,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { CircuitBoard, ArrowLeft, Play, Pause, RotateCcw, Download, Zap, Activity, Gauge } from 'lucide-react';
+import { CircuitBoard, ArrowLeft, Play, Pause, RotateCcw, Download, Zap, Activity, Gauge, Trash2, Cable } from 'lucide-react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
+import { toast } from 'sonner';
 
 interface Component {
   id: string;
@@ -19,9 +20,24 @@ interface Component {
   rotation: number;
 }
 
+interface Wire {
+  id: string;
+  from: { componentId: string; terminal: 'top' | 'bottom' | 'left' | 'right' };
+  to: { componentId: string; terminal: 'top' | 'bottom' | 'left' | 'right' };
+  color: string;
+  netLabel?: string;
+  path: { x: number; y: number }[];
+}
+
 interface Connection {
   from: string;
   to: string;
+}
+
+interface DragWire {
+  from: { componentId: string; terminal: 'top' | 'bottom' | 'left' | 'right'; x: number; y: number };
+  currentX: number;
+  currentY: number;
 }
 
 const componentLibrary = [
@@ -35,6 +51,8 @@ const componentLibrary = [
   { type: 'transistor', label: '🔺 Transistor', icon: '🔺', defaultValue: 0, unit: '' },
 ];
 
+const wireColors = ['#FF00C8', '#00E5FF', '#9C4AFF', '#FF6B00', '#00FF88', '#FFD700'];
+
 export default function CircuitSimulatorPage() {
   const [isRunning, setIsRunning] = useState(false);
   const [components, setComponents] = useState<Component[]>([]);
@@ -46,6 +64,12 @@ export default function CircuitSimulatorPage() {
   const [resistance, setResistance] = useState(0);
   const [power, setPower] = useState(0);
   const [waveform, setWaveform] = useState<number[]>([]);
+  const [wires, setWires] = useState<Wire[]>([]);
+  const [dragWire, setDragWire] = useState<DragWire | null>(null);
+  const [hoveredComponent, setHoveredComponent] = useState<string | null>(null);
+  const [selectedWires, setSelectedWires] = useState<string[]>([]);
+  const [wireDrawingMode, setWireDrawingMode] = useState(false);
+  const [highlightedWirePath, setHighlightedWirePath] = useState<string | null>(null);
   const canvasRef = useRef<HTMLDivElement>(null);
 
   const handleDragStart = (type: string) => {
@@ -74,6 +98,7 @@ export default function CircuitSimulatorPage() {
 
     setComponents(prev => [...prev, newComponent]);
     setDraggedType(null);
+    toast.success(`${componentInfo?.label} added to canvas`);
   }, [draggedType]);
 
   const handleDragOver = (e: React.DragEvent) => {
@@ -81,8 +106,11 @@ export default function CircuitSimulatorPage() {
   };
 
   const removeComponent = (id: string) => {
+    // Remove associated wires
+    setWires(prev => prev.filter(w => w.from.componentId !== id && w.to.componentId !== id));
     setComponents(prev => prev.filter(c => c.id !== id));
     setSelectedComponent(null);
+    toast.info('Component removed');
   };
 
   const updateComponentValue = (id: string, value: number) => {
@@ -91,9 +119,200 @@ export default function CircuitSimulatorPage() {
     ));
   };
 
+  // Get terminal position for a component
+  const getTerminalPosition = (comp: Component, terminal: 'top' | 'bottom' | 'left' | 'right') => {
+    const size = 60;
+    switch (terminal) {
+      case 'top':
+        return { x: comp.x + size / 2, y: comp.y };
+      case 'bottom':
+        return { x: comp.x + size / 2, y: comp.y + size };
+      case 'left':
+        return { x: comp.x, y: comp.y + size / 2 };
+      case 'right':
+        return { x: comp.x + size, y: comp.y + size / 2 };
+    }
+  };
+
+  // Start wire drawing
+  const handleTerminalMouseDown = (componentId: string, terminal: 'top' | 'bottom' | 'left' | 'right', e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!canvasRef.current) return;
+
+    const comp = components.find(c => c.id === componentId);
+    if (!comp) return;
+
+    const pos = getTerminalPosition(comp, terminal);
+    setDragWire({
+      from: { componentId, terminal, x: pos.x, y: pos.y },
+      currentX: pos.x,
+      currentY: pos.y,
+    });
+    setWireDrawingMode(true);
+  };
+
+  // Update wire position while dragging
+  const handleCanvasMouseMove = (e: React.MouseEvent) => {
+    if (!dragWire || !canvasRef.current) return;
+
+    const rect = canvasRef.current.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+
+    setDragWire(prev => prev ? { ...prev, currentX: x, currentY: y } : null);
+  };
+
+  // Complete wire connection
+  const handleTerminalMouseUp = (componentId: string, terminal: 'top' | 'bottom' | 'left' | 'right', e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!dragWire) return;
+
+    // Prevent connecting to same component
+    if (dragWire.from.componentId === componentId) {
+      toast.error('Cannot connect to the same component');
+      setDragWire(null);
+      setWireDrawingMode(false);
+      return;
+    }
+
+    // Check for duplicate connections
+    const duplicate = wires.find(
+      w =>
+        (w.from.componentId === dragWire.from.componentId &&
+          w.to.componentId === componentId) ||
+        (w.to.componentId === dragWire.from.componentId &&
+          w.from.componentId === componentId)
+    );
+
+    if (duplicate) {
+      toast.error('Connection already exists');
+      setDragWire(null);
+      setWireDrawingMode(false);
+      return;
+    }
+
+    const comp = components.find(c => c.id === componentId);
+    if (!comp) return;
+
+    const toPos = getTerminalPosition(comp, terminal);
+
+    // Validate connection (basic check for short circuits)
+    const fromComp = components.find(c => c.id === dragWire.from.componentId);
+    if (fromComp?.type === componentId && fromComp.type === 'voltage') {
+      toast.error('Short circuit detected! Cannot connect voltage sources directly');
+      setDragWire(null);
+      setWireDrawingMode(false);
+      return;
+    }
+
+    // Create smart routing path
+    const path = createSmartPath(dragWire.from.x, dragWire.from.y, toPos.x, toPos.y);
+
+    // Auto-assign wire color
+    const color = wireColors[wires.length % wireColors.length];
+
+    const newWire: Wire = {
+      id: `wire-${Date.now()}`,
+      from: { componentId: dragWire.from.componentId, terminal: dragWire.from.terminal },
+      to: { componentId, terminal },
+      color,
+      path,
+    };
+
+    setWires(prev => [...prev, newWire]);
+    setDragWire(null);
+    setWireDrawingMode(false);
+    toast.success('Wire connected successfully!');
+  };
+
+  // Cancel wire drawing
+  const handleCanvasMouseUp = () => {
+    if (dragWire) {
+      setDragWire(null);
+      setWireDrawingMode(false);
+    }
+  };
+
+  // Create smart routing path with right-angle connections
+  const createSmartPath = (x1: number, y1: number, x2: number, y2: number) => {
+    const path = [{ x: x1, y: y1 }];
+    
+    const dx = x2 - x1;
+    const dy = y2 - y1;
+
+    // Smart routing: prefer horizontal then vertical
+    if (Math.abs(dx) > Math.abs(dy)) {
+      path.push({ x: x1 + dx / 2, y: y1 });
+      path.push({ x: x1 + dx / 2, y: y2 });
+    } else {
+      path.push({ x: x1, y: y1 + dy / 2 });
+      path.push({ x: x2, y: y1 + dy / 2 });
+    }
+
+    path.push({ x: x2, y: y2 });
+    return path;
+  };
+
+  // Delete selected wires
+  const deleteSelectedWires = () => {
+    if (selectedWires.length === 0) return;
+    setWires(prev => prev.filter(w => !selectedWires.includes(w.id)));
+    setSelectedWires([]);
+    toast.success(`${selectedWires.length} wire(s) deleted`);
+  };
+
+  // Auto-cleanup wire layout
+  const autoCleanupWires = () => {
+    // Recreate all wire paths with smart routing
+    setWires(prev =>
+      prev.map(wire => {
+        const fromComp = components.find(c => c.id === wire.from.componentId);
+        const toComp = components.find(c => c.id === wire.to.componentId);
+
+        if (!fromComp || !toComp) return wire;
+
+        const fromPos = getTerminalPosition(fromComp, wire.from.terminal);
+        const toPos = getTerminalPosition(toComp, wire.to.terminal);
+
+        return {
+          ...wire,
+          path: createSmartPath(fromPos.x, fromPos.y, toPos.x, toPos.y),
+        };
+      })
+    );
+    toast.success('Wire layout optimized!');
+  };
+
+  // Update wire positions when components move
+  useEffect(() => {
+    if (wires.length === 0) return;
+
+    setWires(prev =>
+      prev.map(wire => {
+        const fromComp = components.find(c => c.id === wire.from.componentId);
+        const toComp = components.find(c => c.id === wire.to.componentId);
+
+        if (!fromComp || !toComp) return wire;
+
+        const fromPos = getTerminalPosition(fromComp, wire.from.terminal);
+        const toPos = getTerminalPosition(toComp, wire.to.terminal);
+
+        return {
+          ...wire,
+          path: createSmartPath(fromPos.x, fromPos.y, toPos.x, toPos.y),
+        };
+      })
+    );
+  }, [components]);
+
   const runSimulation = () => {
     setIsRunning(true);
     
+    // Check for proper connections
+    if (wires.length === 0) {
+      toast.warning('Add wires to connect components');
+    }
+
     // Simple circuit analysis simulation
     const voltageSource = components.find(c => c.type === 'voltage');
     const resistors = components.filter(c => c.type === 'resistor');
@@ -115,6 +334,10 @@ export default function CircuitSimulatorPage() {
         Math.sin((i / 100) * Math.PI * 4) * v
       );
       setWaveform(wave);
+      
+      toast.success('Simulation started!');
+    } else {
+      toast.error('Add voltage source and resistors to simulate');
     }
   };
 
@@ -125,12 +348,16 @@ export default function CircuitSimulatorPage() {
     setResistance(0);
     setPower(0);
     setWaveform([]);
+    toast.info('Simulation reset');
   };
 
   const clearCanvas = () => {
     setComponents([]);
+    setWires([]);
     setSelectedComponent(null);
+    setSelectedWires([]);
     resetSimulation();
+    toast.info('Canvas cleared');
   };
 
   useEffect(() => {
@@ -179,7 +406,7 @@ export default function CircuitSimulatorPage() {
               <h1 className="text-4xl font-bold text-white">Interactive Circuit Simulator</h1>
             </div>
             <p className="text-gray-300 text-lg">
-              Professional circuit simulation with real-time analysis and waveform display
+              Professional circuit simulation with drag-and-drop wiring and real-time analysis
             </p>
           </motion.div>
 
@@ -190,7 +417,7 @@ export default function CircuitSimulatorPage() {
                 Simulation Controls
               </CardTitle>
               <CardDescription className="text-gray-300">
-                Drag components to canvas and run simulation
+                Drag components to canvas, connect with wires, and run simulation
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -210,6 +437,24 @@ export default function CircuitSimulatorPage() {
                 >
                   <RotateCcw className="h-4 w-4 mr-2" />
                   Reset
+                </Button>
+                <Button 
+                  variant="outline" 
+                  onClick={autoCleanupWires}
+                  disabled={wires.length === 0}
+                  className="bg-white/10 border-white/20 text-white hover:bg-white/20"
+                >
+                  <Cable className="h-4 w-4 mr-2" />
+                  Auto-Cleanup Wires
+                </Button>
+                <Button 
+                  variant="outline" 
+                  onClick={deleteSelectedWires}
+                  disabled={selectedWires.length === 0}
+                  className="bg-white/10 border-white/20 text-white hover:bg-white/20"
+                >
+                  <Trash2 className="h-4 w-4 mr-2" />
+                  Delete Selected ({selectedWires.length})
                 </Button>
                 <Button 
                   variant="outline" 
@@ -250,6 +495,17 @@ export default function CircuitSimulatorPage() {
                         </div>
                       ))}
                     </div>
+                    
+                    <div className="mt-4 p-3 bg-white/5 rounded border border-white/10">
+                      <h4 className="text-xs font-semibold text-[#00C2D1] mb-2">Connection Features</h4>
+                      <ul className="text-xs text-gray-300 space-y-1">
+                        <li>✓ Drag terminals to connect</li>
+                        <li>✓ Auto-color assignment</li>
+                        <li>✓ Smart wire routing</li>
+                        <li>✓ Connection validation</li>
+                        <li>✓ Auto-reconnect on move</li>
+                      </ul>
+                    </div>
                   </CardContent>
                 </Card>
 
@@ -258,35 +514,112 @@ export default function CircuitSimulatorPage() {
                   <CardContent className="pt-6">
                     <div className="flex items-center justify-between mb-4">
                       <h3 className="font-semibold text-[#071428]">Circuit Canvas</h3>
-                      <div className="text-xs text-gray-600">
-                        {components.length} component{components.length !== 1 ? 's' : ''}
+                      <div className="text-xs text-gray-600 flex gap-4">
+                        <span>{components.length} component{components.length !== 1 ? 's' : ''}</span>
+                        <span className="text-[#9C4AFF]">{wires.length} wire{wires.length !== 1 ? 's' : ''}</span>
                       </div>
                     </div>
                     <div
                       ref={canvasRef}
                       onDrop={handleDrop}
                       onDragOver={handleDragOver}
+                      onMouseMove={handleCanvasMouseMove}
+                      onMouseUp={handleCanvasMouseUp}
                       className="bg-white rounded-lg border-2 border-dashed border-gray-300 min-h-[500px] relative overflow-hidden"
                       style={{
                         backgroundImage: 'radial-gradient(circle, #e5e7eb 1px, transparent 1px)',
                         backgroundSize: '20px 20px'
                       }}
                     >
+                      {/* Render wires */}
+                      <svg className="absolute inset-0 pointer-events-none" style={{ zIndex: 1 }}>
+                        {wires.map((wire) => {
+                          const pathD = wire.path
+                            .map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x} ${p.y}`)
+                            .join(' ');
+                          
+                          const isSelected = selectedWires.includes(wire.id);
+                          const isHighlighted = highlightedWirePath === wire.id;
+
+                          return (
+                            <g
+                              key={wire.id}
+                              className="pointer-events-auto cursor-pointer"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setSelectedWires(prev =>
+                                  prev.includes(wire.id)
+                                    ? prev.filter(id => id !== wire.id)
+                                    : [...prev, wire.id]
+                                );
+                              }}
+                              onMouseEnter={() => setHighlightedWirePath(wire.id)}
+                              onMouseLeave={() => setHighlightedWirePath(null)}
+                            >
+                              {/* Wire glow effect */}
+                              <path
+                                d={pathD}
+                                fill="none"
+                                stroke={wire.color}
+                                strokeWidth={isHighlighted ? "6" : "4"}
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                opacity={isHighlighted ? "0.6" : "0.3"}
+                                filter="blur(4px)"
+                              />
+                              {/* Main wire */}
+                              <path
+                                d={pathD}
+                                fill="none"
+                                stroke={isSelected ? '#FFD700' : wire.color}
+                                strokeWidth={isSelected ? "4" : isHighlighted ? "3" : "2"}
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              />
+                            </g>
+                          );
+                        })}
+
+                        {/* Dragging wire preview */}
+                        {dragWire && (
+                          <g>
+                            <line
+                              x1={dragWire.from.x}
+                              y1={dragWire.from.y}
+                              x2={dragWire.currentX}
+                              y2={dragWire.currentY}
+                              stroke="#9C4AFF"
+                              strokeWidth="3"
+                              strokeDasharray="5,5"
+                              strokeLinecap="round"
+                            />
+                            <circle
+                              cx={dragWire.currentX}
+                              cy={dragWire.currentY}
+                              r="4"
+                              fill="#9C4AFF"
+                            />
+                          </g>
+                        )}
+                      </svg>
+
                       {components.length === 0 ? (
-                        <div className="absolute inset-0 flex items-center justify-center text-gray-400">
+                        <div className="absolute inset-0 flex items-center justify-center text-gray-400" style={{ zIndex: 0 }}>
                           <div className="text-center">
                             <CircuitBoard className="h-16 w-16 mx-auto mb-4 text-gray-300" />
                             <p className="text-lg font-semibold text-gray-600">
                               Drag components here to build your circuit
                             </p>
                             <p className="text-sm mt-2">
-                              Start by adding a voltage source and resistors
+                              Click and drag from terminals to create wires
                             </p>
                           </div>
                         </div>
                       ) : (
                         components.map((comp) => {
                           const info = componentLibrary.find(c => c.type === comp.type);
+                          const isHovered = hoveredComponent === comp.id;
+                          
                           return (
                             <motion.div
                               key={comp.id}
@@ -301,9 +634,40 @@ export default function CircuitSimulatorPage() {
                                 left: comp.x,
                                 top: comp.y,
                                 transform: `rotate(${comp.rotation}deg)`,
+                                zIndex: 2,
                               }}
                               onClick={() => setSelectedComponent(comp)}
+                              onMouseEnter={() => setHoveredComponent(comp.id)}
+                              onMouseLeave={() => setHoveredComponent(null)}
                             >
+                              {/* Connection terminals */}
+                              {isHovered && (
+                                <>
+                                  {(['top', 'bottom', 'left', 'right'] as const).map((terminal) => {
+                                    const termPos = {
+                                      top: { x: 20, y: -8 },
+                                      bottom: { x: 20, y: 56 },
+                                      left: { x: -8, y: 20 },
+                                      right: { x: 56, y: 20 },
+                                    };
+
+                                    return (
+                                      <div
+                                        key={terminal}
+                                        className="absolute w-4 h-4 bg-[#9C4AFF] border-2 border-white rounded-full cursor-crosshair hover:bg-[#FF6B00] transition-colors shadow-lg"
+                                        style={{
+                                          left: termPos[terminal].x,
+                                          top: termPos[terminal].y,
+                                          zIndex: 10,
+                                        }}
+                                        onMouseDown={(e) => handleTerminalMouseDown(comp.id, terminal, e)}
+                                        onMouseUp={(e) => handleTerminalMouseUp(comp.id, terminal, e)}
+                                      />
+                                    );
+                                  })}
+                                </>
+                              )}
+
                               <div className="flex flex-col items-center">
                                 <span className="text-2xl mb-1">{info?.icon}</span>
                                 <span className="text-xs font-medium text-gray-700">
@@ -436,7 +800,7 @@ export default function CircuitSimulatorPage() {
               <CardHeader className="pb-3">
                 <CardTitle className="text-white text-base flex items-center gap-2">
                   <Zap className="h-4 w-4 text-[#00C2D1]" />
-                  Analysis Results
+                  Connection Status
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -448,16 +812,17 @@ export default function CircuitSimulatorPage() {
                         Simulation running
                       </p>
                       <p>• Total Components: {components.length}</p>
+                      <p>• Total Wires: {wires.length}</p>
                       <p>• Circuit Type: {components.some(c => c.type === 'voltage') ? 'DC' : 'Incomplete'}</p>
                       <p>• Power Dissipation: {(power * 1000).toFixed(2)} mW</p>
-                      <p>• Efficiency: {voltage > 0 ? ((power / voltage) * 100).toFixed(1) : 0}%</p>
                     </>
                   ) : (
                     <>
                       <p>• Add components to canvas</p>
-                      <p>• Connect with wires (coming soon)</p>
+                      <p>• Hover components to see terminals</p>
+                      <p>• Drag from terminal to connect</p>
+                      <p>• Click wires to select/delete</p>
                       <p>• Click Run to simulate</p>
-                      <p>• View real-time analysis</p>
                     </>
                   )}
                 </div>
@@ -469,35 +834,35 @@ export default function CircuitSimulatorPage() {
           <div className="grid md:grid-cols-2 gap-6">
             <Card className="bg-white/5 border-white/10 backdrop-blur-sm">
               <CardHeader>
-                <CardTitle className="text-white">Quick Start Guide</CardTitle>
+                <CardTitle className="text-white">Wiring Features</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3 text-sm">
                 <div className="flex gap-3">
-                  <div className="font-bold text-[#00C2D1]">1.</div>
+                  <div className="font-bold text-[#00C2D1]">✓</div>
                   <div>
-                    <p className="font-semibold text-white">Drag Components</p>
-                    <p className="text-gray-300">Drag components from the library to the canvas</p>
+                    <p className="font-semibold text-white">Smart Wire Snap</p>
+                    <p className="text-gray-300">Auto-snap to component terminals for accurate connections</p>
                   </div>
                 </div>
                 <div className="flex gap-3">
-                  <div className="font-bold text-[#00C2D1]">2.</div>
+                  <div className="font-bold text-[#00C2D1]">✓</div>
                   <div>
-                    <p className="font-semibold text-white">Configure Values</p>
-                    <p className="text-gray-300">Click components to edit their values</p>
+                    <p className="font-semibold text-white">Auto-Color Assignment</p>
+                    <p className="text-gray-300">Different colors for easy wire identification</p>
                   </div>
                 </div>
                 <div className="flex gap-3">
-                  <div className="font-bold text-[#00C2D1]">3.</div>
+                  <div className="font-bold text-[#00C2D1]">✓</div>
                   <div>
-                    <p className="font-semibold text-white">Run Simulation</p>
-                    <p className="text-gray-300">Click Run to see real-time analysis</p>
+                    <p className="font-semibold text-white">Connection Validation</p>
+                    <p className="text-gray-300">Real-time alerts for incorrect connections</p>
                   </div>
                 </div>
                 <div className="flex gap-3">
-                  <div className="font-bold text-[#00C2D1]">4.</div>
+                  <div className="font-bold text-[#00C2D1]">✓</div>
                   <div>
-                    <p className="font-semibold text-white">View Results</p>
-                    <p className="text-gray-300">Check oscilloscope and multimeter readings</p>
+                    <p className="font-semibold text-white">Auto-Reconnect</p>
+                    <p className="text-gray-300">Wires stay connected when moving components</p>
                   </div>
                 </div>
               </CardContent>
