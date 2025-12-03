@@ -698,31 +698,51 @@ export default function CircuitSimulatorPage() {
                       <motion.div 
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="mt-4 p-4 bg-gray-50 rounded-lg border"
+                        className="mt-4 p-5 bg-gradient-to-br from-[#071428] via-[#0a1d38] to-[#071428] rounded-lg border-2 border-[#00C2D1]/30 shadow-lg"
                       >
-                        <h4 className="font-semibold mb-3 text-[#071428]">Component Properties</h4>
-                        <div className="grid grid-cols-2 gap-3">
-                          <div>
-                            <Label className="text-xs">Type</Label>
-                            <p className="text-sm font-medium capitalize">{selectedComponent.type}</p>
+                        <h4 className="font-bold mb-4 text-white text-base flex items-center gap-2">
+                          <Zap className="h-4 w-4 text-[#00C2D1]" />
+                          Component Properties
+                        </h4>
+                        <div className="grid grid-cols-2 gap-4">
+                          <div className="p-3 bg-white/10 rounded-lg border border-white/20">
+                            <Label className="text-xs font-semibold text-[#00C2D1] mb-1 block">Type</Label>
+                            <p className="text-base font-bold capitalize text-white">
+                              {selectedComponent.type}
+                            </p>
                           </div>
-                          <div>
-                            <Label className="text-xs">ID</Label>
-                            <p className="text-sm font-mono">{selectedComponent.id}</p>
+                          <div className="p-3 bg-white/10 rounded-lg border border-white/20">
+                            <Label className="text-xs font-semibold text-[#00C2D1] mb-1 block">ID</Label>
+                            <p className="text-xs font-mono text-white break-all">
+                              {selectedComponent.id}
+                            </p>
                           </div>
-                          <div>
-                            <Label className="text-xs">Value</Label>
+                          <div className="p-3 bg-white/10 rounded-lg border border-white/20">
+                            <Label className="text-xs font-semibold text-[#00C2D1] mb-1 block">Value</Label>
                             <Input
                               type="number"
                               value={selectedComponent.value}
                               onChange={(e) => updateComponentValue(selectedComponent.id, parseFloat(e.target.value))}
-                              className="h-8 text-sm"
+                              className="h-9 text-sm bg-white text-[#071428] font-bold border-[#00C2D1]/30 focus:border-[#00C2D1]"
                             />
                           </div>
-                          <div>
-                            <Label className="text-xs">Unit</Label>
-                            <p className="text-sm font-medium">{selectedComponent.unit}</p>
+                          <div className="p-3 bg-white/10 rounded-lg border border-white/20">
+                            <Label className="text-xs font-semibold text-[#00C2D1] mb-1 block">Unit</Label>
+                            <p className="text-base font-bold text-white">
+                              {selectedComponent.unit}
+                            </p>
                           </div>
+                        </div>
+                        
+                        {/* Additional Component Info */}
+                        <div className="mt-4 p-3 bg-[#00C2D1]/20 rounded-lg border border-[#00C2D1]/40">
+                          <p className="text-xs text-white/90">
+                            <span className="font-semibold text-[#00C2D1]">Description:</span>{' '}
+                            {componentLibrary.find(c => c.type === selectedComponent.type)?.label || 'Unknown Component'}
+                          </p>
+                          <p className="text-xs text-white/80 mt-1">
+                            Click and drag component to reposition • Hover to see connection terminals
+                          </p>
                         </div>
                       </motion.div>
                     )}
