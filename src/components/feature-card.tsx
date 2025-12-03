@@ -22,6 +22,17 @@ export interface SectionFeaturesProps {
   features: FeatureCardProps[];
 }
 
+// Helper function to check if something is a React component (function or forwardRef)
+const isReactComponent = (obj: unknown): obj is LucideIcon => {
+  return (
+    typeof obj === 'function' ||
+    (typeof obj === 'object' &&
+      obj !== null &&
+      '$$typeof' in obj &&
+      typeof (obj as { render?: unknown }).render === 'function')
+  );
+};
+
 // FeatureCard Component
 export const FeatureCard: React.FC<FeatureCardProps> = ({
   icon,
@@ -31,7 +42,22 @@ export const FeatureCard: React.FC<FeatureCardProps> = ({
   ctaLabel = 'Learn More',
   ctaLink,
 }) => {
-  const IconComponent = typeof icon === 'function' ? icon : null;
+  // Render the icon based on its type
+  const renderIcon = () => {
+    // If it's already a React element, render it directly
+    if (React.isValidElement(icon)) {
+      return React.cloneElement(icon as React.ReactElement, {
+        className: 'h-8 w-8 text-white',
+      });
+    }
+    // If it's a component (function or forwardRef), render it as a component
+    if (isReactComponent(icon)) {
+      const IconComponent = icon;
+      return <IconComponent className="h-8 w-8 text-white" />;
+    }
+    // Fallback for primitives (strings, numbers, etc.)
+    return <span className="h-8 w-8 text-white flex items-center justify-center">{icon as React.ReactNode}</span>;
+  };
 
   const cardContent = (
     <motion.div
@@ -102,11 +128,7 @@ export const FeatureCard: React.FC<FeatureCardProps> = ({
               className="p-3 rounded-xl bg-gradient-to-br from-[#9C4AFF]/30 to-[#FF6B00]/20 
                          border border-[#9C4AFF]/40 shadow-[0_0_20px_rgba(156,74,255,0.4)]"
             >
-              {IconComponent ? (
-                <IconComponent className="h-8 w-8 text-white" />
-              ) : (
-                <div className="h-8 w-8 text-white">{icon}</div>
-              )}
+              {renderIcon()}
             </div>
           </div>
           <CardTitle
