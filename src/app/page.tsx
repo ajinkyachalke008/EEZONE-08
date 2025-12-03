@@ -9,6 +9,7 @@ import { Badge } from '@/components/ui/badge';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
+import { SectionFeatures, FeatureCardProps } from '@/components/feature-card';
 
 // Lazy load heavy components
 const InstrumentScanner = lazy(() => import('@/components/instrument-scanner').then(mod => ({ default: mod.InstrumentScanner })));
