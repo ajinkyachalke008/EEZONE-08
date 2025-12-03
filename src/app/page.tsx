@@ -893,7 +893,7 @@ export default function Home() {
         <section className="py-12 px-4 relative overflow-hidden">
           <div className="absolute top-10 left-10 w-[400px] h-[400px] bg-[#FF6B00] opacity-15 blur-[150px] rounded-full" />
           
-          <div className="container mx-auto max-w-6xl relative z-10 border-2 border-[#FF6B00]/20 rounded-3xl p-8 glass-surface hover:border-[#FF6B00]/40 transition-all">
+          <div className="container mx-auto max-w-6xl relative z-10 border-[3px] border-[#FF6B00]/40 rounded-3xl p-8 glass-surface shadow-[0_0_30px_rgba(255,107,0,0.3)] hover:border-[#FF6B00]/60 hover:shadow-[0_0_40px_rgba(255,107,0,0.4)] transition-all">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -932,7 +932,7 @@ export default function Home() {
                     whileHover={{ scale: 1.03, y: -5 }}
                   >
                     <Link href={`/learn/${topic.slug}`}>
-                      <Card className="h-full glass-surface border-[#FF6B00]/30 hover:border-[#FF6B00]/60 hover:shadow-glowOrange transition-all cursor-pointer">
+                      <Card className="h-full glass-surface border-[2px] border-[#FF6B00]/40 hover:border-[#FF6B00]/70 shadow-[0_0_20px_rgba(255,107,0,0.2)] hover:shadow-[0_0_30px_rgba(255,107,0,0.35)] transition-all cursor-pointer">
                         <CardHeader className="pb-2">
                           <div className="flex items-center gap-3">
                             <div className="p-2 gradient-fire rounded-lg">
@@ -984,7 +984,7 @@ export default function Home() {
                     whileHover={{ scale: 1.03, y: -5 }}
                   >
                     <Link href={`/learn/${topic.slug}`}>
-                      <Card className="h-full glass-surface border-[#9C4AFF]/30 hover:border-[#9C4AFF]/60 hover:shadow-glowViolet transition-all cursor-pointer">
+                      <Card className="h-full glass-surface border-[2px] border-[#9C4AFF]/40 hover:border-[#9C4AFF]/70 shadow-[0_0_20px_rgba(156,74,255,0.2)] hover:shadow-[0_0_30px_rgba(156,74,255,0.35)] transition-all cursor-pointer">
                         <CardHeader className="pb-2">
                           <div className="flex items-center gap-3">
                             <div className="p-2 gradient-violet rounded-lg">
@@ -1019,7 +1019,7 @@ export default function Home() {
                   whileHover={{ scale: 1.03, y: -5 }}
                 >
                   <Link href="/learn/quiz">
-                    <Card className="h-full glass-surface border-[#00E5FF]/30 hover:border-[#00E5FF]/60 hover:shadow-glowCyan transition-all cursor-pointer">
+                    <Card className="h-full glass-surface border-[2px] border-[#00E5FF]/40 hover:border-[#00E5FF]/70 shadow-[0_0_20px_rgba(0,229,255,0.2)] hover:shadow-[0_0_30px_rgba(0,229,255,0.35)] transition-all cursor-pointer">
                       <CardContent className="pt-6 flex flex-col items-center justify-center text-center h-full min-h-[200px]">
                         <Brain className="h-12 w-12 text-[#00E5FF] mb-4" />
                         <h3 className="text-xl font-bold text-white mb-2">Quick Quiz</h3>
@@ -1043,7 +1043,7 @@ export default function Home() {
           <div className="absolute top-20 right-10 w-[400px] h-[400px] bg-[#00E5FF] opacity-20 blur-[150px] rounded-full" />
           <div className="absolute bottom-20 left-10 w-[500px] h-[500px] bg-[#9C4AFF] opacity-20 blur-[150px] rounded-full" />
 
-          <div className="container mx-auto max-w-6xl relative z-10 border-2 border-[#00E5FF]/20 rounded-3xl p-8 glass-surface hover:border-[#00E5FF]/40 transition-all">
+          <div className="container mx-auto max-w-6xl relative z-10 border-[3px] border-[#00E5FF]/40 rounded-3xl p-8 glass-surface shadow-[0_0_30px_rgba(0,229,255,0.3)] hover:border-[#00E5FF]/60 hover:shadow-[0_0_40px_rgba(0,229,255,0.4)] transition-all">
             <motion.div 
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -1074,7 +1074,7 @@ export default function Home() {
                 whileInView={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.8 }}
                 viewport={{ once: true }}
-                className="relative rounded-2xl overflow-hidden border-2 border-[#00E5FF]/30 shadow-glowCyan"
+                className="relative rounded-2xl overflow-hidden border-[2px] border-[#00E5FF]/40 shadow-[0_0_25px_rgba(0,229,255,0.3)]"
               >
                 <img
                   src="https://images.unsplash.com/photo-1581092918056-0c4c3acd3789?w=800&h=600&fit=crop"
@@ -1109,14 +1109,16 @@ export default function Home() {
                     whileInView={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.4, delay: index * 0.1 }}
                     viewport={{ once: true }}
-                    className="flex items-start gap-4 glass-surface border border-white/10 rounded-xl p-4 hover:border-[#00E5FF]/50 hover:shadow-glowCyan transition-all"
+                    className="glass-surface border-[2px] border-[#00E5FF]/30 rounded-xl p-4 hover:border-[#00E5FF]/60 shadow-[0_0_15px_rgba(0,229,255,0.2)] hover:shadow-[0_0_25px_rgba(0,229,255,0.3)] transition-all"
                   >
-                    <div className="p-3 gradient-aqua rounded-lg">
-                      <feature.icon className="h-6 w-6 text-white" />
-                    </div>
-                    <div>
-                      <h4 className="text-white font-semibold text-lg mb-1">{feature.title}</h4>
-                      <p className="text-[#B8A7E0] text-sm">{feature.desc}</p>
+                    <div className="flex items-start gap-4">
+                      <div className="p-3 gradient-aqua rounded-lg">
+                        <feature.icon className="h-6 w-6 text-white" />
+                      </div>
+                      <div>
+                        <h4 className="text-white font-semibold text-lg mb-1">{feature.title}</h4>
+                        <p className="text-[#B8A7E0] text-sm">{feature.desc}</p>
+                      </div>
                     </div>
                   </motion.div>
                 ))}
@@ -1143,7 +1145,7 @@ export default function Home() {
           <div className="absolute top-20 right-10 w-[400px] h-[400px] bg-[#FF00C8] opacity-20 blur-[150px] rounded-full animate-pulse-slow" />
           <div className="absolute bottom-20 left-10 w-[500px] h-[500px] bg-[#9C4AFF] opacity-20 blur-[150px] rounded-full animate-pulse-slow" style={{ animationDelay: '1.5s' }} />
 
-          <div className="container mx-auto max-w-6xl relative z-10 border-2 border-[#9C4AFF]/20 rounded-3xl p-8 glass-surface hover:border-[#9C4AFF]/40 transition-all">
+          <div className="container mx-auto max-w-6xl relative z-10 border-[3px] border-[#9C4AFF]/40 rounded-3xl p-8 glass-surface shadow-[0_0_30px_rgba(156,74,255,0.3)] hover:border-[#9C4AFF]/60 hover:shadow-[0_0_40px_rgba(156,74,255,0.4)] transition-all">
             <motion.div 
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -1188,14 +1190,16 @@ export default function Home() {
                     whileInView={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.4, delay: index * 0.1 }}
                     viewport={{ once: true }}
-                    className="flex items-start gap-4 glass-surface border border-white/10 rounded-xl p-4 hover:border-[#9C4AFF]/50 hover:shadow-glowViolet transition-all"
+                    className="glass-surface border-[2px] border-[#9C4AFF]/30 rounded-xl p-4 hover:border-[#9C4AFF]/60 shadow-[0_0_15px_rgba(156,74,255,0.2)] hover:shadow-[0_0_25px_rgba(156,74,255,0.3)] transition-all"
                   >
-                    <div className="p-3 gradient-violet rounded-lg">
-                      <feature.icon className="h-6 w-6 text-white" />
-                    </div>
-                    <div>
-                      <h4 className="text-white font-semibold text-lg mb-1">{feature.title}</h4>
-                      <p className="text-[#B8A7E0] text-sm">{feature.desc}</p>
+                    <div className="flex items-start gap-4">
+                      <div className="p-3 gradient-violet rounded-lg">
+                        <feature.icon className="h-6 w-6 text-white" />
+                      </div>
+                      <div>
+                        <h4 className="text-white font-semibold text-lg mb-1">{feature.title}</h4>
+                        <p className="text-[#B8A7E0] text-sm">{feature.desc}</p>
+                      </div>
                     </div>
                   </motion.div>
                 ))}
@@ -1207,7 +1211,7 @@ export default function Home() {
                 whileInView={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.8 }}
                 viewport={{ once: true }}
-                className="relative rounded-2xl overflow-hidden border-2 border-[#9C4AFF]/30 shadow-glowViolet order-1 lg:order-2"
+                className="relative rounded-2xl overflow-hidden border-[2px] border-[#9C4AFF]/40 shadow-[0_0_25px_rgba(156,74,255,0.3)] order-1 lg:order-2"
               >
                 <img
                   src="https://images.unsplash.com/photo-1635070041078-e363dbe005cb?w=800&h=600&fit=crop"
@@ -1242,7 +1246,7 @@ export default function Home() {
         <section className="py-16 px-4 relative overflow-hidden">
           <div className="absolute top-10 left-1/2 w-[400px] h-[400px] bg-[#FF6B00] opacity-15 blur-[150px] rounded-full" />
           
-          <div className="container mx-auto max-w-6xl relative z-10 border-2 border-[#9C4AFF]/20 rounded-3xl p-8 glass-surface hover:border-[#9C4AFF]/40 transition-all">
+          <div className="container mx-auto max-w-6xl relative z-10 border-[3px] border-[#9C4AFF]/20 rounded-3xl p-8 glass-surface hover:border-[#9C4AFF]/40 transition-all">
             <div className="text-center mb-12">
               <h2 className="text-4xl font-bold text-white mb-4 glow-text-violet" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>
                 {searchQuery ? 'Tool Categories' : 'Advanced Calculators & Tools'}
@@ -1311,7 +1315,7 @@ export default function Home() {
           <div className="absolute top-10 right-10 w-[400px] h-[400px] bg-[#FF6B00] opacity-20 blur-[150px] rounded-full" />
           <div className="absolute bottom-10 left-10 w-[400px] h-[400px] bg-[#00E5FF] opacity-20 blur-[150px] rounded-full" />
           
-          <div className="container mx-auto max-w-6xl relative z-10 border-2 border-[#FF6B00]/20 rounded-3xl p-8 glass-surface hover:border-[#FF6B00]/40 transition-all">
+          <div className="container mx-auto max-w-6xl relative z-10 border-[3px] border-[#FF6B00]/20 rounded-3xl p-8 glass-surface hover:border-[#FF6B00]/40 transition-all">
             <div className="text-center mb-12">
               <h2 className="text-4xl font-bold text-white mb-4 glow-text-orange" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>
                 🎨 Interactive Design Tools
@@ -1380,7 +1384,7 @@ export default function Home() {
         <section className="py-16 px-4 relative overflow-hidden">
           <div className="absolute top-10 left-1/2 w-[400px] h-[400px] bg-[#9C4AFF] opacity-15 blur-[150px] rounded-full" />
           
-          <div className="container mx-auto max-w-6xl relative z-10 border-2 border-[#9C4AFF]/20 rounded-3xl p-8 glass-surface hover:border-[#9C4AFF]/40 transition-all">
+          <div className="container mx-auto max-w-6xl relative z-10 border-[3px] border-[#9C4AFF]/20 rounded-3xl p-8 glass-surface hover:border-[#9C4AFF]/40 transition-all">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -1432,7 +1436,7 @@ export default function Home() {
           <div className="absolute top-10 right-10 w-[400px] h-[400px] bg-[#00E5FF] opacity-20 blur-[150px] rounded-full animate-pulse-slow" />
           <div className="absolute bottom-10 left-10 w-[400px] h-[400px] bg-[#9C4AFF] opacity-20 blur-[150px] rounded-full animate-pulse-slow" style={{ animationDelay: '1s' }} />
           
-          <div className="container mx-auto max-w-6xl relative z-10 border-2 border-[#00E5FF]/20 rounded-3xl p-8 glass-surface hover:border-[#00E5FF]/40 transition-all">
+          <div className="container mx-auto max-w-6xl relative z-10 border-[3px] border-[#00E5FF]/20 rounded-3xl p-8 glass-surface hover:border-[#00E5FF]/40 transition-all">
             <div className="text-center mb-12">
               <h2 className="text-4xl font-bold text-white mb-4 glow-text-cyan" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>
                 ⚖️ Code Compliance Tools
@@ -1479,7 +1483,7 @@ export default function Home() {
           <div className="absolute top-10 left-1/2 w-[400px] h-[400px] bg-[#FF6B00] opacity-15 blur-[150px] rounded-full" />
           <div className="absolute bottom-10 right-10 w-[400px] h-[400px] bg-[#FF6B00] opacity-20 blur-[150px] rounded-full" />
           
-          <div className="container mx-auto max-w-6xl relative z-10 border-2 border-[#FF6B00]/20 rounded-3xl p-8 glass-surface hover:border-[#FF6B00]/40 transition-all">
+          <div className="container mx-auto max-w-6xl relative z-10 border-[3px] border-[#FF6B00]/20 rounded-3xl p-8 glass-surface hover:border-[#FF6B00]/40 transition-all">
             <div className="text-center mb-12">
               <h2 className="text-4xl font-bold text-white mb-4 glow-text-orange" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>
                 🔧 Diagnostic & Testing Tools
@@ -1527,7 +1531,7 @@ export default function Home() {
           <div className="absolute top-10 right-10 w-[400px] h-[400px] bg-[#FF00C8] opacity-25 blur-[150px] rounded-full animate-pulse-slow" />
           <div className="absolute bottom-10 left-10 w-[400px] h-[400px] bg-[#9C4AFF] opacity-25 blur-[150px] rounded-full animate-pulse-slow" style={{ animationDelay: '1.5s' }} />
           
-          <div className="container mx-auto max-w-6xl relative z-10 border-2 border-[#9C4AFF]/20 rounded-3xl p-8 glass-surface hover:border-[#9C4AFF]/40 transition-all">
+          <div className="container mx-auto max-w-6xl relative z-10 border-[3px] border-[#9C4AFF]/20 rounded-3xl p-8 glass-surface hover:border-[#9C4AFF]/40 transition-all">
             <div className="text-center mb-12">
               <h2 className="text-4xl font-bold text-white mb-4 glow-text-violet" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>
                 ✨ Advanced AI Features
@@ -1579,7 +1583,7 @@ export default function Home() {
           <div className="absolute top-10 left-10 w-[400px] h-[400px] bg-[#00E5FF] opacity-20 blur-[150px] rounded-full" />
           <div className="absolute bottom-10 right-10 w-[400px] h-[400px] bg-[#FF6B00] opacity-20 blur-[150px] rounded-full" />
           
-          <div className="container mx-auto max-w-6xl relative z-10 border-2 border-[#00E5FF]/20 rounded-3xl p-8 glass-surface hover:border-[#00E5FF]/40 transition-all">
+          <div className="container mx-auto max-w-6xl relative z-10 border-[3px] border-[#00E5FF]/20 rounded-3xl p-8 glass-surface hover:border-[#00E5FF]/40 transition-all">
             <div className="text-center mb-12">
               <h2 className="text-4xl font-bold text-white mb-4 glow-text-cyan" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>
                 🎮 Interactive Simulations
@@ -1626,7 +1630,7 @@ export default function Home() {
           <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-[#2B0B4B] to-[#0A0014]" />
           <div className="absolute top-10 right-10 w-[300px] h-[300px] bg-[#FF6B00] opacity-20 blur-[120px] rounded-full" />
           
-          <div className="container mx-auto max-w-6xl relative z-10 border-2 border-[#FF6B00]/20 rounded-3xl p-8 glass-surface hover:border-[#FF6B00]/40 transition-all">
+          <div className="container mx-auto max-w-6xl relative z-10 border-[3px] border-[#FF6B00]/20 rounded-3xl p-8 glass-surface hover:border-[#FF6B00]/40 transition-all">
             <div className="text-center mb-12">
               <h2 className="text-4xl font-bold text-white mb-4 glow-text-orange" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>
                 🔥 Quick-Access Utilities
@@ -1695,7 +1699,7 @@ export default function Home() {
           <div className="absolute top-10 left-10 w-[400px] h-[400px] bg-[#9C4AFF] opacity-20 blur-[150px] rounded-full" />
           <div className="absolute bottom-10 right-10 w-[400px] h-[400px] bg-[#00E5FF] opacity-20 blur-[150px] rounded-full" />
           
-          <div className="container mx-auto max-w-6xl relative z-10 border-2 border-[#9C4AFF]/20 rounded-3xl p-8 glass-surface hover:border-[#9C4AFF]/40 transition-all">
+          <div className="container mx-auto max-w-6xl relative z-10 border-[3px] border-[#9C4AFF]/20 rounded-3xl p-8 glass-surface hover:border-[#9C4AFF]/40 transition-all">
             <div className="text-center mb-12">
               <h2 className="text-4xl font-bold text-white mb-4 glow-text-violet" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>
                 🎓 Educational & Training
@@ -1781,7 +1785,7 @@ export default function Home() {
           <div className="absolute bottom-10 left-10 w-[400px] h-[400px] bg-[#9C4AFF] opacity-25 blur-[150px] rounded-full animate-pulse-slow" style={{ animationDelay: '1.5s' }} />
           <div className="absolute top-1/2 left-1/2 w-[300px] h-[300px] bg-[#00E5FF] opacity-20 blur-[150px] rounded-full animate-pulse-slow" style={{ animationDelay: '3s' }} />
 
-          <div className="container mx-auto max-w-6xl relative z-10 border-2 border-[#FF6B00]/20 rounded-3xl p-8 glass-surface hover:border-[#FF6B00]/40 transition-all">
+          <div className="container mx-auto max-w-6xl relative z-10 border-[3px] border-[#FF6B00]/20 rounded-3xl p-8 glass-surface hover:border-[#FF6B00]/40 transition-all">
             <motion.div 
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -2006,7 +2010,7 @@ export default function Home() {
         <section className="py-16 px-4 relative overflow-hidden">
           <div className="absolute top-10 right-10 w-[400px] h-[400px] bg-[#FF6B00] opacity-15 blur-[150px] rounded-full" />
           
-          <div className="container mx-auto max-w-6xl relative z-10 border-2 border-[#FF6B00]/20 rounded-3xl p-8 glass-surface hover:border-[#FF6B00]/40 transition-all">
+          <div className="container mx-auto max-w-6xl relative z-10 border-[3px] border-[#FF6B00]/20 rounded-3xl p-8 glass-surface hover:border-[#FF6B00]/40 transition-all">
             <div className="flex justify-between items-center mb-8">
               <div>
                 <h2 className="text-3xl font-bold text-white glow-text-orange" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>
@@ -2092,7 +2096,7 @@ export default function Home() {
         <section className="py-16 px-4 relative overflow-hidden">
           <div className="absolute top-10 left-10 w-[400px] h-[400px] bg-[#00E5FF] opacity-15 blur-[150px] rounded-full" />
           
-          <div className="container mx-auto max-w-6xl relative z-10 border-2 border-[#00E5FF]/20 rounded-3xl p-8 glass-surface hover:border-[#00E5FF]/40 transition-all">
+          <div className="container mx-auto max-w-6xl relative z-10 border-[3px] border-[#00E5FF]/20 rounded-3xl p-8 glass-surface hover:border-[#00E5FF]/40 transition-all">
             <h2 className="text-3xl font-bold text-white text-center mb-8 glow-text-cyan" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>
               {searchQuery ? 'Quick Tools' : 'Quick Access Tools'}
             </h2>
@@ -2130,7 +2134,7 @@ export default function Home() {
           <div className="absolute top-10 right-10 w-[400px] h-[400px] bg-[#9C4AFF] opacity-20 blur-[150px] rounded-full" />
           <div className="absolute bottom-10 left-10 w-[400px] h-[400px] bg-[#FF6B00] opacity-20 blur-[150px] rounded-full" />
           
-          <div className="container mx-auto max-w-6xl relative z-10 border-2 border-[#9C4AFF]/20 rounded-3xl p-8 glass-surface hover:border-[#9C4AFF]/40 transition-all">
+          <div className="container mx-auto max-w-6xl relative z-10 border-[3px] border-[#9C4AFF]/20 rounded-3xl p-8 glass-surface hover:border-[#9C4AFF]/40 transition-all">
             <div className="text-center mb-12">
               <h2 className="text-4xl font-bold text-white mb-4 glow-text-violet" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>
                 🚀 Interactive Project Builder
@@ -2211,7 +2215,7 @@ export default function Home() {
           <div className="absolute top-10 right-10 w-[300px] h-[300px] bg-[#FF6B00] opacity-30 blur-[150px] rounded-full animate-pulse-slow" />
           <div className="absolute bottom-10 left-10 w-[300px] h-[300px] bg-[#00E5FF] opacity-30 blur-[150px] rounded-full animate-pulse-slow" style={{ animationDelay: '1s' }} />
 
-          <div className="container mx-auto max-w-4xl text-center relative z-10 border-2 border-[#9C4AFF]/20 rounded-3xl p-12 glass-surface hover:border-[#9C4AFF]/40 transition-all">
+          <div className="container mx-auto max-w-4xl text-center relative z-10 border-[3px] border-[#9C4AFF]/20 rounded-3xl p-12 glass-surface hover:border-[#9C4AFF]/40 transition-all">
             <motion.h2 
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
