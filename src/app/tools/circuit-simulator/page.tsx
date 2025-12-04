@@ -54,6 +54,7 @@ import {
 import { Textarea } from '@/components/ui/textarea';
 import { MonacoCodeEditor } from '@/components/tools/monaco-code-editor';
 import { BreadboardView } from '@/components/tools/breadboard-view';
+import { AICircuitAssistant } from '@/components/tools/ai-circuit-assistant';
 
 interface Component {
   id: string;
@@ -144,7 +145,7 @@ export default function CircuitSimulatorPage() {
   const [isSaving, setIsSaving] = useState(false);
   
   // Add new state for code editor
-  const [activeTab, setActiveTab] = useState<'circuit' | 'code' | 'breadboard'>('circuit');
+  const [activeTab, setActiveTab] = useState<'circuit' | 'code' | 'breadboard' | 'ai'>('circuit');
   const [arduinoCode, setArduinoCode] = useState('');
   const [codeRunning, setCodeRunning] = useState(false);
 
@@ -945,6 +946,19 @@ export default function CircuitSimulatorPage() {
     });
   };
 
+  // Handle AI-generated circuit
+  const handleApplyAICircuit = (aiResponse: any) => {
+    if (aiResponse.components && aiResponse.components.length > 0) {
+      setComponents(aiResponse.components);
+      setWires([]); // Clear existing wires
+      setSaveName('AI Generated Circuit');
+      setCurrentProjectId(null);
+      toast.success('AI circuit applied to canvas!', {
+        description: aiResponse.explanation,
+      });
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#071428] via-[#0a1d38] to-[#071428]">
       {/* Animated Background */}
@@ -1328,11 +1342,11 @@ export default function CircuitSimulatorPage() {
                     Circuit Simulator & Code Editor
                   </CardTitle>
                   <CardDescription className="text-gray-300">
-                    Professional SPICE-like analysis with Arduino programming & breadboard prototyping
+                    Professional SPICE-like analysis with Arduino programming, breadboard & AI assistance
                   </CardDescription>
                 </div>
-                <Tabs value={activeTab} onValueChange={(v: any) => setActiveTab(v)} className="w-[500px]">
-                  <TabsList className="grid w-full grid-cols-3 bg-white/10">
+                <Tabs value={activeTab} onValueChange={(v: any) => setActiveTab(v)} className="w-[600px]">
+                  <TabsList className="grid w-full grid-cols-4 bg-white/10">
                     <TabsTrigger value="circuit" className="data-[state=active]:bg-[#00C2D1]">
                       <CircuitBoard className="h-4 w-4 mr-2" />
                       Circuit
@@ -1344,6 +1358,10 @@ export default function CircuitSimulatorPage() {
                     <TabsTrigger value="breadboard" className="data-[state=active]:bg-[#FF6B00]">
                       <Cable className="h-4 w-4 mr-2" />
                       Breadboard
+                    </TabsTrigger>
+                    <TabsTrigger value="ai" className="data-[state=active]:bg-[#9C4AFF]">
+                      <Sparkles className="h-4 w-4 mr-2" />
+                      AI Assistant
                     </TabsTrigger>
                   </TabsList>
                 </Tabs>
@@ -1983,6 +2001,23 @@ export default function CircuitSimulatorPage() {
                       {/* Breadboard View Component */}
                       <BreadboardView onSync={handleBreadboardSync} />
                     </div>
+                  </motion.div>
+                )}
+
+                {activeTab === 'ai' && (
+                  <motion.div
+                    key="ai"
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.95 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <AICircuitAssistant
+                      onGenerateCircuit={handleApplyAICircuit}
+                      currentComponents={components}
+                      currentWires={wires}
+                      validationErrors={validationErrors}
+                    />
                   </motion.div>
                 )}
               </AnimatePresence>
