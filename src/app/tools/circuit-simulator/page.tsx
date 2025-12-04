@@ -12,7 +12,7 @@ import {
   CircuitBoard, ArrowLeft, Play, Pause, RotateCcw, Download, Zap, Activity, 
   Gauge, Trash2, Cable, Link2, AlertTriangle, CheckCircle, Info, FileCode,
   Search, Filter, BookOpen, Save, Upload, Sparkles, Bug, TrendingUp, BarChart3,
-  FolderOpen, FileJson, Image as ImageIcon, FileText
+  FolderOpen, FileJson, Image as ImageIcon, FileText, Code2, Terminal
 } from 'lucide-react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -52,6 +52,7 @@ import {
   DialogFooter,
 } from '@/components/ui/dialog';
 import { Textarea } from '@/components/ui/textarea';
+import { MonacoCodeEditor } from '@/components/tools/monaco-code-editor';
 
 interface Component {
   id: string;
@@ -141,6 +142,11 @@ export default function CircuitSimulatorPage() {
   const [currentProjectId, setCurrentProjectId] = useState<number | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   
+  // Add new state for code editor
+  const [activeTab, setActiveTab] = useState<'circuit' | 'code'>('circuit');
+  const [arduinoCode, setArduinoCode] = useState('');
+  const [codeRunning, setCodeRunning] = useState(false);
+
   const canvasRef = useRef<HTMLDivElement>(null);
 
   // Get filtered components
@@ -906,6 +912,29 @@ export default function CircuitSimulatorPage() {
     }
   }, [isRunning]);
 
+  // Handle code execution
+  const handleRunCode = (code: string) => {
+    setArduinoCode(code);
+    setCodeRunning(true);
+    
+    // In a real implementation, this would send the code to an MCU emulator
+    // For now, we'll just show a toast
+    toast.success('Code compilation started', {
+      description: 'Arduino code will run on virtual MCU',
+    });
+    
+    // Simulate code execution ending after 5 seconds
+    setTimeout(() => {
+      setCodeRunning(false);
+      toast.info('Code execution completed');
+    }, 5000);
+  };
+
+  const handleStopCode = () => {
+    setCodeRunning(false);
+    toast.info('Code execution stopped');
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#071428] via-[#0a1d38] to-[#071428]">
       {/* Animated Background */}
@@ -1279,529 +1308,634 @@ export default function CircuitSimulatorPage() {
             )}
           </AnimatePresence>
 
+          {/* Main Content Tabs */}
           <Card className="mb-8 bg-white/5 border-white/10 backdrop-blur-sm">
             <CardHeader>
-              <CardTitle className="text-white flex items-center gap-2">
-                <Activity className="h-5 w-5 text-[#00C2D1]" />
-                Enhanced Simulation Controls
-              </CardTitle>
-              <CardDescription className="text-gray-300">
-                Professional SPICE-like analysis with live editing & project management
-              </CardDescription>
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle className="text-white flex items-center gap-2">
+                    <Activity className="h-5 w-5 text-[#00C2D1]" />
+                    Circuit Simulator & Code Editor
+                  </CardTitle>
+                  <CardDescription className="text-gray-300">
+                    Professional SPICE-like analysis with Arduino programming
+                  </CardDescription>
+                </div>
+                <Tabs value={activeTab} onValueChange={(v: any) => setActiveTab(v)} className="w-[400px]">
+                  <TabsList className="grid w-full grid-cols-2 bg-white/10">
+                    <TabsTrigger value="circuit" className="data-[state=active]:bg-[#00C2D1]">
+                      <CircuitBoard className="h-4 w-4 mr-2" />
+                      Circuit Builder
+                    </TabsTrigger>
+                    <TabsTrigger value="code" className="data-[state=active]:bg-[#9C4AFF]">
+                      <Code2 className="h-4 w-4 mr-2" />
+                      Code Editor
+                    </TabsTrigger>
+                  </TabsList>
+                </Tabs>
+              </div>
             </CardHeader>
             <CardContent>
-              <div className="flex gap-4 mb-6 flex-wrap">
-                <Select 
-                  value={simulationSettings.mode} 
-                  onValueChange={(v: any) => setSimulationSettings(prev => ({ ...prev, mode: v }))}
-                >
-                  <SelectTrigger className="w-40 bg-white/10 text-white border-white/20">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="dc">⚡ DC Analysis</SelectItem>
-                    <SelectItem value="ac">〰️ AC Frequency</SelectItem>
-                    <SelectItem value="transient">📊 Transient</SelectItem>
-                  </SelectContent>
-                </Select>
-                
-                <Button
-                  onClick={runEnhancedSimulation}
-                  disabled={components.length === 0}
-                  className="bg-[#00C2D1] text-[#071428] hover:bg-[#00C2D1]/90"
-                >
-                  <Play className="h-4 w-4 mr-2" />
-                  Run Simulation
-                </Button>
-                <Button 
-                  variant="outline" 
-                  onClick={resetSimulation}
-                  className="bg-white/10 border-white/20 text-white hover:bg-white/20"
-                >
-                  <RotateCcw className="h-4 w-4 mr-2" />
-                  Reset
-                </Button>
-                <Button 
-                  variant="outline" 
-                  onClick={() => setShowAllTerminals(!showAllTerminals)}
-                  className={`border-white/20 text-white hover:bg-white/20 ${showAllTerminals ? 'bg-[#9C4AFF]/30' : 'bg-white/10'}`}
-                >
-                  <Link2 className="h-4 w-4 mr-2" />
-                  {showAllTerminals ? 'Hide' : 'Show'} Terminals
-                </Button>
-                <Button 
-                  variant="outline" 
-                  onClick={autoLabel}
-                  disabled={wires.length === 0}
-                  className="bg-white/10 border-white/20 text-white hover:bg-white/20"
-                >
-                  <Sparkles className="h-4 w-4 mr-2" />
-                  Auto-Label
-                </Button>
-                <Button 
-                  variant="outline" 
-                  onClick={autoCleanupWires}
-                  disabled={wires.length === 0}
-                  className="bg-white/10 border-white/20 text-white hover:bg-white/20"
-                >
-                  <Cable className="h-4 w-4 mr-2" />
-                  Cleanup
-                </Button>
-                
-                {/* Export Menu */}
-                <div className="relative group">
-                  <Button 
-                    variant="outline"
-                    className="bg-white/10 border-white/20 text-white hover:bg-white/20"
+              <AnimatePresence mode="wait">
+                {activeTab === 'circuit' && (
+                  <motion.div
+                    key="circuit"
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: 20 }}
+                    transition={{ duration: 0.3 }}
                   >
-                    <Download className="h-4 w-4 mr-2" />
-                    Export
-                  </Button>
-                  <div className="absolute top-full mt-2 right-0 hidden group-hover:block bg-[#071428] border border-white/20 rounded-lg shadow-lg overflow-hidden z-50">
-                    <button
-                      onClick={exportAsJSON}
-                      className="w-full px-4 py-2 text-left text-white hover:bg-white/10 flex items-center gap-2 text-sm"
-                    >
-                      <FileJson className="h-4 w-4" />
-                      Export as JSON
-                    </button>
-                    <button
-                      onClick={exportAsNetlist}
-                      className="w-full px-4 py-2 text-left text-white hover:bg-white/10 flex items-center gap-2 text-sm"
-                    >
-                      <FileText className="h-4 w-4" />
-                      Export Netlist
-                    </button>
-                    <button
-                      onClick={exportAsPNG}
-                      className="w-full px-4 py-2 text-left text-white hover:bg-white/10 flex items-center gap-2 text-sm"
-                    >
-                      <ImageIcon className="h-4 w-4" />
-                      Export as PNG
-                    </button>
-                  </div>
-                </div>
-
-                {/* Import Button */}
-                <label className="cursor-pointer">
-                  <input
-                    type="file"
-                    accept=".json"
-                    onChange={importFromJSON}
-                    className="hidden"
-                  />
-                  <Button 
-                    variant="outline"
-                    className="bg-white/10 border-white/20 text-white hover:bg-white/20"
-                    asChild
-                  >
-                    <span>
-                      <Upload className="h-4 w-4 mr-2" />
-                      Import JSON
-                    </span>
-                  </Button>
-                </label>
-
-                <Button 
-                  variant="outline" 
-                  onClick={deleteSelectedWires}
-                  disabled={selectedWires.length === 0}
-                  className="bg-white/10 border-white/20 text-white hover:bg-white/20"
-                >
-                  <Trash2 className="h-4 w-4 mr-2" />
-                  Delete ({selectedWires.length})
-                </Button>
-                <Button 
-                  variant="outline" 
-                  onClick={clearCanvas}
-                  className="bg-white/10 border-white/20 text-white hover:bg-white/20"
-                >
-                  Clear Canvas
-                </Button>
-              </div>
-
-              <div className="grid lg:grid-cols-4 gap-4">
-                {/* Component Library */}
-                <Card className="bg-[#071428] border-white/20 lg:col-span-1">
-                  <CardContent className="pt-6">
-                    <h3 className="font-semibold mb-3 text-[#00C2D1] flex items-center gap-2">
-                      <Zap className="h-4 w-4" />
-                      Component Library
-                    </h3>
-                    
-                    <div className="mb-4">
-                      <div className="relative">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-                        <Input
-                          value={componentSearch}
-                          onChange={(e) => setComponentSearch(e.target.value)}
-                          placeholder="Search components..."
-                          className="pl-10 bg-white/10 border-white/20 text-white placeholder:text-gray-400"
-                        />
-                      </div>
-                    </div>
-                    
-                    {!componentSearch && (
-                      <Tabs value={selectedCategory} onValueChange={setSelectedCategory} className="mb-4">
-                        <TabsList className="bg-white/10 w-full flex-wrap h-auto gap-1 p-1">
-                          {Object.entries(COMPONENT_CATEGORIES).map(([key, cat]) => (
-                            <TabsTrigger 
-                              key={key} 
-                              value={key}
-                              className="text-xs px-2 py-1 data-[state=active]:bg-[#9C4AFF]"
-                            >
-                              {cat.icon}
-                            </TabsTrigger>
-                          ))}
-                        </TabsList>
-                      </Tabs>
-                    )}
-                    
-                    <div className="space-y-2 text-sm max-h-[600px] overflow-y-auto pr-2">
-                      {filteredComponents.map((comp) => (
-                        <div
-                          key={comp.type}
-                          draggable
-                          onDragStart={() => handleDragStart(comp.type)}
-                          className="p-3 border border-white/10 rounded hover:bg-[#00C2D1]/20 cursor-move transition-colors backdrop-blur-sm group"
+                    <div className="flex gap-4 mb-6 flex-wrap">
+                      <Select 
+                        value={simulationSettings.mode} 
+                        onValueChange={(v: any) => setSimulationSettings(prev => ({ ...prev, mode: v }))}
+                      >
+                        <SelectTrigger className="w-40 bg-white/10 text-white border-white/20">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="dc">⚡ DC Analysis</SelectItem>
+                          <SelectItem value="ac">〰️ AC Frequency</SelectItem>
+                          <SelectItem value="transient">📊 Transient</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      
+                      <Button
+                        onClick={runEnhancedSimulation}
+                        disabled={components.length === 0}
+                        className="bg-[#00C2D1] text-[#071428] hover:bg-[#00C2D1]/90"
+                      >
+                        <Play className="h-4 w-4 mr-2" />
+                        Run Simulation
+                      </Button>
+                      <Button 
+                        variant="outline" 
+                        onClick={resetSimulation}
+                        className="bg-white/10 border-white/20 text-white hover:bg-white/20"
+                      >
+                        <RotateCcw className="h-4 w-4 mr-2" />
+                        Reset
+                      </Button>
+                      <Button 
+                        variant="outline" 
+                        onClick={() => setShowAllTerminals(!showAllTerminals)}
+                        className={`border-white/20 text-white hover:bg-white/20 ${showAllTerminals ? 'bg-[#9C4AFF]/30' : 'bg-white/10'}`}
+                      >
+                        <Link2 className="h-4 w-4 mr-2" />
+                        {showAllTerminals ? 'Hide' : 'Show'} Terminals
+                      </Button>
+                      <Button 
+                        variant="outline" 
+                        onClick={autoLabel}
+                        disabled={wires.length === 0}
+                        className="bg-white/10 border-white/20 text-white hover:bg-white/20"
+                      >
+                        <Sparkles className="h-4 w-4 mr-2" />
+                        Auto-Label
+                      </Button>
+                      <Button 
+                        variant="outline" 
+                        onClick={autoCleanupWires}
+                        disabled={wires.length === 0}
+                        className="bg-white/10 border-white/20 text-white hover:bg-white/20"
+                      >
+                        <Cable className="h-4 w-4 mr-2" />
+                        Cleanup
+                      </Button>
+                      
+                      {/* Export Menu */}
+                      <div className="relative group">
+                        <Button 
+                          variant="outline"
+                          className="bg-white/10 border-white/20 text-white hover:bg-white/20"
                         >
-                          <div className="flex items-center gap-2">
-                            <span className="text-xl">{comp.icon}</span>
-                            <div className="flex-1 min-w-0">
-                              <p className="text-white text-xs font-medium truncate">{comp.label}</p>
-                              <p className="text-gray-400 text-[10px] truncate">{comp.description}</p>
+                          <Download className="h-4 w-4 mr-2" />
+                          Export
+                        </Button>
+                        <div className="absolute top-full mt-2 right-0 hidden group-hover:block bg-[#071428] border border-white/20 rounded-lg shadow-lg overflow-hidden z-50">
+                          <button
+                            onClick={exportAsJSON}
+                            className="w-full px-4 py-2 text-left text-white hover:bg-white/10 flex items-center gap-2 text-sm"
+                          >
+                            <FileJson className="h-4 w-4" />
+                            Export as JSON
+                          </button>
+                          <button
+                            onClick={exportAsNetlist}
+                            className="w-full px-4 py-2 text-left text-white hover:bg-white/10 flex items-center gap-2 text-sm"
+                          >
+                            <FileText className="h-4 w-4" />
+                            Export Netlist
+                          </button>
+                          <button
+                            onClick={exportAsPNG}
+                            className="w-full px-4 py-2 text-left text-white hover:bg-white/10 flex items-center gap-2 text-sm"
+                          >
+                            <ImageIcon className="h-4 w-4" />
+                            Export as PNG
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Import Button */}
+                      <label className="cursor-pointer">
+                        <input
+                          type="file"
+                          accept=".json"
+                          onChange={importFromJSON}
+                          className="hidden"
+                        />
+                        <Button 
+                          variant="outline"
+                          className="bg-white/10 border-white/20 text-white hover:bg-white/20"
+                          asChild
+                        >
+                          <span>
+                            <Upload className="h-4 w-4 mr-2" />
+                            Import JSON
+                          </span>
+                        </Button>
+                      </label>
+
+                      <Button 
+                        variant="outline" 
+                        onClick={deleteSelectedWires}
+                        disabled={selectedWires.length === 0}
+                        className="bg-white/10 border-white/20 text-white hover:bg-white/20"
+                      >
+                        <Trash2 className="h-4 w-4 mr-2" />
+                        Delete ({selectedWires.length})
+                      </Button>
+                      <Button 
+                        variant="outline" 
+                        onClick={clearCanvas}
+                        className="bg-white/10 border-white/20 text-white hover:bg-white/20"
+                      >
+                        Clear Canvas
+                      </Button>
+                    </div>
+
+                    <div className="grid lg:grid-cols-4 gap-4">
+                      {/* Component Library */}
+                      <Card className="bg-[#071428] border-white/20 lg:col-span-1">
+                        <CardContent className="pt-6">
+                          <h3 className="font-semibold mb-3 text-[#00C2D1] flex items-center gap-2">
+                            <Zap className="h-4 w-4" />
+                            Component Library
+                          </h3>
+                          
+                          <div className="mb-4">
+                            <div className="relative">
+                              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                              <Input
+                                value={componentSearch}
+                                onChange={(e) => setComponentSearch(e.target.value)}
+                                placeholder="Search components..."
+                                className="pl-10 bg-white/10 border-white/20 text-white placeholder:text-gray-400"
+                              />
                             </div>
                           </div>
-                          <div className="mt-1 flex items-center gap-1 flex-wrap">
-                            <Badge variant="outline" className="text-[9px] px-1 py-0">
-                              {comp.category}
-                            </Badge>
-                            <Badge variant="outline" className="text-[9px] px-1 py-0">
-                              {comp.pins} pins
-                            </Badge>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                    
-                    <div className="mt-4 p-3 bg-white/5 rounded border border-white/10">
-                      <h4 className="text-xs font-semibold text-[#00C2D1] mb-2">Quick Tips</h4>
-                      <ul className="text-xs text-gray-300 space-y-1">
-                        <li>✓ Drag components to canvas</li>
-                        <li>✓ Click terminals to wire</li>
-                        <li>✓ Edit values in live mode</li>
-                        <li>✓ Save/load projects</li>
-                      </ul>
-                    </div>
-                  </CardContent>
-                </Card>
-
-                {/* Circuit Canvas */}
-                <Card className="lg:col-span-3 bg-white/95 border-white/20">
-                  <CardContent className="pt-6">
-                    <div className="flex items-center justify-between mb-4">
-                      <h3 className="font-semibold text-[#071428]">
-                        {saveName || 'Circuit Canvas'}
-                        {currentProjectId && <span className="text-xs text-gray-500 ml-2">(ID: {currentProjectId})</span>}
-                      </h3>
-                      <div className="text-xs text-gray-600 flex gap-4">
-                        <span>{components.length} component{components.length !== 1 ? 's' : ''}</span>
-                        <span className="text-[#9C4AFF] font-semibold">{wires.length} wire{wires.length !== 1 ? 's' : ''}</span>
-                        {wireDrawingMode && <span className="text-[#FF6B00] font-bold animate-pulse">Drawing wire...</span>}
-                      </div>
-                    </div>
-                    <div
-                      ref={canvasRef}
-                      onDrop={handleDrop}
-                      onDragOver={handleDragOver}
-                      onMouseMove={handleCanvasMouseMove}
-                      onMouseUp={handleCanvasMouseUp}
-                      className={`bg-white rounded-lg border-2 ${wireDrawingMode ? 'border-[#9C4AFF] border-solid' : 'border-dashed border-gray-300'} min-h-[600px] relative overflow-hidden transition-all`}
-                      style={{
-                        backgroundImage: 'radial-gradient(circle, #e5e7eb 1px, transparent 1px)',
-                        backgroundSize: '20px 20px'
-                      }}
-                    >
-                      <svg className="absolute inset-0 pointer-events-none" style={{ zIndex: 1 }}>
-                        {wires.map((wire) => {
-                          const pathD = wire.path
-                            .map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x} ${p.y}`)
-                            .join(' ');
                           
-                          const isSelected = selectedWires.includes(wire.id);
-                          const isHighlighted = highlightedWirePath === wire.id;
-
-                          return (
-                            <g
-                              key={wire.id}
-                              className="pointer-events-auto cursor-pointer"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setSelectedWires(prev =>
-                                  prev.includes(wire.id)
-                                    ? prev.filter(id => id !== wire.id)
-                                    : [...prev, wire.id]
-                                );
-                              }}
-                              onMouseEnter={() => setHighlightedWirePath(wire.id)}
-                              onMouseLeave={() => setHighlightedWirePath(null)}
-                            >
-                              <path
-                                d={pathD}
-                                fill="none"
-                                stroke={wire.color}
-                                strokeWidth={isHighlighted ? "8" : "6"}
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                opacity={isHighlighted ? "0.5" : "0.3"}
-                                filter="blur(4px)"
-                              />
-                              <path
-                                d={pathD}
-                                fill="none"
-                                stroke={isSelected ? '#FFD700' : wire.color}
-                                strokeWidth={isSelected ? "5" : isHighlighted ? "4" : "3"}
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                              />
-                              <circle
-                                cx={wire.path[0].x}
-                                cy={wire.path[0].y}
-                                r="4"
-                                fill={wire.color}
-                                stroke="white"
-                                strokeWidth="1"
-                              />
-                              <circle
-                                cx={wire.path[wire.path.length - 1].x}
-                                cy={wire.path[wire.path.length - 1].y}
-                                r="4"
-                                fill={wire.color}
-                                stroke="white"
-                                strokeWidth="1"
-                              />
-                              {wire.netLabel && (
-                                <text
-                                  x={(wire.path[0].x + wire.path[wire.path.length - 1].x) / 2}
-                                  y={(wire.path[0].y + wire.path[wire.path.length - 1].y) / 2 - 10}
-                                  fontSize="10"
-                                  fill="#9C4AFF"
-                                  fontWeight="bold"
-                                  textAnchor="middle"
-                                  className="pointer-events-none"
-                                >
-                                  {wire.netLabel}
-                                </text>
-                              )}
-                            </g>
-                          );
-                        })}
-
-                        {dragWire && (
-                          <g>
-                            <line
-                              x1={dragWire.from.x}
-                              y1={dragWire.from.y}
-                              x2={dragWire.currentX}
-                              y2={dragWire.currentY}
-                              stroke="#9C4AFF"
-                              strokeWidth="4"
-                              strokeDasharray="10,5"
-                              strokeLinecap="round"
-                              opacity="0.8"
-                            >
-                              <animate
-                                attributeName="stroke-dashoffset"
-                                from="0"
-                                to="15"
-                                dur="0.5s"
-                                repeatCount="indefinite"
-                              />
-                            </line>
-                            <line
-                              x1={dragWire.from.x}
-                              y1={dragWire.from.y}
-                              x2={dragWire.currentX}
-                              y2={dragWire.currentY}
-                              stroke="#9C4AFF"
-                              strokeWidth="8"
-                              strokeLinecap="round"
-                              opacity="0.3"
-                              filter="blur(4px)"
-                            />
-                            <circle
-                              cx={dragWire.from.x}
-                              cy={dragWire.from.y}
-                              r="6"
-                              fill="#9C4AFF"
-                              stroke="white"
-                              strokeWidth="2"
-                            />
-                            <circle
-                              cx={dragWire.currentX}
-                              cy={dragWire.currentY}
-                              r="5"
-                              fill="#FF6B00"
-                              className="animate-pulse"
-                            />
-                          </g>
-                        )}
-                      </svg>
-
-                      {components.length === 0 ? (
-                        <div className="absolute inset-0 flex items-center justify-center text-gray-400" style={{ zIndex: 0 }}>
-                          <div className="text-center">
-                            <CircuitBoard className="h-16 w-16 mx-auto mb-4 text-gray-300" />
-                            <p className="text-lg font-semibold text-gray-600">
-                              Drag components here to build your circuit
-                            </p>
-                            <p className="text-sm mt-2">
-                              Load a template or saved project to start
-                            </p>
-                          </div>
-                        </div>
-                      ) : (
-                        components.map((comp) => {
-                          const info = COMPONENT_LIBRARY.find(c => c.type === comp.type);
-                          const isHovered = hoveredComponent === comp.id;
+                          {!componentSearch && (
+                            <Tabs value={selectedCategory} onValueChange={setSelectedCategory} className="mb-4">
+                              <TabsList className="bg-white/10 w-full flex-wrap h-auto gap-1 p-1">
+                                {Object.entries(COMPONENT_CATEGORIES).map(([key, cat]) => (
+                                  <TabsTrigger 
+                                    key={key} 
+                                    value={key}
+                                    className="text-xs px-2 py-1 data-[state=active]:bg-[#9C4AFF]"
+                                  >
+                                    {cat.icon}
+                                  </TabsTrigger>
+                                ))}
+                              </TabsList>
+                            </Tabs>
+                          )}
                           
-                          return (
-                            <motion.div
-                              key={comp.id}
-                              initial={{ scale: 0 }}
-                              animate={{ scale: 1 }}
-                              className={`absolute p-3 rounded-lg border-2 cursor-pointer transition-all ${
-                                selectedComponent?.id === comp.id
-                                  ? 'border-[#00C2D1] bg-[#00C2D1]/10 shadow-lg'
-                                  : 'border-gray-300 bg-white hover:border-[#00C2D1]/50'
-                              }`}
-                              style={{
-                                left: comp.x,
-                                top: comp.y,
-                                transform: `rotate(${comp.rotation}deg)`,
-                                zIndex: 2,
-                              }}
-                              onClick={() => setSelectedComponent(comp)}
-                              onMouseEnter={() => setHoveredComponent(comp.id)}
-                              onMouseLeave={() => setHoveredComponent(null)}
-                            >
-                              {(isHovered || showAllTerminals || wireDrawingMode) && (
-                                <>
-                                  {(['top', 'bottom', 'left', 'right'] as const).map((terminal) => {
-                                    const termPos = {
-                                      top: { x: 20, y: -8 },
-                                      bottom: { x: 20, y: 56 },
-                                      left: { x: -8, y: 20 },
-                                      right: { x: 56, y: 20 },
-                                    };
+                          <div className="space-y-2 text-sm max-h-[600px] overflow-y-auto pr-2">
+                            {filteredComponents.map((comp) => (
+                              <div
+                                key={comp.type}
+                                draggable
+                                onDragStart={() => handleDragStart(comp.type)}
+                                className="p-3 border border-white/10 rounded hover:bg-[#00C2D1]/20 cursor-move transition-colors backdrop-blur-sm group"
+                              >
+                                <div className="flex items-center gap-2">
+                                  <span className="text-xl">{comp.icon}</span>
+                                  <div className="flex-1 min-w-0">
+                                    <p className="text-white text-xs font-medium truncate">{comp.label}</p>
+                                    <p className="text-gray-400 text-[10px] truncate">{comp.description}</p>
+                                  </div>
+                                </div>
+                                <div className="mt-1 flex items-center gap-1 flex-wrap">
+                                  <Badge variant="outline" className="text-[9px] px-1 py-0">
+                                    {comp.category}
+                                  </Badge>
+                                  <Badge variant="outline" className="text-[9px] px-1 py-0">
+                                    {comp.pins} pins
+                                  </Badge>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                          
+                          <div className="mt-4 p-3 bg-white/5 rounded border border-white/10">
+                            <h4 className="text-xs font-semibold text-[#00C2D1] mb-2">Quick Tips</h4>
+                            <ul className="text-xs text-gray-300 space-y-1">
+                              <li>✓ Drag components to canvas</li>
+                              <li>✓ Click terminals to wire</li>
+                              <li>✓ Edit values in live mode</li>
+                              <li>✓ Save/load projects</li>
+                            </ul>
+                          </div>
+                        </CardContent>
+                      </Card>
 
-                                    const isTerminalHovered = hoveredTerminal?.componentId === comp.id && hoveredTerminal?.terminal === terminal;
+                      {/* Circuit Canvas */}
+                      <Card className="lg:col-span-3 bg-white/95 border-white/20">
+                        <CardContent className="pt-6">
+                          <div className="flex items-center justify-between mb-4">
+                            <h3 className="font-semibold text-[#071428]">
+                              {saveName || 'Circuit Canvas'}
+                              {currentProjectId && <span className="text-xs text-gray-500 ml-2">(ID: {currentProjectId})</span>}
+                            </h3>
+                            <div className="text-xs text-gray-600 flex gap-4">
+                              <span>{components.length} component{components.length !== 1 ? 's' : ''}</span>
+                              <span className="text-[#9C4AFF] font-semibold">{wires.length} wire{wires.length !== 1 ? 's' : ''}</span>
+                              {wireDrawingMode && <span className="text-[#FF6B00] font-bold animate-pulse">Drawing wire...</span>}
+                            </div>
+                          </div>
+                          <div
+                            ref={canvasRef}
+                            onDrop={handleDrop}
+                            onDragOver={handleDragOver}
+                            onMouseMove={handleCanvasMouseMove}
+                            onMouseUp={handleCanvasMouseUp}
+                            className={`bg-white rounded-lg border-2 ${wireDrawingMode ? 'border-[#9C4AFF] border-solid' : 'border-dashed border-gray-300'} min-h-[600px] relative overflow-hidden transition-all`}
+                            style={{
+                              backgroundImage: 'radial-gradient(circle, #e5e7eb 1px, transparent 1px)',
+                              backgroundSize: '20px 20px'
+                            }}
+                          >
+                            <svg className="absolute inset-0 pointer-events-none" style={{ zIndex: 1 }}>
+                              {wires.map((wire) => {
+                                const pathD = wire.path
+                                  .map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x} ${p.y}`)
+                                  .join(' ');
+                                
+                                const isSelected = selectedWires.includes(wire.id);
+                                const isHighlighted = highlightedWirePath === wire.id;
 
-                                    return (
-                                      <div
-                                        key={terminal}
-                                        className={`absolute w-4 h-4 border-2 border-white rounded-full cursor-crosshair transition-all shadow-lg ${
-                                          isTerminalHovered 
-                                            ? 'bg-[#FF6B00] scale-125' 
-                                            : 'bg-[#9C4AFF] hover:bg-[#FF6B00] hover:scale-110'
-                                        }`}
-                                        style={{
-                                          left: termPos[terminal].x,
-                                          top: termPos[terminal].y,
-                                          zIndex: 10,
-                                        }}
-                                        onMouseDown={(e) => handleTerminalMouseDown(comp.id, terminal, e)}
-                                        onMouseUp={(e) => handleTerminalMouseUp(comp.id, terminal, e)}
-                                        onMouseEnter={() => setHoveredTerminal({ componentId: comp.id, terminal })}
-                                        onMouseLeave={() => setHoveredTerminal(null)}
-                                      />
-                                    );
-                                  })}
-                                </>
-                              )}
-
-                              <div className="flex flex-col items-center">
-                                <span className="text-2xl mb-1">{info?.icon}</span>
-                                <span className="text-xs font-medium text-gray-700">
-                                  {comp.value} {comp.unit}
-                                </span>
-                                {selectedComponent?.id === comp.id && (
-                                  <Button
-                                    size="sm"
-                                    variant="destructive"
-                                    className="mt-2 h-6 text-xs"
+                                return (
+                                  <g
+                                    key={wire.id}
+                                    className="pointer-events-auto cursor-pointer"
                                     onClick={(e) => {
                                       e.stopPropagation();
-                                      removeComponent(comp.id);
+                                      setSelectedWires(prev =>
+                                        prev.includes(wire.id)
+                                          ? prev.filter(id => id !== wire.id)
+                                          : [...prev, wire.id]
+                                      );
                                     }}
+                                    onMouseEnter={() => setHighlightedWirePath(wire.id)}
+                                    onMouseLeave={() => setHighlightedWirePath(null)}
                                   >
-                                    Remove
-                                  </Button>
+                                    <path
+                                      d={pathD}
+                                      fill="none"
+                                      stroke={wire.color}
+                                      strokeWidth={isHighlighted ? "8" : "6"}
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                      opacity={isHighlighted ? "0.5" : "0.3"}
+                                      filter="blur(4px)"
+                                    />
+                                    <path
+                                      d={pathD}
+                                      fill="none"
+                                      stroke={isSelected ? '#FFD700' : wire.color}
+                                      strokeWidth={isSelected ? "5" : isHighlighted ? "4" : "3"}
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                    />
+                                    <circle
+                                      cx={wire.path[0].x}
+                                      cy={wire.path[0].y}
+                                      r="4"
+                                      fill={wire.color}
+                                      stroke="white"
+                                      strokeWidth="1"
+                                    />
+                                    <circle
+                                      cx={wire.path[wire.path.length - 1].x}
+                                      cy={wire.path[wire.path.length - 1].y}
+                                      r="4"
+                                      fill={wire.color}
+                                      stroke="white"
+                                      strokeWidth="1"
+                                    />
+                                    {wire.netLabel && (
+                                      <text
+                                        x={(wire.path[0].x + wire.path[wire.path.length - 1].x) / 2}
+                                        y={(wire.path[0].y + wire.path[wire.path.length - 1].y) / 2 - 10}
+                                        fontSize="10"
+                                        fill="#9C4AFF"
+                                        fontWeight="bold"
+                                        textAnchor="middle"
+                                        className="pointer-events-none"
+                                      >
+                                        {wire.netLabel}
+                                      </text>
+                                    )}
+                                  </g>
+                                );
+                              })}
+
+                              {dragWire && (
+                                <g>
+                                  <line
+                                    x1={dragWire.from.x}
+                                    y1={dragWire.from.y}
+                                    x2={dragWire.currentX}
+                                    y2={dragWire.currentY}
+                                    stroke="#9C4AFF"
+                                    strokeWidth="4"
+                                    strokeDasharray="10,5"
+                                    strokeLinecap="round"
+                                    opacity="0.8"
+                                  >
+                                    <animate
+                                      attributeName="stroke-dashoffset"
+                                      from="0"
+                                      to="15"
+                                      dur="0.5s"
+                                      repeatCount="indefinite"
+                                    />
+                                  </line>
+                                  <line
+                                    x1={dragWire.from.x}
+                                    y1={dragWire.from.y}
+                                    x2={dragWire.currentX}
+                                    y2={dragWire.currentY}
+                                    stroke="#9C4AFF"
+                                    strokeWidth="8"
+                                    strokeLinecap="round"
+                                    opacity="0.3"
+                                    filter="blur(4px)"
+                                  />
+                                  <circle
+                                    cx={dragWire.from.x}
+                                    cy={dragWire.from.y}
+                                    r="6"
+                                    fill="#9C4AFF"
+                                    stroke="white"
+                                    strokeWidth="2"
+                                  />
+                                  <circle
+                                    cx={dragWire.currentX}
+                                    cy={dragWire.currentY}
+                                    r="5"
+                                    fill="#FF6B00"
+                                    className="animate-pulse"
+                                  />
+                                </g>
+                              )}
+                            </svg>
+
+                            {components.length === 0 ? (
+                              <div className="absolute inset-0 flex items-center justify-center text-gray-400" style={{ zIndex: 0 }}>
+                                <div className="text-center">
+                                  <CircuitBoard className="h-16 w-16 mx-auto mb-4 text-gray-300" />
+                                  <p className="text-lg font-semibold text-gray-600">
+                                    Drag components here to build your circuit
+                                  </p>
+                                  <p className="text-sm mt-2">
+                                    Load a template or saved project to start
+                                  </p>
+                                </div>
+                              </div>
+                            ) : (
+                              components.map((comp) => {
+                                const info = COMPONENT_LIBRARY.find(c => c.type === comp.type);
+                                const isHovered = hoveredComponent === comp.id;
+                                
+                                return (
+                                  <motion.div
+                                    key={comp.id}
+                                    initial={{ scale: 0 }}
+                                    animate={{ scale: 1 }}
+                                    className={`absolute p-3 rounded-lg border-2 cursor-pointer transition-all ${
+                                      selectedComponent?.id === comp.id
+                                        ? 'border-[#00C2D1] bg-[#00C2D1]/10 shadow-lg'
+                                        : 'border-gray-300 bg-white hover:border-[#00C2D1]/50'
+                                    }`}
+                                    style={{
+                                      left: comp.x,
+                                      top: comp.y,
+                                      transform: `rotate(${comp.rotation}deg)`,
+                                      zIndex: 2,
+                                    }}
+                                    onClick={() => setSelectedComponent(comp)}
+                                    onMouseEnter={() => setHoveredComponent(comp.id)}
+                                    onMouseLeave={() => setHoveredComponent(null)}
+                                  >
+                                    {(isHovered || showAllTerminals || wireDrawingMode) && (
+                                      <>
+                                        {(['top', 'bottom', 'left', 'right'] as const).map((terminal) => {
+                                          const termPos = {
+                                            top: { x: 20, y: -8 },
+                                            bottom: { x: 20, y: 56 },
+                                            left: { x: -8, y: 20 },
+                                            right: { x: 56, y: 20 },
+                                          };
+
+                                          const isTerminalHovered = hoveredTerminal?.componentId === comp.id && hoveredTerminal?.terminal === terminal;
+
+                                          return (
+                                            <div
+                                              key={terminal}
+                                              className={`absolute w-4 h-4 border-2 border-white rounded-full cursor-crosshair transition-all shadow-lg ${
+                                                isTerminalHovered 
+                                                  ? 'bg-[#FF6B00] scale-125' 
+                                                  : 'bg-[#9C4AFF] hover:bg-[#FF6B00] hover:scale-110'
+                                              }`}
+                                              style={{
+                                                left: termPos[terminal].x,
+                                                top: termPos[terminal].y,
+                                                zIndex: 10,
+                                              }}
+                                              onMouseDown={(e) => handleTerminalMouseDown(comp.id, terminal, e)}
+                                              onMouseUp={(e) => handleTerminalMouseUp(comp.id, terminal, e)}
+                                              onMouseEnter={() => setHoveredTerminal({ componentId: comp.id, terminal })}
+                                              onMouseLeave={() => setHoveredTerminal(null)}
+                                            />
+                                          );
+                                        })}
+                                      </>
+                                    )}
+
+                                    <div className="flex flex-col items-center">
+                                      <span className="text-2xl mb-1">{info?.icon}</span>
+                                      <span className="text-xs font-medium text-gray-700">
+                                        {comp.value} {comp.unit}
+                                      </span>
+                                      {selectedComponent?.id === comp.id && (
+                                        <Button
+                                          size="sm"
+                                          variant="destructive"
+                                          className="mt-2 h-6 text-xs"
+                                          onClick={(e) => {
+                                            e.stopPropagation();
+                                            removeComponent(comp.id);
+                                          }}
+                                        >
+                                          Remove
+                                        </Button>
+                                      )}
+                                    </div>
+                                  </motion.div>
+                                );
+                              })
+                            )}
+                          </div>
+
+                          {/* Component Properties */}
+                          {selectedComponent && (
+                            <motion.div 
+                              initial={{ opacity: 0, y: 10 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              className="mt-4 p-5 bg-gradient-to-br from-[#071428] via-[#0a1d38] to-[#071428] rounded-lg border-2 border-[#00C2D1]/30 shadow-lg"
+                            >
+                              <h4 className="font-bold mb-4 text-white text-base flex items-center gap-2">
+                                <Zap className="h-4 w-4 text-[#00C2D1]" />
+                                Component Properties
+                                {liveEditMode && (
+                                  <Badge className="text-xs bg-[#FF6B00]">Live Edit</Badge>
                                 )}
+                              </h4>
+                              <div className="grid grid-cols-2 gap-4">
+                                <div className="p-3 bg-white/10 rounded-lg border border-white/20">
+                                  <Label className="text-xs font-semibold text-[#00C2D1] mb-1 block">Type</Label>
+                                  <p className="text-base font-bold capitalize text-white">
+                                    {selectedComponent.type}
+                                  </p>
+                                </div>
+                                <div className="p-3 bg-white/10 rounded-lg border border-white/20">
+                                  <Label className="text-xs font-semibold text-[#00C2D1] mb-1 block">ID</Label>
+                                  <p className="text-xs font-mono text-white break-all">
+                                    {selectedComponent.id}
+                                  </p>
+                                </div>
+                                <div className="p-3 bg-white/10 rounded-lg border border-white/20">
+                                  <Label className="text-xs font-semibold text-[#00C2D1] mb-1 block">
+                                    Value {liveEditMode && <span className="text-[#FF6B00]">⚡</span>}
+                                  </Label>
+                                  <Input
+                                    type="number"
+                                    value={selectedComponent.value}
+                                    onChange={(e) => updateComponentValue(selectedComponent.id, parseFloat(e.target.value))}
+                                    className="h-9 text-sm bg-white text-[#071428] font-bold border-[#00C2D1]/30 focus:border-[#00C2D1]"
+                                  />
+                                </div>
+                                <div className="p-3 bg-white/10 rounded-lg border border-white/20">
+                                  <Label className="text-xs font-semibold text-[#00C2D1] mb-1 block">Unit</Label>
+                                  <p className="text-base font-bold text-white">
+                                    {selectedComponent.unit}
+                                  </p>
+                                </div>
+                              </div>
+                              
+                              <div className="mt-4 p-3 bg-[#00C2D1]/20 rounded-lg border border-[#00C2D1]/40">
+                                <p className="text-xs text-white/90">
+                                  <span className="font-semibold text-[#00C2D1]">Description:</span>{' '}
+                                  {COMPONENT_LIBRARY.find(c => c.type === selectedComponent.type)?.description || 'Unknown Component'}
+                                </p>
                               </div>
                             </motion.div>
-                          );
-                        })
-                      )}
-                    </div>
-
-                    {/* Component Properties */}
-                    {selectedComponent && (
-                      <motion.div 
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className="mt-4 p-5 bg-gradient-to-br from-[#071428] via-[#0a1d38] to-[#071428] rounded-lg border-2 border-[#00C2D1]/30 shadow-lg"
-                      >
-                        <h4 className="font-bold mb-4 text-white text-base flex items-center gap-2">
-                          <Zap className="h-4 w-4 text-[#00C2D1]" />
-                          Component Properties
-                          {liveEditMode && (
-                            <Badge className="text-xs bg-[#FF6B00]">Live Edit</Badge>
                           )}
-                        </h4>
-                        <div className="grid grid-cols-2 gap-4">
-                          <div className="p-3 bg-white/10 rounded-lg border border-white/20">
-                            <Label className="text-xs font-semibold text-[#00C2D1] mb-1 block">Type</Label>
-                            <p className="text-base font-bold capitalize text-white">
-                              {selectedComponent.type}
-                            </p>
+                        </CardContent>
+                      </Card>
+                    </div>
+                  </motion.div>
+                )}
+
+                {activeTab === 'code' && (
+                  <motion.div
+                    key="code"
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -20 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <div className="space-y-4">
+                      {/* Code Editor Info */}
+                      <Card className="bg-[#9C4AFF]/10 border-[#9C4AFF]/30">
+                        <CardContent className="pt-4">
+                          <div className="flex items-start gap-3">
+                            <Code2 className="h-5 w-5 text-[#9C4AFF] mt-0.5" />
+                            <div>
+                              <p className="text-white font-semibold mb-1">Arduino Code Editor</p>
+                              <p className="text-gray-300 text-sm">
+                                Write Arduino code to control microcontrollers in your circuit. The code will execute on virtual MCUs.
+                              </p>
+                              <div className="mt-2 flex gap-4 text-xs text-gray-400">
+                                <span>• Syntax highlighting</span>
+                                <span>• Code validation</span>
+                                <span>• Built-in snippets</span>
+                                <span>• Board selection</span>
+                              </div>
+                            </div>
                           </div>
-                          <div className="p-3 bg-white/10 rounded-lg border border-white/20">
-                            <Label className="text-xs font-semibold text-[#00C2D1] mb-1 block">ID</Label>
-                            <p className="text-xs font-mono text-white break-all">
-                              {selectedComponent.id}
-                            </p>
+                        </CardContent>
+                      </Card>
+
+                      {/* Monaco Code Editor Component */}
+                      <MonacoCodeEditor
+                        onRun={handleRunCode}
+                        onStop={handleStopCode}
+                        defaultCode={arduinoCode || undefined}
+                      />
+
+                      {/* Integration Info */}
+                      <Card className="bg-white/5 border-white/10">
+                        <CardHeader className="pb-3">
+                          <CardTitle className="text-white text-sm flex items-center gap-2">
+                            <Terminal className="h-4 w-4 text-[#00E5FF]" />
+                            Circuit Integration Status
+                          </CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <div className="space-y-2 text-sm">
+                            <div className="flex items-center justify-between p-2 bg-white/5 rounded">
+                              <span className="text-gray-300">Microcontrollers in Circuit:</span>
+                              <Badge variant="outline">
+                                {components.filter(c => c.type.includes('arduino') || c.type.includes('esp')).length}
+                              </Badge>
+                            </div>
+                            <div className="flex items-center justify-between p-2 bg-white/5 rounded">
+                              <span className="text-gray-300">Code Status:</span>
+                              <Badge className={codeRunning ? 'bg-green-500/20 text-green-400' : 'bg-gray-500/20 text-gray-400'}>
+                                {codeRunning ? 'Running' : 'Stopped'}
+                              </Badge>
+                            </div>
+                            <div className="flex items-center justify-between p-2 bg-white/5 rounded">
+                              <span className="text-gray-300">Active Board:</span>
+                              <span className="text-white text-xs">Arduino Uno</span>
+                            </div>
+                            <div className="mt-4 p-3 bg-[#00E5FF]/10 border border-[#00E5FF]/30 rounded-lg">
+                              <p className="text-xs text-[#00E5FF]">
+                                💡 <span className="font-semibold">Tip:</span> Add Arduino/ESP32 components to your circuit,
+                                then write code to control their pins. The simulator will sync pin states with your circuit.
+                              </p>
+                            </div>
                           </div>
-                          <div className="p-3 bg-white/10 rounded-lg border border-white/20">
-                            <Label className="text-xs font-semibold text-[#00C2D1] mb-1 block">
-                              Value {liveEditMode && <span className="text-[#FF6B00]">⚡</span>}
-                            </Label>
-                            <Input
-                              type="number"
-                              value={selectedComponent.value}
-                              onChange={(e) => updateComponentValue(selectedComponent.id, parseFloat(e.target.value))}
-                              className="h-9 text-sm bg-white text-[#071428] font-bold border-[#00C2D1]/30 focus:border-[#00C2D1]"
-                            />
-                          </div>
-                          <div className="p-3 bg-white/10 rounded-lg border border-white/20">
-                            <Label className="text-xs font-semibold text-[#00C2D1] mb-1 block">Unit</Label>
-                            <p className="text-base font-bold text-white">
-                              {selectedComponent.unit}
-                            </p>
-                          </div>
-                        </div>
-                        
-                        <div className="mt-4 p-3 bg-[#00C2D1]/20 rounded-lg border border-[#00C2D1]/40">
-                          <p className="text-xs text-white/90">
-                            <span className="font-semibold text-[#00C2D1]">Description:</span>{' '}
-                            {COMPONENT_LIBRARY.find(c => c.type === selectedComponent.type)?.description || 'Unknown Component'}
-                          </p>
-                        </div>
-                      </motion.div>
-                    )}
-                  </CardContent>
-                </Card>
-              </div>
+                        </CardContent>
+                      </Card>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </CardContent>
           </Card>
 
