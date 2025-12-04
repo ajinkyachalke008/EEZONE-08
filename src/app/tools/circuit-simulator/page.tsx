@@ -11,7 +11,7 @@ import { Badge } from '@/components/ui/badge';
 import { 
   CircuitBoard, ArrowLeft, Play, Pause, RotateCcw, Download, Zap, Activity, 
   Gauge, Trash2, Cable, Link2, AlertTriangle, CheckCircle, Info, FileCode,
-  Search, Filter, BookOpen, Save, Upload, Sparkles, Bug
+  Search, Filter, BookOpen, Save, Upload, Sparkles, Bug, TrendingUp, BarChart3
 } from 'lucide-react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -35,6 +35,13 @@ import {
   buildNetlist,
   type ValidationError 
 } from '@/lib/circuit-validator';
+import {
+  runSimulation,
+  updateSimulation,
+  type SimulationResult,
+  type SimulationSettings,
+  type SimulationComponent
+} from '@/lib/simulation-engine';
 
 interface Component {
   id: string;
@@ -73,11 +80,30 @@ export default function CircuitSimulatorPage() {
   const [components, setComponents] = useState<Component[]>([]);
   const [selectedComponent, setSelectedComponent] = useState<Component | null>(null);
   const [draggedType, setDraggedType] = useState<string | null>(null);
+  
+  // New enhanced simulation states
+  const [simulationResult, setSimulationResult] = useState<SimulationResult | null>(null);
+  const [simulationSettings, setSimulationSettings] = useState<SimulationSettings>({
+    mode: 'dc',
+    dcMaxIterations: 100,
+    dcTolerance: 1e-6,
+    acStartFreq: 1,
+    acStopFreq: 1000000,
+    acPointsPerDecade: 10,
+    transientStartTime: 0,
+    transientStopTime: 0.01,
+    transientTimeStep: 0.0001
+  });
+  const [liveEditMode, setLiveEditMode] = useState(false);
+  const [selectedNodeForProbe, setSelectedNodeForProbe] = useState<string | null>(null);
+  
+  // Legacy states (keeping for backward compatibility)
   const [voltage, setVoltage] = useState(0);
   const [current, setCurrent] = useState(0);
   const [resistance, setResistance] = useState(0);
   const [power, setPower] = useState(0);
   const [waveform, setWaveform] = useState<number[]>([]);
+  
   const [wires, setWires] = useState<Wire[]>([]);
   const [dragWire, setDragWire] = useState<DragWire | null>(null);
   const [hoveredComponent, setHoveredComponent] = useState<string | null>(null);
@@ -87,14 +113,12 @@ export default function CircuitSimulatorPage() {
   const [highlightedWirePath, setHighlightedWirePath] = useState<string | null>(null);
   const [showAllTerminals, setShowAllTerminals] = useState(false);
   
-  // New states
   const [selectedCategory, setSelectedCategory] = useState<string>('power');
   const [componentSearch, setComponentSearch] = useState('');
   const [validationErrors, setValidationErrors] = useState<ValidationError[]>([]);
   const [showValidation, setShowValidation] = useState(false);
   const [selectedTemplate, setSelectedTemplate] = useState<CircuitTemplate | null>(null);
   const [showTemplates, setShowTemplates] = useState(false);
-  const [simulationMode, setSimulationMode] = useState<'dc' | 'ac' | 'transient'>('dc');
   
   const canvasRef = useRef<HTMLDivElement>(null);
 
@@ -102,6 +126,143 @@ export default function CircuitSimulatorPage() {
   const filteredComponents = componentSearch 
     ? searchComponents(componentSearch)
     : getComponentsByCategory(selectedCategory);
+
+  // Convert UI components to simulation components
+  const convertToSimulationComponents = useCallback((): { components: SimulationComponent[]; nodes: string[] } => {
+    const nets = buildNetlist(components, wires);
+    const simComponents: SimulationComponent[] = [];
+    const nodeSet = new Set<string>();
+    
+    components.forEach(comp => {
+      // Find which nets this component connects to
+      const connectedWires = wires.filter(w => 
+        w.from.componentId === comp.id || w.to.componentId === comp.id
+      );
+      
+      const componentNodes: string[] = [];
+      connectedWires.forEach(wire => {
+        const net = nets.find(n =>
+          n.components.some(nc =>
+            (nc.componentId === wire.from.componentId && nc.terminal === wire.from.terminal) ||
+            (nc.componentId === wire.to.componentId && nc.terminal === wire.to.terminal)
+          )
+        );
+        
+        if (net && !componentNodes.includes(net.label)) {
+          componentNodes.push(net.label);
+          nodeSet.add(net.label);
+        }
+      });
+      
+      // Ensure we have at least 2 nodes for 2-terminal components
+      while (componentNodes.length < 2) {
+        componentNodes.push('GND');
+      }
+      
+      simComponents.push({
+        id: comp.id,
+        type: comp.type,
+        value: comp.value || 0,
+        unit: comp.unit || '',
+        nodes: componentNodes
+      });
+    });
+    
+    return {
+      components: simComponents,
+      nodes: Array.from(nodeSet)
+    };
+  }, [components, wires]);
+
+  // Enhanced run simulation with new engine
+  const runEnhancedSimulation = useCallback(() => {
+    if (components.length === 0) {
+      toast.error('Add components to the circuit first');
+      return;
+    }
+    
+    if (wires.length === 0) {
+      toast.warning('Add wires to connect components');
+      return;
+    }
+    
+    setIsRunning(true);
+    setLiveEditMode(true);
+    
+    const { components: simComponents, nodes } = convertToSimulationComponents();
+    
+    if (simComponents.length === 0) {
+      toast.error('No valid components to simulate');
+      setIsRunning(false);
+      return;
+    }
+    
+    try {
+      const result = runSimulation(simComponents, nodes, simulationSettings);
+      setSimulationResult(result);
+      
+      if (result.success) {
+        toast.success(`${simulationSettings.mode.toUpperCase()} simulation completed successfully!`);
+        
+        // Update legacy display values for backward compatibility
+        if (simulationSettings.mode === 'dc' && result.componentData) {
+          const firstComponent = Object.values(result.componentData)[0];
+          if (firstComponent) {
+            setVoltage(firstComponent.voltage);
+            setCurrent(firstComponent.current);
+            setPower(firstComponent.power);
+          }
+        }
+        
+        // Update waveforms for oscilloscope
+        if (result.waveforms && Object.keys(result.waveforms).length > 0) {
+          const firstWaveform = Object.values(result.waveforms)[0];
+          if (firstWaveform && firstWaveform.voltage) {
+            setWaveform(firstWaveform.voltage);
+          }
+        }
+      } else {
+        toast.error(`Simulation failed: ${result.error}`);
+        setIsRunning(false);
+        setLiveEditMode(false);
+      }
+    } catch (error) {
+      toast.error('Simulation engine error');
+      console.error(error);
+      setIsRunning(false);
+      setLiveEditMode(false);
+    }
+  }, [components, wires, simulationSettings, convertToSimulationComponents]);
+
+  // Live update component value during simulation
+  const updateComponentValueLive = useCallback((id: string, value: number) => {
+    if (!liveEditMode || !simulationResult) {
+      // Normal update
+      setComponents(prev => prev.map(c => 
+        c.id === id ? { ...c, value } : c
+      ));
+      return;
+    }
+    
+    // Live update during simulation
+    const updatedComponents = components.map(c => 
+      c.id === id ? { ...c, value } : c
+    );
+    setComponents(updatedComponents);
+    
+    // Re-run simulation with updated values
+    const { components: simComponents, nodes } = convertToSimulationComponents();
+    const updatedSimComponents = simComponents.map(sc =>
+      sc.id === id ? { ...sc, value } : sc
+    );
+    
+    const newResult = updateSimulation(simulationResult, updatedSimComponents, nodes, simulationSettings);
+    setSimulationResult(newResult);
+    
+    if (newResult.success) {
+      toast.success('⚡ Live update applied', { duration: 1000 });
+    }
+  }, [liveEditMode, simulationResult, components, simulationSettings, convertToSimulationComponents]);
 
   // Load template
   const loadTemplate = (template: CircuitTemplate) => {
@@ -184,9 +345,7 @@ export default function CircuitSimulatorPage() {
   };
 
   const updateComponentValue = (id: string, value: number) => {
-    setComponents(prev => prev.map(c => 
-      c.id === id ? { ...c, value } : c
-    ));
+    updateComponentValueLive(id, value);
   };
 
   const getTerminalPosition = (comp: Component, terminal: 'top' | 'bottom' | 'left' | 'right') => {
@@ -372,41 +531,10 @@ export default function CircuitSimulatorPage() {
     );
   }, [components]);
 
-  const runSimulation = () => {
-    setIsRunning(true);
-    
-    if (wires.length === 0) {
-      toast.warning('Add wires to connect components');
-    }
-
-    const voltageSource = components.find(c => c.type === 'voltage_dc' || c.type === 'battery');
-    const resistors = components.filter(c => c.type === 'resistor');
-    
-    if (voltageSource && resistors.length > 0) {
-      const v = voltageSource.value || 0;
-      const totalR = resistors.reduce((sum, r) => sum + (r.value || 0), 0);
-      
-      const i = totalR > 0 ? v / totalR : 0;
-      const p = v * i;
-      
-      setVoltage(v);
-      setCurrent(i);
-      setResistance(totalR);
-      setPower(p);
-      
-      const wave = Array.from({ length: 100 }, (_, i) => 
-        Math.sin((i / 100) * Math.PI * 4) * v
-      );
-      setWaveform(wave);
-      
-      toast.success(`${simulationMode.toUpperCase()} simulation started!`);
-    } else {
-      toast.error('Add voltage source and resistors to simulate');
-    }
-  };
-
   const resetSimulation = () => {
     setIsRunning(false);
+    setLiveEditMode(false);
+    setSimulationResult(null);
     setVoltage(0);
     setCurrent(0);
     setResistance(0);
@@ -475,9 +603,14 @@ export default function CircuitSimulatorPage() {
                       Template: {selectedTemplate.name}
                     </Badge>
                   )}
+                  {liveEditMode && (
+                    <Badge className="bg-[#FF6B00] text-white animate-pulse">
+                      ⚡ Live Edit Mode
+                    </Badge>
+                  )}
                 </div>
                 <p className="text-gray-300 text-lg">
-                  Full-featured electronics simulation with {COMPONENT_LIBRARY.length}+ components, validation, and templates
+                  Full SPICE-like simulation with DC/AC/Transient analysis • {COMPONENT_LIBRARY.length}+ components
                 </p>
               </div>
               
@@ -635,27 +768,30 @@ export default function CircuitSimulatorPage() {
             <CardHeader>
               <CardTitle className="text-white flex items-center gap-2">
                 <Activity className="h-5 w-5 text-[#00C2D1]" />
-                Simulation Controls
+                Enhanced Simulation Controls
               </CardTitle>
               <CardDescription className="text-gray-300">
-                Drag components to canvas, connect with wires, and run simulation
+                Professional SPICE-like analysis with live component editing
               </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="flex gap-4 mb-6 flex-wrap">
-                <Select value={simulationMode} onValueChange={(v: any) => setSimulationMode(v)}>
-                  <SelectTrigger className="w-32 bg-white/10 text-white border-white/20">
+                <Select 
+                  value={simulationSettings.mode} 
+                  onValueChange={(v: any) => setSimulationSettings(prev => ({ ...prev, mode: v }))}
+                >
+                  <SelectTrigger className="w-40 bg-white/10 text-white border-white/20">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="dc">DC Analysis</SelectItem>
-                    <SelectItem value="ac">AC Analysis</SelectItem>
-                    <SelectItem value="transient">Transient</SelectItem>
+                    <SelectItem value="dc">⚡ DC Analysis</SelectItem>
+                    <SelectItem value="ac">〰️ AC Frequency</SelectItem>
+                    <SelectItem value="transient">📊 Transient</SelectItem>
                   </SelectContent>
                 </Select>
                 
                 <Button
-                  onClick={runSimulation}
+                  onClick={runEnhancedSimulation}
                   disabled={components.length === 0}
                   className="bg-[#00C2D1] text-[#071428] hover:bg-[#00C2D1]/90"
                 >
@@ -1196,7 +1332,7 @@ export default function CircuitSimulatorPage() {
                     <>
                       <p className="flex items-center gap-2">
                         <span className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
-                        {simulationMode.toUpperCase()} simulation running
+                        {simulationSettings.mode.toUpperCase()} simulation running
                       </p>
                       <p>• Components: {components.length}</p>
                       <p>• Wires: {wires.length}</p>
