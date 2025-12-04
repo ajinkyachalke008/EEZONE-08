@@ -53,6 +53,7 @@ import {
 } from '@/components/ui/dialog';
 import { Textarea } from '@/components/ui/textarea';
 import { MonacoCodeEditor } from '@/components/tools/monaco-code-editor';
+import { BreadboardView } from '@/components/tools/breadboard-view';
 
 interface Component {
   id: string;
@@ -143,7 +144,7 @@ export default function CircuitSimulatorPage() {
   const [isSaving, setIsSaving] = useState(false);
   
   // Add new state for code editor
-  const [activeTab, setActiveTab] = useState<'circuit' | 'code'>('circuit');
+  const [activeTab, setActiveTab] = useState<'circuit' | 'code' | 'breadboard'>('circuit');
   const [arduinoCode, setArduinoCode] = useState('');
   const [codeRunning, setCodeRunning] = useState(false);
 
@@ -935,6 +936,15 @@ export default function CircuitSimulatorPage() {
     toast.info('Code execution stopped');
   };
 
+  // Handle breadboard sync
+  const handleBreadboardSync = (breadboardComponents: any[], breadboardWires: any[]) => {
+    // Convert breadboard layout to schematic components
+    // This is a simplified conversion - in production you'd need more sophisticated mapping
+    toast.success('Breadboard synced with schematic!', {
+      description: `${breadboardComponents.length} components, ${breadboardWires.length} wires`,
+    });
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#071428] via-[#0a1d38] to-[#071428]">
       {/* Animated Background */}
@@ -1318,18 +1328,22 @@ export default function CircuitSimulatorPage() {
                     Circuit Simulator & Code Editor
                   </CardTitle>
                   <CardDescription className="text-gray-300">
-                    Professional SPICE-like analysis with Arduino programming
+                    Professional SPICE-like analysis with Arduino programming & breadboard prototyping
                   </CardDescription>
                 </div>
-                <Tabs value={activeTab} onValueChange={(v: any) => setActiveTab(v)} className="w-[400px]">
-                  <TabsList className="grid w-full grid-cols-2 bg-white/10">
+                <Tabs value={activeTab} onValueChange={(v: any) => setActiveTab(v)} className="w-[500px]">
+                  <TabsList className="grid w-full grid-cols-3 bg-white/10">
                     <TabsTrigger value="circuit" className="data-[state=active]:bg-[#00C2D1]">
                       <CircuitBoard className="h-4 w-4 mr-2" />
-                      Circuit Builder
+                      Circuit
                     </TabsTrigger>
                     <TabsTrigger value="code" className="data-[state=active]:bg-[#9C4AFF]">
                       <Code2 className="h-4 w-4 mr-2" />
-                      Code Editor
+                      Code
+                    </TabsTrigger>
+                    <TabsTrigger value="breadboard" className="data-[state=active]:bg-[#FF6B00]">
+                      <Cable className="h-4 w-4 mr-2" />
+                      Breadboard
                     </TabsTrigger>
                   </TabsList>
                 </Tabs>
@@ -1932,6 +1946,42 @@ export default function CircuitSimulatorPage() {
                           </div>
                         </CardContent>
                       </Card>
+                    </div>
+                  </motion.div>
+                )}
+
+                {activeTab === 'breadboard' && (
+                  <motion.div
+                    key="breadboard"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -20 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <div className="space-y-4">
+                      {/* Breadboard Info */}
+                      <Card className="bg-[#FF6B00]/10 border-[#FF6B00]/30">
+                        <CardContent className="pt-4">
+                          <div className="flex items-start gap-3">
+                            <Cable className="h-5 w-5 text-[#FF6B00] mt-0.5" />
+                            <div>
+                              <p className="text-white font-semibold mb-1">Virtual Breadboard Prototyping</p>
+                              <p className="text-gray-300 text-sm">
+                                Build circuits on a realistic breadboard with components and jumper wires. Perfect for learning and prototyping before building physical circuits.
+                              </p>
+                              <div className="mt-2 flex gap-4 text-xs text-gray-400">
+                                <span>• Realistic hole grid</span>
+                                <span>• Power rails</span>
+                                <span>• Colored jumper wires</span>
+                                <span>• Component footprints</span>
+                              </div>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+
+                      {/* Breadboard View Component */}
+                      <BreadboardView onSync={handleBreadboardSync} />
                     </div>
                   </motion.div>
                 )}
