@@ -11,7 +11,8 @@ import { Badge } from '@/components/ui/badge';
 import { 
   CircuitBoard, ArrowLeft, Play, Pause, RotateCcw, Download, Zap, Activity, 
   Gauge, Trash2, Cable, Link2, AlertTriangle, CheckCircle, Info, FileCode,
-  Search, Filter, BookOpen, Save, Upload, Sparkles, Bug, TrendingUp, BarChart3
+  Search, Filter, BookOpen, Save, Upload, Sparkles, Bug, TrendingUp, BarChart3,
+  FolderOpen, FileJson, Image as ImageIcon, FileText
 } from 'lucide-react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -42,6 +43,15 @@ import {
   type SimulationSettings,
   type SimulationComponent
 } from '@/lib/simulation-engine';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from '@/components/ui/dialog';
+import { Textarea } from '@/components/ui/textarea';
 
 interface Component {
   id: string;
@@ -120,6 +130,17 @@ export default function CircuitSimulatorPage() {
   const [selectedTemplate, setSelectedTemplate] = useState<CircuitTemplate | null>(null);
   const [showTemplates, setShowTemplates] = useState(false);
   
+  // New Phase 2 states
+  const [showSaveDialog, setShowSaveDialog] = useState(false);
+  const [showLoadDialog, setShowLoadDialog] = useState(false);
+  const [saveName, setSaveName] = useState('');
+  const [saveDescription, setSaveDescription] = useState('');
+  const [saveCategory, setSaveCategory] = useState<string>('beginner');
+  const [savedProjects, setSavedProjects] = useState<any[]>([]);
+  const [loadingProjects, setLoadingProjects] = useState(false);
+  const [currentProjectId, setCurrentProjectId] = useState<number | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
+  
   const canvasRef = useRef<HTMLDivElement>(null);
 
   // Get filtered components
@@ -127,14 +148,339 @@ export default function CircuitSimulatorPage() {
     ? searchComponents(componentSearch)
     : getComponentsByCategory(selectedCategory);
 
-  // Convert UI components to simulation components
+  // Load saved projects
+  const loadSavedProjects = async () => {
+    setLoadingProjects(true);
+    try {
+      const userId = typeof window !== 'undefined' 
+        ? localStorage.getItem('ee_zone_user_id') || 'guest'
+        : 'guest';
+      
+      const response = await fetch(`/api/circuit-projects?user_id=${userId}`);
+      if (response.ok) {
+        const projects = await response.json();
+        setSavedProjects(projects);
+      } else {
+        toast.error('Failed to load projects');
+      }
+    } catch (error) {
+      toast.error('Error loading projects');
+      console.error(error);
+    } finally {
+      setLoadingProjects(false);
+    }
+  };
+
+  // Save current circuit
+  const saveCircuit = async () => {
+    if (!saveName.trim()) {
+      toast.error('Please enter a project name');
+      return;
+    }
+
+    if (components.length === 0) {
+      toast.error('Cannot save empty circuit');
+      return;
+    }
+
+    setIsSaving(true);
+
+    try {
+      const userId = typeof window !== 'undefined' 
+        ? localStorage.getItem('ee_zone_user_id') || 'guest'
+        : 'guest';
+
+      const projectData = {
+        userId,
+        name: saveName.trim(),
+        description: saveDescription.trim() || null,
+        category: saveCategory,
+        components: JSON.stringify(components),
+        wires: JSON.stringify(wires),
+        simulationSettings: JSON.stringify(simulationSettings),
+        thumbnail: null,
+        isTemplate: false
+      };
+
+      let response;
+      if (currentProjectId) {
+        // Update existing
+        response = await fetch(`/api/circuit-projects/${currentProjectId}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(projectData)
+        });
+      } else {
+        // Create new
+        response = await fetch('/api/circuit-projects', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(projectData)
+        });
+      }
+
+      if (response.ok) {
+        const savedProject = await response.json();
+        setCurrentProjectId(savedProject.id);
+        toast.success(currentProjectId ? 'Project updated!' : 'Project saved!');
+        setShowSaveDialog(false);
+        setSaveName('');
+        setSaveDescription('');
+      } else {
+        const error = await response.json();
+        toast.error(error.error || 'Failed to save project');
+      }
+    } catch (error) {
+      toast.error('Error saving project');
+      console.error(error);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  // Load circuit from saved project
+  const loadCircuit = async (projectId: number) => {
+    try {
+      const response = await fetch(`/api/circuit-projects/${projectId}`);
+      if (response.ok) {
+        const project = await response.json();
+        
+        const loadedComponents = typeof project.components === 'string' 
+          ? JSON.parse(project.components) 
+          : project.components;
+        const loadedWires = typeof project.wires === 'string'
+          ? JSON.parse(project.wires)
+          : project.wires;
+        const loadedSettings = project.simulationSettings 
+          ? (typeof project.simulationSettings === 'string' 
+            ? JSON.parse(project.simulationSettings) 
+            : project.simulationSettings)
+          : simulationSettings;
+
+        setComponents(loadedComponents);
+        setWires(loadedWires);
+        setSimulationSettings(loadedSettings);
+        setCurrentProjectId(project.id);
+        setSaveName(project.name);
+        setSaveDescription(project.description || '');
+        setSaveCategory(project.category);
+        
+        toast.success(`Loaded: ${project.name}`);
+        setShowLoadDialog(false);
+        resetSimulation();
+      } else {
+        toast.error('Failed to load project');
+      }
+    } catch (error) {
+      toast.error('Error loading project');
+      console.error(error);
+    }
+  };
+
+  // Delete project
+  const deleteProject = async (projectId: number) => {
+    try {
+      const response = await fetch(`/api/circuit-projects/${projectId}`, {
+        method: 'DELETE'
+      });
+      
+      if (response.ok) {
+        toast.success('Project deleted');
+        loadSavedProjects();
+        if (currentProjectId === projectId) {
+          setCurrentProjectId(null);
+          clearCanvas();
+        }
+      } else {
+        toast.error('Failed to delete project');
+      }
+    } catch (error) {
+      toast.error('Error deleting project');
+      console.error(error);
+    }
+  };
+
+  // Export as JSON
+  const exportAsJSON = () => {
+    const exportData = {
+      name: saveName || 'Untitled Circuit',
+      components,
+      wires,
+      simulationSettings,
+      exportedAt: new Date().toISOString()
+    };
+
+    const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${exportData.name.replace(/\s+/g, '_')}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+    
+    toast.success('Circuit exported as JSON');
+  };
+
+  // Export as Netlist
+  const exportAsNetlist = () => {
+    const nets = buildNetlist(components, wires);
+    let netlist = `* Circuit: ${saveName || 'Untitled'}\n`;
+    netlist += `* Generated: ${new Date().toISOString()}\n\n`;
+    
+    // Add components
+    components.forEach(comp => {
+      const connectedWires = wires.filter(w => 
+        w.from.componentId === comp.id || w.to.componentId === comp.id
+      );
+      
+      if (connectedWires.length >= 2) {
+        const nodes = connectedWires
+          .map(w => w.netLabel || `Node_${w.id}`)
+          .slice(0, 2);
+        
+        netlist += `${comp.type.toUpperCase()} ${comp.id} ${nodes.join(' ')} ${comp.value}${comp.unit}\n`;
+      }
+    });
+    
+    netlist += `\n.end\n`;
+    
+    const blob = new Blob([netlist], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${(saveName || 'Untitled').replace(/\s+/g, '_')}.net`;
+    a.click();
+    URL.revokeObjectURL(url);
+    
+    toast.success('Netlist exported');
+  };
+
+  // Import from JSON
+  const importFromJSON = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const data = JSON.parse(e.target?.result as string);
+        
+        if (data.components && data.wires) {
+          setComponents(data.components);
+          setWires(data.wires);
+          if (data.simulationSettings) {
+            setSimulationSettings(data.simulationSettings);
+          }
+          if (data.name) {
+            setSaveName(data.name);
+          }
+          
+          toast.success('Circuit imported successfully');
+          resetSimulation();
+        } else {
+          toast.error('Invalid circuit file format');
+        }
+      } catch (error) {
+        toast.error('Failed to parse circuit file');
+        console.error(error);
+      }
+    };
+    reader.readAsText(file);
+  };
+
+  // Export as PNG (canvas screenshot)
+  const exportAsPNG = () => {
+    if (!canvasRef.current) return;
+
+    // Create a temporary canvas
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    const rect = canvasRef.current.getBoundingClientRect();
+    canvas.width = rect.width;
+    canvas.height = rect.height;
+
+    // Draw white background
+    ctx.fillStyle = 'white';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // Draw grid
+    ctx.strokeStyle = '#e5e7eb';
+    ctx.lineWidth = 1;
+    for (let x = 0; x < canvas.width; x += 20) {
+      ctx.beginPath();
+      ctx.moveTo(x, 0);
+      ctx.lineTo(x, canvas.height);
+      ctx.stroke();
+    }
+    for (let y = 0; y < canvas.height; y += 20) {
+      ctx.beginPath();
+      ctx.moveTo(0, y);
+      ctx.lineTo(canvas.width, y);
+      ctx.stroke();
+    }
+
+    // Draw wires
+    wires.forEach(wire => {
+      ctx.strokeStyle = wire.color;
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      wire.path.forEach((p, i) => {
+        if (i === 0) ctx.moveTo(p.x, p.y);
+        else ctx.lineTo(p.x, p.y);
+      });
+      ctx.stroke();
+
+      // Draw net labels
+      if (wire.netLabel) {
+        ctx.font = 'bold 10px Arial';
+        ctx.fillStyle = '#9C4AFF';
+        const midX = (wire.path[0].x + wire.path[wire.path.length - 1].x) / 2;
+        const midY = (wire.path[0].y + wire.path[wire.path.length - 1].y) / 2;
+        ctx.fillText(wire.netLabel, midX, midY - 10);
+      }
+    });
+
+    // Draw components
+    components.forEach(comp => {
+      const info = COMPONENT_LIBRARY.find(c => c.type === comp.type);
+      
+      ctx.fillStyle = 'white';
+      ctx.strokeStyle = '#9ca3af';
+      ctx.lineWidth = 2;
+      ctx.fillRect(comp.x, comp.y, 60, 60);
+      ctx.strokeRect(comp.x, comp.y, 60, 60);
+
+      // Draw icon and text
+      ctx.font = '24px Arial';
+      ctx.fillStyle = '#000';
+      ctx.textAlign = 'center';
+      ctx.fillText(info?.icon || '?', comp.x + 30, comp.y + 30);
+      
+      ctx.font = 'bold 10px Arial';
+      ctx.fillText(`${comp.value} ${comp.unit}`, comp.x + 30, comp.y + 50);
+    });
+
+    // Download
+    canvas.toBlob(blob => {
+      if (!blob) return;
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${(saveName || 'circuit').replace(/\s+/g, '_')}.png`;
+      a.click();
+      URL.revokeObjectURL(url);
+      toast.success('Circuit exported as PNG');
+    });
+  };
+
   const convertToSimulationComponents = useCallback((): { components: SimulationComponent[]; nodes: string[] } => {
     const nets = buildNetlist(components, wires);
     const simComponents: SimulationComponent[] = [];
     const nodeSet = new Set<string>();
     
     components.forEach(comp => {
-      // Find which nets this component connects to
       const connectedWires = wires.filter(w => 
         w.from.componentId === comp.id || w.to.componentId === comp.id
       );
@@ -154,7 +500,6 @@ export default function CircuitSimulatorPage() {
         }
       });
       
-      // Ensure we have at least 2 nodes for 2-terminal components
       while (componentNodes.length < 2) {
         componentNodes.push('GND');
       }
@@ -174,7 +519,6 @@ export default function CircuitSimulatorPage() {
     };
   }, [components, wires]);
 
-  // Enhanced run simulation with new engine
   const runEnhancedSimulation = useCallback(() => {
     if (components.length === 0) {
       toast.error('Add components to the circuit first');
@@ -204,7 +548,6 @@ export default function CircuitSimulatorPage() {
       if (result.success) {
         toast.success(`${simulationSettings.mode.toUpperCase()} simulation completed successfully!`);
         
-        // Update legacy display values for backward compatibility
         if (simulationSettings.mode === 'dc' && result.componentData) {
           const firstComponent = Object.values(result.componentData)[0];
           if (firstComponent) {
@@ -214,7 +557,6 @@ export default function CircuitSimulatorPage() {
           }
         }
         
-        // Update waveforms for oscilloscope
         if (result.waveforms && Object.keys(result.waveforms).length > 0) {
           const firstWaveform = Object.values(result.waveforms)[0];
           if (firstWaveform && firstWaveform.voltage) {
@@ -234,23 +576,19 @@ export default function CircuitSimulatorPage() {
     }
   }, [components, wires, simulationSettings, convertToSimulationComponents]);
 
-  // Live update component value during simulation
   const updateComponentValueLive = useCallback((id: string, value: number) => {
     if (!liveEditMode || !simulationResult) {
-      // Normal update
       setComponents(prev => prev.map(c => 
         c.id === id ? { ...c, value } : c
       ));
       return;
     }
     
-    // Live update during simulation
     const updatedComponents = components.map(c => 
       c.id === id ? { ...c, value } : c
     );
     setComponents(updatedComponents);
     
-    // Re-run simulation with updated values
     const { components: simComponents, nodes } = convertToSimulationComponents();
     const updatedSimComponents = simComponents.map(sc =>
       sc.id === id ? { ...sc, value } : sc
@@ -264,7 +602,6 @@ export default function CircuitSimulatorPage() {
     }
   }, [liveEditMode, simulationResult, components, simulationSettings, convertToSimulationComponents]);
 
-  // Load template
   const loadTemplate = (template: CircuitTemplate) => {
     setComponents(template.components);
     setWires(template.wires.map(w => ({
@@ -278,10 +615,11 @@ export default function CircuitSimulatorPage() {
     })));
     setSelectedTemplate(template);
     setShowTemplates(false);
+    setSaveName(template.name);
+    setCurrentProjectId(null);
     toast.success(`Loaded template: ${template.name}`);
   };
 
-  // Run validation
   const runValidation = () => {
     const errors = validateCircuit(components, wires);
     setValidationErrors(errors);
@@ -296,7 +634,6 @@ export default function CircuitSimulatorPage() {
     }
   };
 
-  // Auto-label nets
   const autoLabel = () => {
     const labeledWires = autoLabelNets(wires, components);
     setWires(labeledWires);
@@ -549,6 +886,9 @@ export default function CircuitSimulatorPage() {
     setSelectedComponent(null);
     setSelectedWires([]);
     setSelectedTemplate(null);
+    setCurrentProjectId(null);
+    setSaveName('');
+    setSaveDescription('');
     resetSimulation();
     toast.info('Canvas cleared');
   };
@@ -603,6 +943,11 @@ export default function CircuitSimulatorPage() {
                       Template: {selectedTemplate.name}
                     </Badge>
                   )}
+                  {currentProjectId && (
+                    <Badge className="bg-[#00E5FF] text-white">
+                      Project #{currentProjectId}
+                    </Badge>
+                  )}
                   {liveEditMode && (
                     <Badge className="bg-[#FF6B00] text-white animate-pulse">
                       ⚡ Live Edit Mode
@@ -616,6 +961,29 @@ export default function CircuitSimulatorPage() {
               
               <div className="flex gap-3">
                 <Button
+                  onClick={() => {
+                    setShowSaveDialog(true);
+                    if (!saveName && components.length > 0) {
+                      setSaveName(`Circuit ${new Date().toLocaleDateString()}`);
+                    }
+                  }}
+                  disabled={components.length === 0}
+                  className="bg-green-600 text-white hover:bg-green-700"
+                >
+                  <Save className="h-4 w-4 mr-2" />
+                  Save Project
+                </Button>
+                <Button
+                  onClick={() => {
+                    setShowLoadDialog(true);
+                    loadSavedProjects();
+                  }}
+                  className="bg-blue-600 text-white hover:bg-blue-700"
+                >
+                  <FolderOpen className="h-4 w-4 mr-2" />
+                  Load Project
+                </Button>
+                <Button
                   onClick={() => setShowTemplates(!showTemplates)}
                   className="bg-[#9C4AFF] text-white hover:bg-[#9C4AFF]/90"
                 >
@@ -627,11 +995,158 @@ export default function CircuitSimulatorPage() {
                   className="bg-[#FF6B00] text-white hover:bg-[#FF6B00]/90"
                 >
                   <Bug className="h-4 w-4 mr-2" />
-                  Validate Circuit
+                  Validate
                 </Button>
               </div>
             </div>
           </motion.div>
+
+          {/* Save Dialog */}
+          <Dialog open={showSaveDialog} onOpenChange={setShowSaveDialog}>
+            <DialogContent className="bg-[#071428] border-white/20 text-white">
+              <DialogHeader>
+                <DialogTitle>Save Circuit Project</DialogTitle>
+                <DialogDescription className="text-gray-300">
+                  {currentProjectId ? 'Update existing project' : 'Save your circuit for later'}
+                </DialogDescription>
+              </DialogHeader>
+              <div className="space-y-4 py-4">
+                <div>
+                  <Label htmlFor="project-name" className="text-white">Project Name *</Label>
+                  <Input
+                    id="project-name"
+                    value={saveName}
+                    onChange={(e) => setSaveName(e.target.value)}
+                    placeholder="My Awesome Circuit"
+                    className="bg-white/10 border-white/20 text-white mt-2"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="project-desc" className="text-white">Description</Label>
+                  <Textarea
+                    id="project-desc"
+                    value={saveDescription}
+                    onChange={(e) => setSaveDescription(e.target.value)}
+                    placeholder="Describe your circuit..."
+                    className="bg-white/10 border-white/20 text-white mt-2"
+                    rows={3}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="project-category" className="text-white">Category *</Label>
+                  <Select value={saveCategory} onValueChange={setSaveCategory}>
+                    <SelectTrigger className="bg-white/10 border-white/20 text-white mt-2">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="beginner">Beginner</SelectItem>
+                      <SelectItem value="analog">Analog</SelectItem>
+                      <SelectItem value="digital">Digital</SelectItem>
+                      <SelectItem value="arduino">Arduino</SelectItem>
+                      <SelectItem value="power">Power</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="text-sm text-gray-400">
+                  <p>• {components.length} components</p>
+                  <p>• {wires.length} wires</p>
+                  <p>• Mode: {simulationSettings.mode.toUpperCase()}</p>
+                </div>
+              </div>
+              <DialogFooter>
+                <Button
+                  variant="outline"
+                  onClick={() => setShowSaveDialog(false)}
+                  className="bg-white/10 border-white/20 text-white"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  onClick={saveCircuit}
+                  disabled={isSaving || !saveName.trim()}
+                  className="bg-[#00C2D1] text-[#071428]"
+                >
+                  <Save className="h-4 w-4 mr-2" />
+                  {isSaving ? 'Saving...' : (currentProjectId ? 'Update' : 'Save')}
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+
+          {/* Load Dialog */}
+          <Dialog open={showLoadDialog} onOpenChange={setShowLoadDialog}>
+            <DialogContent className="bg-[#071428] border-white/20 text-white max-w-3xl">
+              <DialogHeader>
+                <DialogTitle>Load Saved Project</DialogTitle>
+                <DialogDescription className="text-gray-300">
+                  Select a project to load into the simulator
+                </DialogDescription>
+              </DialogHeader>
+              <div className="py-4 max-h-[500px] overflow-y-auto">
+                {loadingProjects ? (
+                  <div className="flex items-center justify-center py-12">
+                    <div className="animate-spin text-[#00C2D1]">
+                      <Activity className="h-8 w-8" />
+                    </div>
+                  </div>
+                ) : savedProjects.length === 0 ? (
+                  <div className="text-center py-12 text-gray-400">
+                    <FolderOpen className="h-16 w-16 mx-auto mb-4 opacity-50" />
+                    <p>No saved projects yet</p>
+                    <p className="text-sm mt-2">Create and save your first circuit!</p>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {savedProjects.map(project => (
+                      <Card
+                        key={project.id}
+                        className="bg-white/5 border-white/10 hover:bg-white/10 cursor-pointer transition-all"
+                      >
+                        <CardHeader className="pb-3">
+                          <div className="flex items-start justify-between">
+                            <div className="flex-1">
+                              <CardTitle className="text-white text-sm">{project.name}</CardTitle>
+                              <CardDescription className="text-gray-400 text-xs mt-1">
+                                {project.description || 'No description'}
+                              </CardDescription>
+                            </div>
+                            <Badge variant="outline" className="text-xs">
+                              {project.category}
+                            </Badge>
+                          </div>
+                        </CardHeader>
+                        <CardContent>
+                          <div className="flex items-center justify-between text-xs text-gray-400 mb-3">
+                            <span>{JSON.parse(project.components).length} components</span>
+                            <span>{new Date(project.createdAt).toLocaleDateString()}</span>
+                          </div>
+                          <div className="flex gap-2">
+                            <Button
+                              size="sm"
+                              onClick={() => loadCircuit(project.id)}
+                              className="flex-1 bg-[#00C2D1] text-[#071428]"
+                            >
+                              Load
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="destructive"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                deleteProject(project.id);
+                              }}
+                            >
+                              <Trash2 className="h-3 w-3" />
+                            </Button>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </DialogContent>
+          </Dialog>
 
           {/* Template Selector */}
           <AnimatePresence>
@@ -771,7 +1286,7 @@ export default function CircuitSimulatorPage() {
                 Enhanced Simulation Controls
               </CardTitle>
               <CardDescription className="text-gray-300">
-                Professional SPICE-like analysis with live component editing
+                Professional SPICE-like analysis with live editing & project management
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -821,7 +1336,7 @@ export default function CircuitSimulatorPage() {
                   className="bg-white/10 border-white/20 text-white hover:bg-white/20"
                 >
                   <Sparkles className="h-4 w-4 mr-2" />
-                  Auto-Label Nets
+                  Auto-Label
                 </Button>
                 <Button 
                   variant="outline" 
@@ -830,8 +1345,63 @@ export default function CircuitSimulatorPage() {
                   className="bg-white/10 border-white/20 text-white hover:bg-white/20"
                 >
                   <Cable className="h-4 w-4 mr-2" />
-                  Auto-Cleanup
+                  Cleanup
                 </Button>
+                
+                {/* Export Menu */}
+                <div className="relative group">
+                  <Button 
+                    variant="outline"
+                    className="bg-white/10 border-white/20 text-white hover:bg-white/20"
+                  >
+                    <Download className="h-4 w-4 mr-2" />
+                    Export
+                  </Button>
+                  <div className="absolute top-full mt-2 right-0 hidden group-hover:block bg-[#071428] border border-white/20 rounded-lg shadow-lg overflow-hidden z-50">
+                    <button
+                      onClick={exportAsJSON}
+                      className="w-full px-4 py-2 text-left text-white hover:bg-white/10 flex items-center gap-2 text-sm"
+                    >
+                      <FileJson className="h-4 w-4" />
+                      Export as JSON
+                    </button>
+                    <button
+                      onClick={exportAsNetlist}
+                      className="w-full px-4 py-2 text-left text-white hover:bg-white/10 flex items-center gap-2 text-sm"
+                    >
+                      <FileText className="h-4 w-4" />
+                      Export Netlist
+                    </button>
+                    <button
+                      onClick={exportAsPNG}
+                      className="w-full px-4 py-2 text-left text-white hover:bg-white/10 flex items-center gap-2 text-sm"
+                    >
+                      <ImageIcon className="h-4 w-4" />
+                      Export as PNG
+                    </button>
+                  </div>
+                </div>
+
+                {/* Import Button */}
+                <label className="cursor-pointer">
+                  <input
+                    type="file"
+                    accept=".json"
+                    onChange={importFromJSON}
+                    className="hidden"
+                  />
+                  <Button 
+                    variant="outline"
+                    className="bg-white/10 border-white/20 text-white hover:bg-white/20"
+                    asChild
+                  >
+                    <span>
+                      <Upload className="h-4 w-4 mr-2" />
+                      Import JSON
+                    </span>
+                  </Button>
+                </label>
+
                 <Button 
                   variant="outline" 
                   onClick={deleteSelectedWires}
@@ -839,16 +1409,7 @@ export default function CircuitSimulatorPage() {
                   className="bg-white/10 border-white/20 text-white hover:bg-white/20"
                 >
                   <Trash2 className="h-4 w-4 mr-2" />
-                  Delete Selected ({selectedWires.length})
-                </Button>
-                <Button 
-                  variant="outline" 
-                  onClick={deleteAllWires}
-                  disabled={wires.length === 0}
-                  className="bg-red-500/20 border-red-500/30 text-red-300 hover:bg-red-500/30"
-                >
-                  <Trash2 className="h-4 w-4 mr-2" />
-                  Delete All Wires
+                  Delete ({selectedWires.length})
                 </Button>
                 <Button 
                   variant="outline" 
@@ -856,13 +1417,6 @@ export default function CircuitSimulatorPage() {
                   className="bg-white/10 border-white/20 text-white hover:bg-white/20"
                 >
                   Clear Canvas
-                </Button>
-                <Button 
-                  variant="outline"
-                  className="bg-white/10 border-white/20 text-white hover:bg-white/20"
-                >
-                  <Download className="h-4 w-4 mr-2" />
-                  Export Netlist
                 </Button>
               </div>
 
@@ -875,7 +1429,6 @@ export default function CircuitSimulatorPage() {
                       Component Library
                     </h3>
                     
-                    {/* Search */}
                     <div className="mb-4">
                       <div className="relative">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
@@ -888,7 +1441,6 @@ export default function CircuitSimulatorPage() {
                       </div>
                     </div>
                     
-                    {/* Category Tabs */}
                     {!componentSearch && (
                       <Tabs value={selectedCategory} onValueChange={setSelectedCategory} className="mb-4">
                         <TabsList className="bg-white/10 w-full flex-wrap h-auto gap-1 p-1">
@@ -936,9 +1488,9 @@ export default function CircuitSimulatorPage() {
                       <h4 className="text-xs font-semibold text-[#00C2D1] mb-2">Quick Tips</h4>
                       <ul className="text-xs text-gray-300 space-y-1">
                         <li>✓ Drag components to canvas</li>
-                        <li>✓ Hover to see terminals</li>
-                        <li>✓ Click & drag terminals</li>
-                        <li>✓ Use validation to check</li>
+                        <li>✓ Click terminals to wire</li>
+                        <li>✓ Edit values in live mode</li>
+                        <li>✓ Save/load projects</li>
                       </ul>
                     </div>
                   </CardContent>
@@ -948,7 +1500,10 @@ export default function CircuitSimulatorPage() {
                 <Card className="lg:col-span-3 bg-white/95 border-white/20">
                   <CardContent className="pt-6">
                     <div className="flex items-center justify-between mb-4">
-                      <h3 className="font-semibold text-[#071428]">Circuit Canvas</h3>
+                      <h3 className="font-semibold text-[#071428]">
+                        {saveName || 'Circuit Canvas'}
+                        {currentProjectId && <span className="text-xs text-gray-500 ml-2">(ID: {currentProjectId})</span>}
+                      </h3>
                       <div className="text-xs text-gray-600 flex gap-4">
                         <span>{components.length} component{components.length !== 1 ? 's' : ''}</span>
                         <span className="text-[#9C4AFF] font-semibold">{wires.length} wire{wires.length !== 1 ? 's' : ''}</span>
@@ -967,7 +1522,6 @@ export default function CircuitSimulatorPage() {
                         backgroundSize: '20px 20px'
                       }}
                     >
-                      {/* Render wires */}
                       <svg className="absolute inset-0 pointer-events-none" style={{ zIndex: 1 }}>
                         {wires.map((wire) => {
                           const pathD = wire.path
@@ -992,7 +1546,6 @@ export default function CircuitSimulatorPage() {
                               onMouseEnter={() => setHighlightedWirePath(wire.id)}
                               onMouseLeave={() => setHighlightedWirePath(null)}
                             >
-                              {/* Wire glow effect */}
                               <path
                                 d={pathD}
                                 fill="none"
@@ -1003,7 +1556,6 @@ export default function CircuitSimulatorPage() {
                                 opacity={isHighlighted ? "0.5" : "0.3"}
                                 filter="blur(4px)"
                               />
-                              {/* Main wire */}
                               <path
                                 d={pathD}
                                 fill="none"
@@ -1012,7 +1564,6 @@ export default function CircuitSimulatorPage() {
                                 strokeLinecap="round"
                                 strokeLinejoin="round"
                               />
-                              {/* Connection dots at terminals */}
                               <circle
                                 cx={wire.path[0].x}
                                 cy={wire.path[0].y}
@@ -1046,10 +1597,8 @@ export default function CircuitSimulatorPage() {
                           );
                         })}
 
-                        {/* Dragging wire preview */}
                         {dragWire && (
                           <g>
-                            {/* Animated dashed line */}
                             <line
                               x1={dragWire.from.x}
                               y1={dragWire.from.y}
@@ -1069,7 +1618,6 @@ export default function CircuitSimulatorPage() {
                                 repeatCount="indefinite"
                               />
                             </line>
-                            {/* Glow effect */}
                             <line
                               x1={dragWire.from.x}
                               y1={dragWire.from.y}
@@ -1081,7 +1629,6 @@ export default function CircuitSimulatorPage() {
                               opacity="0.3"
                               filter="blur(4px)"
                             />
-                            {/* Starting point */}
                             <circle
                               cx={dragWire.from.x}
                               cy={dragWire.from.y}
@@ -1090,7 +1637,6 @@ export default function CircuitSimulatorPage() {
                               stroke="white"
                               strokeWidth="2"
                             />
-                            {/* Cursor point */}
                             <circle
                               cx={dragWire.currentX}
                               cy={dragWire.currentY}
@@ -1110,7 +1656,7 @@ export default function CircuitSimulatorPage() {
                               Drag components here to build your circuit
                             </p>
                             <p className="text-sm mt-2">
-                              Or load a template to get started quickly
+                              Load a template or saved project to start
                             </p>
                           </div>
                         </div>
@@ -1139,7 +1685,6 @@ export default function CircuitSimulatorPage() {
                               onMouseEnter={() => setHoveredComponent(comp.id)}
                               onMouseLeave={() => setHoveredComponent(null)}
                             >
-                              {/* Connection terminals */}
                               {(isHovered || showAllTerminals || wireDrawingMode) && (
                                 <>
                                   {(['top', 'bottom', 'left', 'right'] as const).map((terminal) => {
@@ -1210,6 +1755,9 @@ export default function CircuitSimulatorPage() {
                         <h4 className="font-bold mb-4 text-white text-base flex items-center gap-2">
                           <Zap className="h-4 w-4 text-[#00C2D1]" />
                           Component Properties
+                          {liveEditMode && (
+                            <Badge className="text-xs bg-[#FF6B00]">Live Edit</Badge>
+                          )}
                         </h4>
                         <div className="grid grid-cols-2 gap-4">
                           <div className="p-3 bg-white/10 rounded-lg border border-white/20">
@@ -1225,7 +1773,9 @@ export default function CircuitSimulatorPage() {
                             </p>
                           </div>
                           <div className="p-3 bg-white/10 rounded-lg border border-white/20">
-                            <Label className="text-xs font-semibold text-[#00C2D1] mb-1 block">Value</Label>
+                            <Label className="text-xs font-semibold text-[#00C2D1] mb-1 block">
+                              Value {liveEditMode && <span className="text-[#FF6B00]">⚡</span>}
+                            </Label>
                             <Input
                               type="number"
                               value={selectedComponent.value}
@@ -1263,28 +1813,58 @@ export default function CircuitSimulatorPage() {
                 <CardTitle className="text-white text-base flex items-center gap-2">
                   <Activity className="h-4 w-4 text-[#00C2D1]" />
                   Oscilloscope
+                  {simulationResult?.measurements && (
+                    <Badge className="text-xs bg-[#9C4AFF]">
+                      {Object.keys(simulationResult.waveforms || {}).length} signals
+                    </Badge>
+                  )}
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="bg-[#071428] rounded p-4 h-48 relative overflow-hidden">
                   {waveform.length > 0 ? (
-                    <svg width="100%" height="100%" className="absolute inset-0">
-                      <polyline
-                        points={waveform.map((v, i) => 
-                          `${(i / waveform.length) * 100}%,${50 - (v / voltage * 40)}%`
-                        ).join(' ')}
-                        fill="none"
-                        stroke="#00C2D1"
-                        strokeWidth="2"
-                      />
-                      <line x1="0" y1="50%" x2="100%" y2="50%" stroke="white" strokeOpacity="0.2" strokeWidth="1" />
-                    </svg>
+                    <>
+                      <svg width="100%" height="100%" className="absolute inset-0">
+                        <polyline
+                          points={waveform.map((v, i) => 
+                            `${(i / waveform.length) * 100}%,${50 - (v / (voltage || 1) * 40)}%`
+                          ).join(' ')}
+                          fill="none"
+                          stroke="#00C2D1"
+                          strokeWidth="2"
+                        />
+                        <line x1="0" y1="50%" x2="100%" y2="50%" stroke="white" strokeOpacity="0.2" strokeWidth="1" />
+                      </svg>
+                      {simulationResult?.measurements && Object.keys(simulationResult.measurements.peak).length > 0 && (
+                        <div className="absolute bottom-2 right-2 text-xs text-[#00E5FF] bg-[#071428]/80 px-2 py-1 rounded">
+                          Peak: {Object.values(simulationResult.measurements.peak)[0].toFixed(2)}V
+                        </div>
+                      )}
+                    </>
                   ) : (
                     <div className="absolute inset-0 flex items-center justify-center text-gray-500 text-sm">
                       Run simulation to see waveform
                     </div>
                   )}
                 </div>
+                
+                {/* Measurements */}
+                {simulationResult?.measurements && (
+                  <div className="mt-3 space-y-1 text-xs">
+                    {Object.entries(simulationResult.measurements.rms).slice(0, 1).map(([node, value]) => (
+                      <div key={node} className="flex justify-between text-gray-300">
+                        <span>RMS:</span>
+                        <span className="text-[#00E5FF] font-semibold">{(value as number).toFixed(3)} V</span>
+                      </div>
+                    ))}
+                    {Object.entries(simulationResult.measurements.frequency).slice(0, 1).map(([node, value]) => (
+                      <div key={node} className="flex justify-between text-gray-300">
+                        <span>Freq:</span>
+                        <span className="text-[#00E5FF] font-semibold">{(value as number).toFixed(2)} Hz</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </CardContent>
             </Card>
 
@@ -1318,7 +1898,7 @@ export default function CircuitSimulatorPage() {
               </CardContent>
             </Card>
 
-            {/* Analysis Results */}
+            {/* Circuit Status */}
             <Card className="bg-white/5 border-white/10 backdrop-blur-sm">
               <CardHeader className="pb-3">
                 <CardTitle className="text-white text-base flex items-center gap-2">
@@ -1332,19 +1912,23 @@ export default function CircuitSimulatorPage() {
                     <>
                       <p className="flex items-center gap-2">
                         <span className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
-                        {simulationSettings.mode.toUpperCase()} simulation running
+                        {simulationSettings.mode.toUpperCase()} analysis
                       </p>
                       <p>• Components: {components.length}</p>
                       <p>• Wires: {wires.length}</p>
                       <p>• Nets: {buildNetlist(components, wires).length}</p>
+                      {simulationResult?.nodes && (
+                        <p>• Nodes: {simulationResult.nodes.length}</p>
+                      )}
                       <p>• Power: {(power * 1000).toFixed(2)} mW</p>
                     </>
                   ) : (
                     <>
-                      <p>• {components.length} components on canvas</p>
-                      <p>• {wires.length} wire connections</p>
-                      <p>• {COMPONENT_LIBRARY.length}+ components available</p>
-                      <p>• {CIRCUIT_TEMPLATES.length} templates ready</p>
+                      <p>• {components.length} components</p>
+                      <p>• {wires.length} connections</p>
+                      <p>• {COMPONENT_LIBRARY.length}+ available</p>
+                      <p>• {CIRCUIT_TEMPLATES.length} templates</p>
+                      <p>• {savedProjects.length} saved projects</p>
                       <Button
                         size="sm"
                         onClick={runValidation}
