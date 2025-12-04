@@ -5,10 +5,36 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { CircuitBoard, ArrowLeft, Play, Pause, RotateCcw, Download, Zap, Activity, Gauge, Trash2, Cable, Link2 } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Badge } from '@/components/ui/badge';
+import { 
+  CircuitBoard, ArrowLeft, Play, Pause, RotateCcw, Download, Zap, Activity, 
+  Gauge, Trash2, Cable, Link2, AlertTriangle, CheckCircle, Info, FileCode,
+  Search, Filter, BookOpen, Save, Upload, Sparkles, Bug
+} from 'lucide-react';
 import Link from 'next/link';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
+import { 
+  COMPONENT_LIBRARY, 
+  COMPONENT_CATEGORIES, 
+  getComponentsByCategory, 
+  searchComponents,
+  type ComponentDefinition 
+} from '@/lib/circuit-components';
+import { 
+  CIRCUIT_TEMPLATES, 
+  getTemplatesByCategory, 
+  getTemplateById,
+  type CircuitTemplate 
+} from '@/lib/circuit-templates';
+import { 
+  validateCircuit, 
+  autoLabelNets, 
+  buildNetlist,
+  type ValidationError 
+} from '@/lib/circuit-validator';
 
 interface Component {
   id: string;
@@ -40,17 +66,6 @@ interface DragWire {
   currentY: number;
 }
 
-const componentLibrary = [
-  { type: 'voltage', label: '⚡ Voltage Source', icon: '⚡', defaultValue: 12, unit: 'V' },
-  { type: 'current', label: '🔌 Current Source', icon: '🔌', defaultValue: 1, unit: 'A' },
-  { type: 'resistor', label: '📊 Resistor', icon: '📊', defaultValue: 1000, unit: 'Ω' },
-  { type: 'capacitor', label: '🔋 Capacitor', icon: '🔋', defaultValue: 100, unit: 'μF' },
-  { type: 'inductor', label: '🧲 Inductor', icon: '🧲', defaultValue: 10, unit: 'mH' },
-  { type: 'led', label: '💡 LED', icon: '💡', defaultValue: 2, unit: 'V' },
-  { type: 'diode', label: '⚙️ Diode', icon: '⚙️', defaultValue: 0.7, unit: 'V' },
-  { type: 'transistor', label: '🔺 Transistor', icon: '🔺', defaultValue: 0, unit: '' },
-];
-
 const wireColors = ['#FF00C8', '#00E5FF', '#9C4AFF', '#FF6B00', '#00FF88', '#FFD700'];
 
 export default function CircuitSimulatorPage() {
@@ -58,7 +73,6 @@ export default function CircuitSimulatorPage() {
   const [components, setComponents] = useState<Component[]>([]);
   const [selectedComponent, setSelectedComponent] = useState<Component | null>(null);
   const [draggedType, setDraggedType] = useState<string | null>(null);
-  const [connections, setConnections] = useState<Connection[]>([]);
   const [voltage, setVoltage] = useState(0);
   const [current, setCurrent] = useState(0);
   const [resistance, setResistance] = useState(0);
@@ -72,7 +86,61 @@ export default function CircuitSimulatorPage() {
   const [wireDrawingMode, setWireDrawingMode] = useState(false);
   const [highlightedWirePath, setHighlightedWirePath] = useState<string | null>(null);
   const [showAllTerminals, setShowAllTerminals] = useState(false);
+  
+  // New states
+  const [selectedCategory, setSelectedCategory] = useState<string>('power');
+  const [componentSearch, setComponentSearch] = useState('');
+  const [validationErrors, setValidationErrors] = useState<ValidationError[]>([]);
+  const [showValidation, setShowValidation] = useState(false);
+  const [selectedTemplate, setSelectedTemplate] = useState<CircuitTemplate | null>(null);
+  const [showTemplates, setShowTemplates] = useState(false);
+  const [simulationMode, setSimulationMode] = useState<'dc' | 'ac' | 'transient'>('dc');
+  
   const canvasRef = useRef<HTMLDivElement>(null);
+
+  // Get filtered components
+  const filteredComponents = componentSearch 
+    ? searchComponents(componentSearch)
+    : getComponentsByCategory(selectedCategory);
+
+  // Load template
+  const loadTemplate = (template: CircuitTemplate) => {
+    setComponents(template.components);
+    setWires(template.wires.map(w => ({
+      ...w,
+      path: createSmartPath(
+        template.components.find(c => c.id === w.from.componentId)!.x,
+        template.components.find(c => c.id === w.from.componentId)!.y,
+        template.components.find(c => c.id === w.to.componentId)!.x,
+        template.components.find(c => c.id === w.to.componentId)!.y
+      )
+    })));
+    setSelectedTemplate(template);
+    setShowTemplates(false);
+    toast.success(`Loaded template: ${template.name}`);
+  };
+
+  // Run validation
+  const runValidation = () => {
+    const errors = validateCircuit(components, wires);
+    setValidationErrors(errors);
+    setShowValidation(true);
+    
+    if (errors.length === 0) {
+      toast.success('✓ No issues found! Circuit looks good.');
+    } else {
+      const errorCount = errors.filter(e => e.type === 'error').length;
+      const warningCount = errors.filter(e => e.type === 'warning').length;
+      toast.warning(`Found ${errorCount} error(s) and ${warningCount} warning(s)`);
+    }
+  };
+
+  // Auto-label nets
+  const autoLabel = () => {
+    const labeledWires = autoLabelNets(wires, components);
+    setWires(labeledWires);
+    toast.success('✓ Net labels updated automatically');
+  };
 
   const handleDragStart = (type: string) => {
     setDraggedType(type);
@@ -86,7 +154,7 @@ export default function CircuitSimulatorPage() {
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
 
-    const componentInfo = componentLibrary.find(c => c.type === draggedType);
+    const componentInfo = COMPONENT_LIBRARY.find(c => c.type === draggedType);
     
     const newComponent: Component = {
       id: `${draggedType}-${Date.now()}`,
@@ -108,7 +176,6 @@ export default function CircuitSimulatorPage() {
   };
 
   const removeComponent = (id: string) => {
-    // Remove associated wires
     const removedWireCount = wires.filter(w => w.from.componentId === id || w.to.componentId === id).length;
     setWires(prev => prev.filter(w => w.from.componentId !== id && w.to.componentId !== id));
     setComponents(prev => prev.filter(c => c.id !== id));
@@ -122,7 +189,6 @@ export default function CircuitSimulatorPage() {
     ));
   };
 
-  // Get terminal position for a component
   const getTerminalPosition = (comp: Component, terminal: 'top' | 'bottom' | 'left' | 'right') => {
     const size = 60;
     switch (terminal) {
@@ -137,7 +203,6 @@ export default function CircuitSimulatorPage() {
     }
   };
 
-  // Start wire drawing
   const handleTerminalMouseDown = (componentId: string, terminal: 'top' | 'bottom' | 'left' | 'right', e: React.MouseEvent) => {
     e.stopPropagation();
     if (!canvasRef.current) return;
@@ -155,7 +220,6 @@ export default function CircuitSimulatorPage() {
     toast.info('Drag to connect...', { duration: 1000 });
   };
 
-  // Update wire position while dragging
   const handleCanvasMouseMove = (e: React.MouseEvent) => {
     if (!dragWire || !canvasRef.current) return;
 
@@ -166,12 +230,10 @@ export default function CircuitSimulatorPage() {
     setDragWire(prev => prev ? { ...prev, currentX: x, currentY: y } : null);
   };
 
-  // Complete wire connection
   const handleTerminalMouseUp = (componentId: string, terminal: 'top' | 'bottom' | 'left' | 'right', e: React.MouseEvent) => {
     e.stopPropagation();
     if (!dragWire) return;
 
-    // Prevent connecting to same component
     if (dragWire.from.componentId === componentId) {
       toast.error('Cannot connect component to itself');
       setDragWire(null);
@@ -179,7 +241,6 @@ export default function CircuitSimulatorPage() {
       return;
     }
 
-    // Check for duplicate connections
     const duplicate = wires.find(
       w =>
         (w.from.componentId === dragWire.from.componentId &&
@@ -203,11 +264,7 @@ export default function CircuitSimulatorPage() {
     if (!comp) return;
 
     const toPos = getTerminalPosition(comp, terminal);
-
-    // Create smart routing path
     const path = createSmartPath(dragWire.from.x, dragWire.from.y, toPos.x, toPos.y);
-
-    // Auto-assign wire color
     const color = wireColors[wires.length % wireColors.length];
 
     const newWire: Wire = {
@@ -224,7 +281,6 @@ export default function CircuitSimulatorPage() {
     toast.success('✓ Wire connected successfully!');
   };
 
-  // Cancel wire drawing
   const handleCanvasMouseUp = () => {
     if (dragWire) {
       setDragWire(null);
@@ -233,14 +289,12 @@ export default function CircuitSimulatorPage() {
     }
   };
 
-  // Create smart routing path with right-angle connections
   const createSmartPath = (x1: number, y1: number, x2: number, y2: number) => {
     const path = [{ x: x1, y: y1 }];
     
     const dx = x2 - x1;
     const dy = y2 - y1;
 
-    // Smart routing: prefer horizontal then vertical
     if (Math.abs(dx) > Math.abs(dy)) {
       path.push({ x: x1 + dx / 2, y: y1 });
       path.push({ x: x1 + dx / 2, y: y2 });
@@ -253,7 +307,6 @@ export default function CircuitSimulatorPage() {
     return path;
   };
 
-  // Delete selected wires
   const deleteSelectedWires = () => {
     if (selectedWires.length === 0) return;
     const count = selectedWires.length;
@@ -262,7 +315,6 @@ export default function CircuitSimulatorPage() {
     toast.success(`${count} wire${count !== 1 ? 's' : ''} deleted`);
   };
 
-  // Delete all wires
   const deleteAllWires = () => {
     const count = wires.length;
     if (count === 0) {
@@ -274,14 +326,12 @@ export default function CircuitSimulatorPage() {
     toast.success(`All ${count} wires deleted`);
   };
 
-  // Auto-cleanup wire layout
   const autoCleanupWires = () => {
     if (wires.length === 0) {
       toast.info('No wires to optimize');
       return;
     }
 
-    // Recreate all wire paths with smart routing
     setWires(prev =>
       prev.map(wire => {
         const fromComp = components.find(c => c.id === wire.from.componentId);
@@ -301,7 +351,6 @@ export default function CircuitSimulatorPage() {
     toast.success('✓ Wire layout optimized!');
   };
 
-  // Update wire positions when components move
   useEffect(() => {
     if (wires.length === 0) return;
 
@@ -326,13 +375,11 @@ export default function CircuitSimulatorPage() {
   const runSimulation = () => {
     setIsRunning(true);
     
-    // Check for proper connections
     if (wires.length === 0) {
       toast.warning('Add wires to connect components');
     }
 
-    // Simple circuit analysis simulation
-    const voltageSource = components.find(c => c.type === 'voltage');
+    const voltageSource = components.find(c => c.type === 'voltage_dc' || c.type === 'battery');
     const resistors = components.filter(c => c.type === 'resistor');
     
     if (voltageSource && resistors.length > 0) {
@@ -347,13 +394,12 @@ export default function CircuitSimulatorPage() {
       setResistance(totalR);
       setPower(p);
       
-      // Generate waveform data
       const wave = Array.from({ length: 100 }, (_, i) => 
         Math.sin((i / 100) * Math.PI * 4) * v
       );
       setWaveform(wave);
       
-      toast.success('Simulation started!');
+      toast.success(`${simulationMode.toUpperCase()} simulation started!`);
     } else {
       toast.error('Add voltage source and resistors to simulate');
     }
@@ -374,6 +420,7 @@ export default function CircuitSimulatorPage() {
     setWires([]);
     setSelectedComponent(null);
     setSelectedWires([]);
+    setSelectedTemplate(null);
     resetSimulation();
     toast.info('Canvas cleared');
   };
@@ -381,7 +428,6 @@ export default function CircuitSimulatorPage() {
   useEffect(() => {
     if (isRunning) {
       const interval = setInterval(() => {
-        // Update waveform animation
         setWaveform(prev => {
           const newWave = [...prev];
           newWave.push(newWave.shift() || 0);
@@ -401,7 +447,7 @@ export default function CircuitSimulatorPage() {
       </div>
 
       <div className="relative z-10 py-12 px-4">
-        <div className="container mx-auto max-w-7xl">
+        <div className="container mx-auto max-w-[1920px]">
           <Link href="/">
             <Button variant="outline" className="mb-6 bg-white/10 border-white/20 text-white hover:bg-white/20">
               <ArrowLeft className="h-4 w-4 mr-2" />
@@ -414,19 +460,176 @@ export default function CircuitSimulatorPage() {
             animate={{ opacity: 1, y: 0 }}
             className="mb-8"
           >
-            <div className="flex items-center gap-3 mb-2">
-              <motion.div
-                animate={{ rotate: [0, 360] }}
-                transition={{ duration: 3, repeat: Infinity, ease: 'linear' }}
-              >
-                <CircuitBoard className="h-10 w-10 text-[#00C2D1]" />
-              </motion.div>
-              <h1 className="text-4xl font-bold text-white">Interactive Circuit Simulator</h1>
+            <div className="flex items-center justify-between">
+              <div>
+                <div className="flex items-center gap-3 mb-2">
+                  <motion.div
+                    animate={{ rotate: [0, 360] }}
+                    transition={{ duration: 3, repeat: Infinity, ease: 'linear' }}
+                  >
+                    <CircuitBoard className="h-10 w-10 text-[#00C2D1]" />
+                  </motion.div>
+                  <h1 className="text-4xl font-bold text-white">Professional Circuit Simulator</h1>
+                  {selectedTemplate && (
+                    <Badge className="bg-[#9C4AFF] text-white">
+                      Template: {selectedTemplate.name}
+                    </Badge>
+                  )}
+                </div>
+                <p className="text-gray-300 text-lg">
+                  Full-featured electronics simulation with {COMPONENT_LIBRARY.length}+ components, validation, and templates
+                </p>
+              </div>
+              
+              <div className="flex gap-3">
+                <Button
+                  onClick={() => setShowTemplates(!showTemplates)}
+                  className="bg-[#9C4AFF] text-white hover:bg-[#9C4AFF]/90"
+                >
+                  <BookOpen className="h-4 w-4 mr-2" />
+                  Templates
+                </Button>
+                <Button
+                  onClick={runValidation}
+                  className="bg-[#FF6B00] text-white hover:bg-[#FF6B00]/90"
+                >
+                  <Bug className="h-4 w-4 mr-2" />
+                  Validate Circuit
+                </Button>
+              </div>
             </div>
-            <p className="text-gray-300 text-lg">
-              Professional circuit simulation with drag-and-drop wiring and real-time analysis
-            </p>
           </motion.div>
+
+          {/* Template Selector */}
+          <AnimatePresence>
+            {showTemplates && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                className="mb-6"
+              >
+                <Card className="bg-white/5 border-white/10 backdrop-blur-sm">
+                  <CardHeader>
+                    <div className="flex items-center justify-between">
+                      <CardTitle className="text-white">Circuit Templates</CardTitle>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setShowTemplates(false)}
+                        className="text-white"
+                      >
+                        Close
+                      </Button>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <Tabs defaultValue="beginner" className="w-full">
+                      <TabsList className="bg-white/10">
+                        <TabsTrigger value="beginner">Beginner</TabsTrigger>
+                        <TabsTrigger value="analog">Analog</TabsTrigger>
+                        <TabsTrigger value="digital">Digital</TabsTrigger>
+                        <TabsTrigger value="arduino">Arduino</TabsTrigger>
+                        <TabsTrigger value="power">Power</TabsTrigger>
+                      </TabsList>
+                      {['beginner', 'analog', 'digital', 'arduino', 'power'].map(category => (
+                        <TabsContent key={category} value={category}>
+                          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            {getTemplatesByCategory(category as any).map(template => (
+                              <Card 
+                                key={template.id}
+                                className="bg-white/5 border-white/10 hover:bg-white/10 cursor-pointer transition-colors"
+                                onClick={() => loadTemplate(template)}
+                              >
+                                <CardHeader>
+                                  <CardTitle className="text-white text-sm flex items-center justify-between">
+                                    {template.name}
+                                    <Badge variant="outline" className="text-xs">
+                                      {'⭐'.repeat(template.difficulty)}
+                                    </Badge>
+                                  </CardTitle>
+                                  <CardDescription className="text-gray-300 text-xs">
+                                    {template.description}
+                                  </CardDescription>
+                                </CardHeader>
+                                <CardContent>
+                                  <div className="text-xs text-gray-400">
+                                    {template.components.length} components • {template.wires.length} connections
+                                  </div>
+                                </CardContent>
+                              </Card>
+                            ))}
+                          </div>
+                        </TabsContent>
+                      ))}
+                    </Tabs>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* Validation Panel */}
+          <AnimatePresence>
+            {showValidation && validationErrors.length > 0 && (
+              <motion.div
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                className="mb-6"
+              >
+                <Card className="bg-white/5 border-white/10 backdrop-blur-sm">
+                  <CardHeader>
+                    <div className="flex items-center justify-between">
+                      <CardTitle className="text-white flex items-center gap-2">
+                        <AlertTriangle className="h-5 w-5 text-[#FF6B00]" />
+                        Circuit Validation Results
+                      </CardTitle>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setShowValidation(false)}
+                        className="text-white"
+                      >
+                        Close
+                      </Button>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-2 max-h-64 overflow-y-auto">
+                      {validationErrors.map(error => (
+                        <div
+                          key={error.id}
+                          className={`p-3 rounded-lg border ${
+                            error.type === 'error'
+                              ? 'bg-red-500/10 border-red-500/30'
+                              : error.type === 'warning'
+                              ? 'bg-yellow-500/10 border-yellow-500/30'
+                              : 'bg-blue-500/10 border-blue-500/30'
+                          }`}
+                        >
+                          <div className="flex items-start gap-3">
+                            <div className="mt-0.5">
+                              {error.type === 'error' && <AlertTriangle className="h-4 w-4 text-red-400" />}
+                              {error.type === 'warning' && <AlertTriangle className="h-4 w-4 text-yellow-400" />}
+                              {error.type === 'info' && <Info className="h-4 w-4 text-blue-400" />}
+                            </div>
+                            <div className="flex-1">
+                              <p className="font-semibold text-white text-sm">{error.message}</p>
+                              <p className="text-gray-300 text-xs mt-1">{error.description}</p>
+                              {error.fix && (
+                                <p className="text-[#00E5FF] text-xs mt-2">💡 Fix: {error.fix}</p>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            )}
+          </AnimatePresence>
 
           <Card className="mb-8 bg-white/5 border-white/10 backdrop-blur-sm">
             <CardHeader>
@@ -440,6 +643,17 @@ export default function CircuitSimulatorPage() {
             </CardHeader>
             <CardContent>
               <div className="flex gap-4 mb-6 flex-wrap">
+                <Select value={simulationMode} onValueChange={(v: any) => setSimulationMode(v)}>
+                  <SelectTrigger className="w-32 bg-white/10 text-white border-white/20">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="dc">DC Analysis</SelectItem>
+                    <SelectItem value="ac">AC Analysis</SelectItem>
+                    <SelectItem value="transient">Transient</SelectItem>
+                  </SelectContent>
+                </Select>
+                
                 <Button
                   onClick={runSimulation}
                   disabled={components.length === 0}
@@ -466,12 +680,21 @@ export default function CircuitSimulatorPage() {
                 </Button>
                 <Button 
                   variant="outline" 
+                  onClick={autoLabel}
+                  disabled={wires.length === 0}
+                  className="bg-white/10 border-white/20 text-white hover:bg-white/20"
+                >
+                  <Sparkles className="h-4 w-4 mr-2" />
+                  Auto-Label Nets
+                </Button>
+                <Button 
+                  variant="outline" 
                   onClick={autoCleanupWires}
                   disabled={wires.length === 0}
                   className="bg-white/10 border-white/20 text-white hover:bg-white/20"
                 >
                   <Cable className="h-4 w-4 mr-2" />
-                  Auto-Cleanup Wires
+                  Auto-Cleanup
                 </Button>
                 <Button 
                   variant="outline" 
@@ -507,46 +730,86 @@ export default function CircuitSimulatorPage() {
                 </Button>
               </div>
 
-              <div className="grid md:grid-cols-4 gap-4">
+              <div className="grid lg:grid-cols-4 gap-4">
                 {/* Component Library */}
-                <Card className="bg-[#071428] border-white/20">
+                <Card className="bg-[#071428] border-white/20 lg:col-span-1">
                   <CardContent className="pt-6">
                     <h3 className="font-semibold mb-3 text-[#00C2D1] flex items-center gap-2">
                       <Zap className="h-4 w-4" />
-                      Components
+                      Component Library
                     </h3>
-                    <div className="space-y-2 text-sm max-h-[500px] overflow-y-auto">
-                      {componentLibrary.map((comp) => (
+                    
+                    {/* Search */}
+                    <div className="mb-4">
+                      <div className="relative">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                        <Input
+                          value={componentSearch}
+                          onChange={(e) => setComponentSearch(e.target.value)}
+                          placeholder="Search components..."
+                          className="pl-10 bg-white/10 border-white/20 text-white placeholder:text-gray-400"
+                        />
+                      </div>
+                    </div>
+                    
+                    {/* Category Tabs */}
+                    {!componentSearch && (
+                      <Tabs value={selectedCategory} onValueChange={setSelectedCategory} className="mb-4">
+                        <TabsList className="bg-white/10 w-full flex-wrap h-auto gap-1 p-1">
+                          {Object.entries(COMPONENT_CATEGORIES).map(([key, cat]) => (
+                            <TabsTrigger 
+                              key={key} 
+                              value={key}
+                              className="text-xs px-2 py-1 data-[state=active]:bg-[#9C4AFF]"
+                            >
+                              {cat.icon}
+                            </TabsTrigger>
+                          ))}
+                        </TabsList>
+                      </Tabs>
+                    )}
+                    
+                    <div className="space-y-2 text-sm max-h-[600px] overflow-y-auto pr-2">
+                      {filteredComponents.map((comp) => (
                         <div
                           key={comp.type}
                           draggable
                           onDragStart={() => handleDragStart(comp.type)}
-                          className="p-3 border border-white/10 rounded hover:bg-[#00C2D1]/20 cursor-move transition-colors backdrop-blur-sm"
+                          className="p-3 border border-white/10 rounded hover:bg-[#00C2D1]/20 cursor-move transition-colors backdrop-blur-sm group"
                         >
-                          <div className="flex items-center gap-2 text-white">
+                          <div className="flex items-center gap-2">
                             <span className="text-xl">{comp.icon}</span>
-                            <span className="text-xs">{comp.label}</span>
+                            <div className="flex-1 min-w-0">
+                              <p className="text-white text-xs font-medium truncate">{comp.label}</p>
+                              <p className="text-gray-400 text-[10px] truncate">{comp.description}</p>
+                            </div>
+                          </div>
+                          <div className="mt-1 flex items-center gap-1 flex-wrap">
+                            <Badge variant="outline" className="text-[9px] px-1 py-0">
+                              {comp.category}
+                            </Badge>
+                            <Badge variant="outline" className="text-[9px] px-1 py-0">
+                              {comp.pins} pins
+                            </Badge>
                           </div>
                         </div>
                       ))}
                     </div>
                     
                     <div className="mt-4 p-3 bg-white/5 rounded border border-white/10">
-                      <h4 className="text-xs font-semibold text-[#00C2D1] mb-2">Wiring Instructions</h4>
+                      <h4 className="text-xs font-semibold text-[#00C2D1] mb-2">Quick Tips</h4>
                       <ul className="text-xs text-gray-300 space-y-1">
-                        <li>✓ Hover component to see terminals</li>
-                        <li>✓ Click & drag from terminal</li>
-                        <li>✓ Release on target terminal</li>
-                        <li>✓ Auto-color & smart routing</li>
-                        <li>✓ Click wire to select/delete</li>
-                        <li>✓ Use "Show Terminals" button</li>
+                        <li>✓ Drag components to canvas</li>
+                        <li>✓ Hover to see terminals</li>
+                        <li>✓ Click & drag terminals</li>
+                        <li>✓ Use validation to check</li>
                       </ul>
                     </div>
                   </CardContent>
                 </Card>
 
                 {/* Circuit Canvas */}
-                <Card className="md:col-span-3 bg-white/95 border-white/20">
+                <Card className="lg:col-span-3 bg-white/95 border-white/20">
                   <CardContent className="pt-6">
                     <div className="flex items-center justify-between mb-4">
                       <h3 className="font-semibold text-[#071428]">Circuit Canvas</h3>
@@ -562,7 +825,7 @@ export default function CircuitSimulatorPage() {
                       onDragOver={handleDragOver}
                       onMouseMove={handleCanvasMouseMove}
                       onMouseUp={handleCanvasMouseUp}
-                      className={`bg-white rounded-lg border-2 ${wireDrawingMode ? 'border-[#9C4AFF] border-solid' : 'border-dashed border-gray-300'} min-h-[500px] relative overflow-hidden transition-all`}
+                      className={`bg-white rounded-lg border-2 ${wireDrawingMode ? 'border-[#9C4AFF] border-solid' : 'border-dashed border-gray-300'} min-h-[600px] relative overflow-hidden transition-all`}
                       style={{
                         backgroundImage: 'radial-gradient(circle, #e5e7eb 1px, transparent 1px)',
                         backgroundSize: '20px 20px'
@@ -630,6 +893,19 @@ export default function CircuitSimulatorPage() {
                                 stroke="white"
                                 strokeWidth="1"
                               />
+                              {wire.netLabel && (
+                                <text
+                                  x={(wire.path[0].x + wire.path[wire.path.length - 1].x) / 2}
+                                  y={(wire.path[0].y + wire.path[wire.path.length - 1].y) / 2 - 10}
+                                  fontSize="10"
+                                  fill="#9C4AFF"
+                                  fontWeight="bold"
+                                  textAnchor="middle"
+                                  className="pointer-events-none"
+                                >
+                                  {wire.netLabel}
+                                </text>
+                              )}
                             </g>
                           );
                         })}
@@ -698,13 +974,13 @@ export default function CircuitSimulatorPage() {
                               Drag components here to build your circuit
                             </p>
                             <p className="text-sm mt-2">
-                              Hover components and drag from terminals to create wires
+                              Or load a template to get started quickly
                             </p>
                           </div>
                         </div>
                       ) : (
                         components.map((comp) => {
-                          const info = componentLibrary.find(c => c.type === comp.type);
+                          const info = COMPONENT_LIBRARY.find(c => c.type === comp.type);
                           const isHovered = hoveredComponent === comp.id;
                           
                           return (
@@ -829,14 +1105,10 @@ export default function CircuitSimulatorPage() {
                           </div>
                         </div>
                         
-                        {/* Additional Component Info */}
                         <div className="mt-4 p-3 bg-[#00C2D1]/20 rounded-lg border border-[#00C2D1]/40">
                           <p className="text-xs text-white/90">
                             <span className="font-semibold text-[#00C2D1]">Description:</span>{' '}
-                            {componentLibrary.find(c => c.type === selectedComponent.type)?.label || 'Unknown Component'}
-                          </p>
-                          <p className="text-xs text-white/80 mt-1">
-                            Hover to see terminals • Drag from terminal to create wire • Click wire to select/delete
+                            {COMPONENT_LIBRARY.find(c => c.type === selectedComponent.type)?.description || 'Unknown Component'}
                           </p>
                         </div>
                       </motion.div>
@@ -915,7 +1187,7 @@ export default function CircuitSimulatorPage() {
               <CardHeader className="pb-3">
                 <CardTitle className="text-white text-base flex items-center gap-2">
                   <Zap className="h-4 w-4 text-[#00C2D1]" />
-                  Connection Status
+                  Circuit Status
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -924,96 +1196,29 @@ export default function CircuitSimulatorPage() {
                     <>
                       <p className="flex items-center gap-2">
                         <span className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
-                        Simulation running
+                        {simulationMode.toUpperCase()} simulation running
                       </p>
-                      <p>• Total Components: {components.length}</p>
-                      <p>• Total Wires: {wires.length}</p>
-                      <p>• Circuit Type: {components.some(c => c.type === 'voltage') ? 'DC' : 'Incomplete'}</p>
-                      <p>• Power Dissipation: {(power * 1000).toFixed(2)} mW</p>
+                      <p>• Components: {components.length}</p>
+                      <p>• Wires: {wires.length}</p>
+                      <p>• Nets: {buildNetlist(components, wires).length}</p>
+                      <p>• Power: {(power * 1000).toFixed(2)} mW</p>
                     </>
                   ) : (
                     <>
-                      <p>• Add components to canvas</p>
-                      <p>• Use "Show Terminals" button</p>
-                      <p>• Drag from terminal to connect</p>
-                      <p>• Click wires to select/delete</p>
-                      <p>• Click "Auto-Cleanup" to organize</p>
+                      <p>• {components.length} components on canvas</p>
+                      <p>• {wires.length} wire connections</p>
+                      <p>• {COMPONENT_LIBRARY.length}+ components available</p>
+                      <p>• {CIRCUIT_TEMPLATES.length} templates ready</p>
+                      <Button
+                        size="sm"
+                        onClick={runValidation}
+                        className="w-full mt-2 bg-[#FF6B00]"
+                      >
+                        <Bug className="h-3 w-3 mr-2" />
+                        Check Circuit
+                      </Button>
                     </>
                   )}
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Quick Start Guide */}
-          <div className="grid md:grid-cols-2 gap-6">
-            <Card className="bg-white/5 border-white/10 backdrop-blur-sm">
-              <CardHeader>
-                <CardTitle className="text-white">Enhanced Wiring Features</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3 text-sm">
-                <div className="flex gap-3">
-                  <div className="font-bold text-[#00C2D1]">✓</div>
-                  <div>
-                    <p className="font-semibold text-white">Show All Terminals Mode</p>
-                    <p className="text-gray-300">Toggle button to display all connection points permanently</p>
-                  </div>
-                </div>
-                <div className="flex gap-3">
-                  <div className="font-bold text-[#00C2D1]">✓</div>
-                  <div>
-                    <p className="font-semibold text-white">Visual Wire Drawing</p>
-                    <p className="text-gray-300">Animated preview with glowing effects while dragging wires</p>
-                  </div>
-                </div>
-                <div className="flex gap-3">
-                  <div className="font-bold text-[#00C2D1]">✓</div>
-                  <div>
-                    <p className="font-semibold text-white">Smart Auto-Cleanup</p>
-                    <p className="text-gray-300">Optimizes all wire paths with one click for better layout</p>
-                  </div>
-                </div>
-                <div className="flex gap-3">
-                  <div className="font-bold text-[#00C2D1]">✓</div>
-                  <div>
-                    <p className="font-semibold text-white">Delete All Wires</p>
-                    <p className="text-gray-300">Quick option to remove all connections at once</p>
-                  </div>
-                </div>
-                <div className="flex gap-3">
-                  <div className="font-bold text-[#00C2D1]">✓</div>
-                  <div>
-                    <p className="font-semibold text-white">Connection Dots</p>
-                    <p className="text-gray-300">Visual indicators show exactly where wires connect</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="bg-white/5 border-white/10 backdrop-blur-sm">
-              <CardHeader>
-                <CardTitle className="text-white">Wiring Quick Guide</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3 text-sm">
-                <div>
-                  <p className="font-semibold text-white">1️⃣ Show Terminals</p>
-                  <p className="text-gray-300 text-xs">Click "Show Terminals" button or hover over components</p>
-                </div>
-                <div>
-                  <p className="font-semibold text-white">2️⃣ Start Wire</p>
-                  <p className="text-gray-300 text-xs">Click and hold on any purple terminal dot</p>
-                </div>
-                <div>
-                  <p className="font-semibold text-white">3️⃣ Drag to Connect</p>
-                  <p className="text-gray-300 text-xs">Drag to target component - see animated preview</p>
-                </div>
-                <div>
-                  <p className="font-semibold text-white">4️⃣ Release to Connect</p>
-                  <p className="text-gray-300 text-xs">Release on target terminal - wire auto-routes</p>
-                </div>
-                <div>
-                  <p className="font-semibold text-white">5️⃣ Manage Wires</p>
-                  <p className="text-gray-300 text-xs">Click to select, use cleanup to organize, delete when needed</p>
                 </div>
               </CardContent>
             </Card>
