@@ -1,4 +1,4 @@
-import { sqliteTable, integer, text, real } from 'drizzle-orm/sqlite-core';
+import { sqliteTable, integer, text } from 'drizzle-orm/sqlite-core';
 
 // Gamification tables
 export const userStats = sqliteTable('user_stats', {
@@ -241,4 +241,20 @@ export const bookmarks = sqliteTable('bookmarks', {
   contentType: text('content_type').notNull(),
   contentId: integer('content_id').notNull(),
   createdAt: text('created_at').notNull(),
+});
+
+// Add circuit_projects table
+export const circuitProjects = sqliteTable('circuit_projects', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  userId: text('user_id'),
+  name: text('name').notNull(),
+  description: text('description'),
+  thumbnail: text('thumbnail'),
+  components: text('components', { mode: 'json' }).notNull(),
+  wires: text('wires', { mode: 'json' }).notNull(),
+  simulationSettings: text('simulation_settings', { mode: 'json' }),
+  category: text('category').notNull(),
+  isTemplate: integer('is_template', { mode: 'boolean' }).default(false),
+  createdAt: integer('created_at', { mode: 'timestamp' }).notNull(),
+  updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull(),
 });
