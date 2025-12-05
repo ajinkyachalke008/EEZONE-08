@@ -214,7 +214,7 @@ const projectManagementTools = [
     name: 'Project Timeline Planner', 
     description: 'Interactive Gantt chart creator for visualizing project schedules, tracking milestones, managing dependencies, and coordinating team resources. Features critical path analysis and automated deadline alerts for on-time delivery.', 
     href: '/tools/project-management#timeline',
-    image: 'https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/project-uploads/e24d0c9e-e4fc-4077-96b8-bf644fe969e3/generated_images/interactive-gantt-chart-project-timeline-4373a234-20251205065647.jpg'
+    image: 'https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/project-uploads/e24d0c9e-e4fc-4077-96b8-bf644fe969e3/generated_images/interactive-project-timeline-planner-wit-c7d964d7-20251205070756.jpg'
   },
   { 
     icon: ClipboardList, 
@@ -238,7 +238,7 @@ const codeComplianceTools = [
     name: 'NEC Code Search', 
     description: 'AI-powered search engine for the National Electrical Code with natural language queries, instant article lookup, cross-referencing, and contextual explanations. Access NEC 2020, 2023, and upcoming 2026 editions with highlighted changes and amendments.', 
     href: '/tools/compliance#nec-search',
-    image: 'https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/project-uploads/e24d0c9e-e4fc-4077-96b8-bf644fe969e3/generated_images/ai-powered-nec-code-search-engine-interf-52105564-20251205065738.jpg'
+    image: 'https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/project-uploads/e24d0c9e-e4fc-4077-96b8-bf644fe969e3/generated_images/ai-powered-nec-code-search-engine-interf-e2bb1f3c-20251205070756.jpg'
   },
   { 
     icon: Scale, 
@@ -252,21 +252,21 @@ const codeComplianceTools = [
     name: 'Code Change Tracker', 
     description: 'Track all updates between NEC editions with side-by-side comparisons, impact analysis, and practical implementation guides. Stay current with the latest safety requirements, installation methods, and calculation updates affecting your projects.', 
     href: '/tools/compliance#change-tracker',
-    image: 'https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/project-uploads/e24d0c9e-e4fc-4077-96b8-bf644fe969e3/generated_images/nec-code-change-tracker-interface-displa-dffd4daf-20251205065737.jpg'
+    image: 'https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/project-uploads/e24d0c9e-e4fc-4077-96b8-bf644fe969e3/generated_images/nec-code-change-tracker-interface-showin-c0e377f0-20251205070758.jpg'
   },
   { 
     icon: MapPin, 
     name: 'Jurisdiction Database', 
     description: 'Comprehensive database of local electrical code requirements, amendments, and special provisions for over 15,000 US jurisdictions. Search by ZIP code or city to find specific local regulations, permit requirements, and inspection protocols.', 
     href: '/tools/compliance#jurisdiction',
-    image: 'https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/project-uploads/e24d0c9e-e4fc-4077-96b8-bf644fe969e3/generated_images/comprehensive-jurisdiction-database-inte-139c0960-20251205065737.jpg'
+    image: 'https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/project-uploads/e24d0c9e-e4fc-4077-96b8-bf644fe969e3/generated_images/comprehensive-electrical-code-jurisdicti-4cac5b33-20251205070756.jpg'
   },
   { 
     icon: FileCheck, 
     name: 'Permit Assistant', 
     description: 'Step-by-step guidance for preparing electrical permit applications with required documentation checklists, form auto-fill, plan review preparation, and common rejection avoidance tips. Includes jurisdiction-specific requirements and submission workflows.', 
     href: '/tools/compliance#permit',
-    image: 'https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/project-uploads/e24d0c9e-e4fc-4077-96b8-bf644fe969e3/generated_images/electrical-permit-assistant-interface-wi-3bfd037e-20251205065737.jpg'
+    image: 'https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/project-uploads/e24d0c9e-e4fc-4077-96b8-bf644fe969e3/generated_images/electrical-permit-application-assistant--121ee328-20251205070756.jpg'
   },
 ];
 
@@ -276,7 +276,7 @@ const diagnosticTools = [
     name: 'Maintenance Scheduler', 
     description: 'Complete preventive maintenance planning system for tracking equipment service intervals, creating maintenance calendars, setting automated reminders, and logging completed work. Includes NFPA 70B and manufacturer-recommended schedules for electrical equipment.', 
     href: '/tools/diagnostics#scheduler',
-    image: 'https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/project-uploads/e24d0c9e-e4fc-4077-96b8-bf644fe969e3/generated_images/preventive-maintenance-scheduling-system-8e9c412f-20251205065738.jpg'
+    image: 'https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/project-uploads/e24d0c9e-e4fc-4077-96b8-bf644fe969e3/generated_images/preventive-maintenance-scheduling-system-58bdd198-20251205070756.jpg'
   },
   { 
     icon: FileText, 
@@ -315,7 +315,7 @@ const aiFeatures = [
     description: 'Intelligent code generation for PLC ladder logic, Arduino C++, ESP32 firmware, and industrial automation controllers. Describe your control logic in plain English and get production-ready, commented code with best practices and error handling included.', 
     isPro: true, 
     href: '/tools/ai-features#code-assistant',
-    image: 'https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/project-uploads/e24d0c9e-e4fc-4077-96b8-bf644fe969e3/generated_images/ai-powered-code-generation-interface-for-32bc621c-20251205065738.jpg'
+    image: 'https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/project-uploads/e24d0c9e-e4fc-4077-96b8-bf644fe969e3/generated_images/ai-code-generation-interface-for-plc-lad-62b76a57-20251205070759.jpg'
   },
   { 
     icon: CircuitBoard, 
@@ -323,7 +323,7 @@ const aiFeatures = [
     description: 'Revolutionary circuit design assistant that converts functional requirements into complete schematic suggestions. Input specifications like voltage, current, frequency requirements and receive optimized circuit topologies with component recommendations and design rationale.', 
     isPro: true, 
     href: '/tools/ai-features#circuit-designer',
-    image: 'https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/project-uploads/e24d0c9e-e4fc-4077-96b8-bf644fe969e3/generated_images/revolutionary-ai-circuit-designer-interf-d8fb943e-20251205065737.jpg'
+    image: 'https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/project-uploads/e24d0c9e-e4fc-4077-96b8-bf644fe969e3/generated_images/ai-powered-circuit-designer-interface-ge-8917ecd0-20251205070756.jpg'
   },
   { 
     icon: Wrench, 
@@ -331,7 +331,7 @@ const aiFeatures = [
     description: 'Advanced diagnostic AI that analyzes photos of electrical problems, error codes, meter readings, and equipment failures. Provides step-by-step troubleshooting procedures, likely root causes ranked by probability, and safety precautions for field technicians.', 
     isPro: true, 
     href: '/tools/ai-features#troubleshooting',
-    image: 'https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/project-uploads/e24d0c9e-e4fc-4077-96b8-bf644fe969e3/generated_images/advanced-ai-troubleshooting-system-analy-71a64d7a-20251205065737.jpg'
+    image: 'https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/project-uploads/e24d0c9e-e4fc-4077-96b8-bf644fe969e3/generated_images/advanced-ai-troubleshooting-system-analy-6b514d37-20251205070756.jpg'
   },
   { 
     icon: Headphones, 
@@ -347,7 +347,7 @@ const aiFeatures = [
     description: 'Full platform translation for Spanish, Mandarin Chinese, and Hindi-speaking electrical professionals. Includes technical terminology, NEC code translations, calculation results, and interface localization to serve the global electrical engineering community.', 
     isPro: false, 
     href: '/tools/ai-features#multi-language',
-    image: 'https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/project-uploads/e24d0c9e-e4fc-4077-96b8-bf644fe969e3/generated_images/multi-language-electrical-engineering-pl-5b049b5f-20251205065738.jpg'
+    image: 'https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/project-uploads/e24d0c9e-e4fc-4077-96b8-bf644fe969e3/generated_images/multi-language-electrical-engineering-pl-1f0b7628-20251205070756.jpg'
   },
 ];
 
@@ -385,7 +385,7 @@ const interactiveSimulations = [
     name: 'AR Circuit Overlays', 
     description: 'Augmented reality mobile app that overlays circuit diagrams, cable identification, voltage readings, and equipment specifications onto live camera feeds. Point your phone at a panel or circuit and see real-time data, connection diagrams, and maintenance history displayed in AR for rapid troubleshooting and documentation.', 
     href: '/tools/simulations#ar-overlays',
-    image: 'https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/project-uploads/e24d0c9e-e4fc-4077-96b8-bf644fe969e3/generated_images/augmented-reality-mobile-app-interface-o-83d8ee85-20251205065740.jpg'
+    image: 'https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/project-uploads/e24d0c9e-e4fc-4077-96b8-bf644fe969e3/generated_images/augmented-reality-mobile-application-int-79e29068-20251205070757.jpg'
   },
 ];
 
