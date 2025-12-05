@@ -106,73 +106,78 @@ export function MaterialCostEstimator() {
 
   return (
     <div className="space-y-6">
-      <Card>
+      <Card className="glass-surface border-white/10 backdrop-blur-glass">
         <CardHeader>
-          <CardTitle>Material Cost Estimator</CardTitle>
-          <CardDescription>
+          <CardTitle className="text-white">Material Cost Estimator</CardTitle>
+          <CardDescription className="text-[#B8A7E0]">
             Calculate component and material costs for your electrical projects
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           {/* Project Settings */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-gray-50 rounded-lg">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 glass-surface border border-white/10 rounded-lg">
             <div>
-              <Label htmlFor="projectName">Project Name</Label>
+              <Label htmlFor="projectName" className="text-white">Project Name</Label>
               <Input
                 id="projectName"
                 value={projectName}
                 onChange={(e) => setProjectName(e.target.value)}
                 placeholder="Enter project name"
+                className="glass-surface border-white/20 text-white placeholder:text-[#B8A7E0]"
               />
             </div>
             <div>
-              <Label htmlFor="laborRate">Labor Rate ($/hr)</Label>
+              <Label htmlFor="laborRate" className="text-white">Labor Rate ($/hr)</Label>
               <Input
                 id="laborRate"
                 type="number"
                 value={laborRate}
                 onChange={(e) => setLaborRate(Number(e.target.value))}
+                className="glass-surface border-white/20 text-white placeholder:text-[#B8A7E0]"
               />
             </div>
             <div>
-              <Label htmlFor="markup">Markup (%)</Label>
+              <Label htmlFor="markup" className="text-white">Markup (%)</Label>
               <Input
                 id="markup"
                 type="number"
                 value={markup}
                 onChange={(e) => setMarkup(Number(e.target.value))}
+                className="glass-surface border-white/20 text-white placeholder:text-[#B8A7E0]"
               />
             </div>
             <div>
-              <Label htmlFor="contingency">Contingency (%)</Label>
+              <Label htmlFor="contingency" className="text-white">Contingency (%)</Label>
               <Input
                 id="contingency"
                 type="number"
                 value={contingency}
                 onChange={(e) => setContingency(Number(e.target.value))}
+                className="glass-surface border-white/20 text-white placeholder:text-[#B8A7E0]"
               />
             </div>
           </div>
 
           {/* Add Material Form */}
-          <div className="space-y-4 p-4 border-2 border-dashed border-gray-300 rounded-lg">
-            <h3 className="font-semibold text-lg flex items-center gap-2">
-              <Plus className="h-5 w-5 text-[#00C2D1]" />
+          <div className="space-y-4 p-4 border-2 border-dashed border-white/20 rounded-lg glass-surface">
+            <h3 className="font-semibold text-lg flex items-center gap-2 text-white">
+              <Plus className="h-5 w-5 text-[#9C4AFF]" />
               Add Material
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-6 gap-3">
               <div className="md:col-span-2">
-                <Label>Item Name</Label>
+                <Label className="text-white">Item Name</Label>
                 <Input
                   value={newMaterial.name}
                   onChange={(e) => setNewMaterial({ ...newMaterial, name: e.target.value })}
                   placeholder="12/2 NM-B Cable"
+                  className="glass-surface border-white/20 text-white placeholder:text-[#B8A7E0]"
                 />
               </div>
               <div>
-                <Label>Category</Label>
+                <Label className="text-white">Category</Label>
                 <Select value={newMaterial.category} onValueChange={(value) => setNewMaterial({ ...newMaterial, category: value })}>
-                  <SelectTrigger>
+                  <SelectTrigger className="glass-surface border-white/20 text-white">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -183,17 +188,18 @@ export function MaterialCostEstimator() {
                 </Select>
               </div>
               <div>
-                <Label>Quantity</Label>
+                <Label className="text-white">Quantity</Label>
                 <Input
                   type="number"
                   value={newMaterial.quantity}
                   onChange={(e) => setNewMaterial({ ...newMaterial, quantity: Number(e.target.value) })}
+                  className="glass-surface border-white/20 text-white placeholder:text-[#B8A7E0]"
                 />
               </div>
               <div>
-                <Label>Unit</Label>
+                <Label className="text-white">Unit</Label>
                 <Select value={newMaterial.unit} onValueChange={(value) => setNewMaterial({ ...newMaterial, unit: value })}>
-                  <SelectTrigger>
+                  <SelectTrigger className="glass-surface border-white/20 text-white">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -204,16 +210,17 @@ export function MaterialCostEstimator() {
                 </Select>
               </div>
               <div>
-                <Label>Unit Cost ($)</Label>
+                <Label className="text-white">Unit Cost ($)</Label>
                 <Input
                   type="number"
                   step="0.01"
                   value={newMaterial.unitCost}
                   onChange={(e) => setNewMaterial({ ...newMaterial, unitCost: Number(e.target.value) })}
+                  className="glass-surface border-white/20 text-white placeholder:text-[#B8A7E0]"
                 />
               </div>
             </div>
-            <Button onClick={addMaterial} className="w-full bg-[#00C2D1] text-[#071428] hover:bg-[#00C2D1]/90">
+            <Button onClick={addMaterial} className="w-full gradient-violet text-white hover:shadow-glowViolet">
               <Plus className="h-4 w-4 mr-2" />
               Add Material
             </Button>
@@ -222,30 +229,30 @@ export function MaterialCostEstimator() {
           {/* Materials List */}
           {materials.length > 0 && (
             <div className="space-y-3">
-              <h3 className="font-semibold text-lg">Materials List ({materials.length} items)</h3>
+              <h3 className="font-semibold text-lg text-white">Materials List ({materials.length} items)</h3>
               <div className="space-y-2 max-h-96 overflow-y-auto">
-                {materials.map((material) => (
-                  <div key={material.id} className="flex items-center gap-3 p-3 bg-white border rounded-lg hover:shadow-md transition-shadow">
+                {materials.map((m) => (
+                  <div key={m.id} className="flex items-center gap-3 p-3 glass-surface border border-white/10 rounded-lg hover:border-[#9C4AFF]/50 transition-all">
                     <div className="flex-1 grid grid-cols-1 md:grid-cols-6 gap-2 text-sm">
                       <div className="md:col-span-2">
-                        <div className="font-semibold text-[#071428]">{material.name}</div>
-                        <Badge variant="secondary" className="text-xs mt-1">{material.category}</Badge>
+                        <div className="font-semibold text-white">{m.name}</div>
+                        <Badge variant="secondary" className="text-xs mt-1 bg-white/10 text-white border-white/20">{m.category}</Badge>
                       </div>
-                      <div className="text-gray-600">
-                        <span className="font-medium">{material.quantity}</span> {material.unit}
+                      <div className="text-[#B8A7E0]">
+                        <span className="font-medium text-white">{m.quantity}</span> {m.unit}
                       </div>
-                      <div className="text-gray-600">
-                        ${material.unitCost.toFixed(2)} / {material.unit}
+                      <div className="text-[#B8A7E0]">
+                        ${m.unitCost.toFixed(2)} / {m.unit}
                       </div>
-                      <div className="font-semibold text-[#00C2D1]">
-                        ${material.total.toFixed(2)}
+                      <div className="font-semibold text-[#00E5FF]">
+                        ${m.total.toFixed(2)}
                       </div>
                       <div className="flex justify-end">
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={() => removeMaterial(material.id)}
-                          className="text-red-500 hover:text-red-700 hover:bg-red-50"
+                          onClick={() => removeMaterial(m.id)}
+                          className="text-red-400 hover:text-red-300 hover:bg-red-500/10"
                         >
                           <Trash2 className="h-4 w-4" />
                         </Button>
@@ -260,34 +267,34 @@ export function MaterialCostEstimator() {
           {/* Cost Summary */}
           {materials.length > 0 && (
             <div className="space-y-4">
-              <Card className="bg-gradient-to-br from-[#071428] to-[#0a1d38] text-white">
+              <Card className="bg-gradient-to-br from-[#2B0B4B]/80 to-[#1A0033]/90 border-[#9C4AFF]/30">
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Calculator className="h-5 w-5 text-[#00C2D1]" />
+                  <CardTitle className="flex items-center gap-2 text-white">
+                    <Calculator className="h-5 w-5 text-[#9C4AFF]" />
                     Cost Summary
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
-                  <div className="flex justify-between text-lg">
+                  <div className="flex justify-between text-lg text-white">
                     <span>Subtotal:</span>
                     <span className="font-semibold">${totals.subtotal.toFixed(2)}</span>
                   </div>
-                  <div className="flex justify-between text-sm opacity-80">
+                  <div className="flex justify-between text-sm text-white/80">
                     <span>Markup ({markup}%):</span>
                     <span>${totals.markupAmount.toFixed(2)}</span>
                   </div>
-                  <div className="flex justify-between text-sm opacity-80">
+                  <div className="flex justify-between text-sm text-white/80">
                     <span>Contingency ({contingency}%):</span>
                     <span>${totals.contingencyAmount.toFixed(2)}</span>
                   </div>
                   <div className="border-t border-white/20 pt-3 flex justify-between text-2xl font-bold">
-                    <span className="text-[#00C2D1]">Total Estimate:</span>
-                    <span className="text-[#00C2D1]">${totals.total.toFixed(2)}</span>
+                    <span className="text-[#9C4AFF]">Total Estimate:</span>
+                    <span className="text-[#9C4AFF]">${totals.total.toFixed(2)}</span>
                   </div>
                 </CardContent>
               </Card>
 
-              <Button onClick={exportToCSV} className="w-full" variant="outline">
+              <Button onClick={exportToCSV} variant="outline" className="w-full border-white/20 text-white hover:bg-white/10">
                 <Download className="h-4 w-4 mr-2" />
                 Export to CSV
               </Button>
@@ -295,8 +302,8 @@ export function MaterialCostEstimator() {
           )}
 
           {materials.length === 0 && (
-            <div className="text-center py-12 text-gray-500">
-              <Calculator className="h-16 w-16 mx-auto mb-4 opacity-30" />
+            <div className="text-center py-12 text-[#B8A7E0]">
+              <Calculator className="h-16 w-16 mx-auto mb-4 opacity-50" />
               <p>Add materials to start estimating project costs</p>
             </div>
           )}
