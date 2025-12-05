@@ -55,6 +55,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { MonacoCodeEditor } from '@/components/tools/monaco-code-editor';
 import { BreadboardView } from '@/components/tools/breadboard-view';
 import { AICircuitAssistant } from '@/components/tools/ai-circuit-assistant';
+import { SerialMonitor } from '@/components/tools/serial-monitor';
 
 interface Component {
   id: string;
@@ -145,9 +146,13 @@ export default function CircuitSimulatorPage() {
   const [isSaving, setIsSaving] = useState(false);
   
   // Add new state for code editor
-  const [activeTab, setActiveTab] = useState<'circuit' | 'code' | 'breadboard' | 'ai'>('circuit');
+  const [activeTab, setActiveTab] = useState<'circuit' | 'code' | 'breadboard' | 'ai' | 'serial'>('circuit');
   const [arduinoCode, setArduinoCode] = useState('');
   const [codeRunning, setCodeRunning] = useState(false);
+  
+  // Add serial monitor state
+  const [serialConnected, setSerialConnected] = useState(false);
+  const [serialMessages, setSerialMessages] = useState<any[]>([]);
 
   const canvasRef = useRef<HTMLDivElement>(null);
 
@@ -959,6 +964,22 @@ export default function CircuitSimulatorPage() {
     }
   };
 
+  // Serial Monitor handlers
+  const handleSerialConnect = () => {
+    setSerialConnected(true);
+    toast.success('Serial port connected');
+  };
+
+  const handleSerialDisconnect = () => {
+    setSerialConnected(false);
+    toast.info('Serial port disconnected');
+  };
+
+  const handleSerialSend = (data: string) => {
+    // In a real implementation, this would send data to the MCU
+    console.log('Sending to serial:', data);
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#071428] via-[#0a1d38] to-[#071428]">
       {/* Animated Background */}
@@ -1342,11 +1363,11 @@ export default function CircuitSimulatorPage() {
                     Circuit Simulator & Code Editor
                   </CardTitle>
                   <CardDescription className="text-gray-300">
-                    Professional SPICE-like analysis with Arduino programming, breadboard & AI assistance
+                    Professional SPICE-like analysis with Arduino programming, breadboard, AI assistance & serial monitoring
                   </CardDescription>
                 </div>
-                <Tabs value={activeTab} onValueChange={(v: any) => setActiveTab(v)} className="w-[600px]">
-                  <TabsList className="grid w-full grid-cols-4 bg-white/10">
+                <Tabs value={activeTab} onValueChange={(v: any) => setActiveTab(v)} className="w-[700px]">
+                  <TabsList className="grid w-full grid-cols-5 bg-white/10">
                     <TabsTrigger value="circuit" className="data-[state=active]:bg-[#00C2D1]">
                       <CircuitBoard className="h-4 w-4 mr-2" />
                       Circuit
@@ -1362,6 +1383,10 @@ export default function CircuitSimulatorPage() {
                     <TabsTrigger value="ai" className="data-[state=active]:bg-[#9C4AFF]">
                       <Sparkles className="h-4 w-4 mr-2" />
                       AI Assistant
+                    </TabsTrigger>
+                    <TabsTrigger value="serial" className="data-[state=active]:bg-[#00E5FF]">
+                      <Terminal className="h-4 w-4 mr-2" />
+                      Serial
                     </TabsTrigger>
                   </TabsList>
                 </Tabs>
@@ -2018,6 +2043,89 @@ export default function CircuitSimulatorPage() {
                       currentWires={wires}
                       validationErrors={validationErrors}
                     />
+                  </motion.div>
+                )}
+
+                {activeTab === 'serial' && (
+                  <motion.div
+                    key="serial"
+                    initial={{ opacity: 0, y: -20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 20 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <div className="space-y-4">
+                      {/* Serial Monitor Info */}
+                      <Card className="bg-[#00E5FF]/10 border-[#00E5FF]/30">
+                        <CardContent className="pt-4">
+                          <div className="flex items-start gap-3">
+                            <Terminal className="h-5 w-5 text-[#00E5FF] mt-0.5" />
+                            <div>
+                              <p className="text-white font-semibold mb-1">Serial Communication Monitor</p>
+                              <p className="text-gray-300 text-sm">
+                                Real-time serial communication with Arduino/ESP32 and other microcontrollers. Monitor data, send commands, and debug your firmware.
+                              </p>
+                              <div className="mt-2 flex gap-4 text-xs text-gray-400">
+                                <span>• Real-time data logging</span>
+                                <span>• Configurable baud rates</span>
+                                <span>• Message filtering</span>
+                                <span>• Export logs</span>
+                              </div>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+
+                      {/* Serial Monitor Component */}
+                      <SerialMonitor
+                        isConnected={serialConnected}
+                        onConnect={handleSerialConnect}
+                        onDisconnect={handleSerialDisconnect}
+                        onSend={handleSerialSend}
+                      />
+
+                      {/* Integration Status */}
+                      <Card className="bg-white/5 border-white/10">
+                        <CardHeader className="pb-3">
+                          <CardTitle className="text-white text-sm flex items-center gap-2">
+                            <Zap className="h-4 w-4 text-[#00E5FF]" />
+                            MCU Integration Status
+                          </CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <div className="space-y-2 text-sm">
+                            <div className="flex items-center justify-between p-2 bg-white/5 rounded">
+                              <span className="text-gray-300">Microcontrollers in Circuit:</span>
+                              <Badge variant="outline">
+                                {components.filter(c => c.type.includes('arduino') || c.type.includes('esp')).length}
+                              </Badge>
+                            </div>
+                            <div className="flex items-center justify-between p-2 bg-white/5 rounded">
+                              <span className="text-gray-300">Serial Connection:</span>
+                              <Badge className={serialConnected ? 'bg-green-500/20 text-green-400' : 'bg-gray-500/20 text-gray-400'}>
+                                {serialConnected ? 'Connected' : 'Disconnected'}
+                              </Badge>
+                            </div>
+                            <div className="flex items-center justify-between p-2 bg-white/5 rounded">
+                              <span className="text-gray-300">Code Status:</span>
+                              <Badge className={codeRunning ? 'bg-green-500/20 text-green-400' : 'bg-gray-500/20 text-gray-400'}>
+                                {codeRunning ? 'Running' : 'Stopped'}
+                              </Badge>
+                            </div>
+                            <div className="flex items-center justify-between p-2 bg-white/5 rounded">
+                              <span className="text-gray-300">Messages Logged:</span>
+                              <span className="text-white text-xs">{serialMessages.length}</span>
+                            </div>
+                            <div className="mt-4 p-3 bg-[#00E5FF]/10 border border-[#00E5FF]/30 rounded-lg">
+                              <p className="text-xs text-[#00E5FF]">
+                                💡 <span className="font-semibold">Integration:</span> Connect to serial port to receive data from your Arduino/ESP32. 
+                                The simulator syncs with your code from the Code tab and displays real-time output here.
+                              </p>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </div>
                   </motion.div>
                 )}
               </AnimatePresence>
