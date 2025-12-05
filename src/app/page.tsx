@@ -195,43 +195,198 @@ const careerContent = [
 ];
 
 const projectManagementTools = [
-  { icon: Calculator, name: 'Material Cost Estimator', description: 'Comprehensive cost analysis tool for calculating component prices, material expenses, shipping costs, and vendor comparisons. Generate detailed budget reports for client proposals and project planning with real-time pricing updates.', href: '/tools/project-management#cost-estimator' },
-  { icon: Clock, name: 'Labor Time Calculator', description: 'Professional labor estimation system for accurately calculating installation hours, troubleshooting time, commissioning duration, and testing phases. Includes complexity factors and skill-level adjustments for precise project timeline forecasting.', href: '/tools/project-management#labor-calculator' },
-  { icon: Calendar, name: 'Project Timeline Planner', description: 'Interactive Gantt chart creator for visualizing project schedules, tracking milestones, managing dependencies, and coordinating team resources. Features critical path analysis and automated deadline alerts for on-time delivery.', href: '/tools/project-management#timeline' },
-  { icon: ClipboardList, name: 'BOM Generator', description: 'Automated Bill of Materials creation tool that generates detailed parts lists with specifications, quantities, part numbers, and supplier information. Export to CSV, PDF, or Excel formats for procurement and documentation purposes.', href: '/tools/project-management#bom' },
-  { icon: TrendingUp, name: 'Vendor Comparison', description: 'Multi-vendor price and specification comparison engine for finding the best deals on electrical components. Compare delivery times, warranty terms, technical specs, and total cost across major distributors like Digi-Key, Mouser, and Newark.', href: '/tools/project-management#vendor-comparison' },
+  { 
+    icon: Calculator, 
+    name: 'Material Cost Estimator', 
+    description: 'Comprehensive cost analysis tool for calculating component prices, material expenses, shipping costs, and vendor comparisons. Generate detailed budget reports for client proposals and project planning with real-time pricing updates.', 
+    href: '/tools/project-management#cost-estimator',
+    image: 'https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/project-uploads/e24d0c9e-e4fc-4077-96b8-bf644fe969e3/generated_images/professional-electrical-engineering-mate-41b9fdce-20251205065649.jpg'
+  },
+  { 
+    icon: Clock, 
+    name: 'Labor Time Calculator', 
+    description: 'Professional labor estimation system for accurately calculating installation hours, troubleshooting time, commissioning duration, and testing phases. Includes complexity factors and skill-level adjustments for precise project timeline forecasting.', 
+    href: '/tools/project-management#labor-calculator',
+    image: 'https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/project-uploads/e24d0c9e-e4fc-4077-96b8-bf644fe969e3/generated_images/advanced-labor-time-calculation-interfac-2172bf6d-20251205065648.jpg'
+  },
+  { 
+    icon: Calendar, 
+    name: 'Project Timeline Planner', 
+    description: 'Interactive Gantt chart creator for visualizing project schedules, tracking milestones, managing dependencies, and coordinating team resources. Features critical path analysis and automated deadline alerts for on-time delivery.', 
+    href: '/tools/project-management#timeline',
+    image: 'https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/project-uploads/e24d0c9e-e4fc-4077-96b8-bf644fe969e3/generated_images/interactive-gantt-chart-project-timeline-4373a234-20251205065647.jpg'
+  },
+  { 
+    icon: ClipboardList, 
+    name: 'BOM Generator', 
+    description: 'Automated Bill of Materials creation tool that generates detailed parts lists with specifications, quantities, part numbers, and supplier information. Export to CSV, PDF, or Excel formats for procurement and documentation purposes.', 
+    href: '/tools/project-management#bom',
+    image: 'https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/project-uploads/e24d0c9e-e4fc-4077-96b8-bf644fe969e3/generated_images/automated-bill-of-materials-bom-generato-9671a44e-20251205065649.jpg'
+  },
+  { 
+    icon: TrendingUp, 
+    name: 'Vendor Comparison', 
+    description: 'Multi-vendor price and specification comparison engine for finding the best deals on electrical components. Compare delivery times, warranty terms, technical specs, and total cost across major distributors like Digi-Key, Mouser, and Newark.', 
+    href: '/tools/project-management#vendor-comparison',
+    image: 'https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/project-uploads/e24d0c9e-e4fc-4077-96b8-bf644fe969e3/generated_images/multi-vendor-comparison-dashboard-for-el-1b7253e6-20251205065648.jpg'
+  },
 ];
 
 const codeComplianceTools = [
-  { icon: Search, name: 'NEC Code Search', description: 'AI-powered search engine for the National Electrical Code with natural language queries, instant article lookup, cross-referencing, and contextual explanations. Access NEC 2020, 2023, and upcoming 2026 editions with highlighted changes and amendments.', href: '/tools/compliance#nec-search' },
-  { icon: Scale, name: 'Compliance Checker', description: 'Automated design verification tool that validates your electrical installations against NEC requirements, NFPA 70E safety standards, and local amendments. Generates comprehensive compliance reports with violation warnings and correction recommendations.', href: '/tools/compliance#checker' },
-  { icon: FileText, name: 'Code Change Tracker', description: 'Track all updates between NEC editions with side-by-side comparisons, impact analysis, and practical implementation guides. Stay current with the latest safety requirements, installation methods, and calculation updates affecting your projects.', href: '/tools/compliance#change-tracker' },
-  { icon: MapPin, name: 'Jurisdiction Database', description: 'Comprehensive database of local electrical code requirements, amendments, and special provisions for over 15,000 US jurisdictions. Search by ZIP code or city to find specific local regulations, permit requirements, and inspection protocols.', href: '/tools/compliance#jurisdiction' },
-  { icon: FileCheck, name: 'Permit Assistant', description: 'Step-by-step guidance for preparing electrical permit applications with required documentation checklists, form auto-fill, plan review preparation, and common rejection avoidance tips. Includes jurisdiction-specific requirements and submission workflows.', href: '/tools/compliance#permit' },
+  { 
+    icon: Search, 
+    name: 'NEC Code Search', 
+    description: 'AI-powered search engine for the National Electrical Code with natural language queries, instant article lookup, cross-referencing, and contextual explanations. Access NEC 2020, 2023, and upcoming 2026 editions with highlighted changes and amendments.', 
+    href: '/tools/compliance#nec-search',
+    image: 'https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/project-uploads/e24d0c9e-e4fc-4077-96b8-bf644fe969e3/generated_images/ai-powered-nec-code-search-engine-interf-52105564-20251205065738.jpg'
+  },
+  { 
+    icon: Scale, 
+    name: 'Compliance Checker', 
+    description: 'Automated design verification tool that validates your electrical installations against NEC requirements, NFPA 70E safety standards, and local amendments. Generates comprehensive compliance reports with violation warnings and correction recommendations.', 
+    href: '/tools/compliance#checker',
+    image: 'https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/project-uploads/e24d0c9e-e4fc-4077-96b8-bf644fe969e3/generated_images/automated-electrical-compliance-checker--7352e4fd-20251205065736.jpg'
+  },
+  { 
+    icon: FileText, 
+    name: 'Code Change Tracker', 
+    description: 'Track all updates between NEC editions with side-by-side comparisons, impact analysis, and practical implementation guides. Stay current with the latest safety requirements, installation methods, and calculation updates affecting your projects.', 
+    href: '/tools/compliance#change-tracker',
+    image: 'https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/project-uploads/e24d0c9e-e4fc-4077-96b8-bf644fe969e3/generated_images/nec-code-change-tracker-interface-displa-dffd4daf-20251205065737.jpg'
+  },
+  { 
+    icon: MapPin, 
+    name: 'Jurisdiction Database', 
+    description: 'Comprehensive database of local electrical code requirements, amendments, and special provisions for over 15,000 US jurisdictions. Search by ZIP code or city to find specific local regulations, permit requirements, and inspection protocols.', 
+    href: '/tools/compliance#jurisdiction',
+    image: 'https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/project-uploads/e24d0c9e-e4fc-4077-96b8-bf644fe969e3/generated_images/comprehensive-jurisdiction-database-inte-139c0960-20251205065737.jpg'
+  },
+  { 
+    icon: FileCheck, 
+    name: 'Permit Assistant', 
+    description: 'Step-by-step guidance for preparing electrical permit applications with required documentation checklists, form auto-fill, plan review preparation, and common rejection avoidance tips. Includes jurisdiction-specific requirements and submission workflows.', 
+    href: '/tools/compliance#permit',
+    image: 'https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/project-uploads/e24d0c9e-e4fc-4077-96b8-bf644fe969e3/generated_images/electrical-permit-assistant-interface-wi-3bfd037e-20251205065737.jpg'
+  },
 ];
 
 const diagnosticTools = [
-  { icon: Calendar, name: 'Maintenance Scheduler', description: 'Complete preventive maintenance planning system for tracking equipment service intervals, creating maintenance calendars, setting automated reminders, and logging completed work. Includes NFPA 70B and manufacturer-recommended schedules for electrical equipment.', href: '/tools/diagnostics#scheduler' },
-  { icon: FileText, name: 'Test Report Generator', description: 'Professional report creation tool for megger testing, insulation resistance measurements, ground fault testing, and power quality surveys. Auto-generates IEEE and NETA-compliant reports with graphs, pass/fail indicators, and trending analysis for predictive maintenance.', href: '/tools/diagnostics#test-reports' },
-  { icon: BarChart, name: 'Load Profile Analyzer', description: 'Advanced analytics for utility meter data with demand pattern recognition, peak load identification, power factor analysis, and energy consumption trends. Visualize daily, weekly, and seasonal usage patterns to optimize electrical systems and reduce utility costs.', href: '/tools/diagnostics#load-analyzer' },
-  { icon: Gauge, name: 'Power Quality Reporter', description: 'Comprehensive power quality data interpretation tool for analyzing voltage sags, swells, harmonics, transients, and flicker events. Identifies problem sources, quantifies financial impacts, and recommends mitigation solutions with IEEE 519 compliance verification.', href: '/tools/diagnostics#power-quality' },
-  { icon: Thermometer, name: 'Thermal Imaging Tool', description: 'Thermal imaging data analysis platform for detecting hot spots, loose connections, overloaded circuits, and failing components. Imports data from FLIR and other IR cameras, generates prioritized repair lists, and creates professional thermal inspection reports with NFPA 70B standards.', href: '/tools/diagnostics#thermal' },
+  { 
+    icon: Calendar, 
+    name: 'Maintenance Scheduler', 
+    description: 'Complete preventive maintenance planning system for tracking equipment service intervals, creating maintenance calendars, setting automated reminders, and logging completed work. Includes NFPA 70B and manufacturer-recommended schedules for electrical equipment.', 
+    href: '/tools/diagnostics#scheduler',
+    image: 'https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/project-uploads/e24d0c9e-e4fc-4077-96b8-bf644fe969e3/generated_images/preventive-maintenance-scheduling-system-8e9c412f-20251205065738.jpg'
+  },
+  { 
+    icon: FileText, 
+    name: 'Test Report Generator', 
+    description: 'Professional report creation tool for megger testing, insulation resistance measurements, ground fault testing, and power quality surveys. Auto-generates IEEE and NETA-compliant reports with graphs, pass/fail indicators, and trending analysis for predictive maintenance.', 
+    href: '/tools/diagnostics#test-reports',
+    image: 'https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/project-uploads/e24d0c9e-e4fc-4077-96b8-bf644fe969e3/generated_images/professional-electrical-test-report-gene-793e5fbc-20251205065737.jpg'
+  },
+  { 
+    icon: BarChart, 
+    name: 'Load Profile Analyzer', 
+    description: 'Advanced analytics for utility meter data with demand pattern recognition, peak load identification, power factor analysis, and energy consumption trends. Visualize daily, weekly, and seasonal usage patterns to optimize electrical systems and reduce utility costs.', 
+    href: '/tools/diagnostics#load-analyzer',
+    image: 'https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/project-uploads/e24d0c9e-e4fc-4077-96b8-bf644fe969e3/generated_images/advanced-load-profile-analyzer-dashboard-239f6b0d-20251205065738.jpg'
+  },
+  { 
+    icon: Gauge, 
+    name: 'Power Quality Reporter', 
+    description: 'Comprehensive power quality data interpretation tool for analyzing voltage sags, swells, harmonics, transients, and flicker events. Identifies problem sources, quantifies financial impacts, and recommends mitigation solutions with IEEE 519 compliance verification.', 
+    href: '/tools/diagnostics#power-quality',
+    image: 'https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/project-uploads/e24d0c9e-e4fc-4077-96b8-bf644fe969e3/generated_images/comprehensive-power-quality-reporter-int-8fbdf929-20251205065738.jpg'
+  },
+  { 
+    icon: Thermometer, 
+    name: 'Thermal Imaging Tool', 
+    description: 'Thermal imaging data analysis platform for detecting hot spots, loose connections, overloaded circuits, and failing components. Imports data from FLIR and other IR cameras, generates prioritized repair lists, and creates professional thermal inspection reports with NFPA 70B standards.', 
+    href: '/tools/diagnostics#thermal',
+    image: 'https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/project-uploads/e24d0c9e-e4fc-4077-96b8-bf644fe969e3/generated_images/thermal-imaging-analysis-tool-displaying-7a3ea469-20251205065739.jpg'
+  },
 ];
 
 const aiFeatures = [
-  { icon: Code, name: 'AI Code Assistant', description: 'Intelligent code generation for PLC ladder logic, Arduino C++, ESP32 firmware, and industrial automation controllers. Describe your control logic in plain English and get production-ready, commented code with best practices and error handling included.', isPro: true, href: '/tools/ai-features#code-assistant' },
-  { icon: CircuitBoard, name: 'AI Circuit Designer', description: 'Revolutionary circuit design assistant that converts functional requirements into complete schematic suggestions. Input specifications like voltage, current, frequency requirements and receive optimized circuit topologies with component recommendations and design rationale.', isPro: true, href: '/tools/ai-features#circuit-designer' },
-  { icon: Wrench, name: 'AI Troubleshooting', description: 'Advanced diagnostic AI that analyzes photos of electrical problems, error codes, meter readings, and equipment failures. Provides step-by-step troubleshooting procedures, likely root causes ranked by probability, and safety precautions for field technicians.', isPro: true, href: '/tools/ai-features#troubleshooting' },
-  { icon: Headphones, name: 'Voice Input', description: 'Hands-free operation for field work with natural voice commands for calculations, code lookups, and tool access. Perfect for electricians wearing gloves or working in confined spaces. Supports complex queries like "Calculate voltage drop for 12 AWG copper wire, 150 feet, 20 amps".', isPro: false, href: '/tools/ai-features#voice-input' },
-  { icon: Globe, name: 'Multi-language Support', description: 'Full platform translation for Spanish, Mandarin Chinese, and Hindi-speaking electrical professionals. Includes technical terminology, NEC code translations, calculation results, and interface localization to serve the global electrical engineering community.', isPro: false, href: '/tools/ai-features#multi-language' },
+  { 
+    icon: Code, 
+    name: 'AI Code Assistant', 
+    description: 'Intelligent code generation for PLC ladder logic, Arduino C++, ESP32 firmware, and industrial automation controllers. Describe your control logic in plain English and get production-ready, commented code with best practices and error handling included.', 
+    isPro: true, 
+    href: '/tools/ai-features#code-assistant',
+    image: 'https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/project-uploads/e24d0c9e-e4fc-4077-96b8-bf644fe969e3/generated_images/ai-powered-code-generation-interface-for-32bc621c-20251205065738.jpg'
+  },
+  { 
+    icon: CircuitBoard, 
+    name: 'AI Circuit Designer', 
+    description: 'Revolutionary circuit design assistant that converts functional requirements into complete schematic suggestions. Input specifications like voltage, current, frequency requirements and receive optimized circuit topologies with component recommendations and design rationale.', 
+    isPro: true, 
+    href: '/tools/ai-features#circuit-designer',
+    image: 'https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/project-uploads/e24d0c9e-e4fc-4077-96b8-bf644fe969e3/generated_images/revolutionary-ai-circuit-designer-interf-d8fb943e-20251205065737.jpg'
+  },
+  { 
+    icon: Wrench, 
+    name: 'AI Troubleshooting', 
+    description: 'Advanced diagnostic AI that analyzes photos of electrical problems, error codes, meter readings, and equipment failures. Provides step-by-step troubleshooting procedures, likely root causes ranked by probability, and safety precautions for field technicians.', 
+    isPro: true, 
+    href: '/tools/ai-features#troubleshooting',
+    image: 'https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/project-uploads/e24d0c9e-e4fc-4077-96b8-bf644fe969e3/generated_images/advanced-ai-troubleshooting-system-analy-71a64d7a-20251205065737.jpg'
+  },
+  { 
+    icon: Headphones, 
+    name: 'Voice Input', 
+    description: 'Hands-free operation for field work with natural voice commands for calculations, code lookups, and tool access. Perfect for electricians wearing gloves or working in confined spaces. Supports complex queries like "Calculate voltage drop for 12 AWG copper wire, 150 feet, 20 amps".', 
+    isPro: false, 
+    href: '/tools/ai-features#voice-input',
+    image: 'https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/project-uploads/e24d0c9e-e4fc-4077-96b8-bf644fe969e3/generated_images/hands-free-voice-input-interface-for-ele-e6b10969-20251205065737.jpg'
+  },
+  { 
+    icon: Globe, 
+    name: 'Multi-language Support', 
+    description: 'Full platform translation for Spanish, Mandarin Chinese, and Hindi-speaking electrical professionals. Includes technical terminology, NEC code translations, calculation results, and interface localization to serve the global electrical engineering community.', 
+    isPro: false, 
+    href: '/tools/ai-features#multi-language',
+    image: 'https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/project-uploads/e24d0c9e-e4fc-4077-96b8-bf644fe969e3/generated_images/multi-language-electrical-engineering-pl-5b049b5f-20251205065738.jpg'
+  },
 ];
 
 const interactiveSimulations = [
-  { icon: Beaker, name: 'Virtual Lab Experiments', description: 'Complete virtual electrical laboratory with realistic circuit simulations, oscilloscope measurements, and component testing without physical equipment. Includes safety-critical experiments like transformer polarity testing, motor starting, and fault condition analysis that are too dangerous or expensive for physical labs.', href: '/tools/simulations#virtual-lab' },
-  { icon: Box, name: '3D Installation Viewer', description: 'Immersive 3D visualization tool for planning and reviewing electrical installations in commercial and industrial facilities. Walk through conduit routing, panel layouts, and equipment placements in virtual reality before installation. Export to BIM and coordinate with other trades to avoid conflicts.', href: '/tools/simulations#3d-viewer' },
-  { icon: PlayCircle, name: 'Animated Theory', description: 'Dynamic animated explanations of complex electrical concepts including transformer operation, motor starting, AC waveform generation, three-phase power, magnetic fields, and semiconductor behavior. Interactive controls let you adjust parameters and see real-time effects on system operation.', href: '/tools/simulations#animated-theory' },
-  { icon: Shield, name: 'Safety Training', description: 'OSHA and NFPA 70E compliant safety simulation scenarios including arc flash incidents, electrical shock prevention, proper PPE selection, lockout/tagout procedures, and emergency response. Practice hazard recognition in realistic virtual environments without risk to personnel.', href: '/tools/simulations#safety-training' },
-  { icon: Smartphone, name: 'AR Circuit Overlays', description: 'Augmented reality mobile app that overlays circuit diagrams, cable identification, voltage readings, and equipment specifications onto live camera feeds. Point your phone at a panel or circuit and see real-time data, connection diagrams, and maintenance history displayed in AR for rapid troubleshooting and documentation.', href: '/tools/simulations#ar-overlays' },
+  { 
+    icon: Beaker, 
+    name: 'Virtual Lab Experiments', 
+    description: 'Complete virtual electrical laboratory with realistic circuit simulations, oscilloscope measurements, and component testing without physical equipment. Includes safety-critical experiments like transformer polarity testing, motor starting, and fault condition analysis that are too dangerous or expensive for physical labs.', 
+    href: '/tools/simulations#virtual-lab',
+    image: 'https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/project-uploads/e24d0c9e-e4fc-4077-96b8-bf644fe969e3/generated_images/virtual-electrical-laboratory-with-reali-f62ca05b-20251205065740.jpg'
+  },
+  { 
+    icon: Box, 
+    name: '3D Installation Viewer', 
+    description: 'Immersive 3D visualization tool for planning and reviewing electrical installations in commercial and industrial facilities. Walk through conduit routing, panel layouts, and equipment placements in virtual reality before installation. Export to BIM and coordinate with other trades to avoid conflicts.', 
+    href: '/tools/simulations#3d-viewer',
+    image: 'https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/project-uploads/e24d0c9e-e4fc-4077-96b8-bf644fe969e3/generated_images/immersive-3d-electrical-installation-vie-cf889dd8-20251205065737.jpg'
+  },
+  { 
+    icon: PlayCircle, 
+    name: 'Animated Theory', 
+    description: 'Dynamic animated explanations of complex electrical concepts including transformer operation, motor starting, AC waveform generation, three-phase power, magnetic fields, and semiconductor behavior. Interactive controls let you adjust parameters and see real-time effects on system operation.', 
+    href: '/tools/simulations#animated-theory',
+    image: 'https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/project-uploads/e24d0c9e-e4fc-4077-96b8-bf644fe969e3/generated_images/dynamic-animated-electrical-theory-visua-059f2010-20251205065738.jpg'
+  },
+  { 
+    icon: Shield, 
+    name: 'Safety Training', 
+    description: 'OSHA and NFPA 70E compliant safety simulation scenarios including arc flash incidents, electrical shock prevention, proper PPE selection, lockout/tagout procedures, and emergency response. Practice hazard recognition in realistic virtual environments without risk to personnel.', 
+    href: '/tools/simulations#safety-training',
+    image: 'https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/project-uploads/e24d0c9e-e4fc-4077-96b8-bf644fe969e3/generated_images/osha-and-nfpa-70e-compliant-safety-train-fce7c26f-20251205065737.jpg'
+  },
+  { 
+    icon: Smartphone, 
+    name: 'AR Circuit Overlays', 
+    description: 'Augmented reality mobile app that overlays circuit diagrams, cable identification, voltage readings, and equipment specifications onto live camera feeds. Point your phone at a panel or circuit and see real-time data, connection diagrams, and maintenance history displayed in AR for rapid troubleshooting and documentation.', 
+    href: '/tools/simulations#ar-overlays',
+    image: 'https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/project-uploads/e24d0c9e-e4fc-4077-96b8-bf644fe969e3/generated_images/augmented-reality-mobile-app-interface-o-83d8ee85-20251205065740.jpg'
+  },
 ];
 
 export default function Home() {
@@ -1391,6 +1546,7 @@ export default function Home() {
             shortDescription: tool.description,
             ctaLabel: 'Access Tool',
             ctaLink: tool.href,
+            image: tool.image,
           }))}
         />
       )}
@@ -1406,6 +1562,7 @@ export default function Home() {
             shortDescription: tool.description,
             ctaLabel: 'Explore Tool',
             ctaLink: tool.href,
+            image: tool.image,
           }))}
         />
       )}
@@ -1421,6 +1578,7 @@ export default function Home() {
             shortDescription: tool.description,
             ctaLabel: 'Launch Tool',
             ctaLink: tool.href,
+            image: tool.image,
           }))}
         />
       )}
@@ -1437,6 +1595,7 @@ export default function Home() {
             shortDescription: feature.description,
             ctaLabel: 'Learn More',
             ctaLink: feature.href,
+            image: feature.image,
           }))}
         />
       )}
@@ -1452,6 +1611,7 @@ export default function Home() {
             shortDescription: sim.description,
             ctaLabel: 'Start Simulation',
             ctaLink: sim.href,
+            image: sim.image,
           }))}
         />
       )}
