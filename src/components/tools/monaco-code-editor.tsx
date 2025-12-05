@@ -248,6 +248,7 @@ export function MonacoCodeEditor({
         '&&', '||', '++', '--', '+', '-', '*', '/', '&', '|', '^', '%',
         '<<', '>>', '>>>', '+=', '-=', '*=', '/=', '&=', '|=', '^=',
       ],
+      symbols: /[=><!~?:&|+\-*\/\^%]+/,
       tokenizer: {
         root: [
           [/[a-z_$][\w$]*/, {
@@ -258,7 +259,6 @@ export function MonacoCodeEditor({
           }],
           { include: '@whitespace' },
           [/[{}()\[\]]/, '@brackets'],
-          [/[<>](?!@symbols)/, '@brackets'],
           [/@symbols/, {
             cases: {
               '@operators': 'operator',
