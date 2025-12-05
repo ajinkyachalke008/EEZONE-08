@@ -138,22 +138,22 @@ export function ComplianceChecker() {
   const getStatusIcon = (status: ComplianceCheck['status']) => {
     switch (status) {
       case 'pass':
-        return <CheckCircle2 className="h-5 w-5 text-green-600" />;
+        return <CheckCircle2 className="h-5 w-5 text-green-400" />;
       case 'fail':
-        return <XCircle className="h-5 w-5 text-red-600" />;
+        return <XCircle className="h-5 w-5 text-red-400" />;
       case 'warning':
-        return <AlertTriangle className="h-5 w-5 text-yellow-600" />;
+        return <AlertTriangle className="h-5 w-5 text-yellow-400" />;
     }
   };
 
   const getStatusColor = (status: ComplianceCheck['status']) => {
     switch (status) {
       case 'pass':
-        return 'bg-green-100 text-green-800 border-green-300';
+        return 'bg-green-500/20 text-green-300 border-green-500/30';
       case 'fail':
-        return 'bg-red-100 text-red-800 border-red-300';
+        return 'bg-red-500/20 text-red-300 border-red-500/30';
       case 'warning':
-        return 'bg-yellow-100 text-yellow-800 border-yellow-300';
+        return 'bg-yellow-500/20 text-yellow-300 border-yellow-500/30';
     }
   };
 
@@ -199,20 +199,20 @@ SUMMARY:
 
   return (
     <div className="space-y-6">
-      <Card>
+      <Card className="glass-surface border-white/10 backdrop-blur-glass">
         <CardHeader>
-          <CardTitle>Automatic Compliance Checker</CardTitle>
-          <CardDescription>
+          <CardTitle className="text-white">Automatic Compliance Checker</CardTitle>
+          <CardDescription className="text-[#B8A7E0]">
             Verify your electrical design meets NEC requirements
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           {/* Project Input Form */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-gray-50 rounded-lg">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 glass-surface border border-white/10 rounded-lg">
             <div>
-              <Label>Project Type</Label>
+              <Label className="text-white">Project Type</Label>
               <Select value={projectData.projectType} onValueChange={(value) => setProjectData({...projectData, projectType: value})}>
-                <SelectTrigger>
+                <SelectTrigger className="glass-surface border-white/20 text-white">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -224,9 +224,9 @@ SUMMARY:
             </div>
 
             <div>
-              <Label>Location</Label>
+              <Label className="text-white">Location</Label>
               <Select value={projectData.location} onValueChange={(value) => setProjectData({...projectData, location: value})}>
-                <SelectTrigger>
+                <SelectTrigger className="glass-surface border-white/20 text-white">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -242,27 +242,29 @@ SUMMARY:
             </div>
 
             <div>
-              <Label>Voltage (V)</Label>
+              <Label className="text-white">Voltage (V)</Label>
               <Input
                 type="number"
                 value={projectData.voltage}
                 onChange={(e) => setProjectData({...projectData, voltage: e.target.value})}
+                className="glass-surface border-white/20 text-white placeholder:text-[#B8A7E0]"
               />
             </div>
 
             <div>
-              <Label>Circuit Amperage (A)</Label>
+              <Label className="text-white">Circuit Amperage (A)</Label>
               <Input
                 type="number"
                 value={projectData.amperage}
                 onChange={(e) => setProjectData({...projectData, amperage: e.target.value})}
+                className="glass-surface border-white/20 text-white placeholder:text-[#B8A7E0]"
               />
             </div>
 
             <div>
-              <Label>Wire Size (AWG)</Label>
+              <Label className="text-white">Wire Size (AWG)</Label>
               <Select value={projectData.wireSize} onValueChange={(value) => setProjectData({...projectData, wireSize: value})}>
-                <SelectTrigger>
+                <SelectTrigger className="glass-surface border-white/20 text-white">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -275,9 +277,9 @@ SUMMARY:
             </div>
 
             <div>
-              <Label>Conduit Type</Label>
+              <Label className="text-white">Conduit Type</Label>
               <Select value={projectData.conduitType} onValueChange={(value) => setProjectData({...projectData, conduitType: value})}>
-                <SelectTrigger>
+                <SelectTrigger className="glass-surface border-white/20 text-white">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -290,7 +292,7 @@ SUMMARY:
             </div>
 
             <div className="md:col-span-2 space-y-3">
-              <Label>Protection & Safety Features</Label>
+              <Label className="text-white">Protection & Safety Features</Label>
               <div className="flex flex-wrap gap-4">
                 <label className="flex items-center gap-2 cursor-pointer">
                   <input
@@ -299,7 +301,7 @@ SUMMARY:
                     onChange={(e) => setProjectData({...projectData, hasGFCI: e.target.checked})}
                     className="w-4 h-4"
                   />
-                  <span className="text-sm">GFCI Protection</span>
+                  <span className="text-sm text-white">GFCI Protection</span>
                 </label>
                 <label className="flex items-center gap-2 cursor-pointer">
                   <input
@@ -308,7 +310,7 @@ SUMMARY:
                     onChange={(e) => setProjectData({...projectData, hasAFCI: e.target.checked})}
                     className="w-4 h-4"
                   />
-                  <span className="text-sm">AFCI Protection</span>
+                  <span className="text-sm text-white">AFCI Protection</span>
                 </label>
                 <label className="flex items-center gap-2 cursor-pointer">
                   <input
@@ -317,7 +319,7 @@ SUMMARY:
                     onChange={(e) => setProjectData({...projectData, hasTROutlets: e.target.checked})}
                     className="w-4 h-4"
                   />
-                  <span className="text-sm">Tamper-Resistant Outlets</span>
+                  <span className="text-sm text-white">Tamper-Resistant Outlets</span>
                 </label>
               </div>
             </div>
@@ -326,7 +328,7 @@ SUMMARY:
           <Button 
             onClick={runComplianceCheck}
             disabled={isChecking}
-            className="w-full bg-[#00C2D1] text-[#071428] hover:bg-[#00C2D1]/90"
+            className="w-full gradient-aqua text-white hover:shadow-glowCyan"
             size="lg"
           >
             <Scale className="h-5 w-5 mr-2" />
@@ -337,20 +339,20 @@ SUMMARY:
           {checks.length > 0 && (
             <div className="space-y-4">
               {/* Summary */}
-              <Card className="bg-gradient-to-br from-[#071428] to-[#0a1d38] text-white">
+              <Card className="bg-gradient-to-br from-[#2B0B4B]/80 to-[#1A0033]/90 border-[#9C4AFF]/30">
                 <CardContent className="pt-6">
                   <div className="grid grid-cols-3 gap-4 text-center">
                     <div>
                       <div className="text-3xl font-bold text-green-400">{passCount}</div>
-                      <div className="text-sm opacity-80">Passed</div>
+                      <div className="text-sm text-white/80">Passed</div>
                     </div>
                     <div>
                       <div className="text-3xl font-bold text-red-400">{failCount}</div>
-                      <div className="text-sm opacity-80">Failed</div>
+                      <div className="text-sm text-white/80">Failed</div>
                     </div>
                     <div>
                       <div className="text-3xl font-bold text-yellow-400">{warningCount}</div>
-                      <div className="text-sm opacity-80">Warnings</div>
+                      <div className="text-sm text-white/80">Warnings</div>
                     </div>
                   </div>
                 </CardContent>
@@ -359,7 +361,7 @@ SUMMARY:
               {/* Checks List */}
               <div className="space-y-3">
                 {checks.map((check) => (
-                  <Card key={check.id} className={`border-2 ${getStatusColor(check.status)}`}>
+                  <Card key={check.id} className={`border-2 glass-surface backdrop-blur-glass ${getStatusColor(check.status)}`}>
                     <CardContent className="pt-6">
                       <div className="flex items-start gap-4">
                         <div className="flex-shrink-0 mt-1">
@@ -367,11 +369,11 @@ SUMMARY:
                         </div>
                         <div className="flex-1">
                           <div className="flex items-start justify-between gap-4 mb-2">
-                            <h4 className="font-semibold text-lg">{check.requirement}</h4>
-                            <Badge variant="outline">NEC {check.article}</Badge>
+                            <h4 className="font-semibold text-lg text-white">{check.requirement}</h4>
+                            <Badge variant="outline" className="border-white/30 text-white">NEC {check.article}</Badge>
                           </div>
-                          <Badge variant="secondary" className="mb-2">{check.category}</Badge>
-                          <p className="text-sm mt-2">{check.details}</p>
+                          <Badge variant="secondary" className="mb-2 bg-white/10 text-white border-white/20">{check.category}</Badge>
+                          <p className="text-sm mt-2 text-white/90">{check.details}</p>
                         </div>
                       </div>
                     </CardContent>
@@ -379,7 +381,7 @@ SUMMARY:
                 ))}
               </div>
 
-              <Button onClick={exportReport} variant="outline" className="w-full">
+              <Button onClick={exportReport} variant="outline" className="w-full border-white/20 text-white hover:bg-white/10">
                 <Download className="h-4 w-4 mr-2" />
                 Export Compliance Report
               </Button>
