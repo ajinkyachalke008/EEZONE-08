@@ -1382,147 +1382,47 @@ export default function Home() {
 
       {/* Project Management Suite */}
       {!searchQuery && (
-        <section className="py-16 px-4 relative overflow-hidden">
-          <div className="absolute top-10 left-1/2 w-[400px] h-[400px] bg-[#9C4AFF] opacity-15 blur-[150px] rounded-full" />
-          
-          <div className="container mx-auto max-w-6xl relative z-10 border-[3px] border-[#9C4AFF]/20 rounded-3xl p-8 glass-surface hover:border-[#9C4AFF]/40 transition-all">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "100px" }}
-              className="text-center mb-12"
-            >
-              <h2 className="text-4xl font-bold text-white mb-4 glow-text-violet" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>
-                📋 Project Management Suite
-              </h2>
-              <p className="text-lg text-[#B8A7E0] max-w-3xl mx-auto">
-                Professional tools for planning, estimation, and project execution
-              </p>
-            </motion.div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {projectManagementTools.map((tool, index) => {
-                const Icon = tool.icon;
-                return (
-                  <motion.div
-                    key={tool.name}
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.4, delay: index * 0.1 }}
-                    viewport={{ once: true, margin: "50px" }}
-                    whileHover={{ scale: 1.05, y: -5 }}
-                  >
-                    <Link href={tool.href}>
-                      <Card className="glass-surface border-white/10 hover:border-[#9C4AFF]/50 hover:shadow-glowViolet transition-all cursor-pointer h-full">
-                        <CardHeader>
-                          <Icon className="h-10 w-10 text-[#9C4AFF] mb-2" />
-                          <CardTitle className="text-lg text-white">{tool.name}</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                          <p className="text-[#B8A7E0] text-sm">{tool.description}</p>
-                        </CardContent>
-                      </Card>
-                    </Link>
-                  </motion.div>
-                );
-              })}
-            </div>
-          </div>
-        </section>
+        <SectionFeatures
+          sectionTitle="📋 Project Management Suite"
+          sectionSubtitle="Professional tools for planning, estimation, and project execution"
+          features={projectManagementTools.map(tool => ({
+            icon: tool.icon,
+            featureTitle: tool.name,
+            shortDescription: tool.description,
+            ctaLabel: 'Access Tool',
+            ctaLink: tool.href,
+          }))}
+        />
       )}
 
       {/* Code Compliance Tools */}
       {!searchQuery && (
-        <section className="py-16 px-4 relative overflow-hidden">
-          <div className="absolute top-10 right-10 w-[400px] h-[400px] bg-[#00E5FF] opacity-20 blur-[150px] rounded-full animate-pulse-slow" />
-          <div className="absolute bottom-10 left-10 w-[400px] h-[400px] bg-[#9C4AFF] opacity-20 blur-[150px] rounded-full animate-pulse-slow" style={{ animationDelay: '1s' }} />
-          
-          <div className="container mx-auto max-w-6xl relative z-10 border-[3px] border-[#00E5FF]/20 rounded-3xl p-8 glass-surface hover:border-[#00E5FF]/40 transition-all">
-            <div className="text-center mb-12">
-              <h2 className="text-4xl font-bold text-white mb-4 glow-text-cyan" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>
-                ⚖️ Code Compliance Tools
-              </h2>
-              <p className="text-lg text-[#B8A7E0] max-w-3xl mx-auto">
-                Ensure your designs meet electrical codes and standards
-              </p>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {codeComplianceTools.map((tool, index) => {
-                const Icon = tool.icon;
-                return (
-                  <motion.div
-                    key={tool.name}
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.4, delay: index * 0.1 }}
-                    viewport={{ once: true }}
-                    whileHover={{ scale: 1.05, y: -5 }}
-                  >
-                    <Link href={tool.href}>
-                      <Card className="glass-surface border-white/10 hover:border-[#00E5FF]/50 hover:shadow-glowCyan transition-all cursor-pointer h-full">
-                        <CardHeader>
-                          <Icon className="h-10 w-10 text-[#00E5FF] mb-2" />
-                          <CardTitle className="text-lg text-white">{tool.name}</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                          <p className="text-[#B8A7E0] text-sm">{tool.description}</p>
-                        </CardContent>
-                      </Card>
-                    </Link>
-                  </motion.div>
-                );
-              })}
-            </div>
-          </div>
-        </section>
+        <SectionFeatures
+          sectionTitle="⚖️ Code Compliance Tools"
+          sectionSubtitle="Ensure your designs meet electrical codes and standards"
+          features={codeComplianceTools.map(tool => ({
+            icon: tool.icon,
+            featureTitle: tool.name,
+            shortDescription: tool.description,
+            ctaLabel: 'Explore Tool',
+            ctaLink: tool.href,
+          }))}
+        />
       )}
 
       {/* Diagnostic & Testing Tools */}
       {!searchQuery && (
-        <section className="py-16 px-4 relative overflow-hidden">
-          <div className="absolute top-10 left-1/2 w-[400px] h-[400px] bg-[#FF6B00] opacity-15 blur-[150px] rounded-full" />
-          <div className="absolute bottom-10 right-10 w-[400px] h-[400px] bg-[#FF6B00] opacity-20 blur-[150px] rounded-full" />
-          
-          <div className="container mx-auto max-w-6xl relative z-10 border-[3px] border-[#FF6B00]/20 rounded-3xl p-8 glass-surface hover:border-[#FF6B00]/40 transition-all">
-            <div className="text-center mb-12">
-              <h2 className="text-4xl font-bold text-white mb-4 glow-text-orange" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>
-                🔧 Diagnostic & Testing Tools
-              </h2>
-              <p className="text-lg text-[#B8A7E0] max-w-3xl mx-auto">
-                Equipment maintenance, analysis, and reporting solutions
-              </p>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {diagnosticTools.map((tool, index) => {
-                const Icon = tool.icon;
-                return (
-                  <motion.div
-                    key={tool.name}
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.4, delay: index * 0.1 }}
-                    viewport={{ once: true }}
-                    whileHover={{ scale: 1.05, y: -5 }}
-                  >
-                    <Link href={tool.href}>
-                      <Card className="glass-surface border-white/10 hover:border-[#FF6B00]/50 hover:shadow-glowOrange transition-all cursor-pointer h-full">
-                        <CardHeader>
-                          <Icon className="h-10 w-10 text-[#FF6B00] mb-2" />
-                          <CardTitle className="text-lg text-white">{tool.name}</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                          <p className="text-[#B8A7E0] text-sm">{tool.description}</p>
-                        </CardContent>
-                      </Card>
-                    </Link>
-                  </motion.div>
-                );
-              })}
-            </div>
-          </div>
-        </section>
+        <SectionFeatures
+          sectionTitle="🔧 Diagnostic & Testing Tools"
+          sectionSubtitle="Equipment maintenance, analysis, and reporting solutions"
+          features={diagnosticTools.map(tool => ({
+            icon: tool.icon,
+            featureTitle: tool.name,
+            shortDescription: tool.description,
+            ctaLabel: 'Launch Tool',
+            ctaLink: tool.href,
+          }))}
+        />
       )}
 
       {/* Advanced AI Features - Using Neon Feature Cards */}
@@ -1543,49 +1443,17 @@ export default function Home() {
 
       {/* Interactive Simulations */}
       {!searchQuery && (
-        <section className="py-16 px-4 relative overflow-hidden">
-          <div className="absolute top-10 left-10 w-[400px] h-[400px] bg-[#00E5FF] opacity-20 blur-[150px] rounded-full" />
-          <div className="absolute bottom-10 right-10 w-[400px] h-[400px] bg-[#FF6B00] opacity-20 blur-[150px] rounded-full" />
-          
-          <div className="container mx-auto max-w-6xl relative z-10 border-[3px] border-[#00E5FF]/20 rounded-3xl p-8 glass-surface hover:border-[#00E5FF]/40 transition-all">
-            <div className="text-center mb-12">
-              <h2 className="text-4xl font-bold text-white mb-4 glow-text-cyan" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>
-                🎮 Interactive Simulations
-              </h2>
-              <p className="text-lg text-[#B8A7E0] max-w-3xl mx-auto">
-                Immersive and educational experiences for hands-on learning
-              </p>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {interactiveSimulations.map((sim, index) => {
-                const Icon = sim.icon;
-                return (
-                  <motion.div
-                    key={sim.name}
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.4, delay: index * 0.1 }}
-                    viewport={{ once: true }}
-                    whileHover={{ scale: 1.05, y: -5 }}
-                  >
-                    <Link href={sim.href}>
-                      <Card className="glass-surface border-2 border-white/10 hover:border-[#00E5FF]/50 hover:shadow-glowCyan transition-all cursor-pointer h-full">
-                        <CardHeader>
-                          <Icon className="h-10 w-10 text-[#00E5FF] mb-2" />
-                          <CardTitle className="text-lg text-white">{sim.name}</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                          <p className="text-[#B8A7E0] text-sm">{sim.description}</p>
-                        </CardContent>
-                      </Card>
-                    </Link>
-                  </motion.div>
-                );
-              })}
-            </div>
-          </div>
-        </section>
+        <SectionFeatures
+          sectionTitle="🎮 Interactive Simulations"
+          sectionSubtitle="Immersive and educational experiences for hands-on learning"
+          features={interactiveSimulations.map(sim => ({
+            icon: sim.icon,
+            featureTitle: sim.name,
+            shortDescription: sim.description,
+            ctaLabel: 'Start Simulation',
+            ctaLink: sim.href,
+          }))}
+        />
       )}
 
       {/* Quick-Access Utilities */}
