@@ -128,9 +128,9 @@ export function CodeChangeTracker() {
 
   const getChangeTypeBadge = (type: CodeChange['changeType']) => {
     const styles = {
-      new: 'bg-green-100 text-green-800 border-green-300',
-      revised: 'bg-blue-100 text-blue-800 border-blue-300',
-      deleted: 'bg-red-100 text-red-800 border-red-300'
+      new: 'bg-green-500/20 text-green-300 border-green-500/30',
+      revised: 'bg-blue-500/20 text-blue-300 border-blue-500/30',
+      deleted: 'bg-red-500/20 text-red-300 border-red-500/30'
     };
     return (
       <Badge className={styles[type]}>
@@ -141,9 +141,9 @@ export function CodeChangeTracker() {
 
   const getImpactBadge = (impact: CodeChange['impact']) => {
     const styles = {
-      high: 'bg-red-100 text-red-800',
-      medium: 'bg-yellow-100 text-yellow-800',
-      low: 'bg-gray-100 text-gray-800'
+      high: 'bg-red-500/20 text-red-300 border-red-500/30',
+      medium: 'bg-yellow-500/20 text-yellow-300 border-yellow-500/30',
+      low: 'bg-gray-500/20 text-gray-300 border-gray-500/30'
     };
     return (
       <Badge className={styles[impact]}>
@@ -154,20 +154,20 @@ export function CodeChangeTracker() {
 
   return (
     <div className="space-y-6">
-      <Card>
+      <Card className="glass-surface border-white/10 backdrop-blur-glass">
         <CardHeader>
-          <CardTitle>Code Change Tracker</CardTitle>
-          <CardDescription>
+          <CardTitle className="text-white">Code Change Tracker</CardTitle>
+          <CardDescription className="text-[#B8A7E0]">
             Track updates and changes in NEC editions
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           {/* Filters */}
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-4 p-4 bg-gray-50 rounded-lg">
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-4 p-4 glass-surface border border-white/10 rounded-lg">
             <div>
-              <label className="text-sm font-medium mb-2 block">From Version</label>
+              <label className="text-sm font-medium mb-2 block text-white">From Version</label>
               <Select value={compareFrom} onValueChange={setCompareFrom}>
-                <SelectTrigger>
+                <SelectTrigger className="glass-surface border-white/20 text-white">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -179,9 +179,9 @@ export function CodeChangeTracker() {
             </div>
 
             <div>
-              <label className="text-sm font-medium mb-2 block">To Version</label>
+              <label className="text-sm font-medium mb-2 block text-white">To Version</label>
               <Select value={compareTo} onValueChange={setCompareTo}>
-                <SelectTrigger>
+                <SelectTrigger className="glass-surface border-white/20 text-white">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -193,9 +193,9 @@ export function CodeChangeTracker() {
             </div>
 
             <div>
-              <label className="text-sm font-medium mb-2 block">Category</label>
+              <label className="text-sm font-medium mb-2 block text-white">Category</label>
               <Select value={filterCategory} onValueChange={setFilterCategory}>
-                <SelectTrigger>
+                <SelectTrigger className="glass-surface border-white/20 text-white">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -209,9 +209,9 @@ export function CodeChangeTracker() {
             </div>
 
             <div>
-              <label className="text-sm font-medium mb-2 block">Impact Level</label>
+              <label className="text-sm font-medium mb-2 block text-white">Impact Level</label>
               <Select value={filterImpact} onValueChange={setFilterImpact}>
-                <SelectTrigger>
+                <SelectTrigger className="glass-surface border-white/20 text-white">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -224,9 +224,9 @@ export function CodeChangeTracker() {
             </div>
 
             <div>
-              <label className="text-sm font-medium mb-2 block">Change Type</label>
+              <label className="text-sm font-medium mb-2 block text-white">Change Type</label>
               <Select value={filterType} onValueChange={setFilterType}>
-                <SelectTrigger>
+                <SelectTrigger className="glass-surface border-white/20 text-white">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -240,30 +240,30 @@ export function CodeChangeTracker() {
           </div>
 
           {/* Summary Stats */}
-          <Card className="bg-gradient-to-br from-[#071428] to-[#0a1d38] text-white">
+          <Card className="bg-gradient-to-br from-[#2B0B4B]/80 to-[#1A0033]/90 border-[#9C4AFF]/30">
             <CardContent className="pt-6">
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
                 <div>
-                  <div className="text-3xl font-bold text-[#00C2D1]">{filteredChanges.length}</div>
-                  <div className="text-sm opacity-80">Total Changes</div>
+                  <div className="text-3xl font-bold text-[#00E5FF]">{filteredChanges.length}</div>
+                  <div className="text-sm text-white/80">Total Changes</div>
                 </div>
                 <div>
                   <div className="text-3xl font-bold text-green-400">
                     {filteredChanges.filter(c => c.changeType === 'new').length}
                   </div>
-                  <div className="text-sm opacity-80">New Requirements</div>
+                  <div className="text-sm text-white/80">New Requirements</div>
                 </div>
                 <div>
                   <div className="text-3xl font-bold text-blue-400">
                     {filteredChanges.filter(c => c.changeType === 'revised').length}
                   </div>
-                  <div className="text-sm opacity-80">Revisions</div>
+                  <div className="text-sm text-white/80">Revisions</div>
                 </div>
                 <div>
                   <div className="text-3xl font-bold text-red-400">
                     {filteredChanges.filter(c => c.impact === 'high').length}
                   </div>
-                  <div className="text-sm opacity-80">High Impact</div>
+                  <div className="text-sm text-white/80">High Impact</div>
                 </div>
               </div>
             </CardContent>
@@ -272,62 +272,62 @@ export function CodeChangeTracker() {
           {/* Changes List */}
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <h3 className="font-semibold text-lg">
+              <h3 className="font-semibold text-lg text-white">
                 Code Changes: NEC {compareFrom} → {compareTo}
               </h3>
-              <Badge variant="outline">{filteredChanges.length} changes</Badge>
+              <Badge variant="outline" className="border-white/30 text-white">{filteredChanges.length} changes</Badge>
             </div>
 
             <div className="space-y-3">
               {filteredChanges.map((change) => (
-                <Card key={change.id} className="hover:shadow-md transition-shadow">
+                <Card key={change.id} className="glass-surface border-white/10 backdrop-blur-glass hover:border-[#9C4AFF]/50 transition-all">
                   <CardHeader className="pb-3">
                     <div className="flex items-start justify-between gap-4">
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-2 flex-wrap">
-                          <Badge className="bg-[#071428] text-white">
+                          <Badge className="bg-[#9C4AFF]/20 text-[#9C4AFF] border-[#9C4AFF]/30">
                             Article {change.article}
                           </Badge>
                           {getChangeTypeBadge(change.changeType)}
                           {getImpactBadge(change.impact)}
-                          <Badge variant="outline">{change.category}</Badge>
+                          <Badge variant="outline" className="border-white/30 text-white">{change.category}</Badge>
                         </div>
-                        <CardTitle className="text-lg text-[#071428]">
+                        <CardTitle className="text-lg text-white">
                           {change.title}
                         </CardTitle>
                       </div>
-                      <FileText className="h-5 w-5 text-[#00C2D1] flex-shrink-0" />
+                      <FileText className="h-5 w-5 text-[#00E5FF] flex-shrink-0" />
                     </div>
                   </CardHeader>
                   <CardContent className="space-y-3">
                     <div className="flex items-center gap-2 text-sm">
-                      <AlertCircle className="h-4 w-4 text-gray-500 flex-shrink-0" />
-                      <p className="text-gray-700">{change.summary}</p>
+                      <AlertCircle className="h-4 w-4 text-[#B8A7E0] flex-shrink-0" />
+                      <p className="text-white/90">{change.summary}</p>
                     </div>
 
                     {change.changeType === 'revised' && (
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-                        <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
-                          <div className="text-xs font-semibold text-red-800 mb-1">
+                        <div className="p-3 bg-red-500/10 border border-red-500/30 rounded-lg">
+                          <div className="text-xs font-semibold text-red-400 mb-1">
                             NEC {compareFrom}
                           </div>
-                          <p className="text-sm text-gray-700">{change.oldVersion}</p>
+                          <p className="text-sm text-white/90">{change.oldVersion}</p>
                         </div>
-                        <div className="p-3 bg-green-50 border border-green-200 rounded-lg">
-                          <div className="text-xs font-semibold text-green-800 mb-1">
+                        <div className="p-3 bg-green-500/10 border border-green-500/30 rounded-lg">
+                          <div className="text-xs font-semibold text-green-400 mb-1">
                             NEC {compareTo}
                           </div>
-                          <p className="text-sm text-gray-700">{change.newVersion}</p>
+                          <p className="text-sm text-white/90">{change.newVersion}</p>
                         </div>
                       </div>
                     )}
 
                     {change.changeType === 'new' && (
-                      <div className="p-3 bg-green-50 border border-green-200 rounded-lg mt-4">
-                        <div className="text-xs font-semibold text-green-800 mb-1">
+                      <div className="p-3 bg-green-500/10 border border-green-500/30 rounded-lg mt-4">
+                        <div className="text-xs font-semibold text-green-400 mb-1">
                           NEW in NEC {compareTo}
                         </div>
-                        <p className="text-sm text-gray-700">{change.newVersion}</p>
+                        <p className="text-sm text-white/90">{change.newVersion}</p>
                       </div>
                     )}
                   </CardContent>
@@ -337,13 +337,13 @@ export function CodeChangeTracker() {
           </div>
 
           {filteredChanges.length === 0 && (
-            <Card className="border-2 border-dashed">
+            <Card className="border-2 border-dashed border-white/20 glass-surface backdrop-blur-glass">
               <CardContent className="py-12 text-center">
-                <FileText className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                <h3 className="font-semibold text-lg text-gray-900 mb-2">
+                <FileText className="h-12 w-12 text-[#B8A7E0] mx-auto mb-4 opacity-50" />
+                <h3 className="font-semibold text-lg text-white mb-2">
                   No changes found
                 </h3>
-                <p className="text-gray-600">
+                <p className="text-[#B8A7E0]">
                   Try adjusting your filters to see more results
                 </p>
               </CardContent>
