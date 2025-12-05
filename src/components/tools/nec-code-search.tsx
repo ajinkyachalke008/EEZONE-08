@@ -162,10 +162,10 @@ export function NECCodeSearch() {
 
   return (
     <div className="space-y-6">
-      <Card>
+      <Card className="glass-surface border-white/10 backdrop-blur-glass">
         <CardHeader>
-          <CardTitle>NEC Code Search</CardTitle>
-          <CardDescription>
+          <CardTitle className="text-white">NEC Code Search</CardTitle>
+          <CardDescription className="text-[#B8A7E0]">
             AI-powered search through the National Electrical Code (NEC {necVersion})
           </CardDescription>
         </CardHeader>
@@ -174,7 +174,7 @@ export function NECCodeSearch() {
           <div className="space-y-4">
             <div className="flex gap-3">
               <Select value={necVersion} onValueChange={setNecVersion}>
-                <SelectTrigger className="w-32">
+                <SelectTrigger className="w-32 glass-surface border-white/20 text-white">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -185,20 +185,20 @@ export function NECCodeSearch() {
               </Select>
 
               <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#B8A7E0] h-5 w-5" />
                 <Input
                   placeholder="Search by article, keyword, or requirement (e.g., 'GFCI bathroom', '210.8', 'wire ampacity')"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   onKeyPress={handleKeyPress}
-                  className="pl-10"
+                  className="pl-10 glass-surface border-white/20 text-white placeholder:text-[#B8A7E0]"
                 />
               </div>
 
               <Button 
                 onClick={performSearch}
                 disabled={isSearching || !searchQuery.trim()}
-                className="bg-[#00C2D1] text-[#071428] hover:bg-[#00C2D1]/90"
+                className="gradient-aqua text-white hover:shadow-glowCyan"
               >
                 {isSearching ? 'Searching...' : 'Search'}
               </Button>
@@ -206,13 +206,13 @@ export function NECCodeSearch() {
 
             {/* Popular Searches */}
             <div className="space-y-2">
-              <Label className="text-sm text-gray-600">Popular searches:</Label>
+              <Label className="text-sm text-[#B8A7E0]">Popular searches:</Label>
               <div className="flex flex-wrap gap-2">
                 {popularSearches.map((search, idx) => (
                   <Badge
                     key={idx}
                     variant="outline"
-                    className="cursor-pointer hover:bg-gray-100"
+                    className="cursor-pointer border-white/20 text-white hover:bg-white/10"
                     onClick={() => {
                       setSearchQuery(search);
                       setTimeout(() => performSearch(), 100);
@@ -229,38 +229,38 @@ export function NECCodeSearch() {
           {searchResults.length > 0 && (
             <div className="space-y-4">
               <div className="flex items-center justify-between">
-                <h3 className="font-semibold text-lg">
+                <h3 className="font-semibold text-lg text-white">
                   Search Results ({searchResults.length})
                 </h3>
-                <Badge variant="outline">NEC {necVersion}</Badge>
+                <Badge variant="outline" className="border-white/30 text-white">NEC {necVersion}</Badge>
               </div>
 
               <div className="space-y-3">
                 {searchResults.map((result, idx) => (
-                  <Card key={idx} className="hover:shadow-md transition-shadow">
+                  <Card key={idx} className="glass-surface border-white/10 backdrop-blur-glass hover:border-[#00E5FF]/50 transition-all">
                     <CardHeader className="pb-3">
                       <div className="flex items-start justify-between gap-4">
                         <div className="flex-1">
                           <div className="flex items-center gap-2 mb-2">
-                            <Badge className="bg-[#071428] text-white">
+                            <Badge className="bg-[#00E5FF]/20 text-[#00E5FF] border-[#00E5FF]/30">
                               Article {result.article}
                             </Badge>
-                            <Badge variant="outline">
+                            <Badge variant="outline" className="border-white/30 text-white">
                               Section {result.section}
                             </Badge>
-                            <Badge variant="secondary" className="text-xs">
+                            <Badge variant="secondary" className="text-xs bg-white/10 text-white border-white/20">
                               {result.relevance}% match
                             </Badge>
                           </div>
-                          <CardTitle className="text-lg text-[#071428]">
+                          <CardTitle className="text-lg text-white">
                             {result.title}
                           </CardTitle>
                         </div>
-                        <BookOpen className="h-5 w-5 text-[#00C2D1] flex-shrink-0" />
+                        <BookOpen className="h-5 w-5 text-[#00E5FF] flex-shrink-0" />
                       </div>
                     </CardHeader>
                     <CardContent>
-                      <p className="text-sm text-gray-700 leading-relaxed">
+                      <p className="text-sm text-white/90 leading-relaxed">
                         {result.content}
                       </p>
                     </CardContent>
@@ -272,13 +272,13 @@ export function NECCodeSearch() {
 
           {/* No Results */}
           {searchQuery && searchResults.length === 0 && !isSearching && (
-            <Card className="border-2 border-dashed">
+            <Card className="border-2 border-dashed border-white/20 glass-surface backdrop-blur-glass">
               <CardContent className="py-12 text-center">
-                <AlertCircle className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                <h3 className="font-semibold text-lg text-gray-900 mb-2">
+                <AlertCircle className="h-12 w-12 text-[#B8A7E0] mx-auto mb-4 opacity-50" />
+                <h3 className="font-semibold text-lg text-white mb-2">
                   No results found
                 </h3>
-                <p className="text-gray-600 mb-4">
+                <p className="text-[#B8A7E0] mb-4">
                   Try different keywords or browse popular searches above
                 </p>
               </CardContent>
@@ -287,13 +287,13 @@ export function NECCodeSearch() {
 
           {/* Initial State */}
           {!searchQuery && searchResults.length === 0 && (
-            <Card className="bg-gradient-to-br from-[#071428] to-[#0a1d38] text-white">
+            <Card className="bg-gradient-to-br from-[#2B0B4B]/80 to-[#1A0033]/90 border-[#00E5FF]/30">
               <CardContent className="py-12">
-                <Search className="h-16 w-16 text-[#00C2D1] mx-auto mb-4" />
-                <h3 className="text-xl font-semibold text-center mb-3">
+                <Search className="h-16 w-16 text-[#00E5FF] mx-auto mb-4" />
+                <h3 className="text-xl font-semibold text-center mb-3 text-white">
                   Search the NEC {necVersion} Code
                 </h3>
-                <p className="text-gray-300 text-center max-w-2xl mx-auto">
+                <p className="text-[#B8A7E0] text-center max-w-2xl mx-auto">
                   Enter article numbers (e.g., "210.8"), keywords (e.g., "GFCI"), or 
                   describe what you're looking for (e.g., "bathroom outlet requirements")
                 </p>
