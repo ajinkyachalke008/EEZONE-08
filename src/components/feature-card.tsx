@@ -14,6 +14,7 @@ export interface FeatureCardProps {
   shortDescription: string;
   ctaLabel?: string;
   ctaLink?: string;
+  image?: string;
 }
 
 export interface SectionFeaturesProps {
@@ -41,6 +42,7 @@ export const FeatureCard: React.FC<FeatureCardProps> = ({
   shortDescription,
   ctaLabel = 'Learn More',
   ctaLink,
+  image,
 }) => {
   // Render the icon based on its type
   const renderIcon = () => {
@@ -69,7 +71,7 @@ export const FeatureCard: React.FC<FeatureCardProps> = ({
         className={`
           relative h-full overflow-hidden
           bg-gradient-to-br from-[#2B0B4B]/80 via-[#1A0033]/90 to-[#0A0014]/80
-          border-[2px] border-transparent
+          border-[3px] border-transparent
           rounded-[1.5rem]
           transition-all duration-300
           hover:shadow-[0_0_40px_rgba(156,74,255,0.6),0_0_60px_rgba(255,107,0,0.4),0_0_80px_rgba(0,229,255,0.3)]
@@ -83,26 +85,45 @@ export const FeatureCard: React.FC<FeatureCardProps> = ({
               rgba(0, 229, 255, 0.15) 100%
             )
           `,
-          borderImage: 'linear-gradient(135deg, #FF00C8, #9C4AFF, #00E5FF) 1',
         }}
       >
-        {/* Animated border gradient */}
+        {/* Animated flowing border gradient */}
         <div
-          className="absolute inset-0 rounded-[1.5rem] opacity-0 hover:opacity-100 transition-opacity duration-300"
+          className="absolute inset-0 rounded-[1.5rem] pointer-events-none"
           style={{
-            background: 'linear-gradient(135deg, #FF00C8, #9C4AFF, #00E5FF)',
-            padding: '2px',
+            background: 'linear-gradient(135deg, #FF00C8 0%, #9C4AFF 25%, #00E5FF 50%, #FF6B00 75%, #FF00C8 100%)',
+            padding: '3px',
             WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
             WebkitMaskComposite: 'xor',
             maskComposite: 'exclude',
+            animation: 'rotate-gradient 4s linear infinite',
+            backgroundSize: '200% 200%',
           }}
         />
+
+        {/* Feature Image */}
+        {image && (
+          <div className="relative h-48 w-full overflow-hidden rounded-t-[1.35rem]">
+            <img
+              src={image}
+              alt={featureTitle}
+              className="w-full h-full object-cover transition-transform duration-300 hover:scale-110"
+              loading="lazy"
+            />
+            <div 
+              className="absolute inset-0"
+              style={{
+                background: 'linear-gradient(180deg, rgba(10, 0, 20, 0) 0%, rgba(43, 11, 75, 0.4) 100%)'
+              }}
+            />
+          </div>
+        )}
 
         {/* Tag Badge */}
         {tag && (
           <Badge
             className={`
-              absolute top-4 right-4 z-10
+              absolute ${image ? 'top-52' : 'top-4'} right-4 z-10
               px-3 py-1
               text-white font-semibold text-xs uppercase tracking-wider
               border-0 rounded-full
@@ -122,7 +143,7 @@ export const FeatureCard: React.FC<FeatureCardProps> = ({
           </Badge>
         )}
 
-        <CardHeader className="pb-3 pt-8 px-6">
+        <CardHeader className={`pb-3 ${image ? 'pt-6' : 'pt-8'} px-6`}>
           <div className="flex items-center gap-4 mb-4">
             <div
               className="p-3 rounded-xl bg-gradient-to-br from-[#9C4AFF]/30 to-[#FF6B00]/20 
@@ -231,3 +252,22 @@ export const SectionFeatures: React.FC<SectionFeaturesProps> = ({
     </section>
   );
 };
+
+// Add keyframes for rotating gradient animation
+if (typeof document !== 'undefined') {
+  const style = document.createElement('style');
+  style.textContent = `
+    @keyframes rotate-gradient {
+      0% {
+        background-position: 0% 50%;
+      }
+      50% {
+        background-position: 100% 50%;
+      }
+      100% {
+        background-position: 0% 50%;
+      }
+    }
+  `;
+  document.head.appendChild(style);
+}
