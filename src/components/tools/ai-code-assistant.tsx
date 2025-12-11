@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Code, Copy, Download, Sparkles } from 'lucide-react';
+import { Code, Copy, Download, Sparkles, Loader2, CheckCircle2 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 
 interface CodeExample {
@@ -144,16 +144,37 @@ export function AICodeAssistant() {
   const [prompt, setPrompt] = useState('');
   const [generatedCode, setGeneratedCode] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
+  const [error, setError] = useState('');
+  const [copied, setCopied] = useState(false);
 
-  const generateCode = () => {
-    setIsGenerating(true);
+  const generateCode = async () => {
+    if (!prompt.trim()) return;
     
-    setTimeout(() => {
-      const templates = codeTemplates[platform] || codeTemplates.arduino;
-      const template = templates[0];
-      setGeneratedCode(template.code);
+    setIsGenerating(true);
+    setError('');
+    setGeneratedCode('');
+    
+    try {
+      const response = await fetch('/api/ai-code', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ platform, prompt }),
+      });
+      
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to generate code');
+      }
+      
+      let code = data.code || '';
+      code = code.replace(/^```[\w]*\n?/, '').replace(/\n?```$/, '');
+      setGeneratedCode(code);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to generate code');
+    } finally {
       setIsGenerating(false);
-    }, 2000);
+    }
   };
 
   const loadExample = (example: CodeExample) => {
@@ -161,8 +182,10 @@ export function AICodeAssistant() {
     setPrompt(example.description);
   };
 
-  const copyCode = () => {
-    navigator.clipboard.writeText(generatedCode);
+  const copyCode = async () => {
+    await navigator.clipboard.writeText(generatedCode);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   };
 
   const downloadCode = () => {
@@ -178,121 +201,123 @@ export function AICodeAssistant() {
     a.href = url;
     a.download = `${platform}_code.${extensions[platform] || 'txt'}`;
     a.click();
+    URL.revokeObjectURL(url);
   };
 
   return (
     <div className="space-y-6">
-      <Card>
+      <Card className="glass-surface border-white/10">
         <CardHeader>
-          <CardTitle>AI Code Assistant</CardTitle>
-          <CardDescription>
-            Generate PLC, Arduino, and ESP32 code with AI assistance
+          <CardTitle className="text-white flex items-center gap-2">
+            <Code className="h-6 w-6 text-[#FF00C8]" />
+            AI Code Assistant
+          </CardTitle>
+          <CardDescription className="text-[#B8A7E0]">
+            Generate PLC, Arduino, and ESP32 code with AI assistance powered by OpenRouter
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
-          {/* Platform Selection */}
           <div>
-            <label className="text-sm font-medium mb-2 block">Target Platform</label>
+            <label className="text-sm font-medium mb-2 block text-white">Target Platform</label>
             <Select value={platform} onValueChange={setPlatform}>
-              <SelectTrigger>
+              <SelectTrigger className="glass-surface border-white/20 text-white">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="plc">PLC (Ladder Logic)</SelectItem>
+                <SelectItem value="plc">PLC (Ladder Logic / Structured Text)</SelectItem>
                 <SelectItem value="arduino">Arduino</SelectItem>
                 <SelectItem value="esp32">ESP32</SelectItem>
               </SelectContent>
             </Select>
           </div>
 
-          {/* Code Examples */}
           <div className="space-y-3">
-            <label className="text-sm font-medium">Quick Examples</label>
+            <label className="text-sm font-medium text-white">Quick Examples</label>
             <div className="grid grid-cols-1 gap-2">
               {(codeTemplates[platform] || []).map((example, idx) => (
                 <Button
                   key={idx}
                   variant="outline"
                   onClick={() => loadExample(example)}
-                  className="justify-start text-left h-auto py-3"
+                  className="justify-start text-left h-auto py-3 glass-surface border-white/20 text-white hover:bg-white/10"
                 >
                   <div className="flex-1">
                     <div className="font-medium">{example.description}</div>
-                    <div className="text-xs text-gray-500 mt-1">{example.language}</div>
+                    <div className="text-xs text-[#B8A7E0] mt-1">{example.language}</div>
                   </div>
-                  <Code className="h-4 w-4 text-[#00C2D1]" />
+                  <Code className="h-4 w-4 text-[#FF00C8]" />
                 </Button>
               ))}
             </div>
           </div>
 
-          {/* Prompt Input */}
           <div className="space-y-2">
-            <label className="text-sm font-medium">Describe what you want to code</label>
+            <label className="text-sm font-medium text-white">Describe what you want to code</label>
             <Textarea
               value={prompt}
               onChange={(e) => setPrompt(e.target.value)}
               placeholder="Example: Create a temperature monitoring system with LCD display and alarm when temperature exceeds 50°C"
               rows={4}
+              className="glass-surface border-white/20 text-white placeholder:text-white/50"
             />
           </div>
 
+          {error && (
+            <div className="p-4 bg-red-500/20 border border-red-500/50 rounded-lg text-red-200">
+              {error}
+            </div>
+          )}
+
           <Button 
             onClick={generateCode}
-            disabled={isGenerating || !prompt}
-            className="w-full bg-[#00C2D1] text-[#071428] hover:bg-[#00C2D1]/90"
+            disabled={isGenerating || !prompt.trim()}
+            className="w-full bg-gradient-to-r from-[#9C4AFF] to-[#FF00C8] text-white hover:opacity-90"
             size="lg"
           >
-            <Sparkles className="h-5 w-5 mr-2" />
-            {isGenerating ? 'Generating Code...' : 'Generate Code'}
+            {isGenerating ? (
+              <>
+                <Loader2 className="h-5 w-5 mr-2 animate-spin" />
+                Generating Code...
+              </>
+            ) : (
+              <>
+                <Sparkles className="h-5 w-5 mr-2" />
+                Generate Code
+              </>
+            )}
           </Button>
 
-          {/* Generated Code */}
           {generatedCode && (
             <div className="space-y-4">
               <div className="flex items-center justify-between">
-                <h3 className="font-semibold text-lg flex items-center gap-2">
-                  <Code className="h-5 w-5 text-[#00C2D1]" />
+                <h3 className="font-semibold text-lg flex items-center gap-2 text-white">
+                  <Code className="h-5 w-5 text-[#FF00C8]" />
                   Generated Code
                 </h3>
                 <div className="flex gap-2">
-                  <Button onClick={copyCode} variant="outline" size="sm">
-                    <Copy className="h-4 w-4 mr-2" />
-                    Copy
+                  <Button onClick={copyCode} variant="outline" size="sm" className="glass-surface border-white/20 text-white hover:bg-white/10">
+                    {copied ? <CheckCircle2 className="h-4 w-4 mr-2 text-green-400" /> : <Copy className="h-4 w-4 mr-2" />}
+                    {copied ? 'Copied!' : 'Copy'}
                   </Button>
-                  <Button onClick={downloadCode} variant="outline" size="sm">
+                  <Button onClick={downloadCode} variant="outline" size="sm" className="glass-surface border-white/20 text-white hover:bg-white/10">
                     <Download className="h-4 w-4 mr-2" />
                     Download
                   </Button>
                 </div>
               </div>
 
-              <Card className="bg-[#071428] text-white">
+              <Card className="bg-[#0a0a1a] border-[#9C4AFF]/30">
                 <CardContent className="pt-6">
-                  <pre className="text-sm overflow-x-auto">
+                  <pre className="text-sm overflow-x-auto text-green-400 font-mono">
                     <code>{generatedCode}</code>
                   </pre>
-                </CardContent>
-              </Card>
-
-              {/* Code Explanation */}
-              <Card className="bg-blue-50 border-blue-200">
-                <CardContent className="pt-6">
-                  <h4 className="font-semibold text-blue-900 mb-2">Code Explanation</h4>
-                  <ul className="text-sm text-gray-700 space-y-1">
-                    <li>• Uses appropriate pin definitions and configurations</li>
-                    <li>• Includes proper initialization in setup()</li>
-                    <li>• Implements main logic in loop() function</li>
-                    <li>• Adds debouncing and safety checks</li>
-                    <li>• Ready to upload to your {platform.toUpperCase()} device</li>
-                  </ul>
                 </CardContent>
               </Card>
             </div>
           )}
 
-          {!generatedCode && (
-            <div className="text-center py-12 text-gray-500">
+          {!generatedCode && !isGenerating && (
+            <div className="text-center py-12 text-[#B8A7E0]">
               <Code className="h-16 w-16 mx-auto mb-4 opacity-30" />
               <p>Describe your project or select an example to generate code</p>
             </div>
