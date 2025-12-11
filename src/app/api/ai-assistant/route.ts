@@ -120,18 +120,15 @@ export async function POST(req: NextRequest) {
     try {
       data = await callOpenRouter(message, context);
     } catch (err: any) {
-      console.error('OpenRouter error:', err);
       error = err;
       
       // If OpenRouter fails with rate limit or token issues, try OpenAI
       if (err.status === 429 || err.status === 402 || err.data?.error?.code === 'insufficient_quota') {
-        console.log('OpenRouter limit reached, falling back to OpenAI...');
         try {
           data = await callOpenAI(message, context);
           provider = 'openai';
           error = null;
         } catch (openaiErr: any) {
-          console.error('OpenAI error:', openaiErr);
           error = openaiErr;
         }
       }
@@ -158,7 +155,6 @@ export async function POST(req: NextRequest) {
     });
 
   } catch (error) {
-    console.error('AI Assistant error:', error);
     return NextResponse.json(
       { error: 'Internal server error', details: error instanceof Error ? error.message : 'Unknown error' },
       { status: 500 }
