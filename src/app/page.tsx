@@ -449,8 +449,8 @@ export default function Home() {
           }));
         setBookmarkedTopics(topicBookmarks);
       }
-    } catch (error) {
-      console.error('Error fetching learning data:', error);
+    } catch {
+      // Silent fail - learning data is optional
     } finally {
       setLoadingLearning(false);
     }
