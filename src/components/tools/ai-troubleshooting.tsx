@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Wrench, Camera, AlertTriangle, CheckCircle2, Lightbulb } from 'lucide-react';
+import { Wrench, Camera, AlertTriangle, CheckCircle2, Lightbulb, Loader2, Clock, Package } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 
 interface DiagnosisStep {
@@ -13,6 +13,7 @@ interface DiagnosisStep {
   title: string;
   action: string;
   expectedResult: string;
+  tools?: string;
 }
 
 interface Diagnosis {
@@ -22,6 +23,9 @@ interface Diagnosis {
   diagnosticSteps: DiagnosisStep[];
   solution: string;
   preventiveMeasures: string[];
+  safetyWarnings?: string[];
+  estimatedTime?: string;
+  partsNeeded?: string[];
 }
 
 export function AITroubleshooting() {
@@ -29,55 +33,34 @@ export function AITroubleshooting() {
   const [symptoms, setSymptoms] = useState('');
   const [diagnosis, setDiagnosis] = useState<Diagnosis | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [error, setError] = useState('');
 
-  const analyzeProblem = () => {
+  const analyzeProblem = async () => {
+    if (!symptoms.trim()) return;
+    
     setIsAnalyzing(true);
-
-    setTimeout(() => {
-      // Simulate AI diagnosis
-      const sampleDiagnosis: Diagnosis = {
-        problem: 'Circuit Breaker Tripping',
-        likelyCause: 'Overload condition or short circuit',
-        severity: 'high',
-        diagnosticSteps: [
-          {
-            step: 1,
-            title: 'Check Load',
-            action: 'Measure total connected load on the circuit',
-            expectedResult: 'Load should be below breaker rating (e.g., 16A for 20A breaker)'
-          },
-          {
-            step: 2,
-            title: 'Inspect Connections',
-            action: 'Visually inspect all wire connections for loose or damaged wiring',
-            expectedResult: 'All connections tight, no signs of overheating or damage'
-          },
-          {
-            step: 3,
-            title: 'Test for Short Circuit',
-            action: 'Disconnect loads and test insulation resistance with megger',
-            expectedResult: 'Insulation resistance > 1 MΩ between conductors and ground'
-          },
-          {
-            step: 4,
-            title: 'Verify Breaker',
-            action: 'Test breaker operation with known good load',
-            expectedResult: 'Breaker holds with proper load, trips at rated current'
-          }
-        ],
-        solution: 'Based on symptoms, most likely cause is circuit overload. Redistribute loads across multiple circuits or upgrade circuit capacity if needed. If breaker still trips with reduced load, replace the breaker as it may be defective.',
-        preventiveMeasures: [
-          'Perform regular load assessments',
-          'Avoid daisy-chaining power strips',
-          'Label circuit breakers clearly',
-          'Schedule preventive maintenance checks',
-          'Monitor for signs of overheating'
-        ]
-      };
-
-      setDiagnosis(sampleDiagnosis);
+    setError('');
+    setDiagnosis(null);
+    
+    try {
+      const response = await fetch('/api/ai-troubleshoot', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ problemType, symptoms }),
+      });
+      
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to diagnose problem');
+      }
+      
+      setDiagnosis(data.diagnosis);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to analyze problem');
+    } finally {
       setIsAnalyzing(false);
-    }, 2500);
+    }
   };
 
   const commonIssues = [
@@ -90,29 +73,31 @@ export function AITroubleshooting() {
 
   const getSeverityColor = (severity: Diagnosis['severity']) => {
     const colors = {
-      low: 'bg-green-100 text-green-800',
-      medium: 'bg-yellow-100 text-yellow-800',
-      high: 'bg-orange-100 text-orange-800',
-      critical: 'bg-red-100 text-red-800'
+      low: 'bg-green-500/20 text-green-400 border-green-500/50',
+      medium: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/50',
+      high: 'bg-orange-500/20 text-orange-400 border-orange-500/50',
+      critical: 'bg-red-500/20 text-red-400 border-red-500/50'
     };
     return colors[severity];
   };
 
   return (
     <div className="space-y-6">
-      <Card>
+      <Card className="glass-surface border-white/10">
         <CardHeader>
-          <CardTitle>AI Troubleshooting Assistant</CardTitle>
-          <CardDescription>
-            Upload error photos or describe symptoms for diagnostic help
+          <CardTitle className="text-white flex items-center gap-2">
+            <Wrench className="h-6 w-6 text-[#FF00C8]" />
+            AI Troubleshooting Assistant
+          </CardTitle>
+          <CardDescription className="text-[#B8A7E0]">
+            Describe symptoms for AI-powered diagnostic help
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
-          {/* Problem Type */}
           <div>
-            <label className="text-sm font-medium mb-2 block">Problem Category</label>
+            <label className="text-sm font-medium mb-2 block text-white">Problem Category</label>
             <Select value={problemType} onValueChange={setProblemType}>
-              <SelectTrigger>
+              <SelectTrigger className="glass-surface border-white/20 text-white">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -125,71 +110,70 @@ export function AITroubleshooting() {
             </Select>
           </div>
 
-          {/* Common Issues Quick Select */}
           <div className="space-y-3">
-            <label className="text-sm font-medium">Common Issues</label>
+            <label className="text-sm font-medium text-white">Common Issues</label>
             <div className="grid grid-cols-1 gap-2">
               {commonIssues.map((issue) => (
                 <Button
                   key={issue.value}
                   variant="outline"
                   onClick={() => setSymptoms(issue.label)}
-                  className="justify-start text-left"
+                  className="justify-start text-left glass-surface border-white/20 text-white hover:bg-white/10"
                 >
-                  <AlertTriangle className="h-4 w-4 mr-2 text-orange-600" />
+                  <AlertTriangle className="h-4 w-4 mr-2 text-orange-400" />
                   {issue.label}
                 </Button>
               ))}
             </div>
           </div>
 
-          {/* Photo Upload Simulation */}
           <div className="space-y-2">
-            <label className="text-sm font-medium">Upload Photo (Optional)</label>
-            <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
-              <Camera className="h-12 w-12 mx-auto text-gray-400 mb-3" />
-              <p className="text-sm text-gray-600 mb-2">Take a photo of the problem area</p>
-              <Button variant="outline" size="sm">
-                <Camera className="h-4 w-4 mr-2" />
-                Upload Photo
-              </Button>
-            </div>
-          </div>
-
-          {/* Symptoms Description */}
-          <div className="space-y-2">
-            <label className="text-sm font-medium">Describe the symptoms</label>
+            <label className="text-sm font-medium text-white">Describe the symptoms</label>
             <Textarea
               value={symptoms}
               onChange={(e) => setSymptoms(e.target.value)}
               placeholder="Describe what's happening: When did it start? What were you doing? Any unusual sounds, smells, or visual indicators?"
               rows={5}
+              className="glass-surface border-white/20 text-white placeholder:text-white/50"
             />
           </div>
 
+          {error && (
+            <div className="p-4 bg-red-500/20 border border-red-500/50 rounded-lg text-red-200">
+              {error}
+            </div>
+          )}
+
           <Button 
             onClick={analyzeProblem}
-            disabled={isAnalyzing || !symptoms}
-            className="w-full bg-[#00C2D1] text-[#071428] hover:bg-[#00C2D1]/90"
+            disabled={isAnalyzing || !symptoms.trim()}
+            className="w-full bg-gradient-to-r from-[#9C4AFF] to-[#FF00C8] text-white hover:opacity-90"
             size="lg"
           >
-            <Wrench className="h-5 w-5 mr-2" />
-            {isAnalyzing ? 'Analyzing Problem...' : 'Diagnose Problem'}
+            {isAnalyzing ? (
+              <>
+                <Loader2 className="h-5 w-5 mr-2 animate-spin" />
+                Analyzing Problem...
+              </>
+            ) : (
+              <>
+                <Wrench className="h-5 w-5 mr-2" />
+                Diagnose Problem
+              </>
+            )}
           </Button>
 
-          {/* Diagnosis Results */}
           {diagnosis && (
             <div className="space-y-4">
-              {/* Problem Summary */}
-              <Card className="border-2 border-[#00C2D1]">
+              <Card className="border-2 border-[#9C4AFF]/50 glass-surface">
                 <CardHeader>
                   <div className="flex items-start justify-between gap-4">
                     <div>
-                      <CardTitle className="flex items-center gap-2">
-                        <AlertTriangle className="h-5 w-5 text-[#00C2D1]" />
+                      <CardTitle className="flex items-center gap-2 text-white">
+                        <AlertTriangle className="h-5 w-5 text-[#FF00C8]" />
                         {diagnosis.problem}
                       </CardTitle>
-                      <CardDescription className="mt-2">
+                      <CardDescription className="mt-2 text-[#B8A7E0]">
                         <strong>Likely Cause:</strong> {diagnosis.likelyCause}
                       </CardDescription>
                     </div>
@@ -197,32 +181,53 @@ export function AITroubleshooting() {
                       {diagnosis.severity.toUpperCase()}
                     </Badge>
                   </div>
+                  {(diagnosis.estimatedTime || diagnosis.partsNeeded) && (
+                    <div className="flex gap-4 mt-4 text-sm text-[#B8A7E0]">
+                      {diagnosis.estimatedTime && (
+                        <div className="flex items-center gap-1">
+                          <Clock className="h-4 w-4" />
+                          {diagnosis.estimatedTime}
+                        </div>
+                      )}
+                      {diagnosis.partsNeeded && diagnosis.partsNeeded.length > 0 && (
+                        <div className="flex items-center gap-1">
+                          <Package className="h-4 w-4" />
+                          {diagnosis.partsNeeded.length} parts may be needed
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </CardHeader>
               </Card>
 
-              {/* Diagnostic Steps */}
-              <Card>
+              <Card className="glass-surface border-white/10">
                 <CardHeader>
-                  <CardTitle className="text-lg">Step-by-Step Diagnostic</CardTitle>
+                  <CardTitle className="text-lg text-white">Step-by-Step Diagnostic</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   {diagnosis.diagnosticSteps.map((step) => (
-                    <div key={step.step} className="p-4 border-2 border-gray-200 rounded-lg">
+                    <div key={step.step} className="p-4 border-2 border-white/10 rounded-lg bg-white/5">
                       <div className="flex items-start gap-4">
-                        <div className="flex-shrink-0 w-8 h-8 rounded-full bg-[#071428] text-white flex items-center justify-center font-bold">
+                        <div className="flex-shrink-0 w-8 h-8 rounded-full bg-gradient-to-r from-[#9C4AFF] to-[#FF00C8] text-white flex items-center justify-center font-bold">
                           {step.step}
                         </div>
                         <div className="flex-1">
-                          <h4 className="font-semibold text-[#071428] mb-2">{step.title}</h4>
+                          <h4 className="font-semibold text-white mb-2">{step.title}</h4>
                           <div className="space-y-2 text-sm">
                             <div>
-                              <strong className="text-gray-700">Action:</strong>
-                              <p className="text-gray-600 mt-1">{step.action}</p>
+                              <strong className="text-[#9C4AFF]">Action:</strong>
+                              <p className="text-[#B8A7E0] mt-1">{step.action}</p>
                             </div>
                             <div>
-                              <strong className="text-gray-700">Expected Result:</strong>
-                              <p className="text-gray-600 mt-1">{step.expectedResult}</p>
+                              <strong className="text-[#9C4AFF]">Expected Result:</strong>
+                              <p className="text-[#B8A7E0] mt-1">{step.expectedResult}</p>
                             </div>
+                            {step.tools && (
+                              <div>
+                                <strong className="text-[#9C4AFF]">Tools:</strong>
+                                <p className="text-[#B8A7E0] mt-1">{step.tools}</p>
+                              </div>
+                            )}
                           </div>
                         </div>
                       </div>
@@ -231,28 +236,26 @@ export function AITroubleshooting() {
                 </CardContent>
               </Card>
 
-              {/* Solution */}
-              <Card className="bg-green-50 border-green-200">
+              <Card className="bg-green-500/10 border-green-500/30">
                 <CardContent className="pt-6">
-                  <h4 className="font-semibold text-green-900 mb-2 flex items-center gap-2">
+                  <h4 className="font-semibold text-green-400 mb-2 flex items-center gap-2">
                     <CheckCircle2 className="h-5 w-5" />
                     Recommended Solution
                   </h4>
-                  <p className="text-sm text-gray-700">{diagnosis.solution}</p>
+                  <p className="text-sm text-[#B8A7E0]">{diagnosis.solution}</p>
                 </CardContent>
               </Card>
 
-              {/* Preventive Measures */}
-              <Card className="bg-blue-50 border-blue-200">
+              <Card className="bg-[#9C4AFF]/10 border-[#9C4AFF]/30">
                 <CardContent className="pt-6">
-                  <h4 className="font-semibold text-blue-900 mb-3 flex items-center gap-2">
+                  <h4 className="font-semibold text-[#9C4AFF] mb-3 flex items-center gap-2">
                     <Lightbulb className="h-5 w-5" />
                     Preventive Measures
                   </h4>
-                  <ul className="space-y-2 text-sm text-gray-700">
+                  <ul className="space-y-2 text-sm text-[#B8A7E0]">
                     {diagnosis.preventiveMeasures.map((measure, idx) => (
                       <li key={idx} className="flex items-start gap-2">
-                        <CheckCircle2 className="h-4 w-4 text-blue-600 flex-shrink-0 mt-0.5" />
+                        <CheckCircle2 className="h-4 w-4 text-[#9C4AFF] flex-shrink-0 mt-0.5" />
                         <span>{measure}</span>
                       </li>
                     ))}
@@ -260,17 +263,24 @@ export function AITroubleshooting() {
                 </CardContent>
               </Card>
 
-              {/* Safety Warning */}
-              <Card className="bg-red-50 border-red-200">
+              <Card className="bg-red-500/10 border-red-500/30">
                 <CardContent className="pt-6">
                   <div className="flex items-start gap-3">
-                    <AlertTriangle className="h-5 w-5 text-red-600 flex-shrink-0 mt-0.5" />
+                    <AlertTriangle className="h-5 w-5 text-red-400 flex-shrink-0 mt-0.5" />
                     <div>
-                      <h4 className="font-semibold text-red-900 mb-1">Safety Warning</h4>
-                      <p className="text-sm text-gray-700">
-                        Always turn off power at the breaker before working on electrical systems. 
-                        If you're not comfortable performing these diagnostics, contact a licensed electrician.
-                      </p>
+                      <h4 className="font-semibold text-red-400 mb-1">Safety Warning</h4>
+                      {diagnosis.safetyWarnings && diagnosis.safetyWarnings.length > 0 ? (
+                        <ul className="text-sm text-[#B8A7E0] space-y-1">
+                          {diagnosis.safetyWarnings.map((warning, idx) => (
+                            <li key={idx}>• {warning}</li>
+                          ))}
+                        </ul>
+                      ) : (
+                        <p className="text-sm text-[#B8A7E0]">
+                          Always turn off power at the breaker before working on electrical systems. 
+                          If you&apos;re not comfortable performing these diagnostics, contact a licensed electrician.
+                        </p>
+                      )}
                     </div>
                   </div>
                 </CardContent>
@@ -278,10 +288,10 @@ export function AITroubleshooting() {
             </div>
           )}
 
-          {!diagnosis && (
-            <div className="text-center py-12 text-gray-500">
+          {!diagnosis && !isAnalyzing && (
+            <div className="text-center py-12 text-[#B8A7E0]">
               <Wrench className="h-16 w-16 mx-auto mb-4 opacity-30" />
-              <p>Describe your problem or upload a photo to get diagnostic help</p>
+              <p>Describe your problem to get diagnostic help</p>
             </div>
           )}
         </CardContent>
