@@ -19,6 +19,7 @@ import {
   Mic,
   Video,
   Star,
+  Eye,
 } from 'lucide-react';
 
 interface InterviewQuestion {
