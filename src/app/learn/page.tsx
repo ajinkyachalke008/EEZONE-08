@@ -79,8 +79,8 @@ export default function LearnPage() {
         const progressData = await progressRes.json();
         setProgress(progressData);
       }
-    } catch (error) {
-      console.error('Error fetching data:', error);
+    } catch {
+      // Silent fail - learning data will show empty state
     } finally {
       setLoading(false);
     }
