@@ -84,9 +84,8 @@ export function AICircuitAssistant({
       } else {
         toast.error('AI service error');
       }
-    } catch (error) {
+    } catch {
       toast.error('Network error');
-      console.error(error);
     } finally {
       setLoading(false);
     }
@@ -120,9 +119,8 @@ export function AICircuitAssistant({
       } else {
         toast.error('AI service error');
       }
-    } catch (error) {
+    } catch {
       toast.error('Network error');
-      console.error(error);
     } finally {
       setLoading(false);
     }
@@ -162,9 +160,8 @@ export function AICircuitAssistant({
       } else {
         toast.error('AI service error');
       }
-    } catch (error) {
+    } catch {
       toast.error('Network error');
-      console.error(error);
     } finally {
       setLoading(false);
     }
@@ -198,9 +195,8 @@ export function AICircuitAssistant({
       } else {
         toast.error('AI service error');
       }
-    } catch (error) {
+    } catch {
       toast.error('Network error');
-      console.error(error);
     } finally {
       setLoading(false);
     }

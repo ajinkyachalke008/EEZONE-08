@@ -70,8 +70,11 @@ export function MultiLanguageSupport() {
   };
 
   const playAudio = (text: string) => {
-    // Simulate text-to-speech
-    console.log('Playing audio for:', text);
+    // Text-to-speech - silent for now (would use browser TTS API)
+    if ('speechSynthesis' in window) {
+      const utterance = new SpeechSynthesisUtterance(text);
+      window.speechSynthesis.speak(utterance);
+    }
   };
 
   const getTranslation = (phrase: Translation) => {
