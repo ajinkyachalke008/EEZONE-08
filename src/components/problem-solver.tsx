@@ -38,9 +38,8 @@ export function ProblemSolver() {
         streamRef.current = stream;
         setIsCameraActive(true);
       }
-    } catch (err) {
+    } catch {
       setError('Unable to access camera. Please check permissions.');
-      console.error('Camera error:', err);
     }
   };
 
@@ -143,7 +142,6 @@ export function ProblemSolver() {
       });
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to solve problem');
-      console.error('Solve error:', err);
     } finally {
       setIsLoading(false);
     }

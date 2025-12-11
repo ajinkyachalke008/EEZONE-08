@@ -58,15 +58,13 @@ export const InstrumentScanner = () => {
         
         // Wait for video metadata to load and then play
         videoRef.current.onloadedmetadata = () => {
-          videoRef.current?.play().catch((err) => {
-            console.error('Video play error:', err);
+          videoRef.current?.play().catch(() => {
             setError('Failed to start video stream. Please try again.');
             stopCamera();
           });
         };
       }
-    } catch (err) {
-      console.error('Camera error:', err);
+    } catch {
       setError('Unable to access camera. Please check permissions and try again.');
       setIsCameraMode(false);
       setIsScanning(false);
@@ -145,7 +143,6 @@ export const InstrumentScanner = () => {
       setInstrumentInfo(data.instrumentInfo);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to analyze instrument. Please try again.');
-      console.error('Analysis error:', err);
     } finally {
       setIsAnalyzing(false);
     }
