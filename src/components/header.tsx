@@ -30,8 +30,8 @@ export function Header({ onSearch, searchQuery, onSearchChange }: HeaderProps) {
         const data = await response.json();
         setUserStats(data);
       }
-    } catch (error) {
-      console.error('Failed to fetch user stats:', error);
+    } catch {
+      // Silent fail - user stats are optional
     }
   };
 
