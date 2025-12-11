@@ -156,8 +156,8 @@ export default function TutorialsPage() {
       setVideos(prev => prev.map(v => 
         v.id === video.id ? { ...v, views: v.views + 1 } : v
       ));
-    } catch (error) {
-      console.error('Failed to track video view:', error);
+    } catch {
+      // Silent fail - view tracking is optional
     }
   };
 
@@ -177,9 +177,8 @@ export default function TutorialsPage() {
       ));
       
       toast.success(`Downloading ${resource.title}`);
-    } catch (error) {
+    } catch {
       toast.error('Failed to download resource');
-      console.error('Download error:', error);
     }
   };
 

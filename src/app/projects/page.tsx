@@ -61,8 +61,8 @@ export default function ProjectsPage() {
       const response = await fetch(`/api/projects?${params.toString()}`);
       const data = await response.json();
       setProjects(data);
-    } catch (error) {
-      console.error('Failed to fetch projects:', error);
+    } catch {
+      // Silent fail - projects will show empty state
     } finally {
       setLoading(false);
     }
