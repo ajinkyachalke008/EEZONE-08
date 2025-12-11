@@ -46,8 +46,7 @@ export function RatingSystem({ projectId, currentRating = 0, onRate, userId }: R
       if (onRate) {
         onRate(selectedRating);
       }
-    } catch (error) {
-      console.error('Error submitting rating:', error);
+    } catch {
       toast.error('Failed to submit rating. Please try again.');
     } finally {
       setIsSubmitting(false);
