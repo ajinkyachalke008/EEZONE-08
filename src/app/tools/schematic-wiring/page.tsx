@@ -14,7 +14,8 @@ import {
   Grid3x3, Pencil, Square, Circle, Move, Type, Trash2, Copy,
   Home, Lightbulb, Zap, Settings, CircuitBoard, Search, Undo2, Redo2,
   RotateCw, Lock, Unlock, Layers, FileJson, Printer, MousePointer,
-  Plus, Minus, Calculator, AlertTriangle, CheckCircle, FileSpreadsheet
+  Plus, Minus, Calculator, AlertTriangle, CheckCircle, FileSpreadsheet,
+  Cable, Link2, Magnet, Eye, EyeOff, Palette, Tag, Network, Route
 } from 'lucide-react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -28,6 +29,8 @@ import {
   DialogFooter,
 } from '@/components/ui/dialog';
 import { Textarea } from '@/components/ui/textarea';
+import { useCanvasWiring, WiringElement, WireConnection } from '@/hooks/useCanvasWiring';
+import { WIRE_COLORS, calculateWireSize } from '@/lib/wiring-system';
 
 interface SchematicElement {
   id: string;
@@ -60,6 +63,16 @@ interface HistoryState {
   elements: SchematicElement[];
 }
 
+interface FloorPlanRoom {
+  id: string;
+  name: string;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  color: string;
+}
+
 const symbolLibrary = [
   { type: 'resistor', label: 'Resistor', icon: '⏤◇⏤', category: 'passive' },
   { type: 'capacitor', label: 'Capacitor', icon: '⏤∥⏤', category: 'passive' },
@@ -84,40 +97,51 @@ const symbolLibrary = [
 ];
 
 const wiringComponents = [
-  { type: 'breaker-1p', label: 'Single Pole Breaker', icon: '▢', category: 'protection', amperage: 15 },
-  { type: 'breaker-2p', label: 'Double Pole Breaker', icon: '▢▢', category: 'protection', amperage: 30 },
-  { type: 'gfci-breaker', label: 'GFCI Breaker', icon: 'G▢', category: 'protection', amperage: 20 },
-  { type: 'afci-breaker', label: 'AFCI Breaker', icon: 'A▢', category: 'protection', amperage: 15 },
-  { type: 'main-panel', label: 'Main Panel', icon: '⊞', category: 'distribution' },
-  { type: 'sub-panel', label: 'Sub Panel', icon: '⊟', category: 'distribution' },
-  { type: 'receptacle', label: 'Duplex Receptacle', icon: '⊙⊙', category: 'device' },
-  { type: 'receptacle-gfci', label: 'GFCI Receptacle', icon: 'G⊙', category: 'device' },
-  { type: 'receptacle-20a', label: '20A Receptacle', icon: '⊙₂₀', category: 'device' },
-  { type: 'receptacle-240v', label: '240V Receptacle', icon: '⊙₂₄₀', category: 'device' },
-  { type: 'light-fixture', label: 'Ceiling Light', icon: '◉', category: 'lighting' },
-  { type: 'recessed-light', label: 'Recessed Light', icon: '○', category: 'lighting' },
-  { type: 'track-light', label: 'Track Light', icon: '═◉◉◉', category: 'lighting' },
-  { type: 'pendant-light', label: 'Pendant Light', icon: '↓◉', category: 'lighting' },
-  { type: 'switch-sp', label: 'Single Pole Switch', icon: 'S₁', category: 'control' },
-  { type: 'switch-3way', label: '3-Way Switch', icon: 'S₃', category: 'control' },
-  { type: 'switch-4way', label: '4-Way Switch', icon: 'S₄', category: 'control' },
-  { type: 'dimmer', label: 'Dimmer Switch', icon: 'D↕', category: 'control' },
-  { type: 'fan-switch', label: 'Fan Speed Control', icon: 'F↕', category: 'control' },
-  { type: 'ceiling-fan', label: 'Ceiling Fan', icon: '⚙◉', category: 'device' },
-  { type: 'exhaust-fan', label: 'Exhaust Fan', icon: '↺', category: 'device' },
-  { type: 'smoke-detector', label: 'Smoke Detector', icon: '⊛', category: 'safety' },
-  { type: 'co-detector', label: 'CO Detector', icon: 'CO', category: 'safety' },
-  { type: 'doorbell', label: 'Doorbell', icon: '🔔', category: 'device' },
-  { type: 'thermostat', label: 'Thermostat', icon: '🌡', category: 'hvac' },
+  { type: 'breaker-1p', label: 'Single Pole Breaker', icon: '▢', category: 'protection', amperage: 15, width: 40, height: 60 },
+  { type: 'breaker-2p', label: 'Double Pole Breaker', icon: '▢▢', category: 'protection', amperage: 30, width: 40, height: 80 },
+  { type: 'gfci-breaker', label: 'GFCI Breaker', icon: 'G▢', category: 'protection', amperage: 20, width: 40, height: 60 },
+  { type: 'afci-breaker', label: 'AFCI Breaker', icon: 'A▢', category: 'protection', amperage: 15, width: 40, height: 60 },
+  { type: 'main-panel', label: 'Main Panel', icon: '⊞', category: 'distribution', width: 100, height: 150 },
+  { type: 'sub-panel', label: 'Sub Panel', icon: '⊟', category: 'distribution', width: 80, height: 120 },
+  { type: 'receptacle', label: 'Duplex Receptacle', icon: '⊙⊙', category: 'device', width: 30, height: 40 },
+  { type: 'receptacle-gfci', label: 'GFCI Receptacle', icon: 'G⊙', category: 'device', width: 30, height: 50 },
+  { type: 'receptacle-20a', label: '20A Receptacle', icon: '⊙₂₀', category: 'device', width: 30, height: 40 },
+  { type: 'receptacle-240v', label: '240V Receptacle', icon: '⊙₂₄₀', category: 'device', width: 40, height: 50 },
+  { type: 'light-fixture', label: 'Ceiling Light', icon: '◉', category: 'lighting', width: 40, height: 40 },
+  { type: 'recessed-light', label: 'Recessed Light', icon: '○', category: 'lighting', width: 30, height: 30 },
+  { type: 'track-light', label: 'Track Light', icon: '═◉◉◉', category: 'lighting', width: 80, height: 20 },
+  { type: 'pendant-light', label: 'Pendant Light', icon: '↓◉', category: 'lighting', width: 30, height: 50 },
+  { type: 'switch-sp', label: 'Single Pole Switch', icon: 'S₁', category: 'control', width: 30, height: 40 },
+  { type: 'switch-3way', label: '3-Way Switch', icon: 'S₃', category: 'control', width: 30, height: 40 },
+  { type: 'switch-4way', label: '4-Way Switch', icon: 'S₄', category: 'control', width: 30, height: 40 },
+  { type: 'dimmer', label: 'Dimmer Switch', icon: 'D↕', category: 'control', width: 30, height: 50 },
+  { type: 'fan-switch', label: 'Fan Speed Control', icon: 'F↕', category: 'control', width: 30, height: 50 },
+  { type: 'ceiling-fan', label: 'Ceiling Fan', icon: '⚙◉', category: 'device', width: 60, height: 60 },
+  { type: 'exhaust-fan', label: 'Exhaust Fan', icon: '↺', category: 'device', width: 40, height: 40 },
+  { type: 'smoke-detector', label: 'Smoke Detector', icon: '⊛', category: 'safety', width: 30, height: 30 },
+  { type: 'co-detector', label: 'CO Detector', icon: 'CO', category: 'safety', width: 30, height: 30 },
+  { type: 'doorbell', label: 'Doorbell', icon: '🔔', category: 'device', width: 25, height: 35 },
+  { type: 'thermostat', label: 'Thermostat', icon: '🌡', category: 'hvac', width: 40, height: 60 },
 ];
 
 const GRID_SIZE = 20;
+
+const wireColorOptions = [
+  { value: '#000000', label: 'Black (Hot)', type: 'hot' },
+  { value: '#FF0000', label: 'Red (Hot/Traveler)', type: 'traveler' },
+  { value: '#FFFFFF', label: 'White (Neutral)', type: 'neutral' },
+  { value: '#00FF00', label: 'Green (Ground)', type: 'ground' },
+  { value: '#0066FF', label: 'Blue (Signal)', type: 'signal' },
+  { value: '#FFD700', label: 'Yellow (Switched)', type: 'switched' },
+  { value: '#9C4AFF', label: 'Purple (Custom)', type: 'custom' },
+  { value: '#FF6B00', label: 'Orange (Custom)', type: 'custom' },
+];
 
 export default function SchematicWiringPage() {
   const [elements, setElements] = useState<SchematicElement[]>([]);
   const [selectedElement, setSelectedElement] = useState<SchematicElement | null>(null);
   const [draggedType, setDraggedType] = useState<string | null>(null);
-  const [tool, setTool] = useState<'select' | 'wire' | 'text' | 'shape'>('select');
+  const [tool, setTool] = useState<'select' | 'wire' | 'text' | 'shape' | 'room'>('select');
   const [zoom, setZoom] = useState(100);
   const [showGrid, setShowGrid] = useState(true);
   const [snapToGrid, setSnapToGrid] = useState(true);
@@ -151,7 +175,26 @@ export default function SchematicWiringPage() {
   
   const [showAddCircuitDialog, setShowAddCircuitDialog] = useState(false);
 
+  const [floorPlanRooms, setFloorPlanRooms] = useState<FloorPlanRoom[]>([]);
+  const [selectedRoom, setSelectedRoom] = useState<FloorPlanRoom | null>(null);
+  const [isDrawingRoom, setIsDrawingRoom] = useState(false);
+  const [roomStart, setRoomStart] = useState<{ x: number; y: number } | null>(null);
+  const [showNetInspector, setShowNetInspector] = useState(false);
+  const [showValidationPanel, setShowValidationPanel] = useState(false);
+  const [selectedWireColor, setSelectedWireColor] = useState('#000000');
+
   const canvasRef = useRef<HTMLDivElement>(null);
+  const floorPlanCanvasRef = useRef<HTMLDivElement>(null);
+  const wiringCanvasRef = useRef<HTMLDivElement>(null);
+
+  const wiring = useCanvasWiring({
+    gridSize: GRID_SIZE,
+    snapEnabled: snapToGrid,
+    autoRoute: true,
+    canvasWidth: 800,
+    canvasHeight: 600,
+    debounceMs: 60,
+  });
 
   const filteredSymbols = useMemo(() => {
     if (!searchQuery) return symbolLibrary;
@@ -205,16 +248,32 @@ export default function SchematicWiringPage() {
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key === 'z') {
         e.preventDefault();
-        e.shiftKey ? redo() : undo();
+        if (e.shiftKey) {
+          if (activeTab === 'wiring-designer') wiring.redo();
+          else redo();
+        } else {
+          if (activeTab === 'wiring-designer') wiring.undo();
+          else undo();
+        }
       }
       if ((e.metaKey || e.ctrlKey) && e.key === 'y') {
         e.preventDefault();
-        redo();
+        if (activeTab === 'wiring-designer') wiring.redo();
+        else redo();
       }
       if (e.key === 'Delete' || e.key === 'Backspace') {
-        if (selectedElement) {
+        if (activeTab === 'wiring-designer') {
+          if (wiring.selectedElement) wiring.removeElement(wiring.selectedElementId!);
+          if (wiring.selectedWireIds.length > 0) wiring.removeSelectedWires();
+        } else if (selectedElement) {
           removeElement(selectedElement.id);
         }
+      }
+      if (e.key === 'Escape') {
+        setWireStart(null);
+        setIsDrawingRoom(false);
+        setRoomStart(null);
+        wiring.cancelWireDrag();
       }
       if (e.key === 'r' && selectedElement) {
         rotateElement(selectedElement.id);
@@ -223,7 +282,7 @@ export default function SchematicWiringPage() {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [undo, redo, selectedElement]);
+  }, [undo, redo, selectedElement, activeTab, wiring]);
 
   const snapToGridValue = (value: number) => {
     if (!snapToGrid) return value;
@@ -260,6 +319,39 @@ export default function SchematicWiringPage() {
     toast.success('Component added');
   }, [draggedType, zoom, snapToGrid]);
 
+  const handleWiringDrop = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    if (!draggedType || !wiringCanvasRef.current) return;
+
+    const rect = wiringCanvasRef.current.getBoundingClientRect();
+    const scale = zoom / 100;
+    const x = snapToGridValue((e.clientX - rect.left) / scale);
+    const y = snapToGridValue((e.clientY - rect.top) / scale);
+
+    const compDef = wiringComponents.find(c => c.type === draggedType);
+    
+    const newElement: WiringElement = {
+      id: '',
+      type: draggedType,
+      x,
+      y,
+      width: compDef?.width || 40,
+      height: compDef?.height || 40,
+      rotation: 0,
+      label: compDef?.label || draggedType,
+      terminals: [
+        { id: 'top', position: 'top', type: 'bidirectional' },
+        { id: 'bottom', position: 'bottom', type: 'bidirectional' },
+        { id: 'left', position: 'left', type: 'bidirectional' },
+        { id: 'right', position: 'right', type: 'bidirectional' },
+      ]
+    };
+
+    wiring.addElement(newElement);
+    setDraggedType(null);
+    toast.success(`${compDef?.label || draggedType} added`);
+  }, [draggedType, zoom, snapToGrid, wiring]);
+
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
   };
@@ -284,7 +376,7 @@ export default function SchematicWiringPage() {
           y: wireStart.y,
           rotation: 0,
           points: [wireStart, { x, y }],
-          color: '#000000',
+          color: selectedWireColor,
         };
         setElements(prev => [...prev, newWire]);
         setWireStart(null);
@@ -304,6 +396,56 @@ export default function SchematicWiringPage() {
       saveToHistory();
       toast.success('Text added');
     }
+  };
+
+  const handleFloorPlanClick = (e: React.MouseEvent) => {
+    if (!floorPlanCanvasRef.current || tool !== 'room') return;
+
+    const rect = floorPlanCanvasRef.current.getBoundingClientRect();
+    const scale = zoom / 100;
+    const x = snapToGridValue((e.clientX - rect.left) / scale);
+    const y = snapToGridValue((e.clientY - rect.top) / scale);
+
+    if (!roomStart) {
+      setRoomStart({ x, y });
+      setIsDrawingRoom(true);
+      toast.info('Click to set room corner', { duration: 1000 });
+    } else {
+      const newRoom: FloorPlanRoom = {
+        id: `room-${Date.now()}`,
+        name: `Room ${floorPlanRooms.length + 1}`,
+        x: Math.min(roomStart.x, x),
+        y: Math.min(roomStart.y, y),
+        width: Math.abs(x - roomStart.x),
+        height: Math.abs(y - roomStart.y),
+        color: `hsl(${Math.random() * 360}, 70%, 85%)`,
+      };
+      setFloorPlanRooms(prev => [...prev, newRoom]);
+      setRoomStart(null);
+      setIsDrawingRoom(false);
+      toast.success('Room added');
+    }
+  };
+
+  const handleWiringCanvasClick = (e: React.MouseEvent) => {
+    if (!wiringCanvasRef.current) return;
+    const rect = wiringCanvasRef.current.getBoundingClientRect();
+    const scale = zoom / 100;
+    const x = (e.clientX - rect.left) / scale;
+    const y = (e.clientY - rect.top) / scale;
+    
+    if (wiring.dragWire) {
+      wiring.endWireDrag();
+    }
+  };
+
+  const handleWiringCanvasMouseMove = (e: React.MouseEvent) => {
+    if (!wiringCanvasRef.current || !wiring.dragWire) return;
+    const rect = wiringCanvasRef.current.getBoundingClientRect();
+    const scale = zoom / 100;
+    const x = (e.clientX - rect.left) / scale;
+    const y = (e.clientY - rect.top) / scale;
+    wiring.updateWireDrag({ x, y });
   };
 
   const removeElement = (id: string) => {
@@ -359,7 +501,7 @@ export default function SchematicWiringPage() {
   };
 
   const exportSchematic = () => {
-    const data = JSON.stringify({ elements, panelCircuits }, null, 2);
+    const data = JSON.stringify({ elements, panelCircuits, floorPlanRooms, wiringData: wiring.exportData() }, null, 2);
     const blob = new Blob([data], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -430,14 +572,14 @@ export default function SchematicWiringPage() {
     toast.info('Circuit removed');
   };
 
-  const calculateTraceWidth = (current: number, thickness: number, tempRise: number) => {
-    const k = thickness === 1 ? 0.048 : 0.024;
-    const b = 0.44;
-    const c = 0.725;
-    
-    const area = Math.pow(current / (k * Math.pow(tempRise, b)), 1 / c);
-    const width = area / (thickness * 1.378);
-    return width;
+  const handleValidateWiring = () => {
+    const errors = wiring.runValidation();
+    setShowValidationPanel(true);
+    if (errors.length === 0) {
+      toast.success('No wiring issues found!');
+    } else {
+      toast.warning(`Found ${errors.length} issue(s)`);
+    }
   };
 
   return (
@@ -461,17 +603,21 @@ export default function SchematicWiringPage() {
                 <FileText className="h-10 w-10 text-[#00C2D1]" />
               </motion.div>
               <h1 className="text-3xl font-bold text-white">Schematic & Wiring Designer</h1>
+              <Badge className="bg-[#FF6B00] text-white">Enhanced</Badge>
             </div>
-            <p className="text-gray-300">Professional schematic editor, wiring planner, and load calculator</p>
+            <p className="text-gray-300">Professional schematic editor, wiring planner, floor plan designer, and load calculator with auto-routing</p>
           </motion.div>
 
           <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-6">
-            <TabsList className="bg-white/10 border-white/20">
+            <TabsList className="bg-white/10 border-white/20 flex-wrap">
               <TabsTrigger value="schematic" className="data-[state=active]:bg-[#00C2D1] data-[state=active]:text-[#071428]">
                 <CircuitBoard className="h-4 w-4 mr-2" />Schematic Editor
               </TabsTrigger>
-              <TabsTrigger value="wiring" className="data-[state=active]:bg-[#00C2D1] data-[state=active]:text-[#071428]">
-                <Home className="h-4 w-4 mr-2" />Wiring Planner
+              <TabsTrigger value="wiring-designer" className="data-[state=active]:bg-[#FF6B00] data-[state=active]:text-white">
+                <Cable className="h-4 w-4 mr-2" />Wiring Designer
+              </TabsTrigger>
+              <TabsTrigger value="floor-plan" className="data-[state=active]:bg-[#00C2D1] data-[state=active]:text-[#071428]">
+                <Home className="h-4 w-4 mr-2" />Floor Plan
               </TabsTrigger>
               <TabsTrigger value="panel" className="data-[state=active]:bg-[#00C2D1] data-[state=active]:text-[#071428]">
                 <Layers className="h-4 w-4 mr-2" />Panel Schedule
@@ -499,6 +645,27 @@ export default function SchematicWiringPage() {
 
                     <div className="h-6 w-px bg-white/20" />
 
+                    <Select value={selectedWireColor} onValueChange={setSelectedWireColor}>
+                      <SelectTrigger className="w-40 bg-white/10 border-white/20 text-white">
+                        <div className="flex items-center gap-2">
+                          <div className="w-4 h-4 rounded-full border border-white/30" style={{ backgroundColor: selectedWireColor }} />
+                          <span className="text-xs">Wire Color</span>
+                        </div>
+                      </SelectTrigger>
+                      <SelectContent>
+                        {wireColorOptions.map(opt => (
+                          <SelectItem key={opt.value} value={opt.value}>
+                            <div className="flex items-center gap-2">
+                              <div className="w-4 h-4 rounded-full" style={{ backgroundColor: opt.value }} />
+                              {opt.label}
+                            </div>
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+
+                    <div className="h-6 w-px bg-white/20" />
+
                     <Button size="sm" variant="outline" onClick={undo} disabled={historyIndex <= 0} className="bg-white/10 border-white/20 text-white hover:bg-white/20"><Undo2 className="h-4 w-4" /></Button>
                     <Button size="sm" variant="outline" onClick={redo} disabled={historyIndex >= history.length - 1} className="bg-white/10 border-white/20 text-white hover:bg-white/20"><Redo2 className="h-4 w-4" /></Button>
 
@@ -511,6 +678,7 @@ export default function SchematicWiringPage() {
                     </div>
 
                     <Button size="sm" variant="outline" onClick={() => setShowGrid(!showGrid)} className={`${showGrid ? 'bg-[#00C2D1]/20' : 'bg-white/10'} border-white/20 text-white hover:bg-white/20`}><Grid3x3 className="h-4 w-4" /></Button>
+                    <Button size="sm" variant="outline" onClick={() => setSnapToGrid(!snapToGrid)} className={`${snapToGrid ? 'bg-[#9C4AFF]/20' : 'bg-white/10'} border-white/20 text-white hover:bg-white/20`}><Magnet className="h-4 w-4" /></Button>
 
                     <div className="flex-1" />
 
@@ -654,19 +822,84 @@ export default function SchematicWiringPage() {
               </Card>
             </TabsContent>
 
-            <TabsContent value="wiring">
+            <TabsContent value="wiring-designer">
               <Card className="bg-white/5 border-white/10 backdrop-blur-sm">
                 <CardHeader>
                   <CardTitle className="text-white flex items-center gap-2">
-                    <Home className="h-5 w-5 text-[#00C2D1]" />Residential Wiring Planner
+                    <Cable className="h-5 w-5 text-[#FF6B00]" />Advanced Wiring Designer
+                    <Badge className="bg-[#FF6B00]/20 text-[#FF6B00] border-[#FF6B00]/30">Auto-Route</Badge>
                   </CardTitle>
-                  <CardDescription className="text-gray-300">Plan residential electrical installations with NEC compliance</CardDescription>
+                  <CardDescription className="text-gray-300">Click-to-connect wiring with auto-snap terminals, A* routing, and net management</CardDescription>
                 </CardHeader>
                 <CardContent>
+                  <div className="flex gap-2 mb-4 flex-wrap items-center">
+                    <Button size="sm" variant="outline" onClick={wiring.undo} disabled={!wiring.canUndo} className="bg-white/10 border-white/20 text-white hover:bg-white/20"><Undo2 className="h-4 w-4" /></Button>
+                    <Button size="sm" variant="outline" onClick={wiring.redo} disabled={!wiring.canRedo} className="bg-white/10 border-white/20 text-white hover:bg-white/20"><Redo2 className="h-4 w-4" /></Button>
+
+                    <div className="h-6 w-px bg-white/20" />
+
+                    <div className="flex gap-1 items-center">
+                      <Button size="sm" variant="outline" onClick={() => setZoom(Math.max(50, zoom - 10))} className="bg-white/10 border-white/20 text-white hover:bg-white/20"><ZoomOut className="h-4 w-4" /></Button>
+                      <span className="text-white text-sm min-w-[50px] text-center">{zoom}%</span>
+                      <Button size="sm" variant="outline" onClick={() => setZoom(Math.min(200, zoom + 10))} className="bg-white/10 border-white/20 text-white hover:bg-white/20"><ZoomIn className="h-4 w-4" /></Button>
+                    </div>
+
+                    <Button size="sm" variant="outline" onClick={() => setShowGrid(!showGrid)} className={`${showGrid ? 'bg-[#00C2D1]/20' : 'bg-white/10'} border-white/20 text-white hover:bg-white/20`}><Grid3x3 className="h-4 w-4" /></Button>
+                    <Button size="sm" variant="outline" onClick={() => setSnapToGrid(!snapToGrid)} className={`${snapToGrid ? 'bg-[#9C4AFF]/20' : 'bg-white/10'} border-white/20 text-white hover:bg-white/20`}><Magnet className="h-4 w-4" /></Button>
+
+                    <div className="h-6 w-px bg-white/20" />
+
+                    <Button size="sm" variant="outline" onClick={wiring.rerouteAllWires} disabled={wiring.wires.length === 0} className="bg-white/10 border-white/20 text-white hover:bg-white/20"><Route className="h-4 w-4 mr-1" />Re-route</Button>
+                    <Button size="sm" variant="outline" onClick={handleValidateWiring} className="bg-[#FF6B00]/20 border-[#FF6B00]/50 text-[#FF6B00] hover:bg-[#FF6B00]/30"><AlertTriangle className="h-4 w-4 mr-1" />Validate</Button>
+                    <Button size="sm" variant="outline" onClick={() => setShowNetInspector(!showNetInspector)} className={`${showNetInspector ? 'bg-[#9C4AFF]/20' : 'bg-white/10'} border-white/20 text-white hover:bg-white/20`}><Network className="h-4 w-4 mr-1" />Nets</Button>
+
+                    <div className="flex-1" />
+
+                    <Button size="sm" variant="outline" onClick={() => {
+                      const data = JSON.stringify(wiring.exportData(), null, 2);
+                      const blob = new Blob([data], { type: 'application/json' });
+                      const url = URL.createObjectURL(blob);
+                      const a = document.createElement('a');
+                      a.href = url;
+                      a.download = `wiring-${Date.now()}.json`;
+                      a.click();
+                      URL.revokeObjectURL(url);
+                      toast.success('Wiring exported');
+                    }} className="bg-white/10 border-white/20 text-white hover:bg-white/20"><Download className="h-4 w-4 mr-1" />Export</Button>
+                    <Button size="sm" variant="outline" onClick={wiring.clearCanvas} className="bg-white/10 border-white/20 text-white hover:bg-white/20"><Trash2 className="h-4 w-4" /></Button>
+                  </div>
+
+                  <AnimatePresence>
+                    {showValidationPanel && wiring.validationErrors.length > 0 && (
+                      <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="mb-4">
+                        <Card className="bg-[#FF6B00]/10 border-[#FF6B00]/30">
+                          <CardHeader className="py-3">
+                            <div className="flex items-center justify-between">
+                              <CardTitle className="text-white text-sm flex items-center gap-2">
+                                <AlertTriangle className="h-4 w-4 text-[#FF6B00]" />Validation Results ({wiring.validationErrors.length} issues)
+                              </CardTitle>
+                              <Button variant="ghost" size="sm" onClick={() => setShowValidationPanel(false)} className="text-white h-6 w-6 p-0">×</Button>
+                            </div>
+                          </CardHeader>
+                          <CardContent className="py-2">
+                            <div className="space-y-2 max-h-32 overflow-y-auto">
+                              {wiring.validationErrors.map(err => (
+                                <div key={err.id} className={`p-2 rounded text-xs ${err.type === 'error' ? 'bg-red-500/20 text-red-300' : err.type === 'warning' ? 'bg-yellow-500/20 text-yellow-300' : 'bg-blue-500/20 text-blue-300'}`}>
+                                  <span className="font-semibold">{err.message}</span>
+                                  {err.fix && <span className="opacity-75 ml-2">Fix: {err.fix}</span>}
+                                </div>
+                              ))}
+                            </div>
+                          </CardContent>
+                        </Card>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+
                   <div className="grid md:grid-cols-4 gap-4">
                     <Card className="bg-[#071428] border-white/20">
                       <CardContent className="pt-6">
-                        <h3 className="font-semibold mb-3 text-[#00C2D1]">Wiring Components</h3>
+                        <h3 className="font-semibold mb-3 text-[#FF6B00]">Wiring Components</h3>
                         <div className="mb-3">
                           <div className="relative">
                             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
@@ -682,7 +915,7 @@ export default function SchematicWiringPage() {
                                 <div key={category}>
                                   <p className="text-xs text-gray-400 uppercase mb-2 mt-3 first:mt-0">{category}</p>
                                   {categoryComponents.map((comp) => (
-                                    <div key={comp.type} draggable onDragStart={() => handleDragStart(comp.type)} className="p-2 border border-white/10 rounded hover:bg-[#00C2D1]/20 cursor-move transition-colors">
+                                    <div key={comp.type} draggable onDragStart={() => handleDragStart(comp.type)} className="p-2 border border-white/10 rounded hover:bg-[#FF6B00]/20 cursor-move transition-colors">
                                       <div className="flex items-center justify-between text-white">
                                         <span className="text-xs">{comp.label}</span>
                                         <span className="font-mono text-lg">{comp.icon}</span>
@@ -699,15 +932,278 @@ export default function SchematicWiringPage() {
 
                     <Card className="md:col-span-3 bg-white/95 border-white/20">
                       <CardContent className="pt-6">
-                        <h3 className="font-semibold mb-4 text-[#071428]">Floor Plan</h3>
-                        <div className="bg-white rounded-lg border-2 border-gray-300 min-h-[500px] relative" style={{ backgroundImage: 'linear-gradient(to right, #e5e7eb 1px, transparent 1px), linear-gradient(to bottom, #e5e7eb 1px, transparent 1px)', backgroundSize: '50px 50px' }}>
-                          <div className="absolute inset-0 flex items-center justify-center text-gray-400">
-                            <div className="text-center">
-                              <Home className="h-16 w-16 mx-auto mb-4 text-gray-300" />
-                              <p className="text-lg font-semibold text-gray-600">Draw your floor plan and add electrical components</p>
-                              <p className="text-sm mt-2">Plan outlets, switches, lighting, and circuits</p>
-                            </div>
+                        <div className="flex items-center justify-between mb-4">
+                          <h3 className="font-semibold text-[#071428]">Wiring Canvas</h3>
+                          <div className="flex gap-4 text-xs text-gray-600">
+                            <span>{wiring.elements.length} components</span>
+                            <span className="text-[#FF6B00] font-semibold">{wiring.wires.length} wires</span>
+                            {wiring.dragWire && <span className="text-[#9C4AFF] font-bold animate-pulse">Drawing wire...</span>}
                           </div>
+                        </div>
+                        <div
+                          ref={wiringCanvasRef}
+                          onDrop={handleWiringDrop}
+                          onDragOver={handleDragOver}
+                          onClick={handleWiringCanvasClick}
+                          onMouseMove={handleWiringCanvasMouseMove}
+                          className={`bg-white rounded-lg border-2 ${wiring.dragWire ? 'border-[#9C4AFF]' : 'border-gray-300'} min-h-[500px] relative overflow-hidden transition-all`}
+                          style={{
+                            backgroundImage: showGrid ? 'radial-gradient(circle, #e5e7eb 1px, transparent 1px)' : 'none',
+                            backgroundSize: `${GRID_SIZE * (zoom / 100)}px ${GRID_SIZE * (zoom / 100)}px`,
+                            transform: `scale(${zoom / 100})`,
+                            transformOrigin: 'top left',
+                            width: `${100 / (zoom / 100)}%`,
+                            height: `${500 / (zoom / 100)}px`
+                          }}
+                        >
+                          <svg className="absolute inset-0 pointer-events-none" style={{ zIndex: 1 }}>
+                            {wiring.wires.map((wire) => {
+                              const pathD = wire.path.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x} ${p.y}`).join(' ');
+                              const isSelected = wiring.selectedWireIds.includes(wire.id);
+                              return (
+                                <g key={wire.id} className="pointer-events-auto cursor-pointer" onClick={(e) => { e.stopPropagation(); wiring.setSelectedWireIds(prev => prev.includes(wire.id) ? prev.filter(id => id !== wire.id) : [...prev, wire.id]); }}>
+                                  <path d={pathD} fill="none" stroke={wire.color} strokeWidth="6" strokeLinecap="round" strokeLinejoin="round" opacity="0.3" filter="blur(4px)" />
+                                  <path d={pathD} fill="none" stroke={isSelected ? '#FFD700' : wire.color} strokeWidth={isSelected ? '4' : '2'} strokeLinecap="round" strokeLinejoin="round" />
+                                  <circle cx={wire.path[0].x} cy={wire.path[0].y} r="4" fill={wire.color} stroke="white" strokeWidth="1" />
+                                  <circle cx={wire.path[wire.path.length - 1].x} cy={wire.path[wire.path.length - 1].y} r="4" fill={wire.color} stroke="white" strokeWidth="1" />
+                                  {wire.netLabel && (
+                                    <text x={(wire.path[0].x + wire.path[wire.path.length - 1].x) / 2} y={(wire.path[0].y + wire.path[wire.path.length - 1].y) / 2 - 8} fontSize="9" fill="#9C4AFF" fontWeight="bold" textAnchor="middle">{wire.netLabel}</text>
+                                  )}
+                                </g>
+                              );
+                            })}
+                            {wiring.dragWire && (
+                              <g>
+                                <path d={wiring.dragWire.previewPath.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x} ${p.y}`).join(' ')} fill="none" stroke="#9C4AFF" strokeWidth="3" strokeDasharray="8,4" strokeLinecap="round" opacity="0.7">
+                                  <animate attributeName="stroke-dashoffset" from="0" to="12" dur="0.5s" repeatCount="indefinite" />
+                                </path>
+                                <circle cx={wiring.dragWire.from.position.x} cy={wiring.dragWire.from.position.y} r="6" fill="#9C4AFF" stroke="white" strokeWidth="2" />
+                                <circle cx={wiring.dragWire.currentPosition.x} cy={wiring.dragWire.currentPosition.y} r="5" fill="#FF6B00" className="animate-pulse" />
+                              </g>
+                            )}
+                          </svg>
+
+                          {wiring.elements.length === 0 ? (
+                            <div className="absolute inset-0 flex items-center justify-center text-gray-400" style={{ zIndex: 0 }}>
+                              <div className="text-center">
+                                <Cable className="h-16 w-16 mx-auto mb-4 text-gray-300" />
+                                <p className="text-lg font-semibold text-gray-600">Drag components here to start wiring</p>
+                                <p className="text-sm mt-2">Click terminal dots to connect with auto-routed wires</p>
+                              </div>
+                            </div>
+                          ) : (
+                            wiring.elements.map((el) => {
+                              const compDef = wiringComponents.find(c => c.type === el.type);
+                              const isSelected = wiring.selectedElementId === el.id;
+                              
+                              return (
+                                <motion.div
+                                  key={el.id}
+                                  initial={{ scale: 0 }}
+                                  animate={{ scale: 1 }}
+                                  className={`absolute cursor-pointer transition-all ${isSelected ? 'ring-2 ring-[#FF6B00] shadow-lg' : ''}`}
+                                  style={{ left: el.x, top: el.y, zIndex: 2 }}
+                                  onClick={() => wiring.setSelectedElementId(el.id)}
+                                >
+                                  {el.terminals.map((term) => {
+                                    const termPos = {
+                                      top: { x: el.width / 2 - 6, y: -6 },
+                                      bottom: { x: el.width / 2 - 6, y: el.height - 6 },
+                                      left: { x: -6, y: el.height / 2 - 6 },
+                                      right: { x: el.width - 6, y: el.height / 2 - 6 },
+                                    };
+                                    const pos = termPos[term.position];
+                                    const isHovered = wiring.hoveredTerminal?.elementId === el.id && wiring.hoveredTerminal?.terminal === term.position;
+                                    
+                                    return (
+                                      <div
+                                        key={term.id}
+                                        className={`absolute w-3 h-3 rounded-full cursor-crosshair transition-all border-2 border-white shadow-md ${isHovered ? 'bg-[#FF6B00] scale-150' : 'bg-[#9C4AFF] hover:bg-[#FF6B00] hover:scale-125'}`}
+                                        style={{ left: pos.x, top: pos.y, zIndex: 10 }}
+                                        onMouseDown={(e) => { e.stopPropagation(); wiring.startWireDrag(el.id, term.position); }}
+                                        onMouseUp={(e) => { e.stopPropagation(); if (wiring.dragWire) wiring.endWireDrag(el.id, term.position); }}
+                                      />
+                                    );
+                                  })}
+                                  
+                                  <div className="bg-white rounded border-2 border-gray-300 p-2 flex flex-col items-center justify-center" style={{ width: el.width, height: el.height }}>
+                                    <span className="font-mono text-xl">{compDef?.icon || '?'}</span>
+                                    <span className="text-[8px] font-medium text-gray-600 mt-1 text-center leading-tight">{el.label}</span>
+                                  </div>
+                                </motion.div>
+                              );
+                            })
+                          )}
+                        </div>
+
+                        {wiring.selectedElement && (
+                          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mt-4 p-4 bg-gradient-to-br from-[#071428] via-[#0a1d38] to-[#071428] rounded-lg border border-white/20">
+                            <h4 className="font-semibold mb-3 text-white">Component Properties</h4>
+                            <div className="grid grid-cols-4 gap-3">
+                              <div className="p-2 bg-white/10 rounded">
+                                <Label className="text-xs text-[#FF6B00]">Type</Label>
+                                <p className="text-sm text-white mt-1">{wiring.selectedElement.type}</p>
+                              </div>
+                              <div className="p-2 bg-white/10 rounded">
+                                <Label className="text-xs text-[#FF6B00]">Label</Label>
+                                <Input type="text" value={wiring.selectedElement.label || ''} onChange={(e) => wiring.updateElement(wiring.selectedElementId!, { label: e.target.value })} className="h-7 text-sm bg-white text-[#071428] mt-1" />
+                              </div>
+                              <div className="p-2 bg-white/10 rounded">
+                                <Label className="text-xs text-[#FF6B00]">Position</Label>
+                                <p className="text-sm text-white mt-1">({wiring.selectedElement.x}, {wiring.selectedElement.y})</p>
+                              </div>
+                              <div className="p-2 bg-white/10 rounded flex items-center gap-2">
+                                <Button size="sm" variant="destructive" onClick={() => wiring.removeElement(wiring.selectedElementId!)}><Trash2 className="h-4 w-4" /></Button>
+                              </div>
+                            </div>
+                          </motion.div>
+                        )}
+
+                        {wiring.selectedWires.length > 0 && (
+                          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mt-4 p-4 bg-gradient-to-br from-[#071428] via-[#0a1d38] to-[#071428] rounded-lg border border-white/20">
+                            <h4 className="font-semibold mb-3 text-white">Wire Properties ({wiring.selectedWires.length} selected)</h4>
+                            <div className="grid grid-cols-4 gap-3">
+                              <div className="p-2 bg-white/10 rounded">
+                                <Label className="text-xs text-[#9C4AFF]">Net Label</Label>
+                                <Input type="text" value={wiring.selectedWires[0]?.netLabel || ''} onChange={(e) => wiring.updateWireNetLabel(wiring.selectedWires[0].id, e.target.value)} className="h-7 text-sm bg-white text-[#071428] mt-1" placeholder="e.g., VCC" />
+                              </div>
+                              <div className="p-2 bg-white/10 rounded">
+                                <Label className="text-xs text-[#9C4AFF]">Color</Label>
+                                <Select value={wiring.selectedWires[0]?.color || '#000000'} onValueChange={(v) => wiring.updateWireColor(wiring.selectedWires[0].id, v)}>
+                                  <SelectTrigger className="h-7 mt-1 bg-white text-[#071428]"><SelectValue /></SelectTrigger>
+                                  <SelectContent>
+                                    {wireColorOptions.map(opt => (
+                                      <SelectItem key={opt.value} value={opt.value}>
+                                        <div className="flex items-center gap-2">
+                                          <div className="w-3 h-3 rounded-full" style={{ backgroundColor: opt.value }} />
+                                          {opt.label}
+                                        </div>
+                                      </SelectItem>
+                                    ))}
+                                  </SelectContent>
+                                </Select>
+                              </div>
+                              <div className="p-2 bg-white/10 rounded">
+                                <Label className="text-xs text-[#9C4AFF]">Length</Label>
+                                <p className="text-sm text-white mt-1">{wiring.selectedWires[0]?.path.length} segments</p>
+                              </div>
+                              <div className="p-2 bg-white/10 rounded flex items-center gap-2">
+                                <Button size="sm" variant="destructive" onClick={wiring.removeSelectedWires}><Trash2 className="h-4 w-4 mr-1" />Delete</Button>
+                              </div>
+                            </div>
+                          </motion.div>
+                        )}
+                      </CardContent>
+                    </Card>
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="floor-plan">
+              <Card className="bg-white/5 border-white/10 backdrop-blur-sm">
+                <CardHeader>
+                  <CardTitle className="text-white flex items-center gap-2">
+                    <Home className="h-5 w-5 text-[#00C2D1]" />Floor Plan Designer
+                  </CardTitle>
+                  <CardDescription className="text-gray-300">Draw rooms and plan electrical installations</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex gap-2 mb-4 flex-wrap items-center">
+                    <div className="flex gap-1 border border-white/20 rounded-lg p-1">
+                      <Button size="sm" variant={tool === 'select' ? 'default' : 'ghost'} onClick={() => setTool('select')} className={tool === 'select' ? 'bg-[#00C2D1] text-[#071428]' : 'text-white'}><MousePointer className="h-4 w-4" /></Button>
+                      <Button size="sm" variant={tool === 'room' ? 'default' : 'ghost'} onClick={() => setTool('room')} className={tool === 'room' ? 'bg-[#00C2D1] text-[#071428]' : 'text-white'}><Square className="h-4 w-4" /></Button>
+                    </div>
+
+                    <div className="h-6 w-px bg-white/20" />
+
+                    <div className="flex gap-1 items-center">
+                      <Button size="sm" variant="outline" onClick={() => setZoom(Math.max(50, zoom - 10))} className="bg-white/10 border-white/20 text-white hover:bg-white/20"><ZoomOut className="h-4 w-4" /></Button>
+                      <span className="text-white text-sm min-w-[50px] text-center">{zoom}%</span>
+                      <Button size="sm" variant="outline" onClick={() => setZoom(Math.min(200, zoom + 10))} className="bg-white/10 border-white/20 text-white hover:bg-white/20"><ZoomIn className="h-4 w-4" /></Button>
+                    </div>
+
+                    <Button size="sm" variant="outline" onClick={() => setShowGrid(!showGrid)} className={`${showGrid ? 'bg-[#00C2D1]/20' : 'bg-white/10'} border-white/20 text-white hover:bg-white/20`}><Grid3x3 className="h-4 w-4" /></Button>
+
+                    <div className="flex-1" />
+
+                    <Button size="sm" variant="outline" onClick={() => { setFloorPlanRooms([]); setSelectedRoom(null); }} className="bg-white/10 border-white/20 text-white hover:bg-white/20"><Trash2 className="h-4 w-4" /></Button>
+                  </div>
+
+                  <div className="grid md:grid-cols-4 gap-4">
+                    <Card className="bg-[#071428] border-white/20">
+                      <CardContent className="pt-6">
+                        <h3 className="font-semibold mb-3 text-[#00C2D1]">Rooms ({floorPlanRooms.length})</h3>
+                        <ScrollArea className="h-[300px]">
+                          <div className="space-y-2 pr-2">
+                            {floorPlanRooms.map(room => (
+                              <div key={room.id} className={`p-2 border rounded cursor-pointer transition-colors ${selectedRoom?.id === room.id ? 'border-[#00C2D1] bg-[#00C2D1]/10' : 'border-white/10 hover:border-white/30'}`} onClick={() => setSelectedRoom(room)}>
+                                <div className="flex items-center gap-2">
+                                  <div className="w-4 h-4 rounded" style={{ backgroundColor: room.color }} />
+                                  <span className="text-white text-sm">{room.name}</span>
+                                </div>
+                                <p className="text-[10px] text-gray-400 mt-1">{room.width}×{room.height}px</p>
+                              </div>
+                            ))}
+                            {floorPlanRooms.length === 0 && (
+                              <p className="text-gray-400 text-xs text-center py-4">No rooms yet. Use the Rectangle tool to draw rooms.</p>
+                            )}
+                          </div>
+                        </ScrollArea>
+
+                        {selectedRoom && (
+                          <div className="mt-4 p-3 bg-white/5 rounded border border-white/10">
+                            <Label className="text-xs text-[#00C2D1]">Room Name</Label>
+                            <Input value={selectedRoom.name} onChange={(e) => setFloorPlanRooms(prev => prev.map(r => r.id === selectedRoom.id ? { ...r, name: e.target.value } : r))} className="h-8 mt-1 bg-white/10 border-white/20 text-white" />
+                            <Button size="sm" variant="destructive" className="mt-2 w-full" onClick={() => { setFloorPlanRooms(prev => prev.filter(r => r.id !== selectedRoom.id)); setSelectedRoom(null); }}>Delete Room</Button>
+                          </div>
+                        )}
+                      </CardContent>
+                    </Card>
+
+                    <Card className="md:col-span-3 bg-white/95 border-white/20">
+                      <CardContent className="pt-6">
+                        <div className="flex items-center justify-between mb-4">
+                          <h3 className="font-semibold text-[#071428]">Floor Plan Canvas</h3>
+                          <div className="text-xs text-gray-600">{isDrawingRoom && <span className="text-[#00C2D1] font-bold animate-pulse">Drawing room...</span>}</div>
+                        </div>
+                        <div
+                          ref={floorPlanCanvasRef}
+                          onClick={handleFloorPlanClick}
+                          className="bg-white rounded-lg border-2 border-gray-300 min-h-[500px] relative overflow-hidden cursor-crosshair"
+                          style={{
+                            backgroundImage: showGrid ? 'linear-gradient(to right, #e5e7eb 1px, transparent 1px), linear-gradient(to bottom, #e5e7eb 1px, transparent 1px)' : 'none',
+                            backgroundSize: '50px 50px',
+                            transform: `scale(${zoom / 100})`,
+                            transformOrigin: 'top left',
+                            width: `${100 / (zoom / 100)}%`,
+                            height: `${500 / (zoom / 100)}px`
+                          }}
+                        >
+                          {floorPlanRooms.map(room => (
+                            <div
+                              key={room.id}
+                              className={`absolute border-2 rounded cursor-pointer transition-all ${selectedRoom?.id === room.id ? 'border-[#00C2D1] shadow-lg' : 'border-gray-400'}`}
+                              style={{ left: room.x, top: room.y, width: room.width, height: room.height, backgroundColor: room.color }}
+                              onClick={(e) => { e.stopPropagation(); setSelectedRoom(room); }}
+                            >
+                              <span className="absolute top-1 left-2 text-xs font-semibold text-gray-700">{room.name}</span>
+                            </div>
+                          ))}
+
+                          {roomStart && (
+                            <div className="absolute h-3 w-3 bg-[#00C2D1] rounded-full animate-pulse" style={{ left: roomStart.x - 6, top: roomStart.y - 6 }} />
+                          )}
+
+                          {floorPlanRooms.length === 0 && !isDrawingRoom && (
+                            <div className="absolute inset-0 flex items-center justify-center text-gray-400">
+                              <div className="text-center">
+                                <Home className="h-16 w-16 mx-auto mb-4 text-gray-300" />
+                                <p className="text-lg font-semibold text-gray-600">Select Rectangle tool and click to draw rooms</p>
+                                <p className="text-sm mt-2">Click once for corner, click again to complete</p>
+                              </div>
+                            </div>
+                          )}
                         </div>
                       </CardContent>
                     </Card>
@@ -917,8 +1413,9 @@ export default function SchematicWiringPage() {
               </CardHeader>
               <CardContent className="space-y-2 text-sm text-gray-300">
                 <p>• Drag-and-drop component placement</p>
-                <p>• Professional symbol library (50+)</p>
-                <p>• Wire routing and connections</p>
+                <p>• Auto-routing with A* algorithm</p>
+                <p>• Click-to-connect wiring</p>
+                <p>• Net management & labeling</p>
                 <p>• Undo/Redo with keyboard shortcuts</p>
                 <p>• Export to JSON and BOM</p>
               </CardContent>
