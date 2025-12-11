@@ -158,18 +158,15 @@ export async function POST(request: NextRequest) {
     try {
       data = await callOpenRouter(image);
     } catch (err: any) {
-      console.error('OpenRouter error:', err);
       error = err;
       
       // If OpenRouter fails with rate limit or token issues, try OpenAI
       if (err.status === 429 || err.status === 402 || err.data?.error?.code === 'insufficient_quota') {
-        console.log('OpenRouter limit reached, falling back to OpenAI...');
         try {
           data = await callOpenAI(image);
           provider = 'openai';
           error = null;
         } catch (openaiErr: any) {
-          console.error('OpenAI error:', openaiErr);
           error = openaiErr;
         }
       }
@@ -227,8 +224,7 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json({ instrumentInfo, provider });
-  } catch (error) {
-    console.error('Analysis error:', error);
+  } catch {
     return NextResponse.json(
       { error: 'An unexpected error occurred during analysis' },
       { status: 500 }
