@@ -65,8 +65,7 @@ export function CommentSection({ projectId, comments: initialComments, userId, o
       if (onCommentAdded) {
         onCommentAdded();
       }
-    } catch (error) {
-      console.error('Error posting comment:', error);
+    } catch {
       toast.error('Failed to post comment. Please try again.');
     } finally {
       setIsSubmitting(false);
