@@ -1,8 +1,8 @@
-# ⚡ EE ZONE
+# ⚡ EE ZONE ⚡
 
-### AI-Powered Electrical Engineering Innovation Platform
+### Next-generation ultimate electrical and electronics engineering platform 
 
-**Developed by:** **AJINKYA CHALKE**
+🧑‍💻 **Developed by:** **AJINKYA CHALKE**
 
 📧 **Email:** [ajinkyachalke008@gmail.com](mailto:ajinkyachalke008@gmail.com)
 
