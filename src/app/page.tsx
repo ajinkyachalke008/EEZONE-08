@@ -349,6 +349,14 @@ const aiFeatures = [
     href: '/tools/ai-features#multi-language',
     image: 'https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/project-uploads/e24d0c9e-e4fc-4077-96b8-bf644fe969e3/generated_images/multi-language-electrical-engineering-pl-1f0b7628-20251205070756.jpg'
   },
+  { 
+    icon: Sparkles, 
+    name: 'Pro Diagram Editor', 
+    description: 'AI-powered circuit diagramming with Mermaid support, 1000+ electrical symbols, and seamless export to PNG/SVG/PDF.', 
+    isPro: true, 
+    href: '/tools/diagram-editor',
+    image: 'https://images.unsplash.com/photo-1581092160562-40aa08e78837?w=800&h=600&fit=crop'
+  },
 ];
 
 const interactiveSimulations = [
