@@ -10,12 +10,12 @@ import { useState, useEffect } from 'react';
 import { Badge } from '@/components/ui/badge';
 
 interface HeaderProps {
-  onSearch: (query: string) => void;
-  searchQuery: string;
-  onSearchChange: (query: string) => void;
+  onSearch?: (query: string) => void;
+  searchQuery?: string;
+  onSearchChange?: (query: string) => void;
 }
 
-export function Header({ onSearch, searchQuery, onSearchChange }: HeaderProps) {
+export function Header({ onSearch, searchQuery, onSearchChange }: HeaderProps = {}) {
   const [userStats, setUserStats] = useState<any>(null);
   const userId = 'demo_user'; // In production, get from auth
 

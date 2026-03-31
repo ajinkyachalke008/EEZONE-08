@@ -6,7 +6,8 @@
         "dev": "next dev --turbopack",
         "build": "next build",
         "start": "next start",
-        "lint": "next lint"
+        "lint": "next lint",
+        "postinstall": "node scripts/download-drawio.js"
     },
     "dependencies": {
         "@babel/parser": "^7.28.4",

@@ -122,6 +122,19 @@ const apps = [
     necVersion: '2023',
     image: 'https://images.unsplash.com/photo-1513828583688-c52646db42da?w=400&h=300&fit=crop',
   },
+  {
+    id: 10,
+    name: 'Pro Diagram Editor',
+    description: 'AI-powered circuit diagramming with Mermaid, export to PNG/SVG/PDF, and 1000+ electrical symbols',
+    rating: 4.9,
+    reviews: 4210,
+    category: 'Design',
+    isPro: true,
+    purpose: 'Design & Simulation',
+    necVersion: '2023',
+    image: 'https://images.unsplash.com/photo-1581092160562-40aa08e78837?w=400&h=300&fit=crop',
+    href: '/tools/diagram-editor',
+  },
 ];
 
 export default function AppsPage() {
@@ -172,7 +185,12 @@ export default function AppsPage() {
   };
 
   const handleLaunchApp = (appId: number) => {
-    router.push(`/apps/${appId}`);
+    const app = apps.find(a => a.id === appId);
+    if (app && 'href' in app && app.href) {
+      router.push(app.href as string);
+    } else {
+      router.push(`/apps/${appId}`);
+    }
   };
 
   const FilterSidebar = () => (
