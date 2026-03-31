@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Code, CircuitBoard, Wrench, Mic, Globe, ArrowLeft, Sparkles } from 'lucide-react';
+import { Code, CircuitBoard, Wrench, Mic, Globe, ArrowLeft, Sparkles, PenTool } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
@@ -11,6 +11,7 @@ import { AICircuitDesigner } from '@/components/tools/ai-circuit-designer';
 import { AITroubleshooting } from '@/components/tools/ai-troubleshooting';
 import { VoiceInput } from '@/components/tools/voice-input';
 import { MultiLanguageSupport } from '@/components/tools/multi-language-support';
+import { ProDiagramEditorDetails } from '@/components/tools/pro-diagram-editor-details';
 
 export default function AIFeaturesPage() {
   const [activeTab, setActiveTab] = useState('code-assistant');
@@ -54,7 +55,7 @@ export default function AIFeaturesPage() {
 
         {/* Tools Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid grid-cols-2 lg:grid-cols-5 gap-2 h-auto p-2 glass-surface backdrop-blur-glass border border-white/10">
+          <TabsList className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2 h-auto p-2 glass-surface backdrop-blur-glass border border-white/10">
             <TabsTrigger 
               value="code-assistant" 
               className="flex items-center gap-2 py-3 data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#9C4AFF] data-[state=active]:to-[#FF00C8] data-[state=active]:text-white text-[#B8A7E0]"
@@ -95,6 +96,14 @@ export default function AIFeaturesPage() {
               <span className="hidden sm:inline">Multi-Language</span>
               <span className="sm:hidden">Lang</span>
             </TabsTrigger>
+            <TabsTrigger 
+              value="diagram-editor" 
+              className="flex items-center gap-2 py-3 data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#9C4AFF] data-[state=active]:to-[#FF00C8] data-[state=active]:text-white text-[#B8A7E0]"
+            >
+              <PenTool className="h-4 w-4" />
+              <span className="hidden sm:inline">Diagram Editor</span>
+              <span className="sm:hidden">Draw</span>
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="code-assistant">
@@ -115,6 +124,10 @@ export default function AIFeaturesPage() {
 
           <TabsContent value="multi-language">
             <MultiLanguageSupport />
+          </TabsContent>
+
+          <TabsContent value="diagram-editor">
+            <ProDiagramEditorDetails />
           </TabsContent>
         </Tabs>
       </div>
