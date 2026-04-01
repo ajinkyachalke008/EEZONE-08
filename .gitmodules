@@ -1,0 +1,3 @@
+[submodule "apps/magic-cad"]
+	path = apps/magic-cad
+	url = https://github.com/Adam-CAD/CADAM.git

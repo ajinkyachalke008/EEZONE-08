@@ -38,6 +38,7 @@ export function Header({ onSearch, searchQuery, onSearchChange }: HeaderProps = 
   const navLinks = [
     { href: '/', label: 'Home' },
     { href: '/apps', label: 'Apps' },
+    { href: '/magic-cad', label: 'Magic CAD ✨' },
     { href: '/calculators', label: 'Calculators' },
     { href: '/tutorials', label: 'Tutorials' },
     { href: '/projects', label: 'Projects' },
@@ -94,14 +95,23 @@ export function Header({ onSearch, searchQuery, onSearchChange }: HeaderProps = 
         </Link>
 
         {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center space-x-1">
+        <nav className="hidden lg:flex items-center space-x-0.5 flex-shrink-0">
           {navLinks.map((link) => (
             <Link
               key={link.href}
               href={link.href}
-              className="relative px-4 py-2 text-sm font-medium text-[#B8A7E0] transition-all hover:text-white group"
+              className="relative px-2.5 xl:px-3.5 py-2 text-xs xl:text-sm font-medium text-[#B8A7E0] transition-all hover:text-white group whitespace-nowrap"
             >
-              {link.label}
+              {link.label === 'Magic CAD ✨' ? (
+                <div className="flex items-center gap-1.5">
+                  <span>Magic CAD</span>
+                  <span style={{ fontSize: "0.5rem", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "#76b900", background: "#76b90020", border: "1px solid #76b90040", borderRadius: 4, padding: "1px 4px" }}>
+                    NVIDIA
+                  </span>
+                </div>
+              ) : (
+                link.label
+              )}
               <span className="absolute bottom-0 left-0 w-0 h-0.5 gradient-fire transition-all group-hover:w-full" />
             </Link>
           ))}
@@ -142,7 +152,7 @@ export function Header({ onSearch, searchQuery, onSearchChange }: HeaderProps = 
 
         {/* Mobile Navigation */}
         <Sheet>
-          <SheetTrigger asChild className="md:hidden">
+          <SheetTrigger asChild className="lg:hidden">
             <Button variant="ghost" size="icon" className="text-white hover:bg-white/10">
               <Menu className="h-6 w-6" />
             </Button>
@@ -182,7 +192,16 @@ export function Header({ onSearch, searchQuery, onSearchChange }: HeaderProps = 
                   href={link.href}
                   className="text-lg font-medium transition-colors hover:text-[#9C4AFF] text-white"
                 >
-                  {link.label}
+                  {link.label === 'Magic CAD ✨' ? (
+                    <div className="flex items-center gap-2">
+                      <span>Magic CAD</span>
+                      <span style={{ fontSize: "0.6rem", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "#76b900", background: "#76b90020", border: "1px solid #76b90040", borderRadius: 4, padding: "2px 6px" }}>
+                        NVIDIA
+                      </span>
+                    </div>
+                  ) : (
+                    link.label
+                  )}
                 </Link>
               ))}
               <Button className="gradient-fire text-white hover:shadow-glowOrange font-semibold w-full rounded-xl mt-4">
