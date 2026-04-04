@@ -135,6 +135,19 @@ const apps = [
     image: 'https://images.unsplash.com/photo-1581092160562-40aa08e78837?w=400&h=300&fit=crop',
     href: '/tools/diagram-editor',
   },
+  {
+    id: 11,
+    name: 'Magic CAD',
+    description: 'Next-gen AI 3D modeling and CAD tools powered by NVIDIA NIM and OpenSCAD.',
+    rating: 5.0,
+    reviews: 1337,
+    category: 'Design',
+    isPro: true,
+    purpose: 'Design & Simulation',
+    necVersion: '2023',
+    image: 'https://images.unsplash.com/photo-1617791160505-6f00504e3519?w=400&h=300&fit=crop',
+    href: '/magic-cad',
+  },
 ];
 
 export default function AppsPage() {

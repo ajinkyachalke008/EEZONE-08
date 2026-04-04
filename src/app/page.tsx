@@ -357,6 +357,14 @@ const aiFeatures = [
     href: '/tools/diagram-editor',
     image: 'https://images.unsplash.com/photo-1581092160562-40aa08e78837?w=800&h=600&fit=crop'
   },
+  { 
+    icon: Box, 
+    name: 'Magic CAD', 
+    description: 'Next-gen AI 3D modeling and CAD tools powered by NVIDIA NIM and OpenSCAD. Generate 3D models from text prompts.', 
+    isPro: true, 
+    href: '/magic-cad',
+    image: 'https://images.unsplash.com/photo-1617791160505-6f00504e3519?w=800&h=600&fit=crop'
+  },
 ];
 
 const interactiveSimulations = [

@@ -37,8 +37,8 @@ export function Header({ onSearch, searchQuery, onSearchChange }: HeaderProps = 
 
   const navLinks = [
     { href: '/', label: 'Home' },
-    { href: '/apps', label: 'Apps' },
     { href: '/magic-cad', label: 'Magic CAD ✨' },
+    { href: '/apps', label: 'Apps' },
     { href: '/calculators', label: 'Calculators' },
     { href: '/tutorials', label: 'Tutorials' },
     { href: '/projects', label: 'Projects' },
@@ -103,12 +103,15 @@ export function Header({ onSearch, searchQuery, onSearchChange }: HeaderProps = 
               className="relative px-2.5 xl:px-3.5 py-2 text-xs xl:text-sm font-medium text-[#B8A7E0] transition-all hover:text-white group whitespace-nowrap"
             >
               {link.label === 'Magic CAD ✨' ? (
-                <div className="flex items-center gap-1.5">
-                  <span>Magic CAD</span>
-                  <span style={{ fontSize: "0.5rem", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "#76b900", background: "#76b90020", border: "1px solid #76b90040", borderRadius: 4, padding: "1px 4px" }}>
+                <motion.div 
+                  className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#76b900]/10 border border-[#76b900]/30 hover:bg-[#76b900]/20 transition-all"
+                  whileHover={{ scale: 1.05 }}
+                >
+                  <span className="text-white font-bold">Magic CAD</span>
+                  <span style={{ fontSize: "0.5rem", fontWeight: 800, letterSpacing: "0.1em", textTransform: "uppercase", color: "#76b900", background: "#76b90020", border: "1px solid #76b90040", borderRadius: 4, padding: "1px 4px" }}>
                     NVIDIA
                   </span>
-                </div>
+                </motion.div>
               ) : (
                 link.label
               )}
@@ -193,9 +196,9 @@ export function Header({ onSearch, searchQuery, onSearchChange }: HeaderProps = 
                   className="text-lg font-medium transition-colors hover:text-[#9C4AFF] text-white"
                 >
                   {link.label === 'Magic CAD ✨' ? (
-                    <div className="flex items-center gap-2">
-                      <span>Magic CAD</span>
-                      <span style={{ fontSize: "0.6rem", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "#76b900", background: "#76b90020", border: "1px solid #76b90040", borderRadius: 4, padding: "2px 6px" }}>
+                    <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-[#76b900]/10 border border-[#76b900]/30">
+                      <span className="text-white font-bold">Magic CAD</span>
+                      <span style={{ fontSize: "0.6rem", fontWeight: 800, letterSpacing: "0.1em", textTransform: "uppercase", color: "#76b900", background: "#76b90020", border: "1px solid #76b90040", borderRadius: 4, padding: "2px 6px" }}>
                         NVIDIA
                       </span>
                     </div>
