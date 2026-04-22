@@ -8,11 +8,13 @@ docker ps >nul 2>&1
 if errorlevel 1 (
     echo Docker is not running! Launching Docker Desktop...
     start "" "C:\Program Files\Docker\Docker\Docker Desktop.exe"
-    echo Waiting 15 seconds for Docker Engine to initialize...
-    ping 127.0.0.1 -n 15 > nul
-    docker ps >nul 2>&1
+    echo Waiting for Docker Engine to initialize (this may take up to 60 seconds)...
+    :DockerWaitLoop
+    timeout /t 5 /nobreak >nul
+    docker info >nul 2>&1
     if errorlevel 1 (
-        echo ⚠️ WARNING: Docker still doesn't seem ready. The Supabase backend might fail to start.
+        echo Still waiting for Docker...
+        goto DockerWaitLoop
     ) else (
         echo ✅ Docker started successfully.
     )
@@ -38,6 +40,6 @@ start cmd /k "echo Starting EE Zone Next.js... & npm run dev"
 echo ===================================================
 echo ✨ ALL SERVICES LAUNCHED! ✨
 echo Magic CAD should be available inside EE Zone now.
-echo Visit: http://localhost:3000/magic-cad
+echo Visit: http://localhost:3000/magic-cad-plus
 echo ===================================================
 pause

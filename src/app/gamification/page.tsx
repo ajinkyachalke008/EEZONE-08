@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 import { Trophy, Zap, Target, TrendingUp } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Header } from '@/components/header';
+
 import { PointsDisplay } from '@/components/gamification/points-display';
 import { LevelBadge } from '@/components/gamification/level-badge';
 import { AchievementCard } from '@/components/gamification/achievement-card';
@@ -92,11 +92,7 @@ export default function GamificationPage() {
 
   return (
     <div className="min-h-screen gradient-depth">
-      <Header 
-        onSearch={() => {}}
-        searchQuery=""
-        onSearchChange={() => {}}
-      />
+
 
       {/* Hero Section */}
       <section className="relative py-16 px-4 overflow-hidden">

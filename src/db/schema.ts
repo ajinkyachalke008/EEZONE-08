@@ -258,3 +258,21 @@ export const circuitProjects = sqliteTable('circuit_projects', {
   createdAt: integer('created_at', { mode: 'timestamp' }).notNull(),
   updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull(),
 });
+
+// Apps Library table
+export const apps = sqliteTable('apps', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  name: text('name').notNull(),
+  description: text('description').notNull(),
+  rating: real('rating').notNull().default(0.0),
+  reviews: integer('reviews').notNull().default(0),
+  category: text('category').notNull(),
+  isPro: integer('is_pro', { mode: 'boolean' }).notNull().default(false),
+  purpose: text('purpose').notNull(),
+  necVersion: text('nec_version').notNull(),
+  image: text('image').notNull(),
+  href: text('href'),
+  targetRoles: text('target_roles', { mode: 'json' }),
+  createdAt: integer('created_at', { mode: 'timestamp' }).notNull(),
+  updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull(),
+});

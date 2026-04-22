@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Header } from '@/components/header';
+
 import { LeaderboardTable } from '@/components/gamification/leaderboard-table';
 import { PointsDisplay } from '@/components/gamification/points-display';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -76,7 +76,7 @@ export default function LeaderboardPage() {
 
   return (
     <div className="min-h-screen gradient-depth">
-      <Header onSearch={() => {}} searchQuery="" onSearchChange={() => {}} />
+
 
       {/* Hero Section */}
       <section className="relative py-16 px-4 overflow-hidden">

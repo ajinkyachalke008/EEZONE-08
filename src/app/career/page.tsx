@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Header } from '@/components/header';
+
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -335,7 +335,7 @@ export default function CareerPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#0A0014] via-[#130026] to-[#0A0014]">
-      <Header onSearch={() => {}} searchQuery="" onSearchChange={() => {}} />
+
 
       {/* Hero Section with Enhanced Design */}
       <section className="relative py-20 px-4 overflow-hidden">

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Search, Star, Filter, X, Sparkles, Zap } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -13,151 +13,47 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { motion } from 'framer-motion';
 
-const apps = [
-  {
-    id: 1,
-    name: 'Circuit Simulator Pro',
-    description: 'Advanced circuit simulation with real-time analysis and comprehensive component library',
-    rating: 4.8,
-    reviews: 2340,
-    category: 'Design',
-    isPro: true,
-    purpose: 'Design & Simulation',
-    necVersion: '2023',
-    image: 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=400&h=300&fit=crop',
-  },
-  {
-    id: 2,
-    name: 'NEC Code Reference',
-    description: 'Complete National Electrical Code database with search and bookmarks',
-    rating: 4.9,
-    reviews: 5678,
-    category: 'Reference',
-    isPro: false,
-    purpose: 'Code Reference',
-    necVersion: '2023',
-    image: 'https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?w=400&h=300&fit=crop',
-  },
-  {
-    id: 3,
-    name: 'Load Calculator',
-    description: 'Calculate electrical loads for residential & commercial installations',
-    rating: 4.7,
-    reviews: 1890,
-    category: 'Calculator',
-    isPro: false,
-    purpose: 'Calculations',
-    necVersion: '2020',
-    image: 'https://images.unsplash.com/photo-1635070041078-e363dbe005cb?w=400&h=300&fit=crop',
-  },
-  {
-    id: 4,
-    name: 'Power Quality Analyzer',
-    description: 'Monitor and analyze power quality issues in real-time',
-    rating: 4.6,
-    reviews: 982,
-    category: 'Analysis',
-    isPro: true,
-    purpose: 'Analysis & Testing',
-    necVersion: '2023',
-    image: 'https://images.unsplash.com/photo-1581092160562-40aa08e78837?w=400&h=300&fit=crop',
-  },
-  {
-    id: 5,
-    name: 'Wire Size Calculator',
-    description: 'Determine proper wire gauge based on ampacity and voltage drop',
-    rating: 4.8,
-    reviews: 3421,
-    category: 'Calculator',
-    isPro: false,
-    purpose: 'Calculations',
-    necVersion: '2023',
-    image: 'https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?w=400&h=300&fit=crop',
-  },
-  {
-    id: 6,
-    name: 'Panel Schedule Builder',
-    description: 'Create professional electrical panel schedules quickly',
-    rating: 4.7,
-    reviews: 1567,
-    category: 'Design',
-    isPro: true,
-    purpose: 'Design & Simulation',
-    necVersion: '2020',
-    image: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=400&h=300&fit=crop',
-  },
-  {
-    id: 7,
-    name: 'Fault Current Calculator',
-    description: 'Calculate short circuit and fault currents for system protection',
-    rating: 4.9,
-    reviews: 2103,
-    category: 'Calculator',
-    isPro: false,
-    purpose: 'Calculations',
-    necVersion: '2023',
-    image: 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=400&h=300&fit=crop',
-  },
-  {
-    id: 8,
-    name: 'Motor Control Designer',
-    description: 'Design motor control circuits with protection and control logic',
-    rating: 4.5,
-    reviews: 876,
-    category: 'Design',
-    isPro: true,
-    purpose: 'Design & Simulation',
-    necVersion: '2020',
-    image: 'https://images.unsplash.com/photo-1581092918056-0c4c3acd3789?w=400&h=300&fit=crop',
-  },
-  {
-    id: 9,
-    name: 'Lighting Design Tool',
-    description: 'Plan and calculate lighting layouts for optimal illumination',
-    rating: 4.6,
-    reviews: 1234,
-    category: 'Design',
-    isPro: false,
-    purpose: 'Design & Simulation',
-    necVersion: '2023',
-    image: 'https://images.unsplash.com/photo-1513828583688-c52646db42da?w=400&h=300&fit=crop',
-  },
-  {
-    id: 10,
-    name: 'Pro Diagram Editor',
-    description: 'AI-powered circuit diagramming with Mermaid, export to PNG/SVG/PDF, and 1000+ electrical symbols',
-    rating: 4.9,
-    reviews: 4210,
-    category: 'Design',
-    isPro: true,
-    purpose: 'Design & Simulation',
-    necVersion: '2023',
-    image: 'https://images.unsplash.com/photo-1581092160562-40aa08e78837?w=400&h=300&fit=crop',
-    href: '/tools/diagram-editor',
-  },
-  {
-    id: 11,
-    name: 'Magic CAD',
-    description: 'Next-gen AI 3D modeling and CAD tools powered by NVIDIA NIM and OpenSCAD.',
-    rating: 5.0,
-    reviews: 1337,
-    category: 'Design',
-    isPro: true,
-    purpose: 'Design & Simulation',
-    necVersion: '2023',
-    image: 'https://images.unsplash.com/photo-1617791160505-6f00504e3519?w=400&h=300&fit=crop',
-    href: '/magic-cad',
-  },
-];
+export interface AppData {
+  id: number;
+  name: string;
+  description: string;
+  rating: number;
+  reviews: number;
+  category: string;
+  isPro: boolean;
+  purpose: string;
+  necVersion: string;
+  image: string;
+  href: string | null;
+}
 
 export default function AppsPage() {
   const router = useRouter();
+  const [apps, setApps] = useState<AppData[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedPricing, setSelectedPricing] = useState<string[]>([]);
   const [selectedPurpose, setSelectedPurpose] = useState<string[]>([]);
   const [selectedNEC, setSelectedNEC] = useState<string[]>([]);
   const [minRating, setMinRating] = useState<number>(0);
   const [sortBy, setSortBy] = useState('popular');
+
+  useEffect(() => {
+    const fetchApps = async () => {
+      try {
+        const res = await fetch('/api/apps');
+        if (res.ok) {
+          const data = await res.json();
+          setApps(data.apps);
+        }
+      } catch (error) {
+        console.error('Failed to fetch apps', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchApps();
+  }, []);
 
   const purposes = ['Design & Simulation', 'Calculations', 'Code Reference', 'Analysis & Testing'];
   const necVersions = ['2023', '2020', '2017'];
@@ -384,12 +280,18 @@ export default function AppsPage() {
 
           {/* Apps Grid */}
           <div className="flex-1">
-            <motion.div 
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.4, delay: 0.4 }}
-              className="mb-4 text-sm text-[#B8A7E0]"
-            >
+            {isLoading ? (
+              <div className="flex justify-center items-center py-20">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#9C4AFF]"></div>
+              </div>
+            ) : (
+              <>
+                <motion.div 
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 0.4, delay: 0.4 }}
+                  className="mb-4 text-sm text-[#B8A7E0]"
+                >
               Showing <span className="text-white font-semibold">{sortedApps.length}</span> of <span className="text-white font-semibold">{apps.length}</span> apps
             </motion.div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -462,6 +364,8 @@ export default function AppsPage() {
                   Clear Filters
                 </Button>
               </motion.div>
+            )}
+            </>
             )}
           </div>
         </div>

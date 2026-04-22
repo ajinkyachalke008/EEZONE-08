@@ -15,7 +15,7 @@ interface HeaderProps {
   onSearchChange?: (query: string) => void;
 }
 
-export function Header({ onSearch, searchQuery, onSearchChange }: HeaderProps = {}) {
+export function SiteHeader({ onSearch, searchQuery, onSearchChange }: HeaderProps = {}) {
   const [userStats, setUserStats] = useState<any>(null);
   const userId = 'demo_user'; // In production, get from auth
 
@@ -209,4 +209,4 @@ export function Header({ onSearch, searchQuery, onSearchChange }: HeaderProps = 
   );
 }
 
-export default Header;
+export default SiteHeader;

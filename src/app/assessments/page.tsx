@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Header } from '@/components/header';
+
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -129,7 +129,7 @@ export default function AssessmentsPage() {
 
   return (
     <div className="min-h-screen gradient-depth">
-      <Header onSearch={() => {}} searchQuery="" onSearchChange={() => {}} />
+
 
       {/* Hero Section */}
       <section className="relative py-16 px-4 overflow-hidden">

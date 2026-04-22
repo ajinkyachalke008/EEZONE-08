@@ -8,7 +8,6 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Header } from '@/components/header';
 import Link from 'next/link';
 
 interface Project {
@@ -60,9 +59,10 @@ export default function ProjectsPage() {
       
       const response = await fetch(`/api/projects?${params.toString()}`);
       const data = await response.json();
-      setProjects(data);
+      // Ensure data is always an array to prevent .map() crash
+      setProjects(Array.isArray(data) ? data : []);
     } catch {
-      // Silent fail - projects will show empty state
+      setProjects([]);
     } finally {
       setLoading(false);
     }
@@ -70,11 +70,6 @@ export default function ProjectsPage() {
 
   return (
     <div className="min-h-screen gradient-depth">
-      <Header 
-        onSearch={setSearchQuery}
-        searchQuery={searchQuery}
-        onSearchChange={setSearchQuery}
-      />
 
       {/* Hero Section */}
       <section className="relative py-16 px-4 overflow-hidden">

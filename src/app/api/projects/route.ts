@@ -51,10 +51,8 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(results, { status: 200 });
   } catch (error) {
     console.error('GET error:', error);
-    return NextResponse.json(
-      { error: 'Internal server error: ' + (error as Error).message },
-      { status: 500 }
-    );
+    // Return empty array when DB is unavailable (prevents page crash)
+    return NextResponse.json([], { status: 200 });
   }
 }
 

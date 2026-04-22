@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Progress } from '@/components/ui/progress';
-import { Header } from '@/components/header';
+
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
@@ -124,11 +124,7 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
 
   return (
     <div className="min-h-screen gradient-depth">
-      <Header 
-        onSearch={() => {}}
-        searchQuery=""
-        onSearchChange={() => {}}
-      />
+
 
       <div className="container mx-auto max-w-7xl px-4 py-8">
         {/* Back Button */}
