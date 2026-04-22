@@ -42,7 +42,7 @@ Respond with ONLY the code block, no explanations before or after. Start directl
         'X-Title': 'EE Zone Code Assistant',
       },
       body: JSON.stringify({
-        model: 'openai/gpt-4o-mini',
+        model: 'google/gemma-3-27b-it:free',
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: `Platform: ${platform.toUpperCase()}\n\nRequirement: ${prompt}` }

@@ -30,7 +30,7 @@ Keep responses concise but thorough. Use technical terms appropriately but expla
       'X-Title': 'EE Zone AI Assistant',
     },
     body: JSON.stringify({
-      model: 'mistralai/mistral-7b-instruct:free',
+      model: 'google/gemma-3-27b-it:free',
       messages: [
         { role: 'system', content: systemPrompt },
         { role: 'user', content: (context ? `Context: ${context}\n\n` : '') + message }

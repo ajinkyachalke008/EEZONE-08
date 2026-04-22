@@ -80,7 +80,7 @@ async function callOpenRouter(image: string) {
       'X-Title': 'EE Zone - Instrument Scanner'
     },
     body: JSON.stringify({
-      model: 'openai/gpt-4o',
+      model: 'google/gemma-3-27b-it:free',
       messages: [
         {
           role: 'user',

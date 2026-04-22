@@ -47,7 +47,7 @@ Return ONLY valid JSON, no markdown formatting.`;
         'X-Title': 'EE Zone Circuit Designer',
       },
       body: JSON.stringify({
-        model: 'openai/gpt-4o-mini',
+        model: 'google/gemma-3-27b-it:free',
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: `Design a circuit for: ${prompt}` }
