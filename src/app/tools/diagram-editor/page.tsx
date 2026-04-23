@@ -12,7 +12,6 @@ export default function DiagramEditorPage() {
   const [isMounted, setIsMounted] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [showTips, setShowTips] = useState(true);
-
   useEffect(() => {
     setIsMounted(true);
   }, []);

@@ -57,7 +57,7 @@ async function main() {
         {
             projectId: 2,
             userId: 'solar_002',
-            comment: 'Best solar guide I've found. Clear explanations of series vs parallel configurations.',
+            comment: "Best solar guide I've found. Clear explanations of series vs parallel configurations.",
             createdAt: new Date('2024-01-19T15:30:00').toISOString(),
         },
         {
@@ -101,7 +101,7 @@ async function main() {
         {
             projectId: 3,
             userId: 'user_004',
-            comment: 'Great starter project for IoT. Now I'm planning to add motion sensors and door locks.',
+            comment: "Great starter project for IoT. Now I'm planning to add motion sensors and door locks.",
             createdAt: new Date('2024-01-19T16:00:00').toISOString(),
         },
         {

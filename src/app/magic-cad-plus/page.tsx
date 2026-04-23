@@ -8,7 +8,7 @@ export default function MagicCADPlusPage() {
   const [iframeError, setIframeError] = useState(false);
   const [retryCount, setRetryCount] = useState(0);
 
-  const cadamUrl = process.env.NEXT_PUBLIC_CADAM_URL || 'http://127.0.0.1:5173';
+  const cadamUrl = process.env.NEXT_PUBLIC_CADAM_URL || 'http://localhost:5173/cadam/';
 
   // Check if CADAM is running before showing iframe
   useEffect(() => {

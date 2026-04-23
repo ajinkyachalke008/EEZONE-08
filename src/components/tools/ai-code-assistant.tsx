@@ -1,151 +1,70 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
+import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Code, Copy, Download, Sparkles, Loader2, CheckCircle2 } from 'lucide-react';
+import { Code, Copy, Download, Sparkles, Loader2, CheckCircle2, Zap } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 
-interface CodeExample {
+interface QuickExample {
   platform: string;
-  language: string;
-  code: string;
-  description: string;
+  prompt: string;
+  label: string;
+  icon: string;
 }
 
-const codeTemplates: Record<string, CodeExample[]> = {
-  plc: [
-    {
-      platform: 'PLC',
-      language: 'Ladder Logic (Text)',
-      code: `// Motor Start/Stop Circuit
-START_BUTTON := I:0/0
-STOP_BUTTON := I:0/1
-MOTOR_RUN := O:0/0
-OVERLOAD := I:0/2
-
-// Latch Motor Run when Start pressed
-XIC START_BUTTON
-XIO STOP_BUTTON
-XIO OVERLOAD
-OTE MOTOR_RUN
-
-// Seal-in circuit
-XIC MOTOR_RUN
-XIO STOP_BUTTON
-XIO OVERLOAD
-OTE MOTOR_RUN`,
-      description: 'Basic motor control with start/stop and overload protection'
-    }
-  ],
+const quickExamples: Record<string, QuickExample[]> = {
   arduino: [
-    {
-      platform: 'Arduino',
-      language: 'C++',
-      code: `// LED PWM Dimmer with Button Control
-const int ledPin = 9;
-const int buttonUp = 2;
-const int buttonDown = 3;
-int brightness = 128;
-
-void setup() {
-  pinMode(ledPin, OUTPUT);
-  pinMode(buttonUp, INPUT_PULLUP);
-  pinMode(buttonDown, INPUT_PULLUP);
-}
-
-void loop() {
-  if (digitalRead(buttonUp) == LOW) {
-    brightness = min(255, brightness + 5);
-    delay(50);
-  }
-  
-  if (digitalRead(buttonDown) == LOW) {
-    brightness = max(0, brightness - 5);
-    delay(50);
-  }
-  
-  analogWrite(ledPin, brightness);
-}`,
-      description: 'PWM LED dimming with button control'
-    }
+    { platform: 'arduino', prompt: 'Blink an LED on pin 13 with timing control', label: 'LED Blink Controller', icon: '💡' },
+    { platform: 'arduino', prompt: 'Temperature and humidity sensor DHT11 monitoring system', label: 'Temperature Monitor', icon: '🌡️' },
+    { platform: 'arduino', prompt: 'DC Motor speed control with PWM and H-bridge L298N', label: 'Motor Speed Control', icon: '⚙️' },
+    { platform: 'arduino', prompt: 'Servo motor angle position controller', label: 'Servo Controller', icon: '🔄' },
+    { platform: 'arduino', prompt: 'LCD display I2C 16x2 showing sensor data', label: 'LCD Display', icon: '📺' },
+    { platform: 'arduino', prompt: 'Ultrasonic distance measurement HC-SR04 sensor', label: 'Distance Sensor', icon: '📏' },
+    { platform: 'arduino', prompt: 'Multi-channel relay control system for home automation', label: 'Relay Controller', icon: '🔌' },
+    { platform: 'arduino', prompt: 'Button debounce with long press and double click detection', label: 'Button Handler', icon: '🔘' },
+    { platform: 'arduino', prompt: 'IR infrared remote control receiver', label: 'IR Receiver', icon: '📡' },
+    { platform: 'arduino', prompt: 'Stepper motor NEMA controller with A4988 driver', label: 'Stepper Motor', icon: '🔩' },
+    { platform: 'arduino', prompt: 'Keypad 4x4 password access security lock system', label: 'Keypad Lock', icon: '🔐' },
   ],
   esp32: [
-    {
-      platform: 'ESP32',
-      language: 'C++',
-      code: `// ESP32 WiFi Energy Monitor
-#include <WiFi.h>
-#include <WebServer.h>
-
-const char* ssid = "YOUR_SSID";
-const char* password = "YOUR_PASSWORD";
-
-WebServer server(80);
-const int currentSensorPin = 34;
-const int voltageSensorPin = 35;
-
-float voltage = 0;
-float current = 0;
-float power = 0;
-
-void setup() {
-  Serial.begin(115200);
-  
-  WiFi.begin(ssid, password);
-  while (WiFi.status() != WL_CONNECTED) {
-    delay(500);
-    Serial.print(".");
-  }
-  
-  server.on("/", handleRoot);
-  server.on("/data", handleData);
-  server.begin();
-}
-
-void loop() {
-  server.handleClient();
-  readSensors();
-  delay(100);
-}
-
-void readSensors() {
-  int voltageRaw = analogRead(voltageSensorPin);
-  int currentRaw = analogRead(currentSensorPin);
-  
-  voltage = (voltageRaw / 4095.0) * 250.0;
-  current = (currentRaw / 4095.0) * 30.0;
-  power = voltage * current;
-}
-
-void handleRoot() {
-  String html = "<h1>Energy Monitor</h1>";
-  html += "<p>Voltage: " + String(voltage) + " V</p>";
-  html += "<p>Current: " + String(current) + " A</p>";
-  html += "<p>Power: " + String(power) + " W</p>";
-  server.send(200, "text/html", html);
-}
-
-void handleData() {
-  String json = "{\\"voltage\\":" + String(voltage);
-  json += ",\\"current\\":" + String(current);
-  json += ",\\"power\\":" + String(power) + "}";
-  server.send(200, "application/json", json);
-}`,
-      description: 'WiFi-enabled power monitoring system'
-    }
-  ]
+    { platform: 'esp32', prompt: 'WiFi web server with real-time sensor dashboard', label: 'WiFi Dashboard', icon: '🌐' },
+    { platform: 'esp32', prompt: 'Bluetooth BLE controller for mobile app', label: 'BLE Controller', icon: '📱' },
+    { platform: 'esp32', prompt: 'MQTT IoT client for smart home automation', label: 'MQTT IoT Client', icon: '🏠' },
+    { platform: 'esp32', prompt: 'OLED SSD1306 display dashboard with graphs', label: 'OLED Dashboard', icon: '📊' },
+    { platform: 'esp32', prompt: 'Energy power monitor with voltage current measurement', label: 'Energy Monitor', icon: '⚡' },
+  ],
+  plc: [
+    { platform: 'plc', prompt: 'Motor start stop control circuit with overload protection', label: 'Motor Start/Stop', icon: '🏭' },
+    { platform: 'plc', prompt: 'Traffic light signal sequence controller with pedestrian crossing', label: 'Traffic Lights', icon: '🚦' },
+    { platform: 'plc', prompt: 'Conveyor belt controller with product counting and jam detection', label: 'Conveyor Control', icon: '🏗️' },
+    { platform: 'plc', prompt: 'Tank water level controller with pump and valve automation', label: 'Tank Level Control', icon: '💧' },
+  ],
 };
 
 export function AICodeAssistant() {
   const [platform, setPlatform] = useState('arduino');
   const [prompt, setPrompt] = useState('');
   const [generatedCode, setGeneratedCode] = useState('');
+  const [codeTitle, setCodeTitle] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState('');
   const [copied, setCopied] = useState(false);
+  const [useOnline, setUseOnline] = useState(false);
+  const [apiKey, setApiKey] = useState('');
+
+  useEffect(() => {
+    const savedKey = localStorage.getItem('eezone_openrouter_key');
+    if (savedKey) setApiKey(savedKey);
+  }, []);
+
+  const handleApiKeyChange = (val: string) => {
+    setApiKey(val);
+    localStorage.setItem('eezone_openrouter_key', val);
+  };
 
   const generateCode = async () => {
     if (!prompt.trim()) return;
@@ -153,12 +72,13 @@ export function AICodeAssistant() {
     setIsGenerating(true);
     setError('');
     setGeneratedCode('');
+    setCodeTitle('');
     
     try {
       const response = await fetch('/api/ai-code', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ platform, prompt }),
+        body: JSON.stringify({ platform, prompt, useOnlineAI: useOnline, apiKey }),
       });
       
       const data = await response.json();
@@ -168,8 +88,10 @@ export function AICodeAssistant() {
       }
       
       let code = data.code || '';
+      // Clean up any markdown code block wrappers
       code = code.replace(/^```[\w]*\n?/, '').replace(/\n?```$/, '');
       setGeneratedCode(code);
+      setCodeTitle(data.title || 'Generated Code');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to generate code');
     } finally {
@@ -177,9 +99,9 @@ export function AICodeAssistant() {
     }
   };
 
-  const loadExample = (example: CodeExample) => {
-    setGeneratedCode(example.code);
-    setPrompt(example.description);
+  const loadExample = (example: QuickExample) => {
+    setPlatform(example.platform);
+    setPrompt(example.prompt);
   };
 
   const copyCode = async () => {
@@ -190,7 +112,7 @@ export function AICodeAssistant() {
 
   const downloadCode = () => {
     const extensions: Record<string, string> = {
-      plc: 'txt',
+      plc: 'st',
       arduino: 'ino',
       esp32: 'ino'
     };
@@ -199,10 +121,12 @@ export function AICodeAssistant() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `${platform}_code.${extensions[platform] || 'txt'}`;
+    a.download = `eezone_${platform}_code.${extensions[platform] || 'txt'}`;
     a.click();
     URL.revokeObjectURL(url);
   };
+
+  const currentExamples = quickExamples[platform] || [];
 
   return (
     <div className="space-y-6">
@@ -211,41 +135,83 @@ export function AICodeAssistant() {
           <CardTitle className="text-white flex items-center gap-2">
             <Code className="h-6 w-6 text-[#FF00C8]" />
             AI Code Assistant
+            <Badge className={useOnline ? "bg-green-500/20 text-green-400 border-green-500/30 text-xs ml-2 cursor-pointer transition-all" : "bg-blue-500/20 text-blue-400 border-blue-500/30 text-xs ml-2 cursor-pointer transition-all"} onClick={() => setUseOnline(!useOnline)}>
+              {useOnline ? <Zap className="h-3 w-3 mr-1" /> : <Code className="h-3 w-3 mr-1" />}
+              {useOnline ? 'Online (API)' : 'Offline (Local)'}
+            </Badge>
           </CardTitle>
           <CardDescription className="text-[#B8A7E0]">
-            Generate PLC, Arduino, and ESP32 code with AI assistance powered by OpenRouter
+            Generate production-ready PLC, Arduino, and ESP32 code instantly — powered by EE ZONE&apos;s built-in code engine
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
-          <div>
-            <label className="text-sm font-medium mb-2 block text-white">Target Platform</label>
-            <Select value={platform} onValueChange={setPlatform}>
-              <SelectTrigger className="glass-surface border-white/20 text-white">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="plc">PLC (Ladder Logic / Structured Text)</SelectItem>
-                <SelectItem value="arduino">Arduino</SelectItem>
-                <SelectItem value="esp32">ESP32</SelectItem>
-              </SelectContent>
-            </Select>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="text-sm font-medium mb-2 block text-white">Target Platform</label>
+              <Select value={platform} onValueChange={(val) => { setPlatform(val); setGeneratedCode(''); setCodeTitle(''); }}>
+                <SelectTrigger className="glass-surface border-white/20 text-white">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="plc">🏭 PLC (IEC 61131-3 Structured Text)</SelectItem>
+                  <SelectItem value="arduino">🔌 Arduino (C++)</SelectItem>
+                  <SelectItem value="esp32">📡 ESP32 (WiFi/BLE IoT)</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            
+            <div>
+              <label className="text-sm font-medium mb-2 block text-white">Generation Engine</label>
+              <div className="flex bg-white/5 rounded-lg border border-white/10 p-1">
+                <button
+                  type="button"
+                  onClick={() => setUseOnline(false)}
+                  className={`flex-1 flex items-center justify-center text-sm py-1.5 rounded-md transition-all ${!useOnline ? 'bg-[#9C4AFF]/20 text-[#FF00C8] font-medium' : 'text-white/60 hover:text-white'}`}
+                >
+                  <Code className="h-4 w-4 mr-2" />
+                  Local Fast
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setUseOnline(true)}
+                  className={`flex-1 flex items-center justify-center text-sm py-1.5 rounded-md transition-all ${useOnline ? 'bg-green-500/20 text-green-400 font-medium' : 'text-white/60 hover:text-white'}`}
+                >
+                  <Zap className="h-4 w-4 mr-2" />
+                  Online AI
+                </button>
+              </div>
+            </div>
           </div>
 
+          {useOnline && (
+            <div className="space-y-2 animate-in fade-in slide-in-from-top-2 duration-300">
+              <label className="text-sm font-medium text-white flex items-center justify-between">
+                <span>OpenRouter API Key</span>
+                <a href="https://openrouter.ai/keys" target="_blank" rel="noreferrer" className="text-xs text-[#00D4FF] hover:underline">Get a free key &rarr;</a>
+              </label>
+              <Input
+                type="password"
+                value={apiKey}
+                onChange={(e) => handleApiKeyChange(e.target.value)}
+                placeholder="sk-or-v1-..."
+                className="glass-surface border-white/20 text-white placeholder:text-white/30 font-mono"
+              />
+              <p className="text-xs text-[#B8A7E0]">Your key is stored locally in your browser and never sent anywhere except the backend for code generation.</p>
+            </div>
+          )}
+
           <div className="space-y-3">
-            <label className="text-sm font-medium text-white">Quick Examples</label>
-            <div className="grid grid-cols-1 gap-2">
-              {(codeTemplates[platform] || []).map((example, idx) => (
+            <label className="text-sm font-medium text-white">Quick Examples — click to load</label>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+              {currentExamples.map((example, idx) => (
                 <Button
                   key={idx}
                   variant="outline"
                   onClick={() => loadExample(example)}
-                  className="justify-start text-left h-auto py-3 glass-surface border-white/20 text-white hover:bg-white/10"
+                  className="justify-start text-left h-auto py-2.5 px-3 glass-surface border-white/20 text-white hover:bg-white/10 hover:border-[#9C4AFF]/50 transition-all"
                 >
-                  <div className="flex-1">
-                    <div className="font-medium">{example.description}</div>
-                    <div className="text-xs text-[#B8A7E0] mt-1">{example.language}</div>
-                  </div>
-                  <Code className="h-4 w-4 text-[#FF00C8]" />
+                  <span className="mr-2 text-lg">{example.icon}</span>
+                  <span className="text-sm truncate">{example.label}</span>
                 </Button>
               ))}
             </div>
@@ -289,11 +255,17 @@ export function AICodeAssistant() {
 
           {generatedCode && (
             <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <h3 className="font-semibold text-lg flex items-center gap-2 text-white">
-                  <Code className="h-5 w-5 text-[#FF00C8]" />
-                  Generated Code
-                </h3>
+              <div className="flex items-center justify-between flex-wrap gap-2">
+                <div>
+                  <h3 className="font-semibold text-lg flex items-center gap-2 text-white">
+                    <Code className="h-5 w-5 text-[#FF00C8]" />
+                    {codeTitle || 'Generated Code'}
+                  </h3>
+                  <p className="text-xs text-[#B8A7E0] mt-1 flex items-center gap-1">
+                    <Zap className="h-3 w-3" />
+                    Generated by EE ZONE Code Engine • {platform.toUpperCase()}
+                  </p>
+                </div>
                 <div className="flex gap-2">
                   <Button onClick={copyCode} variant="outline" size="sm" className="glass-surface border-white/20 text-white hover:bg-white/10">
                     {copied ? <CheckCircle2 className="h-4 w-4 mr-2 text-green-400" /> : <Copy className="h-4 w-4 mr-2" />}
@@ -301,14 +273,14 @@ export function AICodeAssistant() {
                   </Button>
                   <Button onClick={downloadCode} variant="outline" size="sm" className="glass-surface border-white/20 text-white hover:bg-white/10">
                     <Download className="h-4 w-4 mr-2" />
-                    Download
+                    Download .{platform === 'plc' ? 'st' : 'ino'}
                   </Button>
                 </div>
               </div>
 
               <Card className="bg-[#0a0a1a] border-[#9C4AFF]/30">
                 <CardContent className="pt-6">
-                  <pre className="text-sm overflow-x-auto text-green-400 font-mono">
+                  <pre className="text-sm overflow-x-auto text-green-400 font-mono whitespace-pre-wrap" style={{ maxHeight: '600px', overflowY: 'auto' }}>
                     <code>{generatedCode}</code>
                   </pre>
                 </CardContent>
@@ -319,7 +291,7 @@ export function AICodeAssistant() {
           {!generatedCode && !isGenerating && (
             <div className="text-center py-12 text-[#B8A7E0]">
               <Code className="h-16 w-16 mx-auto mb-4 opacity-30" />
-              <p>Describe your project or select an example to generate code</p>
+              <p>Select a platform, choose an example or describe your project, then click Generate</p>
             </div>
           )}
         </CardContent>

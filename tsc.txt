@@ -1,0 +1,881 @@
+﻿.next/types/app/api/apps/[id]/route.ts(49,7): error TS2344: Type '{ __tag__: "GET"; __param_position__: "second"; __param_type__: { params: { id: string; }; }; }' does not satisfy the constraint 'ParamCheck<RouteContext>'.
+  The types of '__param_type__.params' are incompatible between these types.
+    Type '{ id: string; }' is missing the following properties from type 'Promise<any>': then, catch, finally, [Symbol.toStringTag]
+.next/types/app/api/apps/[id]/route.ts(205,7): error TS2344: Type '{ __tag__: "PUT"; __param_position__: "second"; __param_type__: { params: { id: string; }; }; }' does not satisfy the constraint 'ParamCheck<RouteContext>'.
+  The types of '__param_type__.params' are incompatible between these types.
+    Type '{ id: string; }' is missing the following properties from type 'Promise<any>': then, catch, finally, [Symbol.toStringTag]
+.next/types/app/api/apps/[id]/route.ts(244,7): error TS2344: Type '{ __tag__: "DELETE"; __param_position__: "second"; __param_type__: { params: { id: string; }; }; }' does not satisfy the constraint 'ParamCheck<RouteContext>'.
+  The types of '__param_type__.params' are incompatible between these types.
+    Type '{ id: string; }' is missing the following properties from type 'Promise<any>': then, catch, finally, [Symbol.toStringTag]
+.next/types/app/api/circuit-projects/[id]/route.ts(49,7): error TS2344: Type '{ __tag__: "GET"; __param_position__: "second"; __param_type__: { params: { id: string; }; }; }' does not satisfy the constraint 'ParamCheck<RouteContext>'.
+  The types of '__param_type__.params' are incompatible between these types.
+    Type '{ id: string; }' is missing the following properties from type 'Promise<any>': then, catch, finally, [Symbol.toStringTag]
+.next/types/app/api/circuit-projects/[id]/route.ts(205,7): error TS2344: Type '{ __tag__: "PUT"; __param_position__: "second"; __param_type__: { params: { id: string; }; }; }' does not satisfy the constraint 'ParamCheck<RouteContext>'.
+  The types of '__param_type__.params' are incompatible between these types.
+    Type '{ id: string; }' is missing the following properties from type 'Promise<any>': then, catch, finally, [Symbol.toStringTag]
+.next/types/app/api/circuit-projects/[id]/route.ts(244,7): error TS2344: Type '{ __tag__: "DELETE"; __param_position__: "second"; __param_type__: { params: { id: string; }; }; }' does not satisfy the constraint 'ParamCheck<RouteContext>'.
+  The types of '__param_type__.params' are incompatible between these types.
+    Type '{ id: string; }' is missing the following properties from type 'Promise<any>': then, catch, finally, [Symbol.toStringTag]
+.next/types/app/api/gamification/activities/[userId]/route.ts(49,7): error TS2344: Type '{ __tag__: "GET"; __param_position__: "second"; __param_type__: { params: { userId: string; }; }; }' does not satisfy the constraint 'ParamCheck<RouteContext>'.
+  The types of '__param_type__.params' are incompatible between these types.
+    Type '{ userId: string; }' is missing the following properties from type 'Promise<any>': then, catch, finally, [Symbol.toStringTag]
+.next/types/app/api/gamification/badges/[userId]/route.ts(49,7): error TS2344: Type '{ __tag__: "GET"; __param_position__: "second"; __param_type__: { params: { userId: string; }; }; }' does not satisfy the constraint 'ParamCheck<RouteContext>'.
+  The types of '__param_type__.params' are incompatible between these types.
+    Type '{ userId: string; }' is missing the following properties from type 'Promise<any>': then, catch, finally, [Symbol.toStringTag]
+.next/types/app/api/learn/analytics/[userId]/route.ts(49,7): error TS2344: Type '{ __tag__: "GET"; __param_position__: "second"; __param_type__: { params: { userId: string; }; }; }' does not satisfy the constraint 'ParamCheck<RouteContext>'.
+  The types of '__param_type__.params' are incompatible between these types.
+    Type '{ userId: string; }' is missing the following properties from type 'Promise<any>': then, catch, finally, [Symbol.toStringTag]
+.next/types/app/api/learn/bookmarks/[userId]/route.ts(49,7): error TS2344: Type '{ __tag__: "GET"; __param_position__: "second"; __param_type__: { params: { userId: string; }; }; }' does not satisfy the constraint 'ParamCheck<RouteContext>'.
+  The types of '__param_type__.params' are incompatible between these types.
+    Type '{ userId: string; }' is missing the following properties from type 'Promise<any>': then, catch, finally, [Symbol.toStringTag]
+.next/types/app/api/learn/progress/[userId]/route.ts(49,7): error TS2344: Type '{ __tag__: "GET"; __param_position__: "second"; __param_type__: { params: { userId: string; }; }; }' does not satisfy the constraint 'ParamCheck<RouteContext>'.
+  The types of '__param_type__.params' are incompatible between these types.
+    Type '{ userId: string; }' is missing the following properties from type 'Promise<any>': then, catch, finally, [Symbol.toStringTag]
+.next/types/app/api/learn/quiz/[attemptId]/results/route.ts(49,7): error TS2344: Type '{ __tag__: "GET"; __param_position__: "second"; __param_type__: { params: { attemptId: string; }; }; }' does not satisfy the constraint 'ParamCheck<RouteContext>'.
+  The types of '__param_type__.params' are incompatible between these types.
+    Type '{ attemptId: string; }' is missing the following properties from type 'Promise<any>': then, catch, finally, [Symbol.toStringTag]
+.next/types/app/api/learn/topics/[slug]/route.ts(49,7): error TS2344: Type '{ __tag__: "GET"; __param_position__: "second"; __param_type__: { params: { slug: string; }; }; }' does not satisfy the constraint 'ParamCheck<RouteContext>'.
+  The types of '__param_type__.params' are incompatible between these types.
+    Type '{ slug: string; }' is missing the following properties from type 'Promise<any>': then, catch, finally, [Symbol.toStringTag]
+.next/types/app/api/projects-new/[id]/average-rating/route.ts(49,7): error TS2344: Type '{ __tag__: "GET"; __param_position__: "second"; __param_type__: { params: { id: string; }; }; }' does not satisfy the constraint 'ParamCheck<RouteContext>'.
+  The types of '__param_type__.params' are incompatible between these types.
+    Type '{ id: string; }' is missing the following properties from type 'Promise<any>': then, catch, finally, [Symbol.toStringTag]
+.next/types/app/api/projects-new/[id]/comment/route.ts(166,7): error TS2344: Type '{ __tag__: "POST"; __param_position__: "second"; __param_type__: { params: { id: string; }; }; }' does not satisfy the constraint 'ParamCheck<RouteContext>'.
+  The types of '__param_type__.params' are incompatible between these types.
+    Type '{ id: string; }' is missing the following properties from type 'Promise<any>': then, catch, finally, [Symbol.toStringTag]
+.next/types/app/api/projects-new/[id]/rate/route.ts(166,7): error TS2344: Type '{ __tag__: "POST"; __param_position__: "second"; __param_type__: { params: { id: string; }; }; }' does not satisfy the constraint 'ParamCheck<RouteContext>'.
+  The types of '__param_type__.params' are incompatible between these types.
+    Type '{ id: string; }' is missing the following properties from type 'Promise<any>': then, catch, finally, [Symbol.toStringTag]
+.next/types/app/api/projects-new/[id]/route.ts(49,7): error TS2344: Type '{ __tag__: "GET"; __param_position__: "second"; __param_type__: { params: { id: string; }; }; }' does not satisfy the constraint 'ParamCheck<RouteContext>'.
+  The types of '__param_type__.params' are incompatible between these types.
+    Type '{ id: string; }' is missing the following properties from type 'Promise<any>': then, catch, finally, [Symbol.toStringTag]
+.next/types/app/api/projects-new/[id]/route.ts(205,7): error TS2344: Type '{ __tag__: "PUT"; __param_position__: "second"; __param_type__: { params: { id: string; }; }; }' does not satisfy the constraint 'ParamCheck<RouteContext>'.
+  The types of '__param_type__.params' are incompatible between these types.
+    Type '{ id: string; }' is missing the following properties from type 'Promise<any>': then, catch, finally, [Symbol.toStringTag]
+.next/types/app/api/projects-new/[id]/route.ts(244,7): error TS2344: Type '{ __tag__: "DELETE"; __param_position__: "second"; __param_type__: { params: { id: string; }; }; }' does not satisfy the constraint 'ParamCheck<RouteContext>'.
+  The types of '__param_type__.params' are incompatible between these types.
+    Type '{ id: string; }' is missing the following properties from type 'Promise<any>': then, catch, finally, [Symbol.toStringTag]
+.next/types/app/api/projects-new/[id]/steps/route.ts(166,7): error TS2344: Type '{ __tag__: "POST"; __param_position__: "second"; __param_type__: { params: { id: string; }; }; }' does not satisfy the constraint 'ParamCheck<RouteContext>'.
+  The types of '__param_type__.params' are incompatible between these types.
+    Type '{ id: string; }' is missing the following properties from type 'Promise<any>': then, catch, finally, [Symbol.toStringTag]
+.next/types/app/api/projects/[id]/comments/route.ts(49,7): error TS2344: Type '{ __tag__: "GET"; __param_position__: "second"; __param_type__: { params: { id: string; }; }; }' does not satisfy the constraint 'ParamCheck<RouteContext>'.
+  The types of '__param_type__.params' are incompatible between these types.
+    Type '{ id: string; }' is missing the following properties from type 'Promise<any>': then, catch, finally, [Symbol.toStringTag]
+.next/types/app/api/projects/[id]/comments/route.ts(166,7): error TS2344: Type '{ __tag__: "POST"; __param_position__: "second"; __param_type__: { params: { id: string; }; }; }' does not satisfy the constraint 'ParamCheck<RouteContext>'.
+  The types of '__param_type__.params' are incompatible between these types.
+    Type '{ id: string; }' is missing the following properties from type 'Promise<any>': then, catch, finally, [Symbol.toStringTag]
+.next/types/app/api/projects/[id]/like/route.ts(166,7): error TS2344: Type '{ __tag__: "POST"; __param_position__: "second"; __param_type__: { params: { id: string; }; }; }' does not satisfy the constraint 'ParamCheck<RouteContext>'.
+  The types of '__param_type__.params' are incompatible between these types.
+    Type '{ id: string; }' is missing the following properties from type 'Promise<any>': then, catch, finally, [Symbol.toStringTag]
+.next/types/app/api/projects/[id]/ratings/route.ts(49,7): error TS2344: Type '{ __tag__: "GET"; __param_position__: "second"; __param_type__: { params: { id: string; }; }; }' does not satisfy the constraint 'ParamCheck<RouteContext>'.
+  The types of '__param_type__.params' are incompatible between these types.
+    Type '{ id: string; }' is missing the following properties from type 'Promise<any>': then, catch, finally, [Symbol.toStringTag]
+.next/types/app/api/projects/[id]/ratings/route.ts(166,7): error TS2344: Type '{ __tag__: "POST"; __param_position__: "second"; __param_type__: { params: { id: string; }; }; }' does not satisfy the constraint 'ParamCheck<RouteContext>'.
+  The types of '__param_type__.params' are incompatible between these types.
+    Type '{ id: string; }' is missing the following properties from type 'Promise<any>': then, catch, finally, [Symbol.toStringTag]
+.next/types/app/api/projects/[id]/route.ts(49,7): error TS2344: Type '{ __tag__: "GET"; __param_position__: "second"; __param_type__: { params: { id: string; }; }; }' does not satisfy the constraint 'ParamCheck<RouteContext>'.
+  The types of '__param_type__.params' are incompatible between these types.
+    Type '{ id: string; }' is missing the following properties from type 'Promise<any>': then, catch, finally, [Symbol.toStringTag]
+.next/types/app/api/projects/[id]/route.ts(205,7): error TS2344: Type '{ __tag__: "PUT"; __param_position__: "second"; __param_type__: { params: { id: string; }; }; }' does not satisfy the constraint 'ParamCheck<RouteContext>'.
+  The types of '__param_type__.params' are incompatible between these types.
+    Type '{ id: string; }' is missing the following properties from type 'Promise<any>': then, catch, finally, [Symbol.toStringTag]
+.next/types/app/api/projects/[id]/route.ts(244,7): error TS2344: Type '{ __tag__: "DELETE"; __param_position__: "second"; __param_type__: { params: { id: string; }; }; }' does not satisfy the constraint 'ParamCheck<RouteContext>'.
+  The types of '__param_type__.params' are incompatible between these types.
+    Type '{ id: string; }' is missing the following properties from type 'Promise<any>': then, catch, finally, [Symbol.toStringTag]
+.next/types/app/api/projects/[id]/steps/[stepId]/route.ts(205,7): error TS2344: Type '{ __tag__: "PUT"; __param_position__: "second"; __param_type__: { params: { id: string; stepId: string; }; }; }' does not satisfy the constraint 'ParamCheck<RouteContext>'.
+  The types of '__param_type__.params' are incompatible between these types.
+    Type '{ id: string; stepId: string; }' is missing the following properties from type 'Promise<any>': then, catch, finally, [Symbol.toStringTag]
+.next/types/app/api/projects/[id]/steps/route.ts(49,7): error TS2344: Type '{ __tag__: "GET"; __param_position__: "second"; __param_type__: { params: { id: string; }; }; }' does not satisfy the constraint 'ParamCheck<RouteContext>'.
+  The types of '__param_type__.params' are incompatible between these types.
+    Type '{ id: string; }' is missing the following properties from type 'Promise<any>': then, catch, finally, [Symbol.toStringTag]
+.next/types/app/api/projects/[id]/steps/route.ts(166,7): error TS2344: Type '{ __tag__: "POST"; __param_position__: "second"; __param_type__: { params: { id: string; }; }; }' does not satisfy the constraint 'ParamCheck<RouteContext>'.
+  The types of '__param_type__.params' are incompatible between these types.
+    Type '{ id: string; }' is missing the following properties from type 'Promise<any>': then, catch, finally, [Symbol.toStringTag]
+.next/types/app/api/projects/[id]/uploads/route.ts(49,7): error TS2344: Type '{ __tag__: "GET"; __param_position__: "second"; __param_type__: { params: { id: string; }; }; }' does not satisfy the constraint 'ParamCheck<RouteContext>'.
+  The types of '__param_type__.params' are incompatible between these types.
+    Type '{ id: string; }' is missing the following properties from type 'Promise<any>': then, catch, finally, [Symbol.toStringTag]
+.next/types/app/api/projects/[id]/uploads/route.ts(166,7): error TS2344: Type '{ __tag__: "POST"; __param_position__: "second"; __param_type__: { params: { id: string; }; }; }' does not satisfy the constraint 'ParamCheck<RouteContext>'.
+  The types of '__param_type__.params' are incompatible between these types.
+    Type '{ id: string; }' is missing the following properties from type 'Promise<any>': then, catch, finally, [Symbol.toStringTag]
+.next/types/app/api/projects/[id]/view/route.ts(166,7): error TS2344: Type '{ __tag__: "POST"; __param_position__: "second"; __param_type__: { params: { id: string; }; }; }' does not satisfy the constraint 'ParamCheck<RouteContext>'.
+  The types of '__param_type__.params' are incompatible between these types.
+    Type '{ id: string; }' is missing the following properties from type 'Promise<any>': then, catch, finally, [Symbol.toStringTag]
+.next/types/app/api/tutorials/articles/[id]/like/route.ts(166,7): error TS2344: Type '{ __tag__: "POST"; __param_position__: "second"; __param_type__: { params: { id: string; }; }; }' does not satisfy the constraint 'ParamCheck<RouteContext>'.
+  The types of '__param_type__.params' are incompatible between these types.
+    Type '{ id: string; }' is missing the following properties from type 'Promise<any>': then, catch, finally, [Symbol.toStringTag]
+.next/types/app/api/tutorials/articles/[id]/view/route.ts(166,7): error TS2344: Type '{ __tag__: "POST"; __param_position__: "second"; __param_type__: { params: { id: string; }; }; }' does not satisfy the constraint 'ParamCheck<RouteContext>'.
+  The types of '__param_type__.params' are incompatible between these types.
+    Type '{ id: string; }' is missing the following properties from type 'Promise<any>': then, catch, finally, [Symbol.toStringTag]
+.next/types/app/api/tutorials/resources/[id]/download/route.ts(166,7): error TS2344: Type '{ __tag__: "POST"; __param_position__: "second"; __param_type__: { params: { id: string; }; }; }' does not satisfy the constraint 'ParamCheck<RouteContext>'.
+  The types of '__param_type__.params' are incompatible between these types.
+    Type '{ id: string; }' is missing the following properties from type 'Promise<any>': then, catch, finally, [Symbol.toStringTag]
+.next/types/app/api/tutorials/videos/[id]/rate/route.ts(166,7): error TS2344: Type '{ __tag__: "POST"; __param_position__: "second"; __param_type__: { params: { id: string; }; }; }' does not satisfy the constraint 'ParamCheck<RouteContext>'.
+  The types of '__param_type__.params' are incompatible between these types.
+    Type '{ id: string; }' is missing the following properties from type 'Promise<any>': then, catch, finally, [Symbol.toStringTag]
+.next/types/app/api/tutorials/videos/[id]/route.ts(49,7): error TS2344: Type '{ __tag__: "GET"; __param_position__: "second"; __param_type__: { params: { id: string; }; }; }' does not satisfy the constraint 'ParamCheck<RouteContext>'.
+  The types of '__param_type__.params' are incompatible between these types.
+    Type '{ id: string; }' is missing the following properties from type 'Promise<any>': then, catch, finally, [Symbol.toStringTag]
+.next/types/app/api/tutorials/videos/[id]/route.ts(205,7): error TS2344: Type '{ __tag__: "PUT"; __param_position__: "second"; __param_type__: { params: { id: string; }; }; }' does not satisfy the constraint 'ParamCheck<RouteContext>'.
+  The types of '__param_type__.params' are incompatible between these types.
+    Type '{ id: string; }' is missing the following properties from type 'Promise<any>': then, catch, finally, [Symbol.toStringTag]
+.next/types/app/api/tutorials/videos/[id]/route.ts(244,7): error TS2344: Type '{ __tag__: "DELETE"; __param_position__: "second"; __param_type__: { params: { id: string; }; }; }' does not satisfy the constraint 'ParamCheck<RouteContext>'.
+  The types of '__param_type__.params' are incompatible between these types.
+    Type '{ id: string; }' is missing the following properties from type 'Promise<any>': then, catch, finally, [Symbol.toStringTag]
+.next/types/app/api/tutorials/videos/[id]/view/route.ts(166,7): error TS2344: Type '{ __tag__: "POST"; __param_position__: "second"; __param_type__: { params: { id: string; }; }; }' does not satisfy the constraint 'ParamCheck<RouteContext>'.
+  The types of '__param_type__.params' are incompatible between these types.
+    Type '{ id: string; }' is missing the following properties from type 'Promise<any>': then, catch, finally, [Symbol.toStringTag]
+apps/magic-cad/shared/types.ts(1,26): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+apps/magic-cad/src/App.tsx(1,30): error TS2307: Cannot find module '@/contexts/AuthProvider' or its corresponding type declarations.
+apps/magic-cad/src/App.tsx(6,35): error TS2307: Cannot find module '@/contexts/MeshFilesContext' or its corresponding type declarations.
+apps/magic-cad/src/components/auth/AuthGuard.tsx(3,25): error TS2307: Cannot find module '@/contexts/AuthContext' or its corresponding type declarations.
+apps/magic-cad/src/components/auth/AvatarUpdateDialog.tsx(13,33): error TS2307: Cannot find module '@/services/profileService' or its corresponding type declarations.
+apps/magic-cad/src/components/auth/AvatarUpdateDialog.tsx(14,26): error TS2307: Cannot find module '@/hooks/use-toast' or its corresponding type declarations.
+apps/magic-cad/src/components/auth/AvatarUpdateDialog.tsx(15,28): error TS2307: Cannot find module '@/components/chat/UserAvatar' or its corresponding type declarations.
+apps/magic-cad/src/components/auth/AvatarUpdateDialog.tsx(120,19): error TS7006: Parameter 'error' implicitly has an 'any' type.
+apps/magic-cad/src/components/auth/AvatarUpdateDialog.tsx(211,15): error TS2322: Type '"dark"' is not assignable to type '"default" | "link" | "destructive" | "outline" | "secondary" | "ghost" | null | undefined'.
+apps/magic-cad/src/components/auth/AvatarUpdateDialog.tsx(220,15): error TS2322: Type '"light"' is not assignable to type '"default" | "link" | "destructive" | "outline" | "secondary" | "ghost" | null | undefined'.
+apps/magic-cad/src/components/auth/DeleteAccountDialog.tsx(12,26): error TS2307: Cannot find module '@/lib/supabase' or its corresponding type declarations.
+apps/magic-cad/src/components/auth/DeleteAccountDialog.tsx(14,26): error TS2307: Cannot find module '@/hooks/use-toast' or its corresponding type declarations.
+apps/magic-cad/src/components/auth/DeleteAccountDialog.tsx(128,17): error TS2322: Type '"black"' is not assignable to type '"default" | "link" | "destructive" | "outline" | "secondary" | "ghost" | null | undefined'.
+apps/magic-cad/src/components/auth/TrialDialog.tsx(10,25): error TS2307: Cannot find module '@/contexts/AuthContext' or its corresponding type declarations.
+apps/magic-cad/src/components/auth/TrialDialog.tsx(12,29): error TS2307: Cannot find module '@/components/ui/FreeTrialButton' or its corresponding type declarations.
+apps/magic-cad/src/components/auth/TrialDialog.tsx(13,40): error TS2307: Cannot find module '@/services/subscriptionService' or its corresponding type declarations.
+apps/magic-cad/src/components/chat/AssistantLoading.tsx(2,34): error TS2307: Cannot find module '@/components/chat/AnimatedEllipsis' or its corresponding type declarations.
+apps/magic-cad/src/components/chat/AssistantMessage.tsx(1,32): error TS2307: Cannot find module '@shared/types' or its corresponding type declarations.
+apps/magic-cad/src/components/chat/AssistantMessage.tsx(20,3): error TS2305: Module '"@/lib/utils"' has no exported member 'CREATIVE_MODELS'.
+apps/magic-cad/src/components/chat/AssistantMessage.tsx(21,3): error TS2305: Module '"@/lib/utils"' has no exported member 'getBackupModel'.
+apps/magic-cad/src/components/chat/AssistantMessage.tsx(22,3): error TS2305: Module '"@/lib/utils"' has no exported member 'PARAMETRIC_MODELS'.
+apps/magic-cad/src/components/chat/AssistantMessage.tsx(25,29): error TS2307: Cannot find module '@/components/auth/TrialDialog' or its corresponding type declarations.
+apps/magic-cad/src/components/chat/AssistantMessage.tsx(26,25): error TS2307: Cannot find module '@/contexts/AuthContext' or its corresponding type declarations.
+apps/magic-cad/src/components/chat/AssistantMessage.tsx(27,29): error TS2307: Cannot find module '@/components/ImageViewer' or its corresponding type declarations.
+apps/magic-cad/src/components/chat/AssistantMessage.tsx(28,33): error TS2307: Cannot find module '@/contexts/ConversationContext' or its corresponding type declarations.
+apps/magic-cad/src/components/chat/AssistantMessage.tsx(35,35): error TS2307: Cannot find module '@/contexts/CurrentMessageContext' or its corresponding type declarations.
+apps/magic-cad/src/components/chat/AssistantMessage.tsx(43,29): error TS2307: Cannot find module '@/hooks/useIsMobile' or its corresponding type declarations.
+apps/magic-cad/src/components/chat/AssistantMessage.tsx(44,29): error TS2307: Cannot find module '@/hooks/useMeshData' or its corresponding type declarations.
+apps/magic-cad/src/components/chat/AssistantMessage.tsx(45,34): error TS2307: Cannot find module '@/components/viewer/MeshImagePreview' or its corresponding type declarations.
+apps/magic-cad/src/components/chat/AssistantMessage.tsx(46,26): error TS2307: Cannot find module '@shared/Tree' or its corresponding type declarations.
+apps/magic-cad/src/components/chat/AssistantMessage.tsx(138,39): error TS7006: Parameter 'branch' implicitly has an 'any' type.
+apps/magic-cad/src/components/chat/AssistantMessage.tsx(144,29): error TS7006: Parameter 'branch' implicitly has an 'any' type.
+apps/magic-cad/src/components/chat/AssistantMessage.tsx(225,53): error TS7006: Parameter 'toolCall' implicitly has an 'any' type.
+apps/magic-cad/src/components/chat/AssistantMessage.tsx(664,8): error TS7006: Parameter 'model' implicitly has an 'any' type.
+apps/magic-cad/src/components/chat/AssistantMessage.tsx(675,14): error TS7006: Parameter 'model' implicitly has an 'any' type.
+apps/magic-cad/src/components/chat/AssistantMessage.tsx(676,11): error TS7006: Parameter 'model' implicitly has an 'any' type.
+apps/magic-cad/src/components/chat/AssistantMessage.tsx(726,31): error TS7006: Parameter 'model' implicitly has an 'any' type.
+apps/magic-cad/src/components/chat/ChatSection.tsx(3,41): error TS2307: Cannot find module '@shared/types' or its corresponding type declarations.
+apps/magic-cad/src/components/chat/ChatSection.tsx(4,26): error TS2307: Cannot find module '@/components/TextAreaChat' or its corresponding type declarations.
+apps/magic-cad/src/components/chat/ChatSection.tsx(5,33): error TS2307: Cannot find module '@/components/chat/SuggestionPills' or its corresponding type declarations.
+apps/magic-cad/src/components/chat/ChatSection.tsx(6,29): error TS2307: Cannot find module '@/hooks/useIsMobile' or its corresponding type declarations.
+apps/magic-cad/src/components/chat/ChatSection.tsx(7,34): error TS2307: Cannot find module '@/components/chat/AssistantMessage' or its corresponding type declarations.
+apps/magic-cad/src/components/chat/ChatSection.tsx(8,29): error TS2307: Cannot find module '@/components/chat/UserMessage' or its corresponding type declarations.
+apps/magic-cad/src/components/chat/ChatSection.tsx(9,30): error TS2307: Cannot find module '@/components/ui/ShareContent' or its corresponding type declarations.
+apps/magic-cad/src/components/chat/ChatSection.tsx(12,25): error TS2307: Cannot find module '@/contexts/AuthContext' or its corresponding type declarations.
+apps/magic-cad/src/components/chat/ChatSection.tsx(13,33): error TS2307: Cannot find module '@/contexts/ConversationContext' or its corresponding type declarations.
+apps/magic-cad/src/components/chat/ChatSection.tsx(14,34): error TS2307: Cannot find module '@/components/chat/AssistantLoading' or its corresponding type declarations.
+apps/magic-cad/src/components/chat/ChatSection.tsx(15,27): error TS2307: Cannot find module '@/components/chat/ChatTitle' or its corresponding type declarations.
+apps/magic-cad/src/components/chat/ChatSection.tsx(16,37): error TS2307: Cannot find module '@/components/LimitReachedMessage' or its corresponding type declarations.
+apps/magic-cad/src/components/chat/ChatSection.tsx(17,42): error TS2307: Cannot find module '@/components/LowPromptsWarningMessage' or its corresponding type declarations.
+apps/magic-cad/src/components/chat/ChatSection.tsx(18,28): error TS2307: Cannot find module '@/components/icons/ui/CreateIcon' or its corresponding type declarations.
+apps/magic-cad/src/components/chat/ChatSection.tsx(19,36): error TS2307: Cannot find module '@/components/ConditionalWrapper' or its corresponding type declarations.
+apps/magic-cad/src/components/chat/ChatSection.tsx(20,26): error TS2307: Cannot find module '@shared/Tree' or its corresponding type declarations.
+apps/magic-cad/src/components/chat/ChatSection.tsx(27,29): error TS2307: Cannot find module '@/hooks/useMeshData' or its corresponding type declarations.
+apps/magic-cad/src/components/chat/ChatSection.tsx(182,21): error TS7006: Parameter 'children' implicitly has an 'any' type.
+apps/magic-cad/src/components/chat/ChatTitle.tsx(10,33): error TS2307: Cannot find module '@/contexts/ConversationContext' or its corresponding type declarations.
+apps/magic-cad/src/components/chat/ChatTitle.tsx(11,29): error TS2307: Cannot find module '@/hooks/useIsMobile' or its corresponding type declarations.
+apps/magic-cad/src/components/chat/ChatTitle.tsx(22,30): error TS2307: Cannot find module '@/components/ui/ShareContent' or its corresponding type declarations.
+apps/magic-cad/src/components/chat/ChatTitle.tsx(55,17): error TS7006: Parameter 'error' implicitly has an 'any' type.
+apps/magic-cad/src/components/chat/ModelButton.tsx(1,33): error TS2307: Cannot find module '@/contexts/ConversationContext' or its corresponding type declarations.
+apps/magic-cad/src/components/chat/ModelButton.tsx(2,10): error TS2305: Module '"@/lib/utils"' has no exported member 'CREATIVE_MODELS'.
+apps/magic-cad/src/components/chat/ModelButton.tsx(2,27): error TS2305: Module '"@/lib/utils"' has no exported member 'PARAMETRIC_MODELS'.
+apps/magic-cad/src/components/chat/ModelButton.tsx(3,25): error TS2307: Cannot find module '@shared/types' or its corresponding type declarations.
+apps/magic-cad/src/components/chat/ModelButton.tsx(10,31): error TS7006: Parameter 'model' implicitly has an 'any' type.
+apps/magic-cad/src/components/chat/ModelButton.tsx(14,29): error TS7006: Parameter 'model' implicitly has an 'any' type.
+apps/magic-cad/src/components/chat/NotificationPrompt.tsx(4,46): error TS2307: Cannot find module '@/services/profileService' or its corresponding type declarations.
+apps/magic-cad/src/components/chat/NotificationPrompt.tsx(5,26): error TS2307: Cannot find module '@/hooks/use-toast' or its corresponding type declarations.
+apps/magic-cad/src/components/chat/NotificationPrompt.tsx(6,25): error TS2307: Cannot find module '@/contexts/AuthContext' or its corresponding type declarations.
+apps/magic-cad/src/components/chat/NotificationPrompt.tsx(102,13): error TS2322: Type '"adam_dark"' is not assignable to type '"default" | "link" | "destructive" | "outline" | "secondary" | "ghost" | null | undefined'.
+apps/magic-cad/src/components/chat/NotificationPrompt.tsx(111,13): error TS2322: Type '"light"' is not assignable to type '"default" | "link" | "destructive" | "outline" | "secondary" | "ghost" | null | undefined'.
+apps/magic-cad/src/components/chat/UserAvatar.tsx(1,42): error TS2307: Cannot find module '@/services/profileService' or its corresponding type declarations.
+apps/magic-cad/src/components/chat/UserAvatar.tsx(3,10): error TS2305: Module '"@/lib/utils"' has no exported member 'getInitials'.
+apps/magic-cad/src/components/chat/UserMessage.tsx(2,25): error TS2307: Cannot find module '@shared/types' or its corresponding type declarations.
+apps/magic-cad/src/components/chat/UserMessage.tsx(22,33): error TS2307: Cannot find module '@/contexts/ConversationContext' or its corresponding type declarations.
+apps/magic-cad/src/components/chat/UserMessage.tsx(23,29): error TS2307: Cannot find module '@/hooks/useIsMobile' or its corresponding type declarations.
+apps/magic-cad/src/components/chat/UserMessage.tsx(24,35): error TS2307: Cannot find module '@/contexts/CurrentMessageContext' or its corresponding type declarations.
+apps/magic-cad/src/components/chat/UserMessage.tsx(25,29): error TS2307: Cannot find module '@/components/ImageViewer' or its corresponding type declarations.
+apps/magic-cad/src/components/chat/UserMessage.tsx(26,34): error TS2307: Cannot find module '@/components/viewer/MeshImagePreview' or its corresponding type declarations.
+apps/magic-cad/src/components/chat/UserMessage.tsx(27,26): error TS2307: Cannot find module '@shared/Tree' or its corresponding type declarations.
+apps/magic-cad/src/components/chat/UserMessage.tsx(28,28): error TS2307: Cannot find module '@/components/chat/UserAvatar' or its corresponding type declarations.
+apps/magic-cad/src/components/chat/UserMessage.tsx(58,6): error TS7006: Parameter 'branch' implicitly has an 'any' type.
+apps/magic-cad/src/components/chat/UserMessage.tsx(61,43): error TS7006: Parameter 'branch' implicitly has an 'any' type.
+apps/magic-cad/src/components/history/ConversationCard.tsx(28,37): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+apps/magic-cad/src/components/history/RenameDialogDrawer.tsx(2,31): error TS2307: Cannot find module '@/hooks/useMediaQuery' or its corresponding type declarations.
+apps/magic-cad/src/components/history/VisualCard.tsx(32,37): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+apps/magic-cad/src/components/history/VisualCard.tsx(34,26): error TS2307: Cannot find module '@/lib/supabase' or its corresponding type declarations.
+apps/magic-cad/src/components/history/VisualCard.tsx(35,29): error TS2307: Cannot find module '@/hooks/useOpenSCAD' or its corresponding type declarations.
+apps/magic-cad/src/components/history/VisualCard.tsx(74,11): error TS2322: Type 'BufferGeometry<NormalBufferAttributes>' is not assignable to type 'BufferGeometry<NormalBufferAttributes, BufferGeometryEventMap> | Readonly<BufferGeometry<NormalBufferAttributes, BufferGeometryEventMap> | undefined>'.
+  Type 'BufferGeometry<NormalBufferAttributes>' is missing the following properties from type 'Readonly<BufferGeometry<NormalBufferAttributes, BufferGeometryEventMap>>': indirect, setIndirect, getIndirect
+apps/magic-cad/src/components/history/VisualCard.tsx(142,12): error TS7006: Parameter 'msg' implicitly has an 'any' type.
+apps/magic-cad/src/components/ImageViewer.tsx(3,34): error TS2307: Cannot find module '@/hooks/useItemSelection' or its corresponding type declarations.
+apps/magic-cad/src/components/ImageViewer.tsx(5,30): error TS2307: Cannot find module '@/hooks/useImageData' or its corresponding type declarations.
+apps/magic-cad/src/components/ImageViewer.tsx(6,33): error TS2307: Cannot find module '@/contexts/ConversationContext' or its corresponding type declarations.
+apps/magic-cad/src/components/ImageViewer.tsx(7,33): error TS2307: Cannot find module '@/utils/file-utils' or its corresponding type declarations.
+apps/magic-cad/src/components/ImageViewer.tsx(40,24): error TS7006: Parameter 'img' implicitly has an 'any' type.
+apps/magic-cad/src/components/Layout.tsx(6,25): error TS2307: Cannot find module '@/contexts/AuthContext' or its corresponding type declarations.
+apps/magic-cad/src/components/Layout.tsx(8,29): error TS2307: Cannot find module '@/hooks/useIsMobile' or its corresponding type declarations.
+apps/magic-cad/src/components/LimitReachedMessage.tsx(1,25): error TS2307: Cannot find module '@/contexts/AuthContext' or its corresponding type declarations.
+apps/magic-cad/src/components/LowPromptsWarningMessage.tsx(1,25): error TS2307: Cannot find module '@/contexts/AuthContext' or its corresponding type declarations.
+apps/magic-cad/src/components/ModelSelector.tsx(11,23): error TS2307: Cannot find module '@shared/types' or its corresponding type declarations.
+apps/magic-cad/src/components/ModelSelector.tsx(12,29): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+apps/magic-cad/src/components/ModelSelector.tsx(13,33): error TS2307: Cannot find module '@/contexts/ConversationContext' or its corresponding type declarations.
+apps/magic-cad/src/components/parameter/ParameterInput.tsx(2,27): error TS2307: Cannot find module '@shared/types' or its corresponding type declarations.
+apps/magic-cad/src/components/parameter/ParameterInput.tsx(8,8): error TS2307: Cannot find module '@/utils/parameterUtils' or its corresponding type declarations.
+apps/magic-cad/src/components/parameter/ParameterInput.tsx(9,33): error TS2307: Cannot find module '@/components/parameter/ParameterSlider' or its corresponding type declarations.
+apps/magic-cad/src/components/parameter/ParameterInput.tsx(131,36): error TS7006: Parameter 'value' implicitly has an 'any' type.
+apps/magic-cad/src/components/parameter/ParameterInput.tsx(131,43): error TS7006: Parameter 'index' implicitly has an 'any' type.
+apps/magic-cad/src/components/parameter/ParameterInput.tsx(175,36): error TS7006: Parameter 'value' implicitly has an 'any' type.
+apps/magic-cad/src/components/parameter/ParameterInput.tsx(175,43): error TS7006: Parameter 'index' implicitly has an 'any' type.
+apps/magic-cad/src/components/parameter/ParameterInput.tsx(188,37): error TS7006: Parameter 'newValue' implicitly has an 'any' type.
+apps/magic-cad/src/components/parameter/ParameterInput.tsx(196,37): error TS7006: Parameter 'newValue' implicitly has an 'any' type.
+apps/magic-cad/src/components/parameter/ParameterInput.tsx(262,36): error TS7006: Parameter 'value' implicitly has an 'any' type.
+apps/magic-cad/src/components/parameter/ParameterInput.tsx(262,43): error TS7006: Parameter 'index' implicitly has an 'any' type.
+apps/magic-cad/src/components/parameter/ParameterSection.tsx(5,36): error TS2307: Cannot find module '@shared/types' or its corresponding type declarations.
+apps/magic-cad/src/components/parameter/ParameterSection.tsx(18,32): error TS2307: Cannot find module '@/components/parameter/ParameterInput' or its corresponding type declarations.
+apps/magic-cad/src/components/parameter/ParameterSection.tsx(19,29): error TS2307: Cannot find module '@/components/parameter/ColorPicker' or its corresponding type declarations.
+apps/magic-cad/src/components/parameter/ParameterSection.tsx(20,40): error TS2307: Cannot find module '@/utils/parameterUtils' or its corresponding type declarations.
+apps/magic-cad/src/components/parameter/ParameterSection.tsx(21,35): error TS2307: Cannot find module '@/contexts/CurrentMessageContext' or its corresponding type declarations.
+apps/magic-cad/src/components/parameter/ParameterSection.tsx(22,55): error TS2307: Cannot find module '@/utils/downloadUtils' or its corresponding type declarations.
+apps/magic-cad/src/components/parameter/ParameterSheetContent.tsx(5,36): error TS2307: Cannot find module '@shared/types' or its corresponding type declarations.
+apps/magic-cad/src/components/parameter/ParameterSheetContent.tsx(12,32): error TS2307: Cannot find module '@/components/parameter/ParameterInput' or its corresponding type declarations.
+apps/magic-cad/src/components/parameter/ParameterSheetContent.tsx(13,40): error TS2307: Cannot find module '@/utils/parameterUtils' or its corresponding type declarations.
+apps/magic-cad/src/components/parameter/ParameterSheetContent.tsx(14,35): error TS2307: Cannot find module '@/contexts/CurrentMessageContext' or its corresponding type declarations.
+apps/magic-cad/src/components/parameter/ParameterSheetContent.tsx(15,55): error TS2307: Cannot find module '@/utils/downloadUtils' or its corresponding type declarations.
+apps/magic-cad/src/components/parameter/ParameterSlider.tsx(2,27): error TS2307: Cannot find module '@shared/types' or its corresponding type declarations.
+apps/magic-cad/src/components/parameter/ParameterSlider.tsx(7,8): error TS2307: Cannot find module '@/utils/parameterUtils' or its corresponding type declarations.
+apps/magic-cad/src/components/parameter/ParameterSlider.tsx(30,7): error TS2322: Type '{ id: string; name: any; className: string; defaultMarkerStyle: string; onValueChange: ([newValue]: number[]) => void; onValueCommit: ([newValue]: number[]) => void; min: any; max: any; value: number[]; defaultValue: number[]; step: any; }' is not assignable to type 'IntrinsicAttributes & SliderProps & RefAttributes<HTMLSpanElement>'.
+  Property 'defaultMarkerStyle' does not exist on type 'IntrinsicAttributes & SliderProps & RefAttributes<HTMLSpanElement>'.
+apps/magic-cad/src/components/ParametricEditor.tsx(4,58): error TS2307: Cannot find module '@/views/ParametricEditorView' or its corresponding type declarations.
+apps/magic-cad/src/components/Sidebar.tsx(18,25): error TS2307: Cannot find module '@/contexts/AuthContext' or its corresponding type declarations.
+apps/magic-cad/src/components/Sidebar.tsx(19,26): error TS2307: Cannot find module '@/lib/supabase' or its corresponding type declarations.
+apps/magic-cad/src/components/Sidebar.tsx(28,29): error TS2307: Cannot find module '@/hooks/useIsMobile' or its corresponding type declarations.
+apps/magic-cad/src/components/Sidebar.tsx(33,52): error TS2307: Cannot find module '@shared/types' or its corresponding type declarations.
+apps/magic-cad/src/components/Sidebar.tsx(34,28): error TS2307: Cannot find module '@/components/chat/UserAvatar' or its corresponding type declarations.
+apps/magic-cad/src/components/Sidebar.tsx(35,28): error TS2307: Cannot find module '@/services/profileService' or its corresponding type declarations.
+apps/magic-cad/src/components/Sidebar.tsx(102,9): error TS2322: Type '"adam_dark_collapsed_avatar"' is not assignable to type '"default" | "link" | "destructive" | "outline" | "secondary" | "ghost" | null | undefined'.
+apps/magic-cad/src/components/Sidebar.tsx(218,23): error TS2322: Type '"adam_dark" | "adam_dark_collapsed"' is not assignable to type '"default" | "link" | "destructive" | "outline" | "secondary" | "ghost" | null | undefined'.
+  Type '"adam_dark"' is not assignable to type '"default" | "link" | "destructive" | "outline" | "secondary" | "ghost" | null | undefined'.
+apps/magic-cad/src/components/Sidebar.tsx(280,23): error TS2322: Type '"adam_dark_collapsed"' is not assignable to type '"default" | "link" | "destructive" | "outline" | "secondary" | "ghost" | null | undefined'.
+apps/magic-cad/src/components/Sidebar.tsx(304,19): error TS2322: Type '"adam_dark"' is not assignable to type '"default" | "link" | "destructive" | "outline" | "secondary" | "ghost" | null | undefined'.
+apps/magic-cad/src/components/Sidebar.tsx(323,23): error TS2322: Type '"adam_dark_collapsed"' is not assignable to type '"default" | "link" | "destructive" | "outline" | "secondary" | "ghost" | null | undefined'.
+apps/magic-cad/src/components/Sidebar.tsx(347,19): error TS2322: Type '"adam_dark"' is not assignable to type '"default" | "link" | "destructive" | "outline" | "secondary" | "ghost" | null | undefined'.
+apps/magic-cad/src/components/Subscriptions.tsx(11,25): error TS2307: Cannot find module '@/contexts/AuthContext' or its corresponding type declarations.
+apps/magic-cad/src/components/Subscriptions.tsx(17,8): error TS2307: Cannot find module '@/services/subscriptionService' or its corresponding type declarations.
+apps/magic-cad/src/components/Subscriptions.tsx(18,31): error TS2307: Cannot find module '@/hooks/useTokenPacks' or its corresponding type declarations.
+apps/magic-cad/src/components/Subscriptions.tsx(194,36): error TS7006: Parameter 'pack' implicitly has an 'any' type.
+apps/magic-cad/src/components/Subscriptions.tsx(201,25): error TS2322: Type '"dark"' is not assignable to type '"default" | "link" | "destructive" | "outline" | "secondary" | "ghost" | null | undefined'.
+apps/magic-cad/src/components/TextAreaChat.tsx(21,14): error TS2305: Module '"@/lib/utils"' has no exported member 'CREATIVE_MODELS'.
+apps/magic-cad/src/components/TextAreaChat.tsx(21,31): error TS2305: Module '"@/lib/utils"' has no exported member 'PARAMETRIC_MODELS'.
+apps/magic-cad/src/components/TextAreaChat.tsx(22,61): error TS2307: Cannot find module '@shared/types' or its corresponding type declarations.
+apps/magic-cad/src/components/TextAreaChat.tsx(27,8): error TS2307: Cannot find module '@/constants/meshConstants' or its corresponding type declarations.
+apps/magic-cad/src/components/TextAreaChat.tsx(33,29): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+apps/magic-cad/src/components/TextAreaChat.tsx(34,26): error TS2307: Cannot find module '@/hooks/use-toast' or its corresponding type declarations.
+apps/magic-cad/src/components/TextAreaChat.tsx(48,26): error TS2307: Cannot find module '@/lib/supabase' or its corresponding type declarations.
+apps/magic-cad/src/components/TextAreaChat.tsx(49,25): error TS2307: Cannot find module '@/contexts/AuthContext' or its corresponding type declarations.
+apps/magic-cad/src/components/TextAreaChat.tsx(50,31): error TS2307: Cannot find module '@/components/ModelSelector' or its corresponding type declarations.
+apps/magic-cad/src/components/TextAreaChat.tsx(54,34): error TS2307: Cannot find module '@/hooks/useItemSelection' or its corresponding type declarations.
+apps/magic-cad/src/components/TextAreaChat.tsx(60,8): error TS2307: Cannot find module '@/utils/meshUtils' or its corresponding type declarations.
+apps/magic-cad/src/components/TextAreaChat.tsx(61,30): error TS2307: Cannot find module '@/contexts/MeshFilesContext' or its corresponding type declarations.
+apps/magic-cad/src/components/TextAreaChat.tsx(368,13): error TS2322: Type '{ value: number[]; defaultValue: any[]; onValueChange: (value: number[]) => void; onValueCommit: (value: number[]) => void; max: any; min: number; step: number; hideDefaultMarker: true; variant: string; className: string; onPointerDown: () => void; onPointerUp: () => void; }' is not assignable to type 'IntrinsicAttributes & SliderProps & RefAttributes<HTMLSpanElement>'.
+  Property 'hideDefaultMarker' does not exist on type 'IntrinsicAttributes & SliderProps & RefAttributes<HTMLSpanElement>'.
+apps/magic-cad/src/components/TextAreaChat.tsx(730,45): error TS7006: Parameter 'img' implicitly has an 'any' type.
+apps/magic-cad/src/components/TextAreaChat.tsx(737,54): error TS7006: Parameter 'img' implicitly has an 'any' type.
+apps/magic-cad/src/components/TextAreaChat.tsx(987,24): error TS7006: Parameter 'prevImages' implicitly has an 'any' type.
+apps/magic-cad/src/components/TextAreaChat.tsx(997,26): error TS7006: Parameter 'prevImages' implicitly has an 'any' type.
+apps/magic-cad/src/components/TextAreaChat.tsx(998,33): error TS7006: Parameter 'img' implicitly has an 'any' type.
+apps/magic-cad/src/components/TextAreaChat.tsx(1006,26): error TS7006: Parameter 'prevImages' implicitly has an 'any' type.
+apps/magic-cad/src/components/TextAreaChat.tsx(1007,36): error TS7006: Parameter 'img' implicitly has an 'any' type.
+apps/magic-cad/src/components/TextAreaChat.tsx(1035,18): error TS7006: Parameter 'prevImages' implicitly has an 'any' type.
+apps/magic-cad/src/components/TextAreaChat.tsx(1042,20): error TS7006: Parameter 'prevImages' implicitly has an 'any' type.
+apps/magic-cad/src/components/TextAreaChat.tsx(1043,27): error TS7006: Parameter 'img' implicitly has an 'any' type.
+apps/magic-cad/src/components/TextAreaChat.tsx(1051,20): error TS7006: Parameter 'prevImages' implicitly has an 'any' type.
+apps/magic-cad/src/components/TextAreaChat.tsx(1052,30): error TS7006: Parameter 'img' implicitly has an 'any' type.
+apps/magic-cad/src/components/TextAreaChat.tsx(1138,18): error TS7006: Parameter 'prevImages' implicitly has an 'any' type.
+apps/magic-cad/src/components/TextAreaChat.tsx(1139,28): error TS7006: Parameter 'img' implicitly has an 'any' type.
+apps/magic-cad/src/components/TextAreaChat.tsx(1431,34): error TS7006: Parameter 'image' implicitly has an 'any' type.
+apps/magic-cad/src/components/TextAreaChat.tsx(1690,32): error TS7006: Parameter 'img' implicitly has an 'any' type.
+apps/magic-cad/src/components/TextAreaChat.tsx(1695,32): error TS7006: Parameter 'img' implicitly has an 'any' type.
+apps/magic-cad/src/components/ui/pagination.tsx(9,10): error TS2305: Module '"@/components/ui/button"' has no exported member 'ButtonProps'.
+apps/magic-cad/src/components/ui/pagination.tsx(72,5): error TS2783: 'size' is specified more than once, so this usage will be overwritten.
+apps/magic-cad/src/components/ui/pagination.tsx(88,5): error TS2783: 'size' is specified more than once, so this usage will be overwritten.
+apps/magic-cad/src/components/ui/ParameterSlider.tsx(2,27): error TS2307: Cannot find module '@shared/types' or its corresponding type declarations.
+apps/magic-cad/src/components/ui/ParameterSlider.tsx(7,8): error TS2307: Cannot find module '@/utils/parameterUtils' or its corresponding type declarations.
+apps/magic-cad/src/components/ui/ParameterSlider.tsx(30,7): error TS2322: Type '{ id: string; name: any; className: string; defaultMarkerStyle: string; onValueChange: ([newValue]: number[]) => void; onValueCommit: ([newValue]: number[]) => void; min: any; max: any; value: number[]; defaultValue: number[]; step: any; }' is not assignable to type 'IntrinsicAttributes & SliderProps & RefAttributes<HTMLSpanElement>'.
+  Property 'defaultMarkerStyle' does not exist on type 'IntrinsicAttributes & SliderProps & RefAttributes<HTMLSpanElement>'.
+apps/magic-cad/src/components/ui/ShareContent.tsx(3,33): error TS2307: Cannot find module '@/contexts/ConversationContext' or its corresponding type declarations.
+apps/magic-cad/src/components/ui/ShareContent.tsx(9,8): error TS2307: Cannot find module '@/components/icons/CompanyIcons' or its corresponding type declarations.
+apps/magic-cad/src/components/ui/ShareContent.tsx(14,8): error TS2307: Cannot find module '@/utils/shareUtils' or its corresponding type declarations.
+apps/magic-cad/src/components/ui/ShareContent.tsx(17,35): error TS2307: Cannot find module '@/contexts/CurrentMessageContext' or its corresponding type declarations.
+apps/magic-cad/src/components/ui/ShareContent.tsx(147,13): error TS2322: Type '"light"' is not assignable to type '"default" | "link" | "destructive" | "outline" | "secondary" | "ghost" | null | undefined'.
+apps/magic-cad/src/components/ui/ShareContent.tsx(174,19): error TS2322: Type '"light"' is not assignable to type '"default" | "link" | "destructive" | "outline" | "secondary" | "ghost" | null | undefined'.
+apps/magic-cad/src/components/ui/toaster.tsx(1,26): error TS2307: Cannot find module '@/hooks/use-toast' or its corresponding type declarations.
+apps/magic-cad/src/components/ui/toaster.tsx(9,8): error TS2307: Cannot find module '@/components/ui/toast' or its corresponding type declarations.
+apps/magic-cad/src/components/ui/toaster.tsx(16,31): error TS7031: Binding element 'id' implicitly has an 'any' type.
+apps/magic-cad/src/components/ui/toaster.tsx(16,35): error TS7031: Binding element 'title' implicitly has an 'any' type.
+apps/magic-cad/src/components/ui/toaster.tsx(16,42): error TS7031: Binding element 'description' implicitly has an 'any' type.
+apps/magic-cad/src/components/ui/toaster.tsx(16,55): error TS7031: Binding element 'action' implicitly has an 'any' type.
+apps/magic-cad/src/components/viewer/CreativeLoadingBar.tsx(1,31): error TS2307: Cannot find module '@shared/types' or its corresponding type declarations.
+apps/magic-cad/src/components/viewer/CreativeLoadingBar.tsx(2,36): error TS2307: Cannot find module '@/hooks/useLoadingProgress' or its corresponding type declarations.
+apps/magic-cad/src/components/viewer/CreativeLoadingBar.tsx(3,31): error TS2307: Cannot find module '@/hooks/useGlbPreview' or its corresponding type declarations.
+apps/magic-cad/src/components/viewer/CreativeLoadingBar.tsx(8,29): error TS2307: Cannot find module '@/hooks/useIsMobile' or its corresponding type declarations.
+apps/magic-cad/src/components/viewer/CreativeLoadingBar.tsx(9,36): error TS2307: Cannot find module '@/components/chat/NotificationPrompt' or its corresponding type declarations.
+apps/magic-cad/src/components/viewer/CreativePreviewDialog.tsx(1,35): error TS2307: Cannot find module '@/contexts/CurrentMessageContext' or its corresponding type declarations.
+apps/magic-cad/src/components/viewer/CreativePreviewSection.tsx(3,35): error TS2307: Cannot find module '@/contexts/CurrentMessageContext' or its corresponding type declarations.
+apps/magic-cad/src/components/viewer/CreativePreviewSection.tsx(4,33): error TS2307: Cannot find module '@/contexts/ConversationContext' or its corresponding type declarations.
+apps/magic-cad/src/components/viewer/CreativePreviewSection.tsx(6,31): error TS2307: Cannot find module '@shared/types' or its corresponding type declarations.
+apps/magic-cad/src/components/viewer/DownloadMenu.tsx(1,26): error TS2307: Cannot find module '@shared/types' or its corresponding type declarations.
+apps/magic-cad/src/components/viewer/DownloadMenu.tsx(15,8): error TS2307: Cannot find module '@/utils/meshPrintProcessUtils' or its corresponding type declarations.
+apps/magic-cad/src/components/viewer/DownloadMenu.tsx(16,33): error TS2307: Cannot find module '@/contexts/ConversationContext' or its corresponding type declarations.
+apps/magic-cad/src/components/viewer/DownloadMenu.tsx(17,26): error TS2307: Cannot find module '@/hooks/use-toast' or its corresponding type declarations.
+apps/magic-cad/src/components/viewer/DownloadMenu.tsx(18,41): error TS2307: Cannot find module '@/utils/file-utils' or its corresponding type declarations.
+apps/magic-cad/src/components/viewer/DownloadMenu.tsx(19,35): error TS2307: Cannot find module '@/contexts/CurrentMessageContext' or its corresponding type declarations.
+apps/magic-cad/src/components/viewer/DownloadMenu.tsx(21,29): error TS2307: Cannot find module '@/hooks/useIsMobile' or its corresponding type declarations.
+apps/magic-cad/src/components/viewer/DownloadMenu.tsx(24,42): error TS2307: Cannot find module '@/utils/meshUtils' or its corresponding type declarations.
+apps/magic-cad/src/components/viewer/DownloadMenu.tsx(26,44): error TS2307: Cannot find module '@/utils/textureExtraction' or its corresponding type declarations.
+apps/magic-cad/src/components/viewer/DownloadMenu.tsx(192,34): error TS7006: Parameter 'node' implicitly has an 'any' type.
+apps/magic-cad/src/components/viewer/DownloadMenu.tsx(308,34): error TS7006: Parameter 'child' implicitly has an 'any' type.
+apps/magic-cad/src/components/viewer/GlbPreview.tsx(7,34): error TS2307: Cannot find module '@/utils/adamLogoVertices' or its corresponding type declarations.
+apps/magic-cad/src/components/viewer/GlbPreview.tsx(8,31): error TS2307: Cannot find module '@shared/types' or its corresponding type declarations.
+apps/magic-cad/src/components/viewer/GlbPreview.tsx(9,36): error TS2307: Cannot find module '@/hooks/useLoadingProgress' or its corresponding type declarations.
+apps/magic-cad/src/components/viewer/GlbPreview.tsx(10,29): error TS2307: Cannot find module '@/hooks/useIsMobile' or its corresponding type declarations.
+apps/magic-cad/src/components/viewer/ImageGallery.tsx(3,35): error TS2307: Cannot find module '@/contexts/CurrentMessageContext' or its corresponding type declarations.
+apps/magic-cad/src/components/viewer/ImageGallery.tsx(7,29): error TS2307: Cannot find module '@/components/ImageViewer' or its corresponding type declarations.
+apps/magic-cad/src/components/viewer/ImageGallery.tsx(8,29): error TS2307: Cannot find module '@/hooks/useIsMobile' or its corresponding type declarations.
+apps/magic-cad/src/components/viewer/ImageGallery.tsx(9,31): error TS2307: Cannot find module '@/hooks/useImageData' or its corresponding type declarations.
+apps/magic-cad/src/components/viewer/ImageGallery.tsx(10,36): error TS2307: Cannot find module '@/components/viewer/CreativeLoadingBar' or its corresponding type declarations.
+apps/magic-cad/src/components/viewer/ImageGallery.tsx(11,31): error TS2307: Cannot find module '@shared/types' or its corresponding type declarations.
+apps/magic-cad/src/components/viewer/ImageGallery.tsx(24,44): error TS7006: Parameter 'image' implicitly has an 'any' type.
+apps/magic-cad/src/components/viewer/ImageGallery.tsx(25,46): error TS7006: Parameter 'image' implicitly has an 'any' type.
+apps/magic-cad/src/components/viewer/ImageGallery.tsx(30,29): error TS7006: Parameter 'image' implicitly has an 'any' type.
+apps/magic-cad/src/components/viewer/LightingControls.tsx(22,8): error TS2307: Cannot find module '@/constants/meshConstants' or its corresponding type declarations.
+apps/magic-cad/src/components/viewer/LightingControls.tsx(23,38): error TS2307: Cannot find module '@shared/types' or its corresponding type declarations.
+apps/magic-cad/src/components/viewer/LightingControls.tsx(345,19): error TS2322: Type '{ value: number[]; defaultValue: any[]; min: number; max: number; step: number; onValueChange: (values: number[]) => void; hideDefaultMarker: true; className: string; "aria-label": string; }' is not assignable to type 'IntrinsicAttributes & SliderProps & RefAttributes<HTMLSpanElement>'.
+  Property 'hideDefaultMarker' does not exist on type 'IntrinsicAttributes & SliderProps & RefAttributes<HTMLSpanElement>'.
+apps/magic-cad/src/components/viewer/LightingControls.tsx(390,19): error TS2322: Type '{ value: number[]; defaultValue: any[]; min: number; max: number; step: number; onValueChange: (values: number[]) => void; hideDefaultMarker: true; className: string; "aria-label": string; }' is not assignable to type 'IntrinsicAttributes & SliderProps & RefAttributes<HTMLSpanElement>'.
+  Property 'hideDefaultMarker' does not exist on type 'IntrinsicAttributes & SliderProps & RefAttributes<HTMLSpanElement>'.
+apps/magic-cad/src/components/viewer/LightingControls.tsx(440,21): error TS2322: Type '{ value: number[]; defaultValue: any[]; min: number; max: number; step: number; onValueChange: (values: number[]) => void; hideDefaultMarker: true; className: string; "aria-label": string; }' is not assignable to type 'IntrinsicAttributes & SliderProps & RefAttributes<HTMLSpanElement>'.
+  Property 'hideDefaultMarker' does not exist on type 'IntrinsicAttributes & SliderProps & RefAttributes<HTMLSpanElement>'.
+apps/magic-cad/src/components/viewer/Loader.tsx(3,25): error TS2307: Cannot find module '@/assets/adam-loading.json' or its corresponding type declarations.
+apps/magic-cad/src/components/viewer/MeshGifPreview.tsx(1,29): error TS2307: Cannot find module '@/hooks/useMeshData' or its corresponding type declarations.
+apps/magic-cad/src/components/viewer/MeshGifPreview.tsx(16,33): error TS2307: Cannot find module '@/contexts/ConversationContext' or its corresponding type declarations.
+apps/magic-cad/src/components/viewer/MeshGifPreview.tsx(19,33): error TS2307: Cannot find module '@/utils/file-utils' or its corresponding type declarations.
+apps/magic-cad/src/components/viewer/MeshImagePreview.tsx(4,33): error TS2307: Cannot find module '@/utils/meshUtils' or its corresponding type declarations.
+apps/magic-cad/src/components/viewer/MeshImagePreview.tsx(5,29): error TS2307: Cannot find module '@/hooks/useMeshData' or its corresponding type declarations.
+apps/magic-cad/src/components/viewer/MeshImagePreview.tsx(6,29): error TS2307: Cannot find module '@/hooks/useIsMobile' or its corresponding type declarations.
+apps/magic-cad/src/components/viewer/MeshImagePreview.tsx(8,31): error TS2307: Cannot find module '@shared/types' or its corresponding type declarations.
+apps/magic-cad/src/components/viewer/MeshPreview.tsx(29,29): error TS2307: Cannot find module '@/hooks/useIsMobile' or its corresponding type declarations.
+apps/magic-cad/src/components/viewer/MeshPreview.tsx(31,29): error TS2307: Cannot find module '@/hooks/useMeshData' or its corresponding type declarations.
+apps/magic-cad/src/components/viewer/MeshPreview.tsx(33,31): error TS2307: Cannot find module '@/components/icons/ui/WireframeIcon' or its corresponding type declarations.
+apps/magic-cad/src/components/viewer/MeshPreview.tsx(42,8): error TS2307: Cannot find module '@/constants/meshConstants' or its corresponding type declarations.
+apps/magic-cad/src/components/viewer/MeshPreview.tsx(43,31): error TS2307: Cannot find module '@shared/types' or its corresponding type declarations.
+apps/magic-cad/src/components/viewer/OpenSCADViewer.tsx(1,29): error TS2307: Cannot find module '@/hooks/useOpenSCAD' or its corresponding type declarations.
+apps/magic-cad/src/components/viewer/OpenSCADViewer.tsx(3,28): error TS2307: Cannot find module '@/components/viewer/ThreeScene' or its corresponding type declarations.
+apps/magic-cad/src/components/viewer/OpenSCADViewer.tsx(8,27): error TS2307: Cannot find module '@/lib/OpenSCADError' or its corresponding type declarations.
+apps/magic-cad/src/components/viewer/OpenSCADViewer.tsx(10,34): error TS2307: Cannot find module '@/contexts/MeshFilesContext' or its corresponding type declarations.
+apps/magic-cad/src/components/viewer/OpenSCADViewer.tsx(59,46): error TS2339: Property 'getMeshFile' does not exist on type '{}'.
+apps/magic-cad/src/components/viewer/OrthographicPerspectiveToggle.tsx(2,30): error TS2307: Cannot find module '@/components/viewer/OrthographicCube' or its corresponding type declarations.
+apps/magic-cad/src/components/viewer/OrthographicPerspectiveToggle.tsx(3,29): error TS2307: Cannot find module '@/components/viewer/PerspectiveCube' or its corresponding type declarations.
+apps/magic-cad/src/components/viewer/ParametricPreviewDialog.tsx(1,35): error TS2307: Cannot find module '@/contexts/CurrentMessageContext' or its corresponding type declarations.
+apps/magic-cad/src/components/viewer/ParametricPreviewDialog.tsx(9,30): error TS2307: Cannot find module '@/components/viewer/ImageGallery' or its corresponding type declarations.
+apps/magic-cad/src/components/viewer/ParametricPreviewDialog.tsx(11,27): error TS2307: Cannot find module '@/lib/OpenSCADError' or its corresponding type declarations.
+apps/magic-cad/src/components/viewer/ParametricPreviewDialog.tsx(19,39): error TS2307: Cannot find module '@/components/parameter/ParameterSheetContent' or its corresponding type declarations.
+apps/magic-cad/src/components/viewer/ParametricPreviewDialog.tsx(20,36): error TS2307: Cannot find module '@shared/types' or its corresponding type declarations.
+apps/magic-cad/src/components/viewer/ParametricPreviewSection.tsx(1,30): error TS2307: Cannot find module '@/components/viewer/ImageGallery' or its corresponding type declarations.
+apps/magic-cad/src/components/viewer/ParametricPreviewSection.tsx(2,35): error TS2307: Cannot find module '@/contexts/CurrentMessageContext' or its corresponding type declarations.
+apps/magic-cad/src/components/viewer/ParametricPreviewSection.tsx(3,20): error TS2307: Cannot find module '@/components/viewer/Loader' or its corresponding type declarations.
+apps/magic-cad/src/components/viewer/ParametricPreviewSection.tsx(5,27): error TS2307: Cannot find module '@/lib/OpenSCADError' or its corresponding type declarations.
+apps/magic-cad/src/components/viewer/ThreeScene.tsx(13,47): error TS2307: Cannot find module '@/components/viewer/OrthographicPerspectiveToggle' or its corresponding type declarations.
+apps/magic-cad/src/components/viewer/ThreeScene.tsx(65,13): error TS2322: Type 'BufferGeometry<NormalBufferAttributes>' is not assignable to type 'BufferGeometry<NormalBufferAttributes, BufferGeometryEventMap> | Readonly<BufferGeometry<NormalBufferAttributes, BufferGeometryEventMap> | undefined>'.
+  Type 'BufferGeometry<NormalBufferAttributes>' is missing the following properties from type 'Readonly<BufferGeometry<NormalBufferAttributes, BufferGeometryEventMap>>': indirect, setIndirect, getIndirect
+apps/magic-cad/src/constants/meshConstants.ts(1,31): error TS2307: Cannot find module '@shared/types' or its corresponding type declarations.
+apps/magic-cad/src/contexts/AuthProvider.tsx(3,26): error TS2307: Cannot find module '@/lib/supabase' or its corresponding type declarations.
+apps/magic-cad/src/contexts/ConversationContext.tsx(1,30): error TS2307: Cannot find module '@shared/types' or its corresponding type declarations.
+apps/magic-cad/src/contexts/CurrentMessageContext.tsx(1,25): error TS2307: Cannot find module '@shared/types' or its corresponding type declarations.
+apps/magic-cad/src/contexts/PostHogProvider.tsx(3,40): error TS2307: Cannot find module '@/lib/posthog' or its corresponding type declarations.
+apps/magic-cad/src/contexts/PostHogProvider.tsx(4,25): error TS2307: Cannot find module '@/contexts/AuthContext' or its corresponding type declarations.
+apps/magic-cad/src/contexts/SelectedItemsContext.tsx(1,29): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+apps/magic-cad/src/hooks/use-toast.ts(3,53): error TS2307: Cannot find module '@/components/ui/toast' or its corresponding type declarations.
+apps/magic-cad/src/hooks/use-toast.ts(153,22): error TS7006: Parameter 'open' implicitly has an 'any' type.
+apps/magic-cad/src/hooks/useGlbPreview.ts(1,26): error TS2307: Cannot find module '@/lib/supabase' or its corresponding type declarations.
+apps/magic-cad/src/hooks/useImageData.ts(1,33): error TS2307: Cannot find module '@/contexts/ConversationContext' or its corresponding type declarations.
+apps/magic-cad/src/hooks/useImageData.ts(2,26): error TS2307: Cannot find module '@/lib/supabase' or its corresponding type declarations.
+apps/magic-cad/src/hooks/useImageData.ts(3,24): error TS2307: Cannot find module '@shared/types' or its corresponding type declarations.
+apps/magic-cad/src/hooks/useItemSelection.ts(1,34): error TS2307: Cannot find module '@/contexts/SelectedItemsContext' or its corresponding type declarations.
+apps/magic-cad/src/hooks/useItemSelection.ts(2,29): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+apps/magic-cad/src/hooks/useItemSelection.ts(11,26): error TS7006: Parameter 'image' implicitly has an 'any' type.
+apps/magic-cad/src/hooks/useItemSelection.ts(13,14): error TS7006: Parameter 'image' implicitly has an 'any' type.
+apps/magic-cad/src/hooks/useLoadingProgress.tsx(1,31): error TS2307: Cannot find module '@shared/types' or its corresponding type declarations.
+apps/magic-cad/src/hooks/useLoadingProgress.tsx(33,18): error TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type '{ fast: { expected: number; min: number; max: number; }; quality: { expected: number; min: number; max: number; }; ultra: { expected: number; min: number; max: number; }; } | { fast: { expected: number; min: number; max: number; }; quality: { ...; }; ultra: { ...; }; }'.
+apps/magic-cad/src/hooks/useMeshData.ts(1,33): error TS2307: Cannot find module '@/contexts/ConversationContext' or its corresponding type declarations.
+apps/magic-cad/src/hooks/useMeshData.ts(2,26): error TS2307: Cannot find module '@/lib/supabase' or its corresponding type declarations.
+apps/magic-cad/src/hooks/useMeshData.ts(3,26): error TS2307: Cannot find module '@shared/types' or its corresponding type declarations.
+apps/magic-cad/src/hooks/useModelChange.ts(1,33): error TS2307: Cannot find module '@/contexts/ConversationContext' or its corresponding type declarations.
+apps/magic-cad/src/hooks/useModelChange.ts(2,23): error TS2307: Cannot find module '@shared/types' or its corresponding type declarations.
+apps/magic-cad/src/hooks/useOpenSCAD.ts(2,50): error TS2307: Cannot find module '@/worker/types' or its corresponding type declarations.
+apps/magic-cad/src/hooks/useOpenSCAD.ts(3,27): error TS2307: Cannot find module '@/lib/OpenSCADError' or its corresponding type declarations.
+apps/magic-cad/src/hooks/useRequestCancellation.ts(2,26): error TS2307: Cannot find module '@/lib/supabase' or its corresponding type declarations.
+apps/magic-cad/src/hooks/useTokenCosts.ts(1,26): error TS2307: Cannot find module '@/lib/supabase' or its corresponding type declarations.
+apps/magic-cad/src/hooks/useTokenPacks.ts(1,26): error TS2307: Cannot find module '@/lib/supabase' or its corresponding type declarations.
+apps/magic-cad/src/lib/supabase.ts(2,26): error TS2307: Cannot find module '@shared/database' or its corresponding type declarations.
+apps/magic-cad/src/lib/utils.ts(3,43): error TS2307: Cannot find module '@shared/types' or its corresponding type declarations.
+apps/magic-cad/src/lib/utils.ts(4,29): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+apps/magic-cad/src/main.tsx(14,17): error TS5097: An import path can only end with a '.tsx' extension when 'allowImportingTsExtensions' is enabled.
+apps/magic-cad/src/main.tsx(18,27): error TS5097: An import path can only end with a '.tsx' extension when 'allowImportingTsExtensions' is enabled.
+apps/magic-cad/src/main.tsx(19,28): error TS5097: An import path can only end with a '.tsx' extension when 'allowImportingTsExtensions' is enabled.
+apps/magic-cad/src/main.tsx(20,28): error TS5097: An import path can only end with a '.tsx' extension when 'allowImportingTsExtensions' is enabled.
+apps/magic-cad/src/main.tsx(21,33): error TS5097: An import path can only end with a '.tsx' extension when 'allowImportingTsExtensions' is enabled.
+apps/magic-cad/src/main.tsx(22,35): error TS5097: An import path can only end with a '.tsx' extension when 'allowImportingTsExtensions' is enabled.
+apps/magic-cad/src/main.tsx(23,35): error TS5097: An import path can only end with a '.tsx' extension when 'allowImportingTsExtensions' is enabled.
+apps/magic-cad/src/main.tsx(24,36): error TS5097: An import path can only end with a '.tsx' extension when 'allowImportingTsExtensions' is enabled.
+apps/magic-cad/src/main.tsx(25,36): error TS5097: An import path can only end with a '.tsx' extension when 'allowImportingTsExtensions' is enabled.
+apps/magic-cad/src/main.tsx(26,31): error TS5097: An import path can only end with a '.tsx' extension when 'allowImportingTsExtensions' is enabled.
+apps/magic-cad/src/main.tsx(27,28): error TS5097: An import path can only end with a '.tsx' extension when 'allowImportingTsExtensions' is enabled.
+apps/magic-cad/src/main.tsx(28,34): error TS5097: An import path can only end with a '.tsx' extension when 'allowImportingTsExtensions' is enabled.
+apps/magic-cad/src/main.tsx(29,29): error TS5097: An import path can only end with a '.tsx' extension when 'allowImportingTsExtensions' is enabled.
+apps/magic-cad/src/main.tsx(30,27): error TS5097: An import path can only end with a '.tsx' extension when 'allowImportingTsExtensions' is enabled.
+apps/magic-cad/src/main.tsx(31,24): error TS5097: An import path can only end with a '.tsx' extension when 'allowImportingTsExtensions' is enabled.
+apps/magic-cad/src/main.tsx(32,23): error TS5097: An import path can only end with a '.tsx' extension when 'allowImportingTsExtensions' is enabled.
+apps/magic-cad/src/main.tsx(33,24): error TS5097: An import path can only end with a '.tsx' extension when 'allowImportingTsExtensions' is enabled.
+apps/magic-cad/src/main.tsx(34,26): error TS5097: An import path can only end with a '.tsx' extension when 'allowImportingTsExtensions' is enabled.
+apps/magic-cad/src/main.tsx(35,41): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+apps/magic-cad/src/services/conversationService.ts(1,25): error TS2307: Cannot find module '@/contexts/AuthContext' or its corresponding type declarations.
+apps/magic-cad/src/services/conversationService.ts(2,39): error TS2307: Cannot find module '@shared/types' or its corresponding type declarations.
+apps/magic-cad/src/services/conversationService.ts(3,26): error TS2307: Cannot find module '@/lib/supabase' or its corresponding type declarations.
+apps/magic-cad/src/services/messageService.ts(1,33): error TS2307: Cannot find module '@/contexts/ConversationContext' or its corresponding type declarations.
+apps/magic-cad/src/services/messageService.ts(2,26): error TS2307: Cannot find module '@/lib/supabase' or its corresponding type declarations.
+apps/magic-cad/src/services/messageService.ts(3,55): error TS2307: Cannot find module '@shared/types' or its corresponding type declarations.
+apps/magic-cad/src/services/messageService.ts(4,37): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+apps/magic-cad/src/services/profileService.ts(1,25): error TS2307: Cannot find module '@/contexts/AuthContext' or its corresponding type declarations.
+apps/magic-cad/src/services/profileService.ts(2,26): error TS2307: Cannot find module '@/lib/supabase' or its corresponding type declarations.
+apps/magic-cad/src/services/profileService.ts(3,25): error TS2307: Cannot find module '@shared/types' or its corresponding type declarations.
+apps/magic-cad/src/services/subscriptionService.ts(1,26): error TS2307: Cannot find module '@/lib/supabase' or its corresponding type declarations.
+apps/magic-cad/src/services/subscriptionService.ts(2,26): error TS2307: Cannot find module '@/hooks/use-toast' or its corresponding type declarations.
+apps/magic-cad/src/types/misc.ts(1,60): error TS2307: Cannot find module '@shared/types' or its corresponding type declarations.
+apps/magic-cad/src/utils/downloadUtils.ts(1,41): error TS2307: Cannot find module '@/utils/file-utils' or its corresponding type declarations.
+apps/magic-cad/src/utils/downloadUtils.ts(2,25): error TS2307: Cannot find module '@shared/types' or its corresponding type declarations.
+apps/magic-cad/src/utils/file-utils.ts(5,25): error TS2307: Cannot find module '@shared/types' or its corresponding type declarations.
+apps/magic-cad/src/utils/meshPrintProcessUtils.ts(968,26): error TS2322: Type 'DataView<ArrayBufferLike>' is not assignable to type 'BlobPart'.
+  Type 'DataView<ArrayBufferLike>' is not assignable to type 'ArrayBufferView<ArrayBuffer>'.
+    Types of property 'buffer' are incompatible.
+      Type 'ArrayBufferLike' is not assignable to type 'ArrayBuffer'.
+        Type 'SharedArrayBuffer' is missing the following properties from type 'ArrayBuffer': resizable, resize, detached, transfer, transferToFixedLength
+apps/magic-cad/src/utils/meshUtils.ts(6,22): error TS2307: Cannot find module '@shared/types' or its corresponding type declarations.
+apps/magic-cad/src/utils/parameterUtils.ts(1,27): error TS2307: Cannot find module '@shared/types' or its corresponding type declarations.
+apps/magic-cad/src/views/CreativeEditorView.tsx(2,34): error TS2307: Cannot find module '@shared/types' or its corresponding type declarations.
+apps/magic-cad/src/views/CreativeEditorView.tsx(4,33): error TS2307: Cannot find module '@/contexts/ConversationContext' or its corresponding type declarations.
+apps/magic-cad/src/views/CreativeEditorView.tsx(5,35): error TS2307: Cannot find module '@/contexts/CurrentMessageContext' or its corresponding type declarations.
+apps/magic-cad/src/views/CreativeEditorView.tsx(14,8): error TS2307: Cannot find module '@/services/messageService' or its corresponding type declarations.
+apps/magic-cad/src/views/CreativeEditorView.tsx(15,29): error TS2307: Cannot find module '@/hooks/useIsMobile' or its corresponding type declarations.
+apps/magic-cad/src/views/CreativeEditorView.tsx(16,18): error TS2307: Cannot find module '@shared/Tree' or its corresponding type declarations.
+apps/magic-cad/src/views/CreativeEditorView.tsx(18,40): error TS2307: Cannot find module '@/hooks/useRequestCancellation' or its corresponding type declarations.
+apps/magic-cad/src/views/CreativeEditorView.tsx(69,10): error TS7006: Parameter 'msg' implicitly has an 'any' type.
+apps/magic-cad/src/views/CreativeShareView.tsx(1,26): error TS2307: Cannot find module '@/lib/supabase' or its corresponding type declarations.
+apps/magic-cad/src/views/CreativeShareView.tsx(2,25): error TS2307: Cannot find module '@shared/types' or its corresponding type declarations.
+apps/magic-cad/src/views/CreativeShareView.tsx(6,33): error TS2307: Cannot find module '@/contexts/ConversationContext' or its corresponding type declarations.
+apps/magic-cad/src/views/CreativeShareView.tsx(7,35): error TS2307: Cannot find module '@/contexts/CurrentMessageContext' or its corresponding type declarations.
+apps/magic-cad/src/views/CreativeShareView.tsx(8,29): error TS2307: Cannot find module '@/hooks/useIsMobile' or its corresponding type declarations.
+apps/magic-cad/src/views/CreativeShareView.tsx(9,18): error TS2307: Cannot find module '@shared/Tree' or its corresponding type declarations.
+apps/magic-cad/src/views/CreativeView.tsx(1,40): error TS2307: Cannot find module '@/components/viewer/CreativePreviewSection' or its corresponding type declarations.
+apps/magic-cad/src/views/CreativeView.tsx(2,29): error TS2307: Cannot find module '@/hooks/useIsMobile' or its corresponding type declarations.
+apps/magic-cad/src/views/CreativeView.tsx(3,41): error TS2307: Cannot find module '@shared/types' or its corresponding type declarations.
+apps/magic-cad/src/views/CreativeView.tsx(10,29): error TS2307: Cannot find module '@/components/chat/ChatSection' or its corresponding type declarations.
+apps/magic-cad/src/views/CreativeView.tsx(14,26): error TS2307: Cannot find module '@shared/Tree' or its corresponding type declarations.
+apps/magic-cad/src/views/CreativeView.tsx(15,39): error TS2307: Cannot find module '@/components/viewer/CreativePreviewDialog' or its corresponding type declarations.
+apps/magic-cad/src/views/EditorView.tsx(1,26): error TS2307: Cannot find module '@/lib/supabase' or its corresponding type declarations.
+apps/magic-cad/src/views/EditorView.tsx(4,25): error TS2307: Cannot find module '@/contexts/AuthContext' or its corresponding type declarations.
+apps/magic-cad/src/views/EditorView.tsx(8,37): error TS2307: Cannot find module '@/contexts/ConversationContext' or its corresponding type declarations.
+apps/magic-cad/src/views/EditorView.tsx(9,39): error TS2307: Cannot find module '@shared/types' or its corresponding type declarations.
+apps/magic-cad/src/views/EditorView.tsx(10,29): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+apps/magic-cad/src/views/EditorView.tsx(12,39): error TS2307: Cannot find module '@/contexts/CurrentMessageContext' or its corresponding type declarations.
+apps/magic-cad/src/views/EditorView.tsx(13,38): error TS2307: Cannot find module '@/contexts/SelectedItemsContext' or its corresponding type declarations.
+apps/magic-cad/src/views/EmailConfirmation.tsx(6,26): error TS2307: Cannot find module '@/lib/supabase' or its corresponding type declarations.
+apps/magic-cad/src/views/EmailConfirmation.tsx(7,26): error TS2307: Cannot find module '@/hooks/use-toast' or its corresponding type declarations.
+apps/magic-cad/src/views/HistoryView.tsx(8,26): error TS2307: Cannot find module '@/lib/supabase' or its corresponding type declarations.
+apps/magic-cad/src/views/HistoryView.tsx(9,25): error TS2307: Cannot find module '@/contexts/AuthContext' or its corresponding type declarations.
+apps/magic-cad/src/views/HistoryView.tsx(11,26): error TS2307: Cannot find module '@/hooks/use-toast' or its corresponding type declarations.
+apps/magic-cad/src/views/HistoryView.tsx(14,61): error TS2307: Cannot find module '@shared/types' or its corresponding type declarations.
+apps/magic-cad/src/views/HistoryView.tsx(15,37): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+apps/magic-cad/src/views/HistoryView.tsx(16,34): error TS2307: Cannot find module '@/components/history/ConversationCard' or its corresponding type declarations.
+apps/magic-cad/src/views/HistoryView.tsx(17,28): error TS2307: Cannot find module '@/components/history/VisualCard' or its corresponding type declarations.
+apps/magic-cad/src/views/HistoryView.tsx(18,36): error TS2307: Cannot find module '@/components/history/RenameDialogDrawer' or its corresponding type declarations.
+apps/magic-cad/src/views/HistoryView.tsx(57,61): error TS7006: Parameter 'conv' implicitly has an 'any' type.
+apps/magic-cad/src/views/HistoryView.tsx(106,24): error TS7031: Binding element 'list' implicitly has an 'any' type.
+apps/magic-cad/src/views/HistoryView.tsx(109,16): error TS7006: Parameter 'file' implicitly has an 'any' type.
+apps/magic-cad/src/views/HistoryView.tsx(386,32): error TS7006: Parameter 'id' implicitly has an 'any' type.
+apps/magic-cad/src/views/HistoryView.tsx(387,32): error TS7006: Parameter '_id' implicitly has an 'any' type.
+apps/magic-cad/src/views/HistoryView.tsx(387,37): error TS7006: Parameter 'title' implicitly has an 'any' type.
+apps/magic-cad/src/views/HistoryView.tsx(392,39): error TS7006: Parameter 'id' implicitly has an 'any' type.
+apps/magic-cad/src/views/HistoryView.tsx(392,43): error TS7006: Parameter 'privacy' implicitly has an 'any' type.
+apps/magic-cad/src/views/HistoryView.tsx(428,40): error TS7006: Parameter 'id' implicitly has an 'any' type.
+apps/magic-cad/src/views/HistoryView.tsx(429,40): error TS7006: Parameter '_id' implicitly has an 'any' type.
+apps/magic-cad/src/views/HistoryView.tsx(429,45): error TS7006: Parameter 'title' implicitly has an 'any' type.
+apps/magic-cad/src/views/HistoryView.tsx(434,47): error TS7006: Parameter 'id' implicitly has an 'any' type.
+apps/magic-cad/src/views/HistoryView.tsx(434,51): error TS7006: Parameter 'privacy' implicitly has an 'any' type.
+apps/magic-cad/src/views/ParametricEditorView.tsx(2,45): error TS2307: Cannot find module '@shared/types' or its corresponding type declarations.
+apps/magic-cad/src/views/ParametricEditorView.tsx(4,10): error TS2305: Module '"@/lib/utils"' has no exported member 'updateParameter'.
+apps/magic-cad/src/views/ParametricEditorView.tsx(6,33): error TS2307: Cannot find module '@/contexts/ConversationContext' or its corresponding type declarations.
+apps/magic-cad/src/views/ParametricEditorView.tsx(7,27): error TS2307: Cannot find module '@/lib/OpenSCADError' or its corresponding type declarations.
+apps/magic-cad/src/views/ParametricEditorView.tsx(8,35): error TS2307: Cannot find module '@/contexts/CurrentMessageContext' or its corresponding type declarations.
+apps/magic-cad/src/views/ParametricEditorView.tsx(17,8): error TS2307: Cannot find module '@/services/messageService' or its corresponding type declarations.
+apps/magic-cad/src/views/ParametricEditorView.tsx(18,25): error TS2307: Cannot find module '@/contexts/AuthContext' or its corresponding type declarations.
+apps/magic-cad/src/views/ParametricEditorView.tsx(19,18): error TS2307: Cannot find module '@shared/Tree' or its corresponding type declarations.
+apps/magic-cad/src/views/ParametricEditorView.tsx(20,40): error TS2307: Cannot find module '@/hooks/useRequestCancellation' or its corresponding type declarations.
+apps/magic-cad/src/views/ParametricEditorView.tsx(22,31): error TS2307: Cannot find module '@/hooks/useMediaQuery' or its corresponding type declarations.
+apps/magic-cad/src/views/ParametricEditorView.tsx(72,10): error TS7006: Parameter 'msg' implicitly has an 'any' type.
+apps/magic-cad/src/views/ParametricEditorView.tsx(144,19): error TS7006: Parameter '_error' implicitly has an 'any' type.
+apps/magic-cad/src/views/ParametricEditorView.tsx(144,27): error TS7006: Parameter '_variables' implicitly has an 'any' type.
+apps/magic-cad/src/views/ParametricEditorView.tsx(144,39): error TS7006: Parameter 'context' implicitly has an 'any' type.
+apps/magic-cad/src/views/ParametricEditorView.tsx(147,18): error TS7006: Parameter 'msg' implicitly has an 'any' type.
+apps/magic-cad/src/views/ParametricShareView.tsx(3,45): error TS2307: Cannot find module '@shared/types' or its corresponding type declarations.
+apps/magic-cad/src/views/ParametricShareView.tsx(4,26): error TS2307: Cannot find module '@/lib/supabase' or its corresponding type declarations.
+apps/magic-cad/src/views/ParametricShareView.tsx(6,10): error TS2305: Module '"@/lib/utils"' has no exported member 'updateParameter'.
+apps/magic-cad/src/views/ParametricShareView.tsx(7,33): error TS2307: Cannot find module '@/contexts/ConversationContext' or its corresponding type declarations.
+apps/magic-cad/src/views/ParametricShareView.tsx(8,35): error TS2307: Cannot find module '@/contexts/CurrentMessageContext' or its corresponding type declarations.
+apps/magic-cad/src/views/ParametricShareView.tsx(9,18): error TS2307: Cannot find module '@shared/Tree' or its corresponding type declarations.
+apps/magic-cad/src/views/ParametricShareView.tsx(10,31): error TS2307: Cannot find module '@/hooks/useMediaQuery' or its corresponding type declarations.
+apps/magic-cad/src/views/ParametricShareView.tsx(33,24): error TS7006: Parameter 'message' implicitly has an 'any' type.
+apps/magic-cad/src/views/ParametricView.tsx(1,29): error TS2307: Cannot find module '@/components/chat/ChatSection' or its corresponding type declarations.
+apps/magic-cad/src/views/ParametricView.tsx(2,34): error TS2307: Cannot find module '@/components/parameter/ParameterSection' or its corresponding type declarations.
+apps/magic-cad/src/views/ParametricView.tsx(3,52): error TS2307: Cannot find module '@shared/types' or its corresponding type declarations.
+apps/magic-cad/src/views/ParametricView.tsx(4,27): error TS2307: Cannot find module '@/lib/OpenSCADError' or its corresponding type declarations.
+apps/magic-cad/src/views/ParametricView.tsx(12,35): error TS2307: Cannot find module '@/contexts/CurrentMessageContext' or its corresponding type declarations.
+apps/magic-cad/src/views/ParametricView.tsx(13,31): error TS2307: Cannot find module '@/hooks/useMediaQuery' or its corresponding type declarations.
+apps/magic-cad/src/views/ParametricView.tsx(16,26): error TS2307: Cannot find module '@shared/Tree' or its corresponding type declarations.
+apps/magic-cad/src/views/ParametricView.tsx(17,42): error TS2307: Cannot find module '@/components/viewer/ParametricPreviewSection' or its corresponding type declarations.
+apps/magic-cad/src/views/ParametricView.tsx(18,41): error TS2307: Cannot find module '@/components/viewer/ParametricPreviewDialog' or its corresponding type declarations.
+apps/magic-cad/src/views/PromptView.tsx(4,26): error TS2307: Cannot find module '@/hooks/use-toast' or its corresponding type declarations.
+apps/magic-cad/src/views/PromptView.tsx(5,25): error TS2307: Cannot find module '@/contexts/AuthContext' or its corresponding type declarations.
+apps/magic-cad/src/views/PromptView.tsx(6,26): error TS2307: Cannot find module '@/lib/supabase' or its corresponding type declarations.
+apps/magic-cad/src/views/PromptView.tsx(7,26): error TS2307: Cannot find module '@/components/TextAreaChat' or its corresponding type declarations.
+apps/magic-cad/src/views/PromptView.tsx(10,46): error TS2307: Cannot find module '@shared/types' or its corresponding type declarations.
+apps/magic-cad/src/views/PromptView.tsx(11,29): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+apps/magic-cad/src/views/PromptView.tsx(12,37): error TS2307: Cannot find module '@/components/LimitReachedMessage' or its corresponding type declarations.
+apps/magic-cad/src/views/PromptView.tsx(13,42): error TS2307: Cannot find module '@/components/LowPromptsWarningMessage' or its corresponding type declarations.
+apps/magic-cad/src/views/PromptView.tsx(14,29): error TS2307: Cannot find module '@/hooks/useIsMobile' or its corresponding type declarations.
+apps/magic-cad/src/views/PromptView.tsx(16,38): error TS2307: Cannot find module '@/contexts/SelectedItemsContext' or its corresponding type declarations.
+apps/magic-cad/src/views/PromptView.tsx(19,40): error TS2307: Cannot find module '@/services/messageService' or its corresponding type declarations.
+apps/magic-cad/src/views/PromptView.tsx(136,24): error TS7031: Binding element 'titleData' implicitly has an 'any' type.
+apps/magic-cad/src/views/PromptView.tsx(136,35): error TS7031: Binding element 'error' implicitly has an 'any' type.
+apps/magic-cad/src/views/PromptView.tsx(158,17): error TS7006: Parameter 'error' implicitly has an 'any' type.
+apps/magic-cad/src/views/PromptView.tsx(194,15): error TS2322: Type '"light"' is not assignable to type '"default" | "link" | "destructive" | "outline" | "secondary" | "ghost" | null | undefined'.
+apps/magic-cad/src/views/ResetPasswordView.tsx(6,26): error TS2307: Cannot find module '@/hooks/use-toast' or its corresponding type declarations.
+apps/magic-cad/src/views/ResetPasswordView.tsx(7,25): error TS2307: Cannot find module '@/contexts/AuthContext' or its corresponding type declarations.
+apps/magic-cad/src/views/SettingsView.tsx(2,25): error TS2307: Cannot find module '@/contexts/AuthContext' or its corresponding type declarations.
+apps/magic-cad/src/views/SettingsView.tsx(5,39): error TS2307: Cannot find module '@/services/subscriptionService' or its corresponding type declarations.
+apps/magic-cad/src/views/SettingsView.tsx(6,38): error TS2307: Cannot find module '@/services/subscriptionService' or its corresponding type declarations.
+apps/magic-cad/src/views/SettingsView.tsx(14,37): error TS2307: Cannot find module '@/components/auth/DeleteAccountDialog' or its corresponding type declarations.
+apps/magic-cad/src/views/SettingsView.tsx(16,26): error TS2307: Cannot find module '@/hooks/use-toast' or its corresponding type declarations.
+apps/magic-cad/src/views/SettingsView.tsx(21,46): error TS2307: Cannot find module '@/services/profileService' or its corresponding type declarations.
+apps/magic-cad/src/views/SettingsView.tsx(22,36): error TS2307: Cannot find module '@/components/auth/AvatarUpdateDialog' or its corresponding type declarations.
+apps/magic-cad/src/views/SettingsView.tsx(23,31): error TS2307: Cannot find module '@/hooks/useTokenPacks' or its corresponding type declarations.
+apps/magic-cad/src/views/SettingsView.tsx(24,31): error TS2307: Cannot find module '@/hooks/useTokenCosts' or its corresponding type declarations.
+apps/magic-cad/src/views/SettingsView.tsx(82,19): error TS7006: Parameter 'e' implicitly has an 'any' type.
+apps/magic-cad/src/views/SettingsView.tsx(106,19): error TS7006: Parameter 'e' implicitly has an 'any' type.
+apps/magic-cad/src/views/SettingsView.tsx(179,23): error TS2322: Type '"light"' is not assignable to type '"default" | "link" | "destructive" | "outline" | "secondary" | "ghost" | null | undefined'.
+apps/magic-cad/src/views/SettingsView.tsx(197,23): error TS2322: Type '"dark"' is not assignable to type '"default" | "link" | "destructive" | "outline" | "secondary" | "ghost" | null | undefined'.
+apps/magic-cad/src/views/SettingsView.tsx(206,21): error TS2322: Type '"dark"' is not assignable to type '"default" | "link" | "destructive" | "outline" | "secondary" | "ghost" | null | undefined'.
+apps/magic-cad/src/views/SettingsView.tsx(229,19): error TS2322: Type '"dark"' is not assignable to type '"default" | "link" | "destructive" | "outline" | "secondary" | "ghost" | null | undefined'.
+apps/magic-cad/src/views/SettingsView.tsx(291,42): error TS7006: Parameter 'tc' implicitly has an 'any' type.
+apps/magic-cad/src/views/SettingsView.tsx(311,23): error TS2322: Type '{ indicatorClassName: string; className: string; max: any; value: number; }' is not assignable to type 'IntrinsicAttributes & ProgressProps & RefAttributes<HTMLDivElement>'.
+  Property 'indicatorClassName' does not exist on type 'IntrinsicAttributes & ProgressProps & RefAttributes<HTMLDivElement>'.
+apps/magic-cad/src/views/SettingsView.tsx(355,21): error TS2322: Type '"dark"' is not assignable to type '"default" | "link" | "destructive" | "outline" | "secondary" | "ghost" | null | undefined'.
+apps/magic-cad/src/views/SettingsView.tsx(371,23): error TS2322: Type '"dark"' is not assignable to type '"default" | "link" | "destructive" | "outline" | "secondary" | "ghost" | null | undefined'.
+apps/magic-cad/src/views/SettingsView.tsx(389,38): error TS7006: Parameter 'pack' implicitly has an 'any' type.
+apps/magic-cad/src/views/SettingsView.tsx(396,27): error TS2322: Type '"dark"' is not assignable to type '"default" | "link" | "destructive" | "outline" | "secondary" | "ghost" | null | undefined'.
+apps/magic-cad/src/views/SettingsView.tsx(447,19): error TS2322: Type '"dark"' is not assignable to type '"default" | "link" | "destructive" | "outline" | "secondary" | "ghost" | null | undefined'.
+apps/magic-cad/src/views/SettingsView.tsx(454,19): error TS2322: Type '"dark"' is not assignable to type '"default" | "link" | "destructive" | "outline" | "secondary" | "ghost" | null | undefined'.
+apps/magic-cad/src/views/ShareView.tsx(1,26): error TS2307: Cannot find module '@/lib/supabase' or its corresponding type declarations.
+apps/magic-cad/src/views/ShareView.tsx(7,37): error TS2307: Cannot find module '@/contexts/ConversationContext' or its corresponding type declarations.
+apps/magic-cad/src/views/ShareView.tsx(9,39): error TS2307: Cannot find module '@shared/types' or its corresponding type declarations.
+apps/magic-cad/src/views/ShareView.tsx(10,39): error TS2307: Cannot find module '@/contexts/CurrentMessageContext' or its corresponding type declarations.
+apps/magic-cad/src/views/SignInView.tsx(13,26): error TS2307: Cannot find module '@/hooks/use-toast' or its corresponding type declarations.
+apps/magic-cad/src/views/SignInView.tsx(14,25): error TS2307: Cannot find module '@/contexts/AuthContext' or its corresponding type declarations.
+apps/magic-cad/src/views/SignInView.tsx(16,26): error TS2307: Cannot find module '@/lib/supabase' or its corresponding type declarations.
+apps/magic-cad/src/views/SignInView.tsx(18,28): error TS2307: Cannot find module '@/components/icons/CompanyIcons' or its corresponding type declarations.
+apps/magic-cad/src/views/SignInView.tsx(19,10): error TS2305: Module '"@/lib/utils"' has no exported member 'validateRedirectUrl'.
+apps/magic-cad/src/views/SignUpEmailView.tsx(7,26): error TS2307: Cannot find module '@/hooks/use-toast' or its corresponding type declarations.
+apps/magic-cad/src/views/SignUpEmailView.tsx(8,25): error TS2307: Cannot find module '@/contexts/AuthContext' or its corresponding type declarations.
+apps/magic-cad/src/views/SignUpEmailView.tsx(9,26): error TS2307: Cannot find module '@/lib/supabase' or its corresponding type declarations.
+apps/magic-cad/src/views/SignUpEmailView.tsx(11,28): error TS2307: Cannot find module '@/components/icons/CompanyIcons' or its corresponding type declarations.
+apps/magic-cad/src/views/SignUpEmailView.tsx(12,10): error TS2305: Module '"@/lib/utils"' has no exported member 'validateRedirectUrl'.
+apps/magic-cad/src/views/SignUpView.tsx(3,26): error TS2307: Cannot find module '@/hooks/use-toast' or its corresponding type declarations.
+apps/magic-cad/src/views/SignUpView.tsx(4,25): error TS2307: Cannot find module '@/contexts/AuthContext' or its corresponding type declarations.
+apps/magic-cad/src/views/SignUpView.tsx(5,26): error TS2307: Cannot find module '@/lib/supabase' or its corresponding type declarations.
+apps/magic-cad/src/views/SignUpView.tsx(7,28): error TS2307: Cannot find module '@/components/icons/CompanyIcons' or its corresponding type declarations.
+apps/magic-cad/src/views/SignUpView.tsx(9,10): error TS2305: Module '"@/lib/utils"' has no exported member 'validateRedirectUrl'.
+apps/magic-cad/src/views/SubscriptionView.tsx(1,31): error TS2307: Cannot find module '@/components/Subscriptions' or its corresponding type declarations.
+apps/magic-cad/src/views/SubscriptionView.tsx(2,29): error TS2307: Cannot find module '@/components/auth/TrialDialog' or its corresponding type declarations.
+apps/magic-cad/src/views/UpdatePasswordView.tsx(4,25): error TS2307: Cannot find module '@/contexts/AuthContext' or its corresponding type declarations.
+apps/magic-cad/src/views/UpdatePasswordView.tsx(5,26): error TS2307: Cannot find module '@/hooks/use-toast' or its corresponding type declarations.
+apps/magic-cad/src/views/UpdatePasswordView.tsx(47,26): error TS2345: Argument of type 'string' is not assignable to parameter of type 'void'.
+apps/magic-cad/src/worker/openSCAD.ts(1,37): error TS2307: Cannot find module '@/vendor/openscad-wasm/openscad.js' or its corresponding type declarations.
+apps/magic-cad/src/worker/openSCAD.ts(3,26): error TS2307: Cannot find module '@/vendor/openscad-wasm/openscad.d.js' or its corresponding type declarations.
+apps/magic-cad/src/worker/openSCAD.ts(4,27): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+apps/magic-cad/src/worker/openSCAD.ts(11,27): error TS2307: Cannot find module '@/lib/OpenSCADError' or its corresponding type declarations.
+apps/magic-cad/src/worker/openSCAD.ts(12,27): error TS2307: Cannot find module '@/lib/libraries.ts' or its corresponding type declarations.
+apps/magic-cad/src/worker/types.ts(1,27): error TS2307: Cannot find module '@shared/types' or its corresponding type declarations.
+apps/magic-cad/src/worker/types.ts(2,27): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+apps/magic-cad/src/worker/worker.ts(1,27): error TS2307: Cannot find module '@/lib/OpenSCADError' or its corresponding type declarations.
+apps/magic-cad/src/worker/worker.ts(58,18): error TS18046: 'error' is of type 'unknown'.
+apps/magic-cad/src/worker/worker.ts(59,15): error TS18046: 'error' is of type 'unknown'.
+apps/magic-cad/src/worker/worker.ts(60,17): error TS18046: 'error' is of type 'unknown'.
+apps/magic-cad/supabase/functions/_shared/imageGen.ts(2,32): error TS2307: Cannot find module 'https://esm.sh/@supabase/supabase-js@2.49.9' or its corresponding type declarations.
+apps/magic-cad/supabase/functions/_shared/imageGen.ts(3,39): error TS2307: Cannot find module 'npm:@google/genai' or its corresponding type declarations.
+apps/magic-cad/supabase/functions/_shared/imageGen.ts(4,21): error TS2307: Cannot find module 'npm:@fal-ai/client' or its corresponding type declarations.
+apps/magic-cad/supabase/functions/_shared/imageGen.ts(5,35): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+apps/magic-cad/supabase/functions/_shared/imageGen.ts(8,3): error TS2304: Cannot find name 'Deno'.
+apps/magic-cad/supabase/functions/_shared/imageGen.ts(9,3): error TS2304: Cannot find name 'Deno'.
+apps/magic-cad/supabase/functions/_shared/imageGen.ts(19,16): error TS2304: Cannot find name 'Deno'.
+apps/magic-cad/supabase/functions/_shared/imageGen.ts(244,16): error TS7006: Parameter 'image' implicitly has an 'any' type.
+apps/magic-cad/supabase/functions/_shared/imageGen.ts(245,13): error TS7006: Parameter 'image' implicitly has an 'any' type.
+apps/magic-cad/supabase/functions/_shared/messageUtils.ts(1,29): error TS2307: Cannot find module '@shared/types.ts' or its corresponding type declarations.
+apps/magic-cad/supabase/functions/_shared/messageUtils.ts(2,32): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+apps/magic-cad/supabase/functions/_shared/messageUtils.ts(3,35): error TS2307: Cannot find module 'npm:@anthropic-ai/sdk/resources/messages' or its corresponding type declarations.
+apps/magic-cad/supabase/functions/_shared/messageUtils.ts(11,6): error TS2304: Cannot find name 'Deno'.
+apps/magic-cad/supabase/functions/_shared/messageUtils.ts(12,9): error TS2304: Cannot find name 'Deno'.
+apps/magic-cad/supabase/functions/_shared/messageUtils.ts(13,9): error TS2304: Cannot find name 'Deno'.
+apps/magic-cad/supabase/functions/_shared/messageUtils.ts(47,18): error TS7006: Parameter 'image' implicitly has an 'any' type.
+apps/magic-cad/supabase/functions/_shared/messageUtils.ts(48,15): error TS7006: Parameter 'image' implicitly has an 'any' type.
+apps/magic-cad/supabase/functions/_shared/messageUtils.ts(133,8): error TS7006: Parameter 'imageId' implicitly has an 'any' type.
+apps/magic-cad/supabase/functions/_shared/messageUtils.ts(282,8): error TS7006: Parameter 'imageId' implicitly has an 'any' type.
+apps/magic-cad/supabase/functions/_shared/parseParameter.ts(6,8): error TS2307: Cannot find module '@shared/types.ts' or its corresponding type declarations.
+apps/magic-cad/supabase/functions/_shared/sentry.ts(1,25): error TS2307: Cannot find module 'npm:@sentry/deno' or its corresponding type declarations.
+apps/magic-cad/supabase/functions/_shared/sentry.ts(6,10): error TS2304: Cannot find name 'Deno'.
+apps/magic-cad/supabase/functions/_shared/sentry.ts(9,18): error TS2304: Cannot find name 'Deno'.
+apps/magic-cad/supabase/functions/_shared/sentry.ts(31,20): error TS2304: Cannot find name 'Deno'.
+apps/magic-cad/supabase/functions/_shared/supabaseClient.ts(5,8): error TS2307: Cannot find module 'https://esm.sh/@supabase/supabase-js@2.49.9' or its corresponding type declarations.
+apps/magic-cad/supabase/functions/_shared/supabaseClient.ts(6,26): error TS2307: Cannot find module '@shared/database.ts' or its corresponding type declarations.
+apps/magic-cad/supabase/functions/_shared/supabaseClient.ts(14,5): error TS2304: Cannot find name 'Deno'.
+apps/magic-cad/supabase/functions/_shared/supabaseClient.ts(15,5): error TS2304: Cannot find name 'Deno'.
+apps/magic-cad/supabase/functions/_shared/supabaseClient.ts(27,5): error TS2304: Cannot find name 'Deno'.
+apps/magic-cad/supabase/functions/_shared/supabaseClient.ts(28,5): error TS2304: Cannot find name 'Deno'.
+apps/magic-cad/supabase/functions/creative-chat/index.ts(2,29): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+apps/magic-cad/supabase/functions/creative-chat/index.ts(3,27): error TS2307: Cannot find module 'npm:@anthropic-ai/sdk' or its corresponding type declarations.
+apps/magic-cad/supabase/functions/creative-chat/index.ts(4,30): error TS2307: Cannot find module 'npm:@anthropic-ai/sdk/resources/messages' or its corresponding type declarations.
+apps/magic-cad/supabase/functions/creative-chat/index.ts(12,8): error TS2307: Cannot find module '@shared/types.ts' or its corresponding type declarations.
+apps/magic-cad/supabase/functions/creative-chat/index.ts(17,8): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+apps/magic-cad/supabase/functions/creative-chat/index.ts(18,18): error TS2307: Cannot find module '@shared/Tree.ts' or its corresponding type declarations.
+apps/magic-cad/supabase/functions/creative-chat/index.ts(19,38): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+apps/magic-cad/supabase/functions/creative-chat/index.ts(24,8): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+apps/magic-cad/supabase/functions/creative-chat/index.ts(31,3): error TS2304: Cannot find name 'Deno'.
+apps/magic-cad/supabase/functions/creative-chat/index.ts(32,3): error TS2304: Cannot find name 'Deno'.
+apps/magic-cad/supabase/functions/creative-chat/index.ts(71,8): error TS7006: Parameter 'imageId' implicitly has an 'any' type.
+apps/magic-cad/supabase/functions/creative-chat/index.ts(313,20): error TS7006: Parameter 'content' implicitly has an 'any' type.
+apps/magic-cad/supabase/functions/creative-chat/index.ts(314,17): error TS7006: Parameter 'content' implicitly has an 'any' type.
+apps/magic-cad/supabase/functions/creative-chat/index.ts(320,20): error TS7006: Parameter 's' implicitly has an 'any' type.
+apps/magic-cad/supabase/functions/creative-chat/index.ts(330,1): error TS2304: Cannot find name 'Deno'.
+apps/magic-cad/supabase/functions/creative-chat/index.ts(330,19): error TS7006: Parameter 'req' implicitly has an 'any' type.
+apps/magic-cad/supabase/functions/creative-chat/index.ts(410,6): error TS2304: Cannot find name 'Deno'.
+apps/magic-cad/supabase/functions/creative-chat/index.ts(411,9): error TS2304: Cannot find name 'Deno'.
+apps/magic-cad/supabase/functions/creative-chat/index.ts(412,9): error TS2304: Cannot find name 'Deno'.
+apps/magic-cad/supabase/functions/creative-chat/index.ts(534,39): error TS7006: Parameter 'msg' implicitly has an 'any' type.
+apps/magic-cad/supabase/functions/creative-chat/index.ts(542,54): error TS7006: Parameter 'message' implicitly has an 'any' type.
+apps/magic-cad/supabase/functions/creative-chat/index.ts(571,15): error TS2304: Cannot find name 'Deno'.
+apps/magic-cad/supabase/functions/creative-chat/index.ts(666,58): error TS7006: Parameter 'toolCall' implicitly has an 'any' type.
+apps/magic-cad/supabase/functions/creative-chat/index.ts(740,60): error TS7006: Parameter 'toolCall' implicitly has an 'any' type.
+apps/magic-cad/supabase/functions/creative-chat/index.ts(753,28): error TS7006: Parameter 'toolCall' implicitly has an 'any' type.
+apps/magic-cad/supabase/functions/creative-chat/index.ts(815,41): error TS7006: Parameter 'toolCall' implicitly has an 'any' type.
+apps/magic-cad/supabase/functions/delete-user/index.ts(3,20): error TS2307: Cannot find module 'npm:stripe@17.5.0' or its corresponding type declarations.
+apps/magic-cad/supabase/functions/delete-user/index.ts(4,29): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+apps/magic-cad/supabase/functions/delete-user/index.ts(8,8): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+apps/magic-cad/supabase/functions/delete-user/index.ts(9,51): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+apps/magic-cad/supabase/functions/delete-user/index.ts(17,27): error TS2304: Cannot find name 'Deno'.
+apps/magic-cad/supabase/functions/delete-user/index.ts(30,1): error TS2304: Cannot find name 'Deno'.
+apps/magic-cad/supabase/functions/delete-user/index.ts(30,19): error TS7006: Parameter 'req' implicitly has an 'any' type.
+apps/magic-cad/supabase/functions/delete-user/index.ts(137,3): error TS2304: Cannot find name 'EdgeRuntime'.
+apps/magic-cad/supabase/functions/fal-webhook/index.ts(2,46): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+apps/magic-cad/supabase/functions/fal-webhook/index.ts(3,27): error TS2307: Cannot find module 'npm:fflate@0.8.2' or its corresponding type declarations.
+apps/magic-cad/supabase/functions/fal-webhook/index.ts(8,3): error TS2304: Cannot find name 'Deno'.
+apps/magic-cad/supabase/functions/fal-webhook/index.ts(9,3): error TS2304: Cannot find name 'Deno'.
+apps/magic-cad/supabase/functions/fal-webhook/index.ts(14,1): error TS2304: Cannot find name 'Deno'.
+apps/magic-cad/supabase/functions/fal-webhook/index.ts(14,19): error TS7006: Parameter 'request' implicitly has an 'any' type.
+apps/magic-cad/supabase/functions/jackson-pollock/index.ts(7,29): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+apps/magic-cad/supabase/functions/jackson-pollock/index.ts(57,1): error TS2304: Cannot find name 'Deno'.
+apps/magic-cad/supabase/functions/mesh/index.ts(2,29): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+apps/magic-cad/supabase/functions/mesh/index.ts(3,21): error TS2307: Cannot find module 'npm:@fal-ai/client' or its corresponding type declarations.
+apps/magic-cad/supabase/functions/mesh/index.ts(4,29): error TS2307: Cannot find module 'npm:@google/genai' or its corresponding type declarations.
+apps/magic-cad/supabase/functions/mesh/index.ts(5,23): error TS2307: Cannot find module 'npm:@anthropic-ai/sdk' or its corresponding type declarations.
+apps/magic-cad/supabase/functions/mesh/index.ts(11,8): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+apps/magic-cad/supabase/functions/mesh/index.ts(12,37): error TS2307: Cannot find module '@shared/types.ts' or its corresponding type declarations.
+apps/magic-cad/supabase/functions/mesh/index.ts(16,8): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+apps/magic-cad/supabase/functions/mesh/index.ts(17,35): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+apps/magic-cad/supabase/functions/mesh/index.ts(18,51): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+apps/magic-cad/supabase/functions/mesh/index.ts(28,3): error TS2304: Cannot find name 'Deno'.
+apps/magic-cad/supabase/functions/mesh/index.ts(29,3): error TS2304: Cannot find name 'Deno'.
+apps/magic-cad/supabase/functions/mesh/index.ts(128,16): error TS2304: Cannot find name 'Deno'.
+apps/magic-cad/supabase/functions/mesh/index.ts(133,11): error TS2304: Cannot find name 'Deno'.
+apps/magic-cad/supabase/functions/mesh/index.ts(140,11): error TS2304: Cannot find name 'Deno'.
+apps/magic-cad/supabase/functions/mesh/index.ts(158,1): error TS2304: Cannot find name 'Deno'.
+apps/magic-cad/supabase/functions/mesh/index.ts(158,19): error TS7006: Parameter 'req' implicitly has an 'any' type.
+apps/magic-cad/supabase/functions/mesh/index.ts(486,16): error TS2304: Cannot find name 'Deno'.
+apps/magic-cad/supabase/functions/mesh/index.ts(487,19): error TS2304: Cannot find name 'Deno'.
+apps/magic-cad/supabase/functions/mesh/index.ts(488,19): error TS2304: Cannot find name 'Deno'.
+apps/magic-cad/supabase/functions/mesh/index.ts(633,7): error TS2304: Cannot find name 'EdgeRuntime'.
+apps/magic-cad/supabase/functions/mesh/index.ts(652,5): error TS2304: Cannot find name 'EdgeRuntime'.
+apps/magic-cad/supabase/functions/mesh/index.ts(715,6): error TS2304: Cannot find name 'Deno'.
+apps/magic-cad/supabase/functions/mesh/index.ts(716,9): error TS2304: Cannot find name 'Deno'.
+apps/magic-cad/supabase/functions/mesh/index.ts(717,9): error TS2304: Cannot find name 'Deno'.
+apps/magic-cad/supabase/functions/mesh/index.ts(721,18): error TS2304: Cannot find name 'Deno'.
+apps/magic-cad/supabase/functions/mesh/index.ts(722,19): error TS2304: Cannot find name 'Deno'.
+apps/magic-cad/supabase/functions/mesh/index.ts(723,16): error TS2304: Cannot find name 'Deno'.
+apps/magic-cad/supabase/functions/mesh/index.ts(771,48): error TS7006: Parameter 'file' implicitly has an 'any' type.
+apps/magic-cad/supabase/functions/mesh/index.ts(984,18): error TS7006: Parameter 'image' implicitly has an 'any' type.
+apps/magic-cad/supabase/functions/mesh/index.ts(985,15): error TS7006: Parameter 'image' implicitly has an 'any' type.
+apps/magic-cad/supabase/functions/mesh/index.ts(1264,17): error TS18047: 'longCaption' is possibly 'null'.
+apps/magic-cad/supabase/functions/mesh/index.ts(1483,6): error TS2304: Cannot find name 'Deno'.
+apps/magic-cad/supabase/functions/mesh/index.ts(1484,9): error TS2304: Cannot find name 'Deno'.
+apps/magic-cad/supabase/functions/mesh/index.ts(1485,9): error TS2304: Cannot find name 'Deno'.
+apps/magic-cad/supabase/functions/mesh/index.ts(1550,48): error TS7006: Parameter 'file' implicitly has an 'any' type.
+apps/magic-cad/supabase/functions/mesh/index.ts(1619,18): error TS7006: Parameter 'image' implicitly has an 'any' type.
+apps/magic-cad/supabase/functions/mesh/index.ts(1620,15): error TS7006: Parameter 'image' implicitly has an 'any' type.
+apps/magic-cad/supabase/functions/parametric-chat/index.ts(9,8): error TS2307: Cannot find module '@shared/types.ts' or its corresponding type declarations.
+apps/magic-cad/supabase/functions/parametric-chat/index.ts(13,8): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+apps/magic-cad/supabase/functions/parametric-chat/index.ts(14,18): error TS2307: Cannot find module '@shared/Tree.ts' or its corresponding type declarations.
+apps/magic-cad/supabase/functions/parametric-chat/index.ts(15,29): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+apps/magic-cad/supabase/functions/parametric-chat/index.ts(16,35): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+apps/magic-cad/supabase/functions/parametric-chat/index.ts(17,29): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+apps/magic-cad/supabase/functions/parametric-chat/index.ts(21,28): error TS2304: Cannot find name 'Deno'.
+apps/magic-cad/supabase/functions/parametric-chat/index.ts(395,1): error TS2304: Cannot find name 'Deno'.
+apps/magic-cad/supabase/functions/parametric-chat/index.ts(395,19): error TS7006: Parameter 'req' implicitly has an 'any' type.
+apps/magic-cad/supabase/functions/parametric-chat/index.ts(536,39): error TS7006: Parameter 'm' implicitly has an 'any' type.
+apps/magic-cad/supabase/functions/parametric-chat/index.ts(652,49): error TS7006: Parameter 'call' implicitly has an 'any' type.
+apps/magic-cad/supabase/functions/parametric-chat/index.ts(982,20): error TS7006: Parameter 'c' implicitly has an 'any' type.
+apps/magic-cad/supabase/functions/parametric-chat/index.ts(1044,18): error TS7006: Parameter '_' implicitly has an 'any' type.
+apps/magic-cad/supabase/functions/parametric-chat/index.ts(1061,18): error TS7006: Parameter 'c' implicitly has an 'any' type.
+apps/magic-cad/supabase/functions/prompt-generator/index.ts(7,27): error TS2307: Cannot find module 'npm:@anthropic-ai/sdk' or its corresponding type declarations.
+apps/magic-cad/supabase/functions/prompt-generator/index.ts(8,29): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+apps/magic-cad/supabase/functions/prompt-generator/index.ts(10,39): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+apps/magic-cad/supabase/functions/prompt-generator/index.ts(59,1): error TS2304: Cannot find name 'Deno'.
+apps/magic-cad/supabase/functions/prompt-generator/index.ts(59,19): error TS7006: Parameter 'req' implicitly has an 'any' type.
+apps/magic-cad/supabase/functions/prompt-generator/index.ts(109,13): error TS2304: Cannot find name 'Deno'.
+apps/magic-cad/supabase/functions/stripe-create-checkout-session/index.ts(4,29): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+apps/magic-cad/supabase/functions/stripe-create-checkout-session/index.ts(5,39): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+apps/magic-cad/supabase/functions/stripe-create-checkout-session/index.ts(6,51): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+apps/magic-cad/supabase/functions/stripe-create-checkout-session/index.ts(11,27): error TS2304: Cannot find name 'Deno'.
+apps/magic-cad/supabase/functions/stripe-create-checkout-session/index.ts(12,3): error TS2322: Type '"2024-12-18.acacia"' is not assignable to type '"2026-02-25.clover"'.
+apps/magic-cad/supabase/functions/stripe-create-checkout-session/index.ts(16,1): error TS2304: Cannot find name 'Deno'.
+apps/magic-cad/supabase/functions/stripe-create-checkout-session/index.ts(16,19): error TS7006: Parameter 'req' implicitly has an 'any' type.
+apps/magic-cad/supabase/functions/stripe-create-checkout-session/index.ts(120,19): error TS2304: Cannot find name 'Deno'.
+apps/magic-cad/supabase/functions/stripe-create-checkout-session/index.ts(183,20): error TS2304: Cannot find name 'Deno'.
+apps/magic-cad/supabase/functions/stripe-create-checkout-session/index.ts(184,19): error TS2304: Cannot find name 'Deno'.
+apps/magic-cad/supabase/functions/stripe-create-checkout-session/index.ts(227,18): error TS2304: Cannot find name 'Deno'.
+apps/magic-cad/supabase/functions/stripe-create-checkout-session/index.ts(228,17): error TS2304: Cannot find name 'Deno'.
+apps/magic-cad/supabase/functions/stripe-create-portal-session/index.ts(4,29): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+apps/magic-cad/supabase/functions/stripe-create-portal-session/index.ts(5,39): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+apps/magic-cad/supabase/functions/stripe-create-portal-session/index.ts(6,51): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+apps/magic-cad/supabase/functions/stripe-create-portal-session/index.ts(11,27): error TS2304: Cannot find name 'Deno'.
+apps/magic-cad/supabase/functions/stripe-create-portal-session/index.ts(12,3): error TS2322: Type '"2024-12-18.acacia"' is not assignable to type '"2026-02-25.clover"'.
+apps/magic-cad/supabase/functions/stripe-create-portal-session/index.ts(16,1): error TS2304: Cannot find name 'Deno'.
+apps/magic-cad/supabase/functions/stripe-create-portal-session/index.ts(16,19): error TS7006: Parameter 'req' implicitly has an 'any' type.
+apps/magic-cad/supabase/functions/stripe-create-portal-session/index.ts(93,17): error TS2304: Cannot find name 'Deno'.
+apps/magic-cad/supabase/functions/stripe-webhook/index.ts(3,46): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+apps/magic-cad/supabase/functions/stripe-webhook/index.ts(4,51): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+apps/magic-cad/supabase/functions/stripe-webhook/index.ts(9,27): error TS2304: Cannot find name 'Deno'.
+apps/magic-cad/supabase/functions/stripe-webhook/index.ts(10,3): error TS2322: Type '"2024-12-18.acacia"' is not assignable to type '"2026-02-25.clover"'.
+apps/magic-cad/supabase/functions/stripe-webhook/index.ts(17,1): error TS2304: Cannot find name 'Deno'.
+apps/magic-cad/supabase/functions/stripe-webhook/index.ts(17,19): error TS7006: Parameter 'request' implicitly has an 'any' type.
+apps/magic-cad/supabase/functions/stripe-webhook/index.ts(26,7): error TS2304: Cannot find name 'Deno'.
+apps/magic-cad/supabase/functions/stripe-webhook/index.ts(146,18): error TS2339: Property 'current_period_end' does not exist on type 'Subscription'.
+apps/magic-cad/supabase/functions/stripe-webhook/index.ts(362,18): error TS2339: Property 'current_period_end' does not exist on type 'Response<Subscription>'.
+apps/magic-cad/supabase/functions/stripe-webhook/index.ts(467,16): error TS2339: Property 'subscription' does not exist on type 'Invoice'.
+apps/magic-cad/supabase/functions/stripe-webhook/index.ts(472,20): error TS2339: Property 'subscription' does not exist on type 'Invoice'.
+apps/magic-cad/supabase/functions/stripe-webhook/index.ts(473,17): error TS2339: Property 'subscription' does not exist on type 'Invoice'.
+apps/magic-cad/supabase/functions/stripe-webhook/index.ts(474,17): error TS2339: Property 'subscription' does not exist on type 'Invoice'.
+apps/magic-cad/supabase/functions/stripe-webhook/index.ts(494,18): error TS2339: Property 'current_period_end' does not exist on type 'Response<Subscription>'.
+apps/magic-cad/supabase/functions/title-generator/index.ts(7,27): error TS2307: Cannot find module 'npm:@anthropic-ai/sdk' or its corresponding type declarations.
+apps/magic-cad/supabase/functions/title-generator/index.ts(8,29): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+apps/magic-cad/supabase/functions/title-generator/index.ts(10,39): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+apps/magic-cad/supabase/functions/title-generator/index.ts(11,25): error TS2307: Cannot find module '@shared/types.ts' or its corresponding type declarations.
+apps/magic-cad/supabase/functions/title-generator/index.ts(12,43): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+apps/magic-cad/supabase/functions/title-generator/index.ts(44,1): error TS2304: Cannot find name 'Deno'.
+apps/magic-cad/supabase/functions/title-generator/index.ts(44,19): error TS7006: Parameter 'req' implicitly has an 'any' type.
+apps/magic-cad/supabase/functions/title-generator/index.ts(99,13): error TS2304: Cannot find name 'Deno'.
+src/app/api/circuit-projects/route.ts(55,7): error TS2740: Type 'Omit<SQLiteSelectBase<"circuit_projects", "async", ResultSet, { id: SQLiteColumn<{ name: "id"; tableName: "circuit_projects"; dataType: "number"; columnType: "SQLiteInteger"; data: number; driverParam: number; ... 8 more ...; generated: undefined; }, {}, {}>; ... 10 more ...; updatedAt: SQLiteColumn<...>; }, ... 5 m...' is missing the following properties from type 'SQLiteSelectBase<"circuit_projects", "async", ResultSet, { id: SQLiteColumn<{ name: "id"; tableName: "circuit_projects"; dataType: "number"; columnType: "SQLiteInteger"; data: number; driverParam: number; ... 8 more ...; generated: undefined; }, {}, {}>; ... 10 more ...; updatedAt: SQLiteColumn<...>; }, ... 5 more ....': joinsNotNullableMap, tableName, isPartialSelect, session, and 5 more.
+src/app/api/circuit-projects/templates/route.ts(64,7): error TS2740: Type 'Omit<SQLiteSelectBase<"circuit_projects", "async", ResultSet, { id: SQLiteColumn<{ name: "id"; tableName: "circuit_projects"; dataType: "number"; columnType: "SQLiteInteger"; data: number; driverParam: number; ... 8 more ...; generated: undefined; }, {}, {}>; ... 10 more ...; updatedAt: SQLiteColumn<...>; }, ... 5 m...' is missing the following properties from type 'SQLiteSelectBase<"circuit_projects", "async", ResultSet, { id: SQLiteColumn<{ name: "id"; tableName: "circuit_projects"; dataType: "number"; columnType: "SQLiteInteger"; data: number; driverParam: number; ... 8 more ...; generated: undefined; }, {}, {}>; ... 10 more ...; updatedAt: SQLiteColumn<...>; }, ... 5 more ....': joinsNotNullableMap, tableName, isPartialSelect, session, and 5 more.
+src/app/api/circuit-projects/templates/route.ts(71,7): error TS2740: Type 'Omit<SQLiteSelectBase<"circuit_projects", "async", ResultSet, { id: SQLiteColumn<{ name: "id"; tableName: "circuit_projects"; dataType: "number"; columnType: "SQLiteInteger"; data: number; driverParam: number; ... 8 more ...; generated: undefined; }, {}, {}>; ... 10 more ...; updatedAt: SQLiteColumn<...>; }, ... 5 m...' is missing the following properties from type 'SQLiteSelectBase<"circuit_projects", "async", ResultSet, { id: SQLiteColumn<{ name: "id"; tableName: "circuit_projects"; dataType: "number"; columnType: "SQLiteInteger"; data: number; driverParam: number; ... 8 more ...; generated: undefined; }, {}, {}>; ... 10 more ...; updatedAt: SQLiteColumn<...>; }, ... 5 more ....': joinsNotNullableMap, tableName, isPartialSelect, session, and 5 more.
+src/app/api/gamification/activities/[userId]/route.ts(3,10): error TS2305: Module '"@/db/schema"' has no exported member 'userActivities'.
+src/app/api/gamification/activities/[userId]/route.ts(67,7): error TS2740: Type 'Omit<SQLiteSelectBase<any, "async", ResultSet, any, "single", any, false, "where", any[], any>, "where">' is missing the following properties from type 'SQLiteSelectBase<any, "async", ResultSet, any, "single", any, false, never, any[], any>': joinsNotNullableMap, tableName, isPartialSelect, session, and 5 more.
+src/app/api/gamification/activities/[userId]/route.ts(74,7): error TS2740: Type 'Omit<SQLiteSelectBase<any, "async", ResultSet, any, "single", any, false, "where", any[], any>, "where">' is missing the following properties from type 'SQLiteSelectBase<any, "async", ResultSet, any, "single", any, false, never, any[], any>': joinsNotNullableMap, tableName, isPartialSelect, session, and 5 more.
+src/app/api/gamification/badges/[userId]/route.ts(3,10): error TS2724: '"@/db/schema"' has no exported member named 'userBadgesNew'. Did you mean 'userBadges'?
+src/app/api/gamification/check-badges/route.ts(119,42): error TS18046: 'error' is of type 'unknown'.
+src/app/api/gamification/points/route.ts(3,10): error TS2305: Module '"@/db/schema"' has no exported member 'userPoints'.
+src/app/api/gamification/points/route.ts(3,22): error TS2305: Module '"@/db/schema"' has no exported member 'userActivities'.
+src/app/api/learn/questions/route.ts(79,7): error TS2740: Type 'Omit<SQLiteSelectBase<"questions", "async", ResultSet, { id: SQLiteColumn<{ name: "id"; tableName: "questions"; dataType: "number"; columnType: "SQLiteInteger"; data: number; driverParam: number; notNull: true; ... 7 more ...; generated: undefined; }, {}, {}>; ... 8 more ...; createdAt: SQLiteColumn<...>; }, ... 5 m...' is missing the following properties from type 'SQLiteSelectBase<"questions", "async", ResultSet, { id: SQLiteColumn<{ name: "id"; tableName: "questions"; dataType: "number"; columnType: "SQLiteInteger"; data: number; driverParam: number; notNull: true; ... 7 more ...; generated: undefined; }, {}, {}>; ... 8 more ...; createdAt: SQLiteColumn<...>; }, ... 5 more ....': joinsNotNullableMap, tableName, isPartialSelect, session, and 5 more.
+src/app/api/projects-new/[id]/average-rating/route.ts(3,10): error TS2724: '"@/db/schema"' has no exported member named 'projectRatingsNew'. Did you mean 'projectRatings'?
+src/app/api/projects-new/[id]/average-rating/route.ts(3,29): error TS2724: '"@/db/schema"' has no exported member named 'projectsNew'. Did you mean 'projects'?
+src/app/api/projects-new/[id]/comment/route.ts(3,10): error TS2724: '"@/db/schema"' has no exported member named 'projectCommentsNew'. Did you mean 'projectComments'?
+src/app/api/projects-new/[id]/comment/route.ts(3,30): error TS2724: '"@/db/schema"' has no exported member named 'projectsNew'. Did you mean 'projects'?
+src/app/api/projects-new/[id]/rate/route.ts(3,10): error TS2724: '"@/db/schema"' has no exported member named 'projectRatingsNew'. Did you mean 'projectRatings'?
+src/app/api/projects-new/[id]/rate/route.ts(3,29): error TS2724: '"@/db/schema"' has no exported member named 'projectsNew'. Did you mean 'projects'?
+src/app/api/projects-new/[id]/route.ts(3,10): error TS2724: '"@/db/schema"' has no exported member named 'projectsNew'. Did you mean 'projects'?
+src/app/api/projects-new/[id]/route.ts(3,23): error TS2724: '"@/db/schema"' has no exported member named 'projectStepsNew'. Did you mean 'projectSteps'?
+src/app/api/projects-new/[id]/route.ts(3,40): error TS2724: '"@/db/schema"' has no exported member named 'projectRatingsNew'. Did you mean 'projectRatings'?
+src/app/api/projects-new/[id]/route.ts(3,59): error TS2724: '"@/db/schema"' has no exported member named 'projectCommentsNew'. Did you mean 'projectComments'?
+src/app/api/projects-new/[id]/steps/route.ts(3,10): error TS2724: '"@/db/schema"' has no exported member named 'projectStepsNew'. Did you mean 'projectSteps'?
+src/app/api/projects-new/[id]/steps/route.ts(3,27): error TS2724: '"@/db/schema"' has no exported member named 'projectsNew'. Did you mean 'projects'?
+src/app/api/projects-new/route.ts(3,10): error TS2724: '"@/db/schema"' has no exported member named 'projectsNew'. Did you mean 'projects'?
+src/app/api/projects-new/route.ts(86,7): error TS2740: Type 'Omit<SQLiteSelectBase<any, "async", ResultSet, any, "single", any, false, "where", any[], any>, "where">' is missing the following properties from type 'SQLiteSelectBase<any, "async", ResultSet, any, "single", any, false, never, any[], any>': joinsNotNullableMap, tableName, isPartialSelect, session, and 5 more.
+src/app/api/projects-new/route.ts(91,7): error TS2740: Type 'Omit<SQLiteSelectBase<any, "async", ResultSet, any, "single", any, false, "orderBy", any[], any>, "orderBy">' is missing the following properties from type 'SQLiteSelectBase<any, "async", ResultSet, any, "single", any, false, never, any[], any>': joinsNotNullableMap, tableName, isPartialSelect, session, and 5 more.
+src/app/api/projects-new/route.ts(93,7): error TS2740: Type 'Omit<SQLiteSelectBase<any, "async", ResultSet, any, "single", any, false, "orderBy", any[], any>, "orderBy">' is missing the following properties from type 'SQLiteSelectBase<any, "async", ResultSet, any, "single", any, false, never, any[], any>': joinsNotNullableMap, tableName, isPartialSelect, session, and 5 more.
+src/app/api/projects-new/route.ts(95,7): error TS2740: Type 'Omit<SQLiteSelectBase<any, "async", ResultSet, any, "single", any, false, "orderBy", any[], any>, "orderBy">' is missing the following properties from type 'SQLiteSelectBase<any, "async", ResultSet, any, "single", any, false, never, any[], any>': joinsNotNullableMap, tableName, isPartialSelect, session, and 5 more.
+src/app/api/projects/route.ts(43,7): error TS2740: Type 'Omit<SQLiteSelectBase<"projects", "async", ResultSet, { id: SQLiteColumn<{ name: "id"; tableName: "projects"; dataType: "number"; columnType: "SQLiteInteger"; data: number; driverParam: number; notNull: true; ... 7 more ...; generated: undefined; }, {}, {}>; ... 15 more ...; updatedAt: SQLiteColumn<...>; }, ... 5 mo...' is missing the following properties from type 'SQLiteSelectBase<"projects", "async", ResultSet, { id: SQLiteColumn<{ name: "id"; tableName: "projects"; dataType: "number"; columnType: "SQLiteInteger"; data: number; driverParam: number; notNull: true; ... 7 more ...; generated: undefined; }, {}, {}>; ... 15 more ...; updatedAt: SQLiteColumn<...>; }, ... 5 more .....': joinsNotNullableMap, tableName, isPartialSelect, session, and 5 more.
+src/app/api/tutorials/articles/route.ts(52,7): error TS2740: Type 'Omit<SQLiteSelectBase<"articles", "async", ResultSet, { id: SQLiteColumn<{ name: "id"; tableName: "articles"; dataType: "number"; columnType: "SQLiteInteger"; data: number; driverParam: number; notNull: true; ... 7 more ...; generated: undefined; }, {}, {}>; ... 13 more ...; updatedAt: SQLiteColumn<...>; }, ... 5 mo...' is missing the following properties from type 'SQLiteSelectBase<"articles", "async", ResultSet, { id: SQLiteColumn<{ name: "id"; tableName: "articles"; dataType: "number"; columnType: "SQLiteInteger"; data: number; driverParam: number; notNull: true; ... 7 more ...; generated: undefined; }, {}, {}>; ... 13 more ...; updatedAt: SQLiteColumn<...>; }, ... 5 more .....': joinsNotNullableMap, tableName, isPartialSelect, session, and 5 more.
+src/app/api/tutorials/resources/route.ts(41,7): error TS2740: Type 'Omit<SQLiteSelectBase<"downloadable_resources", "async", ResultSet, { id: SQLiteColumn<{ name: "id"; tableName: "downloadable_resources"; dataType: "number"; columnType: "SQLiteInteger"; data: number; ... 9 more ...; generated: undefined; }, {}, {}>; ... 9 more ...; updatedAt: SQLiteColumn<...>; }, ... 5 more ..., {...' is missing the following properties from type 'SQLiteSelectBase<"downloadable_resources", "async", ResultSet, { id: SQLiteColumn<{ name: "id"; tableName: "downloadable_resources"; dataType: "number"; columnType: "SQLiteInteger"; data: number; ... 9 more ...; generated: undefined; }, {}, {}>; ... 9 more ...; updatedAt: SQLiteColumn<...>; }, ... 5 more ..., { ...;...': joinsNotNullableMap, tableName, isPartialSelect, session, and 5 more.
+src/app/api/tutorials/resources/route.ts(53,44): error TS18046: 'error' is of type 'unknown'.
+src/app/api/tutorials/resources/route.ts(163,44): error TS18046: 'error' is of type 'unknown'.
+src/app/api/tutorials/videos/route.ts(53,7): error TS2740: Type 'Omit<SQLiteSelectBase<"video_tutorials", "async", ResultSet, { id: SQLiteColumn<{ name: "id"; tableName: "video_tutorials"; dataType: "number"; columnType: "SQLiteInteger"; data: number; driverParam: number; ... 8 more ...; generated: undefined; }, {}, {}>; ... 12 more ...; updatedAt: SQLiteColumn<...>; }, ... 5 mor...' is missing the following properties from type 'SQLiteSelectBase<"video_tutorials", "async", ResultSet, { id: SQLiteColumn<{ name: "id"; tableName: "video_tutorials"; dataType: "number"; columnType: "SQLiteInteger"; data: number; driverParam: number; ... 8 more ...; generated: undefined; }, {}, {}>; ... 12 more ...; updatedAt: SQLiteColumn<...>; }, ... 5 more ......': joinsNotNullableMap, tableName, isPartialSelect, session, and 5 more.
+src/app/gamification/page.tsx(121,17): error TS2322: Type '{ totalPoints: any; recentPoints: number; showAnimation: boolean; }' is not assignable to type 'IntrinsicAttributes & PointsDisplayProps'.
+  Property 'recentPoints' does not exist on type 'IntrinsicAttributes & PointsDisplayProps'.
+src/app/tools/circuit-simulator/page.tsx(65,33): error TS2503: Cannot find namespace 'JSX'.
+src/app/tools/circuit-simulator/page.tsx(828,14): error TS2345: Argument of type 'Wire[]' is not assignable to parameter of type 'SetStateAction<Wire[]>'.
+  Type 'Wire[]' is not assignable to type 'Wire[]'. Two different types with this name exist, but they are unrelated.
+    Property 'path' is missing in type 'Wire' but required in type 'Wire'.
+src/app/tools/diagram-editor/page.tsx(15,21): error TS2304: Cannot find name 'useRef'.
+src/app/tools/power-systems/page.tsx(101,37): error TS2353: Object literal may only specify known properties, and ''00'' does not exist in type '{ [key: number]: number; }'.
+src/app/tools/power-systems/page.tsx(171,78): error TS2322: Type '{ children: Element[]; value: string; onValueChange: Dispatch<SetStateAction<string>>; className: string; }' is not assignable to type 'IntrinsicAttributes & SelectSharedProps & { value?: string | undefined; defaultValue?: string | undefined; onValueChange?(value: string): void; }'.
+  Property 'className' does not exist on type 'IntrinsicAttributes & SelectSharedProps & { value?: string | undefined; defaultValue?: string | undefined; onValueChange?(value: string): void; }'.
+src/app/tools/power-systems/page.tsx(347,90): error TS2322: Type '{ children: Element[]; value: string; onValueChange: Dispatch<SetStateAction<string>>; className: string; }' is not assignable to type 'IntrinsicAttributes & SelectSharedProps & { value?: string | undefined; defaultValue?: string | undefined; onValueChange?(value: string): void; }'.
+  Property 'className' does not exist on type 'IntrinsicAttributes & SelectSharedProps & { value?: string | undefined; defaultValue?: string | undefined; onValueChange?(value: string): void; }'.
+src/app/tools/power-systems/page.tsx(387,78): error TS2322: Type '{ children: Element[]; value: string; onValueChange: Dispatch<SetStateAction<string>>; className: string; }' is not assignable to type 'IntrinsicAttributes & SelectSharedProps & { value?: string | undefined; defaultValue?: string | undefined; onValueChange?(value: string): void; }'.
+  Property 'className' does not exist on type 'IntrinsicAttributes & SelectSharedProps & { value?: string | undefined; defaultValue?: string | undefined; onValueChange?(value: string): void; }'.
+src/components/assessments/quiz-interface.tsx(134,62): error TS18047: 'acc' is possibly 'null'.
+src/components/assessments/quiz-interface.tsx(138,18): error TS2345: Argument of type 'number | null' is not assignable to parameter of type 'number'.
+  Type 'null' is not assignable to type 'number'.
+src/components/assessments/quiz-interface.tsx(153,62): error TS18047: 'acc' is possibly 'null'.
+src/components/assessments/quiz-interface.tsx(155,36): error TS18047: 'score' is possibly 'null'.
+src/components/assessments/quiz-interface.tsx(219,92): error TS18047: 'score' is possibly 'null'.
+src/components/ErrorReporter.tsx(14,19): error TS2554: Expected 1 arguments, but got 0.
+src/components/feature-card.tsx(54,9): error TS2769: No overload matches this call.
+  The last overload gave the following error.
+    Object literal may only specify known properties, and 'className' does not exist in type 'Partial<unknown> & Attributes'.
+src/components/ui/chart.tsx(109,3): error TS2339: Property 'payload' does not exist on type 'Omit<Props<ValueType, NameType>, PropertiesReadFromContext> & { active?: boolean | undefined; allowEscapeViewBox?: AllowInDimension | undefined; ... 24 more ...; wrapperStyle?: CSSProperties | undefined; } & ClassAttributes<...> & HTMLAttributes<...> & { ...; }'.
+src/components/ui/chart.tsx(114,3): error TS2339: Property 'label' does not exist on type 'Omit<Props<ValueType, NameType>, PropertiesReadFromContext> & { active?: boolean | undefined; allowEscapeViewBox?: AllowInDimension | undefined; ... 24 more ...; wrapperStyle?: CSSProperties | undefined; } & ClassAttributes<...> & HTMLAttributes<...> & { ...; }'.
+src/components/ui/chart.tsx(182,23): error TS7006: Parameter 'item' implicitly has an 'any' type.
+src/components/ui/chart.tsx(182,29): error TS7006: Parameter 'index' implicitly has an 'any' type.
+src/components/ui/chart.tsx(260,39): error TS2344: Type '"verticalAlign" | "payload"' does not satisfy the constraint '"string" | "path" | "href" | "origin" | "transform" | "mode" | "filter" | "fill" | "values" | "id" | "content" | "role" | "type" | "suppressHydrationWarning" | "className" | "color" | ... 431 more ... | "portal"'.
+  Type '"payload"' is not assignable to type '"string" | "path" | "href" | "origin" | "transform" | "mode" | "filter" | "fill" | "values" | "id" | "content" | "role" | "type" | "suppressHydrationWarning" | "className" | "color" | ... 431 more ... | "portal"'.
+src/components/ui/chart.tsx(266,17): error TS2339: Property 'length' does not exist on type '{}'.
+src/components/ui/chart.tsx(278,16): error TS2339: Property 'map' does not exist on type '{}'.
+src/components/ui/chart.tsx(278,21): error TS7006: Parameter 'item' implicitly has an 'any' type.
+src/db/seeds/dailyLoginStreaks.ts(2,10): error TS2305: Module '"@/db/schema"' has no exported member 'dailyLoginStreaks'.
+src/db/seeds/project_steps.ts(2,10): error TS2724: '"@/db/schema"' has no exported member named 'projectStepsNew'. Did you mean 'projectSteps'?
+src/db/seeds/projectCommentsNew.ts(2,10): error TS2724: '"@/db/schema"' has no exported member named 'projectCommentsNew'. Did you mean 'projectComments'?
+src/db/seeds/projectRatingsNew.ts(2,10): error TS2724: '"@/db/schema"' has no exported member named 'projectRatingsNew'. Did you mean 'projectRatings'?
+src/db/seeds/projectsNew.ts(2,10): error TS2724: '"@/db/schema"' has no exported member named 'projectsNew'. Did you mean 'projects'?
+src/db/seeds/projectStepsNew.ts(2,10): error TS2724: '"@/db/schema"' has no exported member named 'projectStepsNew'. Did you mean 'projectSteps'?
+src/db/seeds/userActivities.ts(2,10): error TS2305: Module '"@/db/schema"' has no exported member 'userActivities'.
+src/db/seeds/userBadgesNew.ts(2,10): error TS2724: '"@/db/schema"' has no exported member named 'userBadgesNew'. Did you mean 'userBadges'?
+src/db/seeds/userPoints.ts(2,10): error TS2305: Module '"@/db/schema"' has no exported member 'userPoints'.
+src/lib/simulation-engine.ts(472,7): error TS2739: Type 'Record<string, any>' is missing the following properties from type '{ rms: Record<string, number>; peak: Record<string, number>; frequency: Record<string, number>; phase: Record<string, number>; }': rms, peak, frequency, phase
+src/lib/simulation-engine.ts(565,7): error TS2739: Type 'Record<string, any>' is missing the following properties from type '{ rms: Record<string, number>; peak: Record<string, number>; frequency: Record<string, number>; phase: Record<string, number>; }': rms, peak, frequency, phase
+src/lib/wiring-system.ts(152,18): error TS2345: Argument of type '{ gx: number; gy: number; }' is not assignable to parameter of type '{ x: number; y: number; }'.
+  Type '{ gx: number; gy: number; }' is missing the following properties from type '{ x: number; y: number; }': x, y
+src/lib/wiring-system.ts(196,45): error TS2345: Argument of type '{ gx: number; gy: number; }' is not assignable to parameter of type '{ x: number; y: number; }'.
+  Type '{ gx: number; gy: number; }' is missing the following properties from type '{ x: number; y: number; }': x, y
