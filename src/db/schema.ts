@@ -259,6 +259,38 @@ export const circuitProjects = sqliteTable('circuit_projects', {
   updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull(),
 });
 
+// Missing gamification tables (required by API routes)
+export const userActivities = sqliteTable('user_activities', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  userId: text('user_id').notNull(),
+  activityType: text('activity_type').notNull(),
+  description: text('description').notNull(),
+  pointsEarned: integer('points_earned').notNull().default(0),
+  metadata: text('metadata'),
+  createdAt: text('created_at').notNull(),
+});
+
+export const userBadgesNew = sqliteTable('user_badges_new', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  userId: text('user_id').notNull(),
+  badgeId: text('badge_id').notNull(),
+  badgeName: text('badge_name').notNull(),
+  badgeIcon: text('badge_icon').notNull(),
+  badgeCategory: text('badge_category').notNull(),
+  earnedAt: text('earned_at').notNull(),
+  createdAt: text('created_at').notNull(),
+});
+
+export const userPoints = sqliteTable('user_points', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  userId: text('user_id').notNull(),
+  points: integer('points').notNull().default(0),
+  reason: text('reason').notNull(),
+  sourceType: text('source_type').notNull(),
+  sourceId: text('source_id'),
+  createdAt: text('created_at').notNull(),
+});
+
 // Apps Library table
 export const apps = sqliteTable('apps', {
   id: integer('id').primaryKey({ autoIncrement: true }),
