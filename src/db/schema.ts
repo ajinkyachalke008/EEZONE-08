@@ -366,3 +366,16 @@ export const projectCommentsNew = sqliteTable('project_comments_new', {
   createdAt: text('created_at').notNull(),
   updatedAt: text('updated_at').notNull(),
 });
+
+// Daily login streaks table
+export const dailyLoginStreaks = sqliteTable('daily_login_streaks', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  userId: text('user_id').notNull().unique(),
+  currentStreak: integer('current_streak').notNull().default(0),
+  longestStreak: integer('longest_streak').notNull().default(0),
+  lastLoginDate: text('last_login_date'),
+  streakStartDate: text('streak_start_date'),
+  totalLoginDays: integer('total_login_days').notNull().default(0),
+  createdAt: text('created_at').notNull(),
+  updatedAt: text('updated_at').notNull(),
+});
