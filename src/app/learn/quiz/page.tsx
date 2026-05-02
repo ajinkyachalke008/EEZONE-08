@@ -60,7 +60,7 @@ const getUserId = () => {
   return 'anonymous';
 };
 
-export default function QuizPage() {
+function QuizPageContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const preselectedTopicId = searchParams.get('topic');
@@ -694,5 +694,15 @@ export default function QuizPage() {
         </div>
       </section>
     </div>
+  );
+}
+
+import { Suspense } from 'react';
+
+export default function QuizPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-[#0A0A0F] flex items-center justify-center"><div className="text-white">Loading...</div></div>}>
+      <QuizPageContent />
+    </Suspense>
   );
 }
