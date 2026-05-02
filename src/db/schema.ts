@@ -308,3 +308,61 @@ export const apps = sqliteTable('apps', {
   createdAt: integer('created_at', { mode: 'timestamp' }).notNull(),
   updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull(),
 });
+// Missing projects-new tables (required by API routes)
+export const projectsNew = sqliteTable('projects_new', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  title: text('title').notNull(),
+  description: text('description').notNull(),
+  category: text('category').notNull(),
+  difficulty: text('difficulty').notNull(),
+  estimatedTime: text('estimated_time').notNull(),
+  authorId: text('author_id').notNull(),
+  authorName: text('author_name').notNull(),
+  thumbnailUrl: text('thumbnail_url'),
+  status: text('status').notNull().default('draft'),
+  viewsCount: integer('views_count').notNull().default(0),
+  likesCount: integer('likes_count').notNull().default(0),
+  ratingAverage: real('rating_average').notNull().default(0.0),
+  ratingCount: integer('rating_count').notNull().default(0),
+  tags: text('tags').notNull(),
+  createdAt: text('created_at').notNull(),
+  updatedAt: text('updated_at').notNull(),
+});
+
+export const projectStepsNew = sqliteTable('project_steps_new', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  projectId: integer('project_id').notNull().references(() => projectsNew.id),
+  stepNumber: integer('step_number').notNull(),
+  title: text('title').notNull(),
+  description: text('description').notNull(),
+  instructions: text('instructions').notNull(),
+  calculatorIds: text('calculator_ids'),
+  imageUrl: text('image_url'),
+  videoUrl: text('video_url'),
+  estimatedDuration: text('estimated_duration'),
+  createdAt: text('created_at').notNull(),
+  updatedAt: text('updated_at').notNull(),
+});
+
+export const projectRatingsNew = sqliteTable('project_ratings_new', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  projectId: integer('project_id').notNull().references(() => projectsNew.id),
+  userId: text('user_id').notNull(),
+  username: text('username').notNull(),
+  rating: integer('rating').notNull(),
+  review: text('review'),
+  createdAt: text('created_at').notNull(),
+  updatedAt: text('updated_at').notNull(),
+});
+
+export const projectCommentsNew = sqliteTable('project_comments_new', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  projectId: integer('project_id').notNull().references(() => projectsNew.id),
+  userId: text('user_id').notNull(),
+  username: text('username').notNull(),
+  comment: text('comment').notNull(),
+  parentCommentId: integer('parent_comment_id'),
+  likesCount: integer('likes_count').notNull().default(0),
+  createdAt: text('created_at').notNull(),
+  updatedAt: text('updated_at').notNull(),
+});
