@@ -54,6 +54,48 @@ The platform is built on **Next.js 15 App Router**, backed by **Turso (libSQL)**
 
 ---
 
+## 🖼️ Preview
+
+<div align="center">
+
+<!-- 
+  ═══════════════════════════════════════════════════════════
+  HOW TO ADD SCREENSHOTS:
+
+  Option 1 — Upload to GitHub:
+    1. Go to your repo → Issues → New Issue
+    2. Drag & drop your screenshot into the text box
+    3. GitHub generates a URL like:
+       https://user-images.githubusercontent.com/xxxxx/image.png
+    4. Replace the placeholder below with that URL
+
+  Option 2 — Add to repo:
+    1. Create a folder: /public/previews/
+    2. Add your screenshots there (e.g. homepage.png)
+    3. Use relative path:
+       ![EE Zone Homepage](./public/previews/homepage.png)
+
+  Option 3 — Use a GIF (Recommended for impact):
+    Tools: Loom, ScreenToGif, Kap (Mac), ShareX (Windows)
+    Record a 15-30 second walkthrough of the platform
+    Upload as above and replace the src below
+  ═══════════════════════════════════════════════════════════
+-->
+
+| Homepage | Circuit Simulator |
+|:---:|:---:|
+| ![Homepage Preview](https://placehold.co/600x350/0A0A0F/FF6B35?text=Add+Homepage+Screenshot) | ![Circuit Sim Preview](https://placehold.co/600x350/0A0A0F/6C63FF?text=Add+Circuit+Sim+Screenshot) |
+
+| Learning Hub | Magic CAD |
+|:---:|:---:|
+| ![Learning Hub Preview](https://placehold.co/600x350/0A0A0F/22C55E?text=Add+Learning+Hub+Screenshot) | ![Magic CAD Preview](https://placehold.co/600x350/0A0A0F/3B82F6?text=Add+Magic+CAD+Screenshot) |
+
+> 📸 **To add your own screenshots:** Upload images to this repo under `/public/previews/` and replace the placeholder URLs above.
+
+</div>
+
+---
+
 ## ✨ Feature Modules
 
 ### 🤖 AI-Powered Tools (`/tools`)
