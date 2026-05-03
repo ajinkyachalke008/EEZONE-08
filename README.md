@@ -1,17 +1,38 @@
 <div align="center">
 
+<img src="https://img.shields.io/badge/⚡-EE%20ZONE-FF6B35?style=for-the-badge&labelColor=0A0A0F&color=FF6B35" alt="EE ZONE"/>
+
 # ⚡ EE ZONE
 
 ### Next-Generation AI-Powered Electrical & Electronics Engineering Platform
 
-[![Live Demo](https://img.shields.io/badge/🚀_Live_Demo-eezone--08--e8dm.vercel.app-6C63FF?style=for-the-badge)](https://eezone-08-e8dm.vercel.app)
-[![Next.js](https://img.shields.io/badge/Next.js-15.3-black?style=for-the-badge&logo=next.js)](https://nextjs.org)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?style=for-the-badge&logo=typescript)](https://typescriptlang.org)
-[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4.0-38B2AC?style=for-the-badge&logo=tailwind-css)](https://tailwindcss.com)
-[![Drizzle ORM](https://img.shields.io/badge/Drizzle_ORM-0.44-C5F74F?style=for-the-badge)](https://orm.drizzle.team)
-[![License](https://img.shields.io/badge/License-EOEL_v1.0-FF6B35?style=for-the-badge&logo=opensourceinitiative&logoColor=white)](LICENSE)
+<br/>
 
-**Built by [Ajinkya Chalke](mailto:ajinkyachalke008@gmail.com)**
+<!-- Core Tech -->
+[![Next.js](https://img.shields.io/badge/Next.js-15.3-black?style=for-the-badge&logo=next.js&logoColor=white)](https://nextjs.org)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://typescriptlang.org)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4.0-38B2AC?style=for-the-badge&logo=tailwindcss&logoColor=white)](https://tailwindcss.com)
+[![React](https://img.shields.io/badge/React-19.0-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev)
+
+<!-- Backend & DB -->
+[![Drizzle ORM](https://img.shields.io/badge/Drizzle_ORM-0.44-C5F74F?style=for-the-badge&logo=databricks&logoColor=black)](https://orm.drizzle.team)
+[![Turso](https://img.shields.io/badge/Turso-libSQL-4FF8D2?style=for-the-badge&logo=sqlite&logoColor=black)](https://turso.tech)
+[![Better Auth](https://img.shields.io/badge/Better_Auth-1.6-8B5CF6?style=for-the-badge&logo=auth0&logoColor=white)](https://better-auth.com)
+[![Vercel](https://img.shields.io/badge/Deployed_on-Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white)](https://eezone-08-e8dm.vercel.app)
+
+<!-- Status & License -->
+[![Live](https://img.shields.io/badge/Status-Live%20%26%20Deployed-22C55E?style=for-the-badge&logo=statuspage&logoColor=white)](https://eezone-08-e8dm.vercel.app)
+[![License](https://img.shields.io/badge/License-EOEL%20v1.0-FF6B35?style=for-the-badge&logo=opensourceinitiative&logoColor=white)](LICENSE)
+[![PRs Welcome](https://img.shields.io/badge/PRs-Welcome-brightgreen?style=for-the-badge&logo=github&logoColor=white)](CONTRIBUTING.md)
+[![Made in India](https://img.shields.io/badge/Made%20in-India-FF9933?style=for-the-badge&logo=googlemaps&logoColor=white)](https://github.com/ajinkyachalke008)
+
+<br/>
+
+[![Live Demo](https://img.shields.io/badge/LIVE%20DEMO-%20eezone--08--e8dm.vercel.app-6C63FF?style=for-the-badge&logo=vercel&logoColor=white)](https://eezone-08-e8dm.vercel.app)
+
+<br/>
+
+**Built with ⚡ by [Ajinkya Chalke](mailto:ajinkyachalke008@gmail.com) — Karad, Maharashtra, India**
 
 *A unified intelligent workspace for electrical engineers, students, researchers, and professionals*
 
@@ -366,10 +387,10 @@ Engineering Student | AI/ML & Full-Stack Developer | Karad, Maharashtra, India
 
 <div align="center">
 
-[![License](https://img.shields.io/badge/License-EOEL_v1.0-FF6B35?style=for-the-badge&logo=opensourceinitiative&logoColor=white)](LICENSE)
-[![Free for Education](https://img.shields.io/badge/Education-Free_&_Open-22C55E?style=for-the-badge&logo=academia&logoColor=white)](LICENSE)
-[![Attribution](https://img.shields.io/badge/Attribution-Required-F59E0B?style=for-the-badge&logo=creativecommons&logoColor=white)](LICENSE)
-[![Commercial](https://img.shields.io/badge/Commercial_Use-With_Credit-3B82F6?style=for-the-badge&logo=briefcase&logoColor=white)](LICENSE)
+[![License](https://img.shields.io/badge/License-EOEL%20v1.0-FF6B35?style=for-the-badge&logo=opensourceinitiative&logoColor=white)](LICENSE)
+[![Free for Education](https://img.shields.io/badge/Education-Free%20%26%20Open-22C55E?style=for-the-badge&logo=readthedocs&logoColor=white)](LICENSE)
+[![Attribution Required](https://img.shields.io/badge/Attribution-Required-F59E0B?style=for-the-badge&logo=creativecommons&logoColor=white)](LICENSE)
+[![Commercial Use](https://img.shields.io/badge/Commercial%20Use-With%20Credit-3B82F6?style=for-the-badge&logo=handshake&logoColor=white)](LICENSE)
 
 </div>
 
