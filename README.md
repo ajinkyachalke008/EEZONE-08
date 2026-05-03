@@ -9,7 +9,7 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?style=for-the-badge&logo=typescript)](https://typescriptlang.org)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4.0-38B2AC?style=for-the-badge&logo=tailwind-css)](https://tailwindcss.com)
 [![Drizzle ORM](https://img.shields.io/badge/Drizzle_ORM-0.44-C5F74F?style=for-the-badge)](https://orm.drizzle.team)
-[![License](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)](LICENSE)
+[![License](https://img.shields.io/badge/License-EOEL_v1.0-FF6B35?style=for-the-badge&logo=opensourceinitiative&logoColor=white)](LICENSE)
 
 **Built by [Ajinkya Chalke](mailto:ajinkyachalke008@gmail.com)**
 
@@ -364,7 +364,56 @@ Engineering Student | AI/ML & Full-Stack Developer | Karad, Maharashtra, India
 
 ## 📄 License
 
-This project is licensed under the **MIT License** — see [LICENSE](LICENSE) for details.
+<div align="center">
+
+[![License](https://img.shields.io/badge/License-EOEL_v1.0-FF6B35?style=for-the-badge&logo=opensourceinitiative&logoColor=white)](LICENSE)
+[![Free for Education](https://img.shields.io/badge/Education-Free_&_Open-22C55E?style=for-the-badge&logo=academia&logoColor=white)](LICENSE)
+[![Attribution](https://img.shields.io/badge/Attribution-Required-F59E0B?style=for-the-badge&logo=creativecommons&logoColor=white)](LICENSE)
+[![Commercial](https://img.shields.io/badge/Commercial_Use-With_Credit-3B82F6?style=for-the-badge&logo=briefcase&logoColor=white)](LICENSE)
+
+</div>
+
+This project is governed by the **EE Zone Open Engineering License (EOEL) v1.0** — a custom license written specifically for this platform.
+
+### ✅ What You CAN Do
+
+| Permission | Who |
+|---|---|
+| Use, study, and learn from the source code | ✅ Everyone |
+| Fork and modify for academic projects | ✅ Everyone |
+| Deploy for classroom / university use | ✅ Everyone |
+| Share within educational communities | ✅ Everyone |
+| Use commercially (with attribution) | ✅ With credit to Ajinkya Chalke |
+| Submit pull requests & contributions | ✅ Everyone |
+
+### ❌ What You CANNOT Do
+
+| Restriction | Detail |
+|---|---|
+| Remove authorship credit | Attribution to Ajinkya Chalke is mandatory |
+| White-label & rebrand as your own | Public deployments must link to original repo |
+| Sell AI features as standalone product | Instrument Scanner, AI Designer etc. are protected |
+| Use without crediting the original author | Even in commercial use — credit is non-negotiable |
+
+### 📌 Attribution Required
+
+Any public deployment must display:
+
+```
+Powered by EE ZONE — Built by Ajinkya Chalke
+https://github.com/ajinkyachalke008/EEZONE-08
+```
+
+Any academic paper referencing this project must cite:
+
+```
+Chalke, A. (2025). EE ZONE: AI-Powered Electrical Engineering Platform.
+GitHub. https://github.com/ajinkyachalke008/EEZONE-08
+```
+
+> ⚠️ **Engineering Safety Notice:** All calculators, simulations, and compliance tools are for educational reference only. Do not use outputs as the sole basis for real-world electrical installations. Always consult a licensed Professional Engineer.
+
+See the full [LICENSE](LICENSE) file for complete terms.
 
 ---
 
