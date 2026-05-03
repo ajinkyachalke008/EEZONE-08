@@ -1,0 +1,87 @@
+MIT License
+
+Copyright (c) 2025 Ajinkya Chalke
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+---
+
+Additional Terms for EE ZONE Platform
+
+1. Attribution Requirement
+   Any public deployment or fork of this software must visibly credit the
+   original author: Ajinkya Chalke (ajinkyachalke008@gmail.com) in the
+   application UI, documentation, or README.
+
+2. Non-Commercial AI Use
+   The AI-powered features of this platform (Instrument Scanner, Problem
+   Solver, AI Circuit Designer, AI Code Assistant, AI Troubleshooter) are
+   intended for educational and engineering purposes. Commercial resale of
+   these AI features as a standalone product is not permitted without
+   explicit written permission from the author.
+
+3. Educational Use Encouraged
+   Students, educators, and academic institutions are explicitly encouraged
+   to use, fork, and adapt this platform for non-commercial educational
+   purposes. No permission needed — just keep the attribution.
+
+4. Contributions
+   Contributions via pull requests are welcome. By submitting a contribution,
+   you agree that your code will be licensed under this same MIT License and
+   that copyright of the contribution is shared with the project author.
+
+5. No Warranty on Electrical Calculations
+   The engineering calculators, simulations, and compliance tools in this
+   platform are provided for reference and educational purposes only. They
+   should NOT be used as the sole basis for real-world electrical installations
+   or safety-critical decisions. Always verify results with a licensed
+   professional engineer.
+
+---
+
+Third-Party Licenses
+
+This software makes use of the following open-source projects, each governed
+by their respective licenses:
+
+- Next.js         — MIT License (Vercel, Inc.)
+- Tailwind CSS    — MIT License (Tailwind Labs, Inc.)
+- Drizzle ORM     — Apache 2.0 License (Drizzle Team)
+- Better Auth     — MIT License
+- draw.io (diagx) — Apache 2.0 License (JGraph Ltd)
+- Radix UI        — MIT License (WorkOS)
+- Framer Motion   — MIT License (Framer B.V.)
+- Three.js        — MIT License (mrdoob)
+- Monaco Editor   — MIT License (Microsoft Corporation)
+- Recharts        — MIT License (Recharts Group)
+- Lucide React    — ISC License (Lucide Contributors)
+
+Full license texts for each dependency are available in their respective
+npm package directories under node_modules/.
+
+---
+
+Contact
+
+For licensing inquiries, commercial use requests, or collaboration:
+
+  Ajinkya Chalke
+  Email : ajinkyachalke008@gmail.com
+  GitHub: https://github.com/ajinkyachalke008
+  Location: Karad, Maharashtra, India
