@@ -1,433 +1,377 @@
-# ⚡ EE ZONE ⚡
+<div align="center">
 
-### Next-generation ultimate electrical and electronics engineering platform 
+# ⚡ EE ZONE
 
-🧑‍💻 **Developed by:** **AJINKYA CHALKE**
+### Next-Generation AI-Powered Electrical & Electronics Engineering Platform
 
-📧 **Email:** [ajinkyachalke008@gmail.com](mailto:ajinkyachalke008@gmail.com)
+[![Live Demo](https://img.shields.io/badge/🚀_Live_Demo-eezone--08--e8dm.vercel.app-6C63FF?style=for-the-badge)](https://eezone-08-e8dm.vercel.app)
+[![Next.js](https://img.shields.io/badge/Next.js-15.3-black?style=for-the-badge&logo=next.js)](https://nextjs.org)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?style=for-the-badge&logo=typescript)](https://typescriptlang.org)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4.0-38B2AC?style=for-the-badge&logo=tailwind-css)](https://tailwindcss.com)
+[![Drizzle ORM](https://img.shields.io/badge/Drizzle_ORM-0.44-C5F74F?style=for-the-badge)](https://orm.drizzle.team)
+[![License](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)](LICENSE)
 
----
+**Built by [Ajinkya Chalke](mailto:ajinkyachalke008@gmail.com)**
 
-# 🏷 Project Badges
+*A unified intelligent workspace for electrical engineers, students, researchers, and professionals*
 
-![Next.js](https://img.shields.io/badge/Frontend-Next.js-black?style=for-the-badge\&logo=next.js)
-![React](https://img.shields.io/badge/UI-React-blue?style=for-the-badge\&logo=react)
-![TailwindCSS](https://img.shields.io/badge/Styling-TailwindCSS-38B2AC?style=for-the-badge\&logo=tailwind-css)
-![Node.js](https://img.shields.io/badge/Backend-Node.js-green?style=for-the-badge\&logo=node.js)
-![Express](https://img.shields.io/badge/API-Express.js-black?style=for-the-badge\&logo=express)
-![MongoDB](https://img.shields.io/badge/Database-MongoDB-green?style=for-the-badge\&logo=mongodb)
-![Artificial Intelligence](https://img.shields.io/badge/AI-Artificial%20Intelligence-purple?style=for-the-badge)
-![Electrical Engineering](https://img.shields.io/badge/Field-Electrical%20Engineering-orange?style=for-the-badge)
-![Circuit Simulation](https://img.shields.io/badge/Feature-Circuit%20Simulation-red?style=for-the-badge)
-![SPICE Simulation](https://img.shields.io/badge/Engine-SPICE%20Simulation-blue?style=for-the-badge)
-![License](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)
+</div>
 
 ---
 
-# 📘 Project Description
+## 📌 Overview
 
-**EE ZONE** is a next-generation **AI-powered electrical and electronies engineering platform** designed for students, engineers, researchers, and professionals.
-The platform integrates **engineering tools, electrical simulations, AI assistance, system design calculators, diagnostics tools, and educational simulations** into a single digital ecosystem.
+**EE ZONE** is a production-grade, full-stack web platform that consolidates everything an electrical or electronics engineer needs into one intelligent workspace. Instead of juggling 10 different tools across different websites, EE Zone brings **circuit simulation, AI problem solving, engineering calculators, gamified learning, CAD diagramming, project management, and code compliance** into a single cohesive platform — with a dark, NeoLumen-themed UI built for serious technical work.
 
-Electrical engineering workflows traditionally require multiple disconnected tools for **design, simulation, analysis, and project planning**. EE ZONE solves this problem by providing **a unified intelligent engineering workspace** where users can design circuits, perform system calculations, simulate electrical behavior, troubleshoot faults, and manage engineering projects.
-
-The system combines **modern full-stack web technologies, artificial intelligence, circuit simulation engines, and engineering databases** to provide a powerful and scalable engineering platform.
-
-EE ZONE aims to transform electrical engineering learning and development by enabling **safe experimentation, rapid prototyping, intelligent troubleshooting, and interactive education**.
+The platform is built on **Next.js 15 App Router**, backed by **Turso (libSQL)** with **Drizzle ORM**, authenticated via **Better Auth**, and deploys instantly to **Vercel**. AI features are powered via the **OpenRouter API**.
 
 ---
 
-# 🚀 Features
+## 🌐 Live Demo
 
-## 1️⃣ AI-Powered Engineering Tools
-
-### Instrument Scanner
-
-AI-based system that identifies electrical instruments using camera input or uploaded images.
-
-Capabilities include:
-
-• Detecting multimeters, oscilloscopes, power supplies, and test equipment
-• Displaying technical specifications
-• Showing safety instructions and usage guides
-• Instant recognition within seconds
+> **[https://eezone-08-e8dm.vercel.app](https://eezone-08-e8dm.vercel.app)**
 
 ---
 
-### Problem Solver
+## ✨ Feature Modules
 
-An AI assistant that solves complex electrical engineering problems step-by-step.
+### 🤖 AI-Powered Tools (`/tools`)
 
-Supports:
-
-• Ohm’s Law calculations
-• Kirchhoff’s Voltage Law (KVL)
-• Kirchhoff’s Current Law (KCL)
-• AC circuit analysis
-• DC circuit analysis
-• Three-phase power calculations
-
-Users can input problems via text or scanned images.
+| Tool | Description |
+|------|-------------|
+| **Instrument Scanner** | Upload or capture an image of any electrical instrument — AI identifies it and returns specs, usage guide, and safety notes |
+| **Problem Solver** | Text or image input — solves Ohm's Law, KVL, KCL, AC/DC analysis, three-phase calculations step-by-step |
+| **AI Circuit Designer** | Describe your system requirements in natural language — AI generates an optimized circuit schematic |
+| **AI Code Assistant** | Generates PLC ladder logic, Arduino C++, and ESP32 firmware from project descriptions |
+| **AI Troubleshooter** | Analyzes meter readings and equipment photos to diagnose faults |
 
 ---
 
-## 2️⃣ Advanced Calculators & Systems Design
+### 🧮 Engineering Calculators (`/calculators`)
 
-### Power Systems
+**Power Systems**
+- Three-Phase Power Calculator, Short Circuit Analysis, Harmonic Analysis
+- Load Schedule Generator, Conduit Fill Calculator, Grounding System Design
 
-Engineering tools for electrical power system design:
+**Motor & Drive Systems**
+- Motor Starter Sizing, VFD Calculator, Motor Selection Tool
+- Belt & Chain Drive Calculator, Torque & Load Analysis
 
-• Three-Phase Power Calculator
-• Short Circuit Analysis
-• Harmonic Analysis
-• Load Schedule Generator
-• Conduit Fill Calculator
-• Grounding System Design
+**Lighting & Energy**
+- Lighting Design Calculator, Energy Cost Calculator, Solar PV System Designer
+- Energy Audit Tool, ROI Analysis
 
----
-
-### Motor & Drive Systems
-
-Industrial motor engineering tools:
-
-• Motor Starter Sizing
-• Variable Frequency Drive (VFD) Calculator
-• Motor Selection Tool
-• Belt & Chain Drive Calculator
-• Torque & Load Analysis
+**Quick Utilities**
+- 555 Timer Calculator (astable & monostable modes fully implemented)
+- Op-Amp Calculator (non-inverting, inverting, summing configs)
+- Fuse & Breaker Sizing, Voltage Divider, PCB Trace Width, Thermal Management
 
 ---
 
-### Lighting & Energy Systems
+### 🔌 Interactive Design & Simulation
 
-Energy system planning tools:
+**Circuit Simulator**
+- Drag-and-drop circuit builder on infinite canvas
+- 12+ professional SVG component symbols (resistor, capacitor, inductor, LED, diode, NPN transistor, op-amp, 555 timer, Arduino Uno, and more)
+- DC / AC / Transient simulation with virtual oscilloscope
+- Export to SVG, JSON, and SPICE netlist
+- Snap-to-grid, undo/redo, live edit mode during simulation
 
-• Lighting Design Calculator
-• Energy Cost Calculator
-• Solar PV System Designer
-• Energy Audit Tool
-• ROI Analysis
-
----
-
-## 3️⃣ Interactive Design & Simulation
-
-### Circuit Simulation
-
-Professional circuit simulation environment featuring:
-
-• Drag-and-drop circuit builder
-• SPICE simulation integration
-• DC analysis
-• AC frequency analysis
-• Transient signal analysis
-• Virtual oscilloscope waveform viewer
+**Schematic & Wiring Designer**
+- Grid-based A* auto-routing algorithm for wire paths
+- NEC-compliant wire color coding (black hot, red traveler, white neutral, green ground)
+- Click-to-connect with auto-snap terminals
+- Net management, labeling, and inspector panel
+- Floor plan designer with room drawing
+- Spatial indexing via `rbush` for performance
+- Export to JSON with complete net data
 
 ---
 
-### Schematic & Wiring Design
+### 🗺️ Magic CAD (`/magic-cad` & `/magic-cad-plus`)
 
-Electrical design tools including:
-
-• Professional schematic editor
-• Residential wiring planner
-• Control panel designer
-• PCB trace width calculator
-
----
-
-## 4️⃣ Engineering Project Management
-
-### Material Cost Estimator
-
-Calculates:
-
-• Component costs
-• Shipping expenses
-• Vendor comparisons
-• Project budgets
+Embedded **draw.io** integration, patched and configured specifically for EE Zone:
+- Full diagramming environment for electrical schematics, P&IDs, and wiring diagrams
+- AI Generate proxy connected to OpenRouter (`/api/drawio-generate`)
+- Export proxy for diagram rendering (`/api/drawio-export`)
+- EE Zone NeoLumen theme applied, service worker disabled for stable deployment
+- Assets downloaded and patched automatically at **build time**
 
 ---
 
-### Labor Time Calculator
+### 📚 Learning Hub (`/learn`)
 
-Estimates labor time for:
+**Gamified learning system:**
+- Topic-based modules with completion tracking (`userTopicsProgress`)
+- Quiz engine with multiple choice, scoring, timer, and difficulty levels
+- Video tutorials with YouTube integration (`/api/youtube`)
+- Downloadable resources — datasheets, guides, cheat sheets
+- Bookmarks system for saving content
 
-• Electrical installation
-• Troubleshooting
-• Maintenance
-• Testing
-
----
-
-### Project Timeline Planner
-
-Interactive **Gantt chart system** for project planning including milestone tracking and task scheduling.
-
----
-
-### BOM Generator
-
-Automatically generates **Bill of Materials** with export options:
-
-• CSV
-• Excel
-• PDF
+**Gamification Engine** (`/gamification`):
+- XP points for completed activities, quizzes, and logins
+- Badge system with category-based achievements
+- Leaderboard with global rankings (`/leaderboard`)
+- Daily login streaks
+- User stats dashboard (`/progress`)
 
 ---
 
-## 5️⃣ Electrical Code Compliance
+### 📁 Engineering Projects (`/projects`)
 
-### NEC Code Search
-
-AI search engine for **National Electrical Code (NEC)** regulations.
-
-Supports multiple editions including:
-
-• NEC 2020
-• NEC 2023
-• NEC 2026
+Community-driven project hub:
+- Browse, rate, and comment on real-world electrical engineering projects
+- Submit projects with step-by-step instructions and image uploads
+- Rating and review system
+- Filter by category and difficulty
 
 ---
 
-### Compliance Checker
+### 🏛️ Code Compliance (`/tools` → Compliance)
 
-Automatically verifies electrical designs against:
-
-• NEC standards
-• NFPA 70E safety guidelines
-
----
-
-## 6️⃣ Diagnostics & Testing Tools
-
-### Maintenance Scheduler
-
-Schedules equipment service intervals based on **NFPA 70B standards**.
-
-### Test Report Generator
-
-Creates reports compliant with **IEEE and NETA standards**.
-
-### Power Quality Analyzer
-
-Analyzes voltage sags, harmonics, load patterns, and power consumption.
-
-### Thermal Imaging Tool
-
-Uses infrared imaging to detect overheating components and electrical faults.
+- NEC Code Search (2020, 2023, 2026 editions)
+- Compliance Checker for NEC and NFPA 70E
+- Code Change Tracker, Jurisdiction Database, Permit Assistant
 
 ---
 
-## 7️⃣ Advanced AI Engineering Features
+### 🔬 Diagnostics & Testing (`/tools` → Diagnostics)
 
-### AI Code Assistant
-
-Generates code for:
-
-• PLC ladder logic
-• Arduino C++ programs
-• ESP32 firmware
+- Maintenance Scheduler (NFPA 70B compliant)
+- Test Report Generator (IEEE and NETA standards)
+- Power Quality Analyzer (voltage sags, harmonics, load patterns)
+- Thermal Imaging fault detection
 
 ---
 
-### AI Circuit Designer
+### 💼 Career & Assessments (`/career`, `/assessments`)
 
-Automatically converts system requirements into optimized circuit schematics.
-
----
-
-### AI Troubleshooting System
-
-Analyzes electrical system photos and meter readings to diagnose faults.
+- FE/PE exam preparation, engineering tutorials
+- Resume builder, AI interview coaching, skill assessments
 
 ---
 
-### Voice & Multi-Language Support
+## 🏗️ Tech Stack
 
-Supports voice commands and multiple languages including Hindi, Mandarin, and Spanish.
-
----
-
-## 8️⃣ Interactive Educational Simulations
-
-### Virtual Labs
-
-Allows safe experimentation with electrical circuits in a virtual environment.
-
-### 3D Installation Viewer
-
-Provides immersive visualization of industrial electrical installations.
-
-### AR Circuit Overlay
-
-Displays circuit diagrams on real-world camera feeds for troubleshooting.
-
----
-
-## 9️⃣ Utilities & Career Development
-
-### Essential Calculators
-
-Includes quick tools for:
-
-• Fuse and breaker sizing
-• Voltage divider calculations
-• 555 timer design
-• Op-amp calculations
-• Thermal management
+| Layer | Technology |
+|-------|-----------|
+| **Framework** | Next.js 15.3 (App Router, React Server Components) |
+| **Language** | TypeScript 5.9 |
+| **Runtime** | Node.js 24.x / Bun 1.3 |
+| **Styling** | Tailwind CSS v4, Framer Motion, shadcn/ui |
+| **UI Primitives** | Radix UI (full suite), Lucide React, Tabler Icons |
+| **3D / WebGL** | Three.js, @react-three/fiber, @react-three/drei |
+| **Database** | Turso (libSQL edge database) via `@libsql/client` |
+| **ORM** | Drizzle ORM 0.44 |
+| **Auth** | Better Auth 1.6 |
+| **AI / LLM** | OpenRouter API (meta/llama-3.3-70b and others) |
+| **CAD Engine** | draw.io (diagx) — patched & embedded at build time |
+| **Code Editor** | Monaco Editor |
+| **Charts** | Recharts |
+| **Payments** | Stripe + autumn-js |
+| **Deployment** | Vercel (iad1 — US East, Node.js serverless) |
+| **Package Manager** | Bun |
 
 ---
 
-### Career Tools
+## 🗄️ Database Schema
 
-Provides:
+The platform uses **Turso (libSQL)** — a SQLite-compatible edge database. Key tables:
 
-• Engineering tutorials
-• Certification preparation (FE / PE)
-• Resume builder
-• AI interview coaching
-• Engineering job opportunities
-
----
-
-# 🏗 Architecture
-
-EE ZONE follows a **modern full-stack scalable architecture** consisting of multiple layers.
-
-### Frontend Layer
-
-Technologies used:
-
-Next.js
-React.js
-Tailwind CSS
-Framer Motion
-Canvas / WebGL
-
-Responsibilities:
-
-• User interface
-• Circuit design tools
-• AI tool dashboards
-• Simulation visualization
+```
+users / sessions           → Better Auth managed
+apps                       → Apps library entries
+articles / topics          → Learning content
+questions / quizAttempts   → Quiz engine
+questionAttempts           → Per-answer tracking
+videoTutorials             → YouTube-linked tutorials
+downloadableResources      → PDFs, guides, datasheets
+bookmarks                  → Saved items per user
+projects / projectsNew     → Community projects
+projectSteps(New)          → Step-by-step project instructions
+projectRatings(New)        → Star ratings
+projectComments(New)       → Discussion threads
+projectUploads             → Attached project files
+circuitProjects            → Saved circuit designs
+userStats                  → Points, level, rank
+userPoints                 → Activity-based point log
+userActivities             → Action history
+userBadges(New)            → Earned achievements
+dailyLoginStreaks           → Streak tracking
+userTopicsProgress         → Module completion tracking
+leaderboardEntries         → Ranked global scores
+achievements / badges      → Badge definitions & metadata
+```
 
 ---
 
-### Backend Layer
+## ⚙️ Local Development
 
-Technologies used:
+### Prerequisites
 
-Node.js
-Express.js
-REST API Architecture
+- Node.js 20+ or Bun 1.3+
+- [Turso](https://turso.tech) account (free tier)
+- [OpenRouter](https://openrouter.ai) API key (free tier)
 
-Responsibilities:
-
-• Engineering calculations
-• Simulation processing
-• AI integration
-• Data processing
-
----
-
-### Simulation Engine
-
-Provides real-time electrical system modeling including:
-
-• DC circuit simulation
-• AC frequency analysis
-• Transient waveform simulation
-• Signal analysis
-
-SPICE-based simulation models are used for accurate circuit behavior prediction.
-
----
-
-### Artificial Intelligence Layer
-
-AI systems power features such as:
-
-• Instrument recognition
-• Electrical problem solving
-• Circuit design automation
-• Fault detection
-
-Technologies include:
-
-Machine Learning
-Computer Vision (CNN)
-Natural Language Processing
-
----
-
-### Database Layer
-
-EE ZONE uses **MongoDB** for storing:
-
-• Electrical component libraries
-• Circuit designs
-• Simulation results
-• Engineering project data
-
----
-
-# ⚙ Installation
-
-## 1️⃣ Clone Repository
+### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/EE-ZONE.git
-cd EE-ZONE
+git clone https://github.com/ajinkyachalke008/EEZONE-08.git
+cd EEZONE-08
 ```
 
----
-
-## 2️⃣ Install Dependencies
+### 2. Install Dependencies
 
 ```bash
-npm install
+bun install
+# or
+npm install --legacy-peer-deps
 ```
 
----
+### 3. Configure Environment Variables
 
-## 3️⃣ Configure Environment Variables
+Create a `.env` file in the root:
 
-Create `.env` file:
+```env
+# Database (Turso)
+TURSO_DATABASE_URL=libsql://your-db.turso.io
+TURSO_AUTH_TOKEN=your_turso_auth_token
 
+# Authentication (Better Auth)
+BETTER_AUTH_SECRET=your_random_secret_min_32_chars
+BETTER_AUTH_URL=http://localhost:3000
+
+# AI (OpenRouter)
+OPENROUTER_API_KEY=your_openrouter_api_key
+
+# App
+NEXT_PUBLIC_APP_URL=http://localhost:3000
 ```
-MONGODB_URI=your_database_url
-NEXT_PUBLIC_API_URL=http://localhost:3000
-AI_API_KEY=your_api_key
-```
 
----
-
-## 4️⃣ Run Development Server
+### 4. Push Database Schema
 
 ```bash
-npm run dev
+bun run drizzle-kit push
 ```
 
-Open in browser:
-
-```
-http://localhost:3000
-```
-
----
-
-## 5️⃣ Build for Production
+### 5. Run Development Server
 
 ```bash
-npm run build
-npm start
+bun run dev
+```
+
+Open [http://localhost:3000](http://localhost:3000)
+
+### 6. Build for Production
+
+```bash
+bun run build
+bun start
 ```
 
 ---
 
-# ⭐ Support the Project
+## 🚀 Vercel Deployment
 
-If you find **EE ZONE** useful, please **star the repository on GitHub and share it with the engineering community**.
+1. Push this repo to GitHub
+2. Import project at [vercel.com](https://vercel.com)
+3. Add all environment variables from `.env` above
+4. Deploy — Vercel auto-detects Next.js
+
+> **Note:** The draw.io assets (~20MB) are downloaded and patched at **build time** via `scripts/download-drawio.js` — no manual setup needed. The script does a sparse git checkout, patches the AI proxy URL, disables the service worker, and copies assets to `public/drawio`.
 
 ---
+
+## 📁 Project Structure
+
+```
+EEZONE-08/
+├── src/
+│   ├── app/                    # Next.js App Router pages
+│   │   ├── api/                # API route handlers
+│   │   │   ├── ai-assistant/   ai-circuit/   ai-code/   ai-troubleshoot/
+│   │   │   ├── analyze-instrument/   solve-problem/
+│   │   │   ├── circuit-projects/   drawio-export/   drawio-generate/
+│   │   │   ├── gamification/   learn/   projects/   projects-new/
+│   │   │   ├── tutorials/   youtube/   apps/
+│   │   ├── apps/               # Apps Library page
+│   │   ├── assessments/        # Skill assessment pages
+│   │   ├── calculators/        # Engineering calculator pages
+│   │   ├── career/             # Career tools
+│   │   ├── gamification/       # XP, badges, achievements
+│   │   ├── leaderboard/        # Global rankings
+│   │   ├── learn/              # Learning hub + quiz engine
+│   │   ├── magic-cad/          # draw.io CAD (standard)
+│   │   ├── magic-cad-plus/     # draw.io CAD (advanced)
+│   │   ├── progress/           # User progress dashboard
+│   │   ├── projects/           # Community projects
+│   │   ├── tools/              # All engineering tool pages
+│   │   └── tutorials/          # Video tutorials
+│   ├── components/ui/          # shadcn/ui component library
+│   ├── db/
+│   │   └── schema.ts           # Drizzle ORM schema (all tables)
+│   └── lib/
+│       ├── auth.ts             # Better Auth configuration
+│       └── db.ts               # Turso libSQL client
+├── scripts/
+│   └── download-drawio.js      # Build-time draw.io download & patch
+├── drizzle/                    # Drizzle migration snapshots
+├── drizzle.config.ts
+├── next.config.ts
+└── package.json
+```
+
+---
+
+## 🔑 Key Architectural Decisions
+
+**Why Turso over Postgres?**
+Turso (libSQL) runs at the Vercel edge with extremely low latency, the free tier is generous, and the SQLite-compatible API pairs perfectly with Drizzle ORM for type-safe queries without the overhead of a managed Postgres instance.
+
+**Why Better Auth over NextAuth?**
+Better Auth 1.6 offers first-class Drizzle adapter support, a clean API surface, and significantly less boilerplate than NextAuth v5 for the same feature set.
+
+**Why draw.io via build-time download?**
+draw.io's full app cannot be installed via npm. The build script does a sparse git checkout of only the necessary webapp assets, patches the AI proxy endpoint, disables the service worker (incompatible with Vercel), and outputs to `public/drawio` — fully transparent to the deployment pipeline.
+
+**Why OpenRouter over direct model APIs?**
+OpenRouter provides a unified API across 100+ models with a generous free tier, enabling the platform to use the best available model without being locked to a single provider or paying per-token costs during development.
+
+---
+
+## 🛣️ Roadmap
+
+- [ ] **Hero / Landing Page** — NeoLumen marketing page with animated feature demos
+- [ ] **Stripe Billing** — Premium tier activation via autumn-js + Stripe webhooks
+- [ ] **Social Auth** — Google & GitHub OAuth via Better Auth
+- [ ] **WebAssembly SPICE Engine** — Real circuit simulation backend
+- [ ] **Mobile Optimization** — Responsive layouts for all calculator tools
+- [ ] **PWA Support** — Installable offline-first app
+- [ ] **PDF Report Export** — Professional engineering report generation
+- [ ] **AR Circuit Overlay** — Camera feed + live circuit diagram overlay
+
+---
+
+## 👨‍💻 Author
+
+**Ajinkya Chalke**
+Engineering Student | AI/ML & Full-Stack Developer | Karad, Maharashtra, India
+
+- 📧 Email: [ajinkyachalke008@gmail.com](mailto:ajinkyachalke008@gmail.com)
+- 🔗 GitHub: [@ajinkyachalke008](https://github.com/ajinkyachalke008)
+
+---
+
+## 📄 License
+
+This project is licensed under the **MIT License** — see [LICENSE](LICENSE) for details.
+
+---
+
+<div align="center">
+
+**⚡ EE ZONE — Built for Engineers, by an Engineer ⚡**
+
+*If this project helped you, please ⭐ star the repository*
+
+</div>
