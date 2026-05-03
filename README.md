@@ -22,7 +22,7 @@
 
 <!-- Status & License -->
 [![Live](https://img.shields.io/badge/Status-Live%20%26%20Deployed-22C55E?style=for-the-badge&logo=statuspage&logoColor=white)](https://eezone-08-e8dm.vercel.app)
-[![License](https://img.shields.io/badge/License-EOEL%20v1.0-FF6B35?style=for-the-badge&logo=opensourceinitiative&logoColor=white)](LICENSE)
+[![License](https://img.shields.io/badge/License-EOEL%20v1.0-FF6B35?style=for-the-badge&logo=opensourceinitiative&logoColor=white)](https://github.com/ajinkyachalke008/EEZONE-08/blob/main/LICENSE)
 [![PRs Welcome](https://img.shields.io/badge/PRs-Welcome-brightgreen?style=for-the-badge&logo=github&logoColor=white)](CONTRIBUTING.md)
 [![Made in India](https://img.shields.io/badge/Made%20in-India-FF9933?style=for-the-badge&logo=googlemaps&logoColor=white)](https://github.com/ajinkyachalke008)
 
@@ -429,10 +429,10 @@ Engineering Student | AI/ML & Full-Stack Developer | Karad, Maharashtra, India
 
 <div align="center">
 
-[![License](https://img.shields.io/badge/License-EOEL%20v1.0-FF6B35?style=for-the-badge&logo=opensourceinitiative&logoColor=white)](LICENSE)
-[![Free for Education](https://img.shields.io/badge/Education-Free%20%26%20Open-22C55E?style=for-the-badge&logo=readthedocs&logoColor=white)](LICENSE)
-[![Attribution Required](https://img.shields.io/badge/Attribution-Required-F59E0B?style=for-the-badge&logo=creativecommons&logoColor=white)](LICENSE)
-[![Commercial Use](https://img.shields.io/badge/Commercial%20Use-With%20Credit-3B82F6?style=for-the-badge&logo=handshake&logoColor=white)](LICENSE)
+[![License](https://img.shields.io/badge/License-EOEL%20v1.0-FF6B35?style=for-the-badge&logo=opensourceinitiative&logoColor=white)](https://github.com/ajinkyachalke008/EEZONE-08/blob/main/LICENSE)
+[![Free for Education](https://img.shields.io/badge/Education-Free%20%26%20Open-22C55E?style=for-the-badge&logo=readthedocs&logoColor=white)](https://github.com/ajinkyachalke008/EEZONE-08/blob/main/LICENSE)
+[![Attribution Required](https://img.shields.io/badge/Attribution-Required-F59E0B?style=for-the-badge&logo=creativecommons&logoColor=white)](https://github.com/ajinkyachalke008/EEZONE-08/blob/main/LICENSE)
+[![Commercial Use](https://img.shields.io/badge/Commercial%20Use-With%20Credit-3B82F6?style=for-the-badge&logo=handshake&logoColor=white)](https://github.com/ajinkyachalke008/EEZONE-08/blob/main/LICENSE)
 
 </div>
 
@@ -476,7 +476,7 @@ GitHub. https://github.com/ajinkyachalke008/EEZONE-08
 
 > ⚠️ **Engineering Safety Notice:** All calculators, simulations, and compliance tools are for educational reference only. Do not use outputs as the sole basis for real-world electrical installations. Always consult a licensed Professional Engineer.
 
-See the full [LICENSE](LICENSE) file for complete terms.
+See the full [LICENSE](https://github.com/ajinkyachalke008/EEZONE-08/blob/main/LICENSE) file for complete terms.
 
 ---
 
