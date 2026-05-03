@@ -1,87 +1,241 @@
-MIT License
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                                                                              ║
+║              ⚡  EE ZONE OPEN ENGINEERING LICENSE (EOEL) v1.0  ⚡            ║
+║                                                                              ║
+║                        Copyright (c) 2025 Ajinkya Chalke                    ║
+║                         Karad, Maharashtra, India                            ║
+║                      ajinkyachalke008@gmail.com                             ║
+║                  github.com/ajinkyachalke008/EEZONE-08                      ║
+║                                                                              ║
+╚══════════════════════════════════════════════════════════════════════════════╝
 
-Copyright (c) 2025 Ajinkya Chalke
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+PREAMBLE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+EE ZONE was built out of a genuine belief that engineering education should be
+accessible to every student — regardless of whether they can afford expensive
+software licenses or attend a well-funded institution.
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+This license reflects that belief. It is written to be human-readable first,
+legally sound second. If you are a student, a teacher, or someone who just
+wants to learn electrical engineering — you are welcome here, unconditionally.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+If you are a company or individual seeking to profit from this work, this
+license asks only one thing in return: give credit where it is due.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SECTION 1 — DEFINITIONS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+"The Software"       refers to the EE ZONE platform — all source code, assets,
+                     scripts, database schemas, documentation, configuration
+                     files, and any derivative works contained in this
+                     repository.
+
+"The Author"         refers to Ajinkya Chalke, the original creator and sole
+                     copyright holder of this Software.
+
+"You" / "Licensee"   refers to any individual, organization, institution, or
+                     automated system that accesses, downloads, copies, forks,
+                     modifies, deploys, or otherwise interacts with this
+                     Software.
+
+"Educational Use"    means use by students, self-learners, academic
+                     institutions, non-profit training organizations, open
+                     workshops, and educators — for learning, teaching, or
+                     research purposes — where no direct revenue is generated
+                     from the Software itself.
+
+"Commercial Use"     means any use where the Software, or a substantial portion
+                     of it, is used to generate direct or indirect revenue,
+                     including but not limited to: SaaS products, paid courses,
+                     enterprise internal tools, consulting deliverables, or
+                     white-labelled platforms.
+
+"Derivative Work"    means any modification, adaptation, translation, port,
+                     or extension of the Software that incorporates a
+                     substantial portion of its source code or architecture.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SECTION 2 — GRANT OF RIGHTS FOR EDUCATIONAL USE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Subject to the conditions in Section 4, the Author grants You a worldwide,
+royalty-free, non-exclusive, perpetual license to:
+
+  ✦  Use the Software for personal learning and skill development
+  ✦  Study the source code to understand engineering platform architecture
+  ✦  Fork and modify the Software for academic projects and coursework
+  ✦  Deploy the Software for classroom demonstrations or university labs
+  ✦  Share the Software freely within educational communities
+  ✦  Build upon the Software for open-source, non-commercial tools
+
+This grant is FREE, unconditional in intent, and requires no written
+permission from the Author — as long as Section 4 (Attribution) is followed.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SECTION 3 — COMMERCIAL USE TERMS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Commercial Use of this Software is permitted ONLY under the following
+conditions — ALL of which must be satisfied simultaneously:
+
+  3.1  ATTRIBUTION DISPLAYED
+       The original author (Ajinkya Chalke) must be visibly credited in the
+       application UI, product documentation, marketing materials, and any
+       public-facing about page or footer.
+
+  3.2  NO WHITE-LABELLING WITHOUT PERMISSION
+       You may not remove, obscure, or replace the original authorship
+       attribution with your own branding and present the Software as if
+       you created it. Any public commercial deployment must retain a visible
+       link to the original repository.
+
+  3.3  AI FEATURES ARE NON-TRANSFERABLE
+       The AI-powered modules of this platform (Instrument Scanner, Problem
+       Solver, AI Circuit Designer, AI Code Assistant, AI Troubleshooter)
+       may not be extracted, repackaged, and sold as standalone commercial
+       AI products without explicit written permission from the Author.
+
+  3.4  NOTIFICATION ENCOURAGED
+       While not legally required, the Author kindly requests that you send
+       a brief message to ajinkyachalke008@gmail.com if you deploy this
+       Software commercially. This helps the Author understand the platform's
+       real-world impact.
+
+  If you cannot meet the above conditions, you must obtain a separate
+  commercial license by contacting the Author directly.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SECTION 4 — ATTRIBUTION REQUIREMENTS (MANDATORY FOR ALL USE)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+This is the ONE non-negotiable condition that applies to every Licensee,
+whether educational or commercial:
+
+  4.1  SOURCE CODE
+       All copies or substantial portions of the Software — including forks,
+       mirrors, and derivative works — must retain this license file and the
+       following copyright notice at the top of the primary README or
+       equivalent documentation:
+
+         "Originally created by Ajinkya Chalke — github.com/ajinkyachalke008"
+
+  4.2  DEPLOYED APPLICATIONS
+       Any public web deployment of this Software or a Derivative Work must
+       display the following in a visible location (footer, about page, or
+       credits section):
+
+         "Powered by EE ZONE — Built by Ajinkya Chalke"
+         (with a link to: github.com/ajinkyachalke008/EEZONE-08)
+
+  4.3  ACADEMIC PUBLICATIONS
+       If this Software is referenced in a thesis, research paper, or academic
+       publication, please cite it as:
+
+         Chalke, A. (2025). EE ZONE: AI-Powered Electrical Engineering Platform.
+         GitHub. https://github.com/ajinkyachalke008/EEZONE-08
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SECTION 5 — CONTRIBUTIONS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Contributions to this repository are warmly welcomed.
+
+By submitting a pull request or patch, you agree that:
+
+  5.1  Your contribution will be licensed under this same EOEL v1.0 license.
+
+  5.2  You have the right to submit the code (it is your own original work
+       or properly licensed third-party code).
+
+  5.3  The Author (Ajinkya Chalke) retains the right to accept, reject, or
+       modify any contribution.
+
+  5.4  Contributors will be acknowledged in the project's contributor list
+       unless they request otherwise.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SECTION 6 — ENGINEERING SAFETY DISCLAIMER
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+THE ENGINEERING CALCULATORS, CIRCUIT SIMULATIONS, COMPLIANCE CHECKERS, AND
+ALL TECHNICAL TOOLS WITHIN THIS SOFTWARE ARE PROVIDED FOR EDUCATIONAL AND
+REFERENCE PURPOSES ONLY.
+
+  ⚠  Results must NOT be used as the sole basis for any real-world electrical
+     installation, design sign-off, or safety-critical decision.
+
+  ⚠  Always verify calculations with a licensed Professional Engineer (PE)
+     before implementation in any physical system.
+
+  ⚠  The Author accepts no liability for any electrical failure, injury, or
+     property damage resulting from reliance on this Software's outputs.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SECTION 7 — GENERAL WARRANTY DISCLAIMER
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+THIS SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+FITNESS FOR A PARTICULAR PURPOSE, AND NON-INFRINGEMENT.
 
----
+IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY CLAIM, DAMAGES, OR OTHER
+LIABILITY — WHETHER IN AN ACTION OF CONTRACT, TORT, OR OTHERWISE — ARISING
+FROM, OUT OF, OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+IN THE SOFTWARE.
 
-Additional Terms for EE ZONE Platform
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SECTION 8 — THIRD-PARTY COMPONENTS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-1. Attribution Requirement
-   Any public deployment or fork of this software must visibly credit the
-   original author: Ajinkya Chalke (ajinkyachalke008@gmail.com) in the
-   application UI, documentation, or README.
+This Software incorporates third-party open-source components. Each retains
+its own license, which this EOEL does not supersede:
 
-2. Non-Commercial AI Use
-   The AI-powered features of this platform (Instrument Scanner, Problem
-   Solver, AI Circuit Designer, AI Code Assistant, AI Troubleshooter) are
-   intended for educational and engineering purposes. Commercial resale of
-   these AI features as a standalone product is not permitted without
-   explicit written permission from the author.
+  Next.js          MIT License      — Vercel, Inc.
+  Tailwind CSS     MIT License      — Tailwind Labs, Inc.
+  Drizzle ORM      Apache 2.0       — Drizzle Team
+  Better Auth      MIT License      — Better Auth Contributors
+  draw.io (diagx)  Apache 2.0       — JGraph Ltd
+  Radix UI         MIT License      — WorkOS
+  Framer Motion    MIT License      — Framer B.V.
+  Three.js         MIT License      — mrdoob & contributors
+  Monaco Editor    MIT License      — Microsoft Corporation
+  Recharts         MIT License      — Recharts Group
+  Lucide React     ISC License      — Lucide Contributors
+  Stripe SDK       Apache 2.0       — Stripe, Inc.
+  Turso / libSQL   MIT License      — Turso, Inc.
 
-3. Educational Use Encouraged
-   Students, educators, and academic institutions are explicitly encouraged
-   to use, fork, and adapt this platform for non-commercial educational
-   purposes. No permission needed — just keep the attribution.
+Full license texts are available in each package's directory under
+node_modules/ or at their respective GitHub repositories.
 
-4. Contributions
-   Contributions via pull requests are welcome. By submitting a contribution,
-   you agree that your code will be licensed under this same MIT License and
-   that copyright of the contribution is shared with the project author.
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SECTION 9 — LICENSE VERSION & UPDATES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-5. No Warranty on Electrical Calculations
-   The engineering calculators, simulations, and compliance tools in this
-   platform are provided for reference and educational purposes only. They
-   should NOT be used as the sole basis for real-world electrical installations
-   or safety-critical decisions. Always verify results with a licensed
-   professional engineer.
+This is version 1.0 of the EE Zone Open Engineering License (EOEL).
 
----
+The Author reserves the right to release updated versions of this license.
+Any new version will carry a distinct version number. You may always choose
+to use the Software under the terms of any version of this license that was
+current at the time you received the Software.
 
-Third-Party Licenses
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+CONTACT
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-This software makes use of the following open-source projects, each governed
-by their respective licenses:
-
-- Next.js         — MIT License (Vercel, Inc.)
-- Tailwind CSS    — MIT License (Tailwind Labs, Inc.)
-- Drizzle ORM     — Apache 2.0 License (Drizzle Team)
-- Better Auth     — MIT License
-- draw.io (diagx) — Apache 2.0 License (JGraph Ltd)
-- Radix UI        — MIT License (WorkOS)
-- Framer Motion   — MIT License (Framer B.V.)
-- Three.js        — MIT License (mrdoob)
-- Monaco Editor   — MIT License (Microsoft Corporation)
-- Recharts        — MIT License (Recharts Group)
-- Lucide React    — ISC License (Lucide Contributors)
-
-Full license texts for each dependency are available in their respective
-npm package directories under node_modules/.
-
----
-
-Contact
-
-For licensing inquiries, commercial use requests, or collaboration:
+For commercial licensing inquiries, collaboration, or any questions about
+the terms of this license, please contact:
 
   Ajinkya Chalke
-  Email : ajinkyachalke008@gmail.com
-  GitHub: https://github.com/ajinkyachalke008
-  Location: Karad, Maharashtra, India
+  📧  ajinkyachalke008@gmail.com
+  🔗  github.com/ajinkyachalke008
+  📍  Karad, Maharashtra, India
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  EE ZONE Open Engineering License (EOEL) v1.0
+  Copyright (c) 2025 Ajinkya Chalke. All rights reserved.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
