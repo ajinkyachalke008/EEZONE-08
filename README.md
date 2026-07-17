@@ -207,9 +207,10 @@ Community-driven project hub:
 
 ---
 
-### 💼 Career & Assessments (`/career`, `/assessments`)
+### 💼 Career &  Assessments (`/career`, `/assessments`)
 
 - FE/PE exam preparation, engineering tutorials
+
 - Resume builder, AI interview coaching, skill assessments
 
 ---
