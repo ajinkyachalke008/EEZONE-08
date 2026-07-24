@@ -192,6 +192,7 @@ Community-driven project hub:
 
 ### 🏛️ Code Compliance (`/tools` → Compliance)
 
+
 - NEC Code Search (2020, 2023, 2026 editions)
 - Compliance Checker for NEC and NFPA 70E
 - Code Change Tracker, Jurisdiction Database, Permit Assistant
