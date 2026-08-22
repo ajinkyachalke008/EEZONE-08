@@ -11,9 +11,9 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { SectionFeatures, FeatureCardProps } from '@/components/feature-card';
 
-// Lazy load heavy components
-const InstrumentScanner = lazy(() => import('@/components/instrument-scanner').then(mod => ({ default: mod.InstrumentScanner })));
-const ProblemSolver = lazy(() => import('@/components/problem-solver').then(mod => ({ default: mod.ProblemSolver })));
+// Direct component imports
+import { InstrumentScanner } from '@/components/instrument-scanner';
+import { ProblemSolver } from '@/components/problem-solver';
 
 // Loading fallback component
 const SectionLoader = () => (
