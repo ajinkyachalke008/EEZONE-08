@@ -80,7 +80,7 @@ async function callOpenRouter(image: string) {
       'X-Title': 'EE Zone - Instrument Scanner'
     },
     body: JSON.stringify({
-      model: 'google/gemma-3-27b-it:free',
+      model: 'google/gemma-3-27b-it',
       messages: [
         {
           role: 'user',

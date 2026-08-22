@@ -107,7 +107,7 @@ export async function POST(req: NextRequest) {
     const apiUrl = useOpenRouter
       ? "https://openrouter.ai/api/v1/chat/completions"
       : "https://api.openai.com/v1/chat/completions";
-    const model = useOpenRouter ? "google/gemma-3-27b-it:free" : "gpt-4o-mini";
+    const model = useOpenRouter ? "google/gemma-3-27b-it" : "gpt-4o-mini";
 
     const headers: Record<string, string> = {
       "Content-Type": "application/json",

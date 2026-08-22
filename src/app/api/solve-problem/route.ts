@@ -48,7 +48,7 @@ async function callOpenRouter(problem?: string, image?: string) {
       'X-Title': 'EE Zone Problem Solver'
     },
     body: JSON.stringify({
-      model: 'google/gemma-3-27b-it:free',
+      model: 'google/gemma-3-27b-it',
       messages,
       temperature: 0.3,
       max_tokens: 2000
