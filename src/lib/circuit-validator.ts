@@ -92,7 +92,12 @@ export function buildNetlist(components: Component[], wires: Wire[]): Net[] {
 
       const isPower = netComponents.some(nc => {
         const comp = components.find(c => c.id === nc.componentId);
-        return comp?.type === 'voltage_dc' || comp?.type === 'voltage_ac' || comp?.type === 'battery';
+        if (!comp) return false;
+        if (comp.type === 'voltage_dc' || comp.type === 'voltage_ac' || comp.type === 'battery' || comp.type === 'signal_generator') {
+          // Only positive terminal (right or top) is the power rail!
+          return nc.terminal === 'right' || nc.terminal === 'top';
+        }
+        return false;
       });
 
       // Auto-label based on type
@@ -156,25 +161,45 @@ function checkShortCircuits(components: Component[], wires: Wire[], nets: Net[])
   const errors: ValidationError[] = [];
 
   nets.forEach(net => {
-    // Check if this net connects power directly to ground
-    const hasPower = net.isPower;
+    // Check if positive terminal of a voltage source connects directly to Ground
+    const hasPowerPos = net.components.some(nc => {
+      const comp = components.find(c => c.id === nc.componentId);
+      if (!comp) return false;
+      if (comp.type === 'voltage_dc' || comp.type === 'voltage_ac' || comp.type === 'battery' || comp.type === 'signal_generator') {
+        return nc.terminal === 'right' || nc.terminal === 'top';
+      }
+      return false;
+    });
+
     const hasGround = net.isGround;
 
-    if (hasPower && hasGround) {
-      // Check for very low resistance path
-      const resistorsInPath = net.components
-        .map(nc => components.find(c => c.id === nc.componentId))
-        .filter(c => c?.type === 'resistor');
+    // Check if positive and negative terminals of the same source are on the same net
+    const powerSourceIds = new Set<string>();
+    let sameSourceShort = false;
+    net.components.forEach(nc => {
+      const comp = components.find(c => c.id === nc.componentId);
+      if (comp && (comp.type === 'voltage_dc' || comp.type === 'voltage_ac' || comp.type === 'battery' || comp.type === 'signal_generator')) {
+        if (powerSourceIds.has(comp.id)) {
+          sameSourceShort = true;
+        }
+        powerSourceIds.add(comp.id);
+      }
+    });
 
-      const totalResistance = resistorsInPath.reduce((sum, r) => sum + (r?.value || 0), 0);
+    if ((hasPowerPos && hasGround) || sameSourceShort) {
+      // Check if there are other loads or resistors in path
+      const loadsInPath = net.components.filter(nc => {
+        const comp = components.find(c => c.id === nc.componentId);
+        return comp && comp.type !== 'voltage_dc' && comp.type !== 'voltage_ac' && comp.type !== 'battery' && comp.type !== 'signal_generator' && comp.type !== 'ground';
+      });
 
-      if (totalResistance < 10) {
+      if (loadsInPath.length === 0) {
         errors.push({
           id: `short-${net.id}`,
           type: 'error',
           category: 'short',
           message: 'Short Circuit Detected',
-          description: `Power source connected directly to ground with very low resistance (${totalResistance.toFixed(1)}Ω). This will cause excessive current flow and damage components.`,
+          description: `Positive terminal of power source is connected directly to Ground or return path without a load.`,
           fix: 'Add a resistor or load between power and ground to limit current.',
           componentIds: net.components.map(nc => nc.componentId),
           wireIds: wires.filter(w => 

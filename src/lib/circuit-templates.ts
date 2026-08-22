@@ -95,7 +95,7 @@ export const CIRCUIT_TEMPLATES: CircuitTemplate[] = [
     components: [
       { id: 'v-1', type: 'voltage_ac', x: 100, y: 200, value: 5, unit: 'V', rotation: 0 },
       { id: 'r1', type: 'resistor', x: 250, y: 200, value: 1000, unit: 'Ω', rotation: 0 },
-      { id: 'c1', type: 'capacitor', x: 400, y: 300, value: 100, unit: 'μF', rotation: 0 },
+      { id: 'c1', type: 'capacitor', x: 400, y: 300, value: 0.1, unit: 'μF', rotation: 0 },
       { id: 'gnd-1', type: 'ground', x: 100, y: 400, value: 0, unit: 'V', rotation: 0 },
       { id: 'probe-1', type: 'probe', x: 550, y: 250, value: 0, unit: '', rotation: 0 }
     ],
@@ -116,6 +116,35 @@ export const CIRCUIT_TEMPLATES: CircuitTemplate[] = [
   },
 
   {
+    id: 'rlc_resonance',
+    name: 'RLC Resonant Tank',
+    description: 'Series RLC resonant circuit exhibiting Q-factor voltage magnification at f0 ≈ 5.03 kHz',
+    category: 'analog',
+    difficulty: 3,
+    components: [
+      { id: 'v-1', type: 'voltage_ac', x: 100, y: 150, value: 5, unit: 'V', rotation: 0, params: { frequency: 5033, offset: 0, waveformType: 0 } },
+      { id: 'r1', type: 'resistor', x: 250, y: 150, value: 50, unit: 'Ω', rotation: 0 },
+      { id: 'l1', type: 'inductor', x: 400, y: 150, value: 10, unit: 'mH', rotation: 0 },
+      { id: 'c1', type: 'capacitor', x: 550, y: 250, value: 100, unit: 'nF', rotation: 0 },
+      { id: 'gnd-1', type: 'ground', x: 100, y: 350, value: 0, unit: 'V', rotation: 0 }
+    ],
+    wires: [
+      { id: 'w1', from: { componentId: 'v-1', terminal: 'right' }, to: { componentId: 'r1', terminal: 'left' }, color: '#FF0000', netLabel: 'VIN' },
+      { id: 'w2', from: { componentId: 'r1', terminal: 'right' }, to: { componentId: 'l1', terminal: 'left' }, color: '#FF6B00', netLabel: 'VR_OUT' },
+      { id: 'w3', from: { componentId: 'l1', terminal: 'right' }, to: { componentId: 'c1', terminal: 'top' }, color: '#00E5FF', netLabel: 'VLC_TANK' },
+      { id: 'w4', from: { componentId: 'c1', terminal: 'bottom' }, to: { componentId: 'gnd-1', terminal: 'top' }, color: '#000000', netLabel: 'GND' },
+      { id: 'w5', from: { componentId: 'v-1', terminal: 'left' }, to: { componentId: 'gnd-1', terminal: 'top' }, color: '#000000', netLabel: 'GND' }
+    ],
+    learningObjectives: [
+      'Understand Series RLC Resonance',
+      'Observe Q-factor voltage magnification at f0',
+      'Calculate resonant frequency f0 = 1 / (2*pi*sqrt(L*C))',
+      'Analyze phase alignment of current and voltage'
+    ],
+    tags: ['analog', 'resonance', 'rlc', 'tank', 'inductor', 'capacitor', 'filter']
+  },
+
+  {
     id: '555_astable',
     name: '555 Timer (Astable Mode)',
     description: 'Flashing LED using 555 timer in astable configuration',
@@ -131,7 +160,17 @@ export const CIRCUIT_TEMPLATES: CircuitTemplate[] = [
       { id: 'r3', type: 'resistor', x: 650, y: 250, value: 330, unit: 'Ω', rotation: 0 },
       { id: 'gnd-1', type: 'ground', x: 300, y: 500, value: 0, unit: 'V', rotation: 0 }
     ],
-    wires: [],
+    wires: [
+      { id: 'w1', from: { componentId: 'v-1', terminal: 'right' }, to: { componentId: 'r1', terminal: 'left' }, color: '#FF0000', netLabel: 'VCC' },
+      { id: 'w2', from: { componentId: 'r1', terminal: 'right' }, to: { componentId: 'r2', terminal: 'left' }, color: '#FF6B00' },
+      { id: 'w3', from: { componentId: 'r2', terminal: 'right' }, to: { componentId: 'c1', terminal: 'top' }, color: '#FF6B00' },
+      { id: 'w4', from: { componentId: 'c1', terminal: 'bottom' }, to: { componentId: 'gnd-1', terminal: 'top' }, color: '#000000', netLabel: 'GND' },
+      { id: 'w5', from: { componentId: 'v-1', terminal: 'left' }, to: { componentId: 'gnd-1', terminal: 'top' }, color: '#000000', netLabel: 'GND' },
+      { id: 'w6', from: { componentId: 'r1', terminal: 'right' }, to: { componentId: 'ic-1', terminal: 'left' }, color: '#9C4AFF' },
+      { id: 'w7', from: { componentId: 'ic-1', terminal: 'right' }, to: { componentId: 'led-1', terminal: 'left' }, color: '#00FF88' },
+      { id: 'w8', from: { componentId: 'led-1', terminal: 'right' }, to: { componentId: 'r3', terminal: 'left' }, color: '#FF6B00' },
+      { id: 'w9', from: { componentId: 'r3', terminal: 'right' }, to: { componentId: 'gnd-1', terminal: 'top' }, color: '#000000', netLabel: 'GND' }
+    ],
     learningObjectives: [
       'Understand 555 timer operation',
       'Configure astable multivibrator',
@@ -155,7 +194,14 @@ export const CIRCUIT_TEMPLATES: CircuitTemplate[] = [
       { id: 'r1', type: 'resistor', x: 650, y: 250, value: 330, unit: 'Ω', rotation: 0 },
       { id: 'gnd-1', type: 'ground', x: 400, y: 450, value: 0, unit: 'V', rotation: 0 }
     ],
-    wires: [],
+    wires: [
+      { id: 'w1', from: { componentId: 'v-1', terminal: 'right' }, to: { componentId: 'and-1', terminal: 'left' }, color: '#FF0000', netLabel: 'IN_A' },
+      { id: 'w2', from: { componentId: 'v-1', terminal: 'right' }, to: { componentId: 'and-1', terminal: 'top' }, color: '#FF0000', netLabel: 'IN_B' },
+      { id: 'w3', from: { componentId: 'and-1', terminal: 'right' }, to: { componentId: 'led-1', terminal: 'left' }, color: '#00FF88', netLabel: 'OUT' },
+      { id: 'w4', from: { componentId: 'led-1', terminal: 'right' }, to: { componentId: 'r1', terminal: 'left' }, color: '#FF6B00' },
+      { id: 'w5', from: { componentId: 'r1', terminal: 'right' }, to: { componentId: 'gnd-1', terminal: 'top' }, color: '#000000', netLabel: 'GND' },
+      { id: 'w6', from: { componentId: 'v-1', terminal: 'left' }, to: { componentId: 'gnd-1', terminal: 'top' }, color: '#000000', netLabel: 'GND' }
+    ],
     learningObjectives: [
       'Understand AND gate logic',
       'Test truth table',
@@ -180,7 +226,17 @@ export const CIRCUIT_TEMPLATES: CircuitTemplate[] = [
       { id: 'or1', type: 'logic_or', x: 600, y: 325, value: 0, unit: '', rotation: 0 },
       { id: 'gnd-1', type: 'ground', x: 400, y: 500, value: 0, unit: 'V', rotation: 0 }
     ],
-    wires: [],
+    wires: [
+      { id: 'w1', from: { componentId: 'v-1', terminal: 'right' }, to: { componentId: 'xor1', terminal: 'left' }, color: '#FF0000', netLabel: 'A' },
+      { id: 'w2', from: { componentId: 'v-1', terminal: 'right' }, to: { componentId: 'xor1', terminal: 'top' }, color: '#FF0000', netLabel: 'B' },
+      { id: 'w3', from: { componentId: 'xor1', terminal: 'right' }, to: { componentId: 'xor2', terminal: 'left' }, color: '#00E5FF' },
+      { id: 'w4', from: { componentId: 'xor1', terminal: 'right' }, to: { componentId: 'and2', terminal: 'left' }, color: '#00E5FF' },
+      { id: 'w5', from: { componentId: 'v-1', terminal: 'right' }, to: { componentId: 'and1', terminal: 'left' }, color: '#FF0000' },
+      { id: 'w6', from: { componentId: 'v-1', terminal: 'right' }, to: { componentId: 'and1', terminal: 'top' }, color: '#FF0000' },
+      { id: 'w7', from: { componentId: 'and1', terminal: 'right' }, to: { componentId: 'or1', terminal: 'bottom' }, color: '#9C4AFF' },
+      { id: 'w8', from: { componentId: 'and2', terminal: 'right' }, to: { componentId: 'or1', terminal: 'top' }, color: '#9C4AFF' },
+      { id: 'w9', from: { componentId: 'v-1', terminal: 'left' }, to: { componentId: 'gnd-1', terminal: 'top' }, color: '#000000', netLabel: 'GND' }
+    ],
     learningObjectives: [
       'Understand binary addition',
       'Build full adder from gates',
@@ -227,9 +283,15 @@ export const CIRCUIT_TEMPLATES: CircuitTemplate[] = [
     components: [
       { id: 'arduino-1', type: 'arduino_uno', x: 150, y: 200, value: 0, unit: '', rotation: 0 },
       { id: 'ultra-1', type: 'ultrasonic', x: 500, y: 200, value: 400, unit: 'cm', rotation: 0 },
-      { id: 'lcd-1', type: 'lcd_display', x: 150, y: 450, value: 16, unit: 'char', rotation: 0 }
+      { id: 'lcd-1', type: 'lcd_display', x: 150, y: 450, value: 16, unit: 'char', rotation: 0 },
+      { id: 'gnd-1', type: 'ground', x: 150, y: 550, value: 0, unit: 'V', rotation: 0 }
     ],
-    wires: [],
+    wires: [
+      { id: 'w1', from: { componentId: 'arduino-1', terminal: 'right' }, to: { componentId: 'ultra-1', terminal: 'left' }, color: '#FF6B00', netLabel: 'TRIG' },
+      { id: 'w2', from: { componentId: 'ultra-1', terminal: 'right' }, to: { componentId: 'lcd-1', terminal: 'top' }, color: '#00E5FF', netLabel: 'DATA' },
+      { id: 'w3', from: { componentId: 'arduino-1', terminal: 'bottom' }, to: { componentId: 'gnd-1', terminal: 'top' }, color: '#000000', netLabel: 'GND' },
+      { id: 'w4', from: { componentId: 'lcd-1', terminal: 'left' }, to: { componentId: 'gnd-1', terminal: 'top' }, color: '#000000', netLabel: 'GND' }
+    ],
     learningObjectives: [
       'Interface ultrasonic sensor',
       'Measure distance in code',
@@ -252,7 +314,16 @@ export const CIRCUIT_TEMPLATES: CircuitTemplate[] = [
       { id: 'v-1', type: 'voltage_dc', x: 550, y: 100, value: 5, unit: 'V', rotation: 0 },
       { id: 'gnd-1', type: 'ground', x: 200, y: 500, value: 0, unit: 'V', rotation: 0 }
     ],
-    wires: [],
+    wires: [
+      { id: 'w1', from: { componentId: 'v-1', terminal: 'right' }, to: { componentId: 'pot-1', terminal: 'left' }, color: '#FF0000', netLabel: '5V' },
+      { id: 'w2', from: { componentId: 'v-1', terminal: 'right' }, to: { componentId: 'servo-1', terminal: 'top' }, color: '#FF0000' },
+      { id: 'w3', from: { componentId: 'pot-1', terminal: 'right' }, to: { componentId: 'arduino-1', terminal: 'left' }, color: '#FF6B00', netLabel: 'A0' },
+      { id: 'w4', from: { componentId: 'arduino-1', terminal: 'right' }, to: { componentId: 'servo-1', terminal: 'left' }, color: '#00FF88', netLabel: 'PWM9' },
+      { id: 'w5', from: { componentId: 'pot-1', terminal: 'bottom' }, to: { componentId: 'gnd-1', terminal: 'top' }, color: '#000000', netLabel: 'GND' },
+      { id: 'w6', from: { componentId: 'servo-1', terminal: 'bottom' }, to: { componentId: 'gnd-1', terminal: 'top' }, color: '#000000', netLabel: 'GND' },
+      { id: 'w7', from: { componentId: 'arduino-1', terminal: 'bottom' }, to: { componentId: 'gnd-1', terminal: 'top' }, color: '#000000', netLabel: 'GND' },
+      { id: 'w8', from: { componentId: 'v-1', terminal: 'left' }, to: { componentId: 'gnd-1', terminal: 'top' }, color: '#000000', netLabel: 'GND' }
+    ],
     learningObjectives: [
       'Control servo motors',
       'Read analog input',
@@ -278,7 +349,18 @@ export const CIRCUIT_TEMPLATES: CircuitTemplate[] = [
       { id: 'r1', type: 'resistor', x: 800, y: 200, value: 330, unit: 'Ω', rotation: 0 },
       { id: 'gnd-1', type: 'ground', x: 350, y: 450, value: 0, unit: 'V', rotation: 0 }
     ],
-    wires: [],
+    wires: [
+      { id: 'w1', from: { componentId: 'v-1', terminal: 'right' }, to: { componentId: 'c1', terminal: 'top' }, color: '#FF0000', netLabel: '12V_IN' },
+      { id: 'w2', from: { componentId: 'c1', terminal: 'top' }, to: { componentId: 'reg-1', terminal: 'left' }, color: '#FF0000' },
+      { id: 'w3', from: { componentId: 'c1', terminal: 'bottom' }, to: { componentId: 'gnd-1', terminal: 'top' }, color: '#000000', netLabel: 'GND' },
+      { id: 'w4', from: { componentId: 'reg-1', terminal: 'bottom' }, to: { componentId: 'gnd-1', terminal: 'top' }, color: '#000000', netLabel: 'GND' },
+      { id: 'w5', from: { componentId: 'reg-1', terminal: 'right' }, to: { componentId: 'c2', terminal: 'top' }, color: '#00FF88', netLabel: '5V_OUT' },
+      { id: 'w6', from: { componentId: 'c2', terminal: 'top' }, to: { componentId: 'r1', terminal: 'left' }, color: '#00FF88' },
+      { id: 'w7', from: { componentId: 'r1', terminal: 'right' }, to: { componentId: 'led-1', terminal: 'left' }, color: '#FF6B00' },
+      { id: 'w8', from: { componentId: 'led-1', terminal: 'right' }, to: { componentId: 'gnd-1', terminal: 'top' }, color: '#000000', netLabel: 'GND' },
+      { id: 'w9', from: { componentId: 'c2', terminal: 'bottom' }, to: { componentId: 'gnd-1', terminal: 'top' }, color: '#000000', netLabel: 'GND' },
+      { id: 'w10', from: { componentId: 'v-1', terminal: 'left' }, to: { componentId: 'gnd-1', terminal: 'top' }, color: '#000000', netLabel: 'GND' }
+    ],
     learningObjectives: [
       'Understand voltage regulation',
       'Use LM7805 regulator',
@@ -302,7 +384,15 @@ export const CIRCUIT_TEMPLATES: CircuitTemplate[] = [
       { id: 'r2', type: 'resistor', x: 550, y: 150, value: 330, unit: 'Ω', rotation: 0 },
       { id: 'gnd-1', type: 'ground', x: 400, y: 500, value: 0, unit: 'V', rotation: 0 }
     ],
-    wires: [],
+    wires: [
+      { id: 'w1', from: { componentId: 'v-1', terminal: 'right' }, to: { componentId: 'r1', terminal: 'left' }, color: '#FF0000', netLabel: '9V' },
+      { id: 'w2', from: { componentId: 'v-1', terminal: 'right' }, to: { componentId: 'r2', terminal: 'left' }, color: '#FF0000' },
+      { id: 'w3', from: { componentId: 'r1', terminal: 'right' }, to: { componentId: 'trans-1', terminal: 'left' }, color: '#FF6B00', netLabel: 'BASE' },
+      { id: 'w4', from: { componentId: 'r2', terminal: 'right' }, to: { componentId: 'led-1', terminal: 'left' }, color: '#FF6B00' },
+      { id: 'w5', from: { componentId: 'led-1', terminal: 'right' }, to: { componentId: 'trans-1', terminal: 'top' }, color: '#00E5FF', netLabel: 'COLLECTOR' },
+      { id: 'w6', from: { componentId: 'trans-1', terminal: 'bottom' }, to: { componentId: 'gnd-1', terminal: 'top' }, color: '#000000', netLabel: 'GND' },
+      { id: 'w7', from: { componentId: 'v-1', terminal: 'left' }, to: { componentId: 'gnd-1', terminal: 'top' }, color: '#000000', netLabel: 'GND' }
+    ],
     learningObjectives: [
       'Use transistor as switch',
       'Calculate base resistor',

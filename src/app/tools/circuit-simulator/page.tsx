@@ -16,7 +16,7 @@ import {
   FolderOpen, FileJson, Image as ImageIcon, FileText, Undo2, Redo2, 
   ZoomIn, ZoomOut, Grid3X3, Copy, Layers, Eye, EyeOff, Lock, Unlock,
   RotateCw, FlipHorizontal, FlipVertical, Maximize2, Move, MousePointer,
-  Target, Crosshair, Magnet
+  Target, Crosshair, Magnet, Radio
 } from 'lucide-react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -46,6 +46,18 @@ import {
   type SimulationSettings,
   type SimulationComponent
 } from '@/lib/simulation-engine';
+import {
+  generateSpiceNetlist,
+  downloadNetlist,
+  isSpiceEligible
+} from '@/lib/spice-netlist-generator';
+import { runSpiceSimulation } from '@/lib/spice-runner';
+import { MeasurementBus } from '@/lib/measurement-bus';
+import { InteractiveMultimeter } from '@/components/circuit/interactive-multimeter';
+import { InteractiveOscilloscope } from '@/components/circuit/interactive-oscilloscope';
+import { SignalGeneratorPanel } from '@/components/circuit/signal-generator-panel';
+import { EnhancedComponentProperties } from '@/components/circuit/enhanced-component-properties';
+import type { SignalGeneratorConfig } from '@/lib/instrument-types';
 import {
   Dialog,
   DialogContent,
@@ -247,7 +259,7 @@ export default function CircuitSimulatorPage() {
   
   const [simulationResult, setSimulationResult] = useState<SimulationResult | null>(null);
   const [simulationSettings, setSimulationSettings] = useState<SimulationSettings>({
-    mode: 'dc',
+    mode: 'transient',
     dcMaxIterations: 100,
     dcTolerance: 1e-6,
     acStartFreq: 1,
@@ -264,7 +276,25 @@ export default function CircuitSimulatorPage() {
   const [resistance, setResistance] = useState(0);
   const [power, setPower] = useState(0);
   const [waveform, setWaveform] = useState<number[]>([]);
+  const [engineUsed, setEngineUsed] = useState<'spice-ts' | 'legacy-mna'>('spice-ts');
+  const [spiceModalOpen, setSpiceModalOpen] = useState(false);
+  const [currentNetlist, setCurrentNetlist] = useState('');
+  const [snappedTerminal, setSnappedTerminal] = useState<{ componentId: string; terminal: 'top' | 'bottom' | 'left' | 'right'; x: number; y: number } | null>(null);
   
+  // Real Virtual Laboratory Measurement Bus
+  const [measurementBus, setMeasurementBus] = useState<MeasurementBus>(() => new MeasurementBus());
+  const [signalGenConfig, setSignalGenConfig] = useState<SignalGeneratorConfig>({
+    enabled: true,
+    waveform: 'SINE',
+    frequency: 1000,
+    amplitude: 5.0,
+    offset: 0.0,
+    dutyCycle: 50,
+    outputNode: '1',
+    referenceNode: '0'
+  });
+  const [showSignalGen, setShowSignalGen] = useState(false);
+
   const [wires, setWires] = useState<Wire[]>([]);
   const [dragWire, setDragWire] = useState<DragWire | null>(null);
   const [hoveredComponent, setHoveredComponent] = useState<string | null>(null);
@@ -272,6 +302,14 @@ export default function CircuitSimulatorPage() {
   const [selectedWires, setSelectedWires] = useState<string[]>([]);
   const [wireDrawingMode, setWireDrawingMode] = useState(false);
   const [showAllTerminals, setShowAllTerminals] = useState(true);
+  const [contextMenu, setContextMenu] = useState<{
+    visible: boolean;
+    x: number;
+    y: number;
+    type: 'component' | 'wire' | 'canvas';
+    targetComponentId?: string;
+    targetWireId?: string;
+  }>({ visible: false, x: 0, y: 0, type: 'canvas' });
   
   const [selectedCategory, setSelectedCategory] = useState<string>('power');
   const [componentSearch, setComponentSearch] = useState('');
@@ -707,7 +745,7 @@ export default function CircuitSimulatorPage() {
     };
   }, [components, wires]);
 
-  const runEnhancedSimulation = useCallback(() => {
+  const runEnhancedSimulation = useCallback(async () => {
     if (components.length === 0) {
       toast.error('Add components to the circuit first');
       return;
@@ -717,24 +755,90 @@ export default function CircuitSimulatorPage() {
       toast.warning('Add wires to connect components');
       return;
     }
+
+    // Pre-flight circuit validation
+    const valErrors = validateCircuit(components, wires);
+    const criticalErrors = valErrors.filter(e => e.severity >= 4);
+    if (criticalErrors.length > 0) {
+      setValidationErrors(valErrors);
+      setShowValidation(true);
+      toast.error(`Circuit issue: ${criticalErrors[0].message}`);
+      return;
+    }
     
     setIsRunning(true);
     setLiveEditMode(true);
-    
+
+    // Auto-detect mode if AC or reactive/dynamic components are present
+    const hasDynamic = components.some(c => 
+      c.type === 'voltage_ac' || 
+      c.type === 'signal_generator' || 
+      c.type === 'capacitor' || 
+      c.type === 'inductor' || 
+      c.type === '555_timer'
+    );
+    const effectiveSettings: SimulationSettings = {
+      ...simulationSettings,
+      mode: hasDynamic ? 'transient' : simulationSettings.mode
+    };
+
+    // Try SPICE solver if circuit components are eligible
+    if (isSpiceEligible(components as any)) {
+      try {
+        const netlist = generateSpiceNetlist(components as any, wires as any, effectiveSettings);
+        setCurrentNetlist(netlist);
+        const result = await runSpiceSimulation(netlist, effectiveSettings, components as any);
+        
+        if (result.success) {
+          setSimulationResult(result);
+          setEngineUsed('spice-ts');
+          const bus = new MeasurementBus(result, `spice-${Date.now()}`, components as any);
+          setMeasurementBus(bus);
+          toast.success(`SPICE ${effectiveSettings.mode.toUpperCase()} simulation completed!`);
+
+          if (result.componentData) {
+            const firstComponent = Object.values(result.componentData)[0];
+            if (firstComponent) {
+              setVoltage(firstComponent.voltage);
+              setCurrent(firstComponent.current);
+              setPower(firstComponent.power);
+              const r = firstComponent.current > 0 ? firstComponent.voltage / firstComponent.current : 0;
+              setResistance(r);
+            }
+          }
+
+          if (result.waveforms && Object.keys(result.waveforms).length > 0) {
+            const firstWaveform = Object.values(result.waveforms)[0];
+            if (firstWaveform && firstWaveform.voltage && firstWaveform.voltage.length > 0) {
+              setWaveform(firstWaveform.voltage);
+            }
+          }
+          return;
+        } else {
+          toast.warning(`SPICE solver notice: ${result.error || 'Switching to MNA'}`);
+        }
+      } catch (spiceErr) {
+        console.warn('SPICE simulation error, falling back to legacy MNA:', spiceErr);
+      }
+    }
+
+    // Fallback to MNA solver
     const { components: simComponents, nodes } = convertToSimulationComponents();
-    
     if (simComponents.length === 0) {
       toast.error('No valid components to simulate');
       setIsRunning(false);
       return;
     }
-    
+
     try {
       const result = runSimulation(simComponents, nodes, simulationSettings);
       setSimulationResult(result);
+      setEngineUsed('legacy-mna');
+      const bus = new MeasurementBus(result, `mna-${Date.now()}`, components as any);
+      setMeasurementBus(bus);
       
       if (result.success) {
-        toast.success(`${simulationSettings.mode.toUpperCase()} simulation completed!`);
+        toast.info(`Legacy MNA ${simulationSettings.mode.toUpperCase()} simulation completed`);
         
         if (simulationSettings.mode === 'dc' && result.componentData) {
           const firstComponent = Object.values(result.componentData)[0];
@@ -764,49 +868,146 @@ export default function CircuitSimulatorPage() {
     }
   }, [components, wires, simulationSettings, convertToSimulationComponents]);
 
-  const updateComponentValueLive = useCallback((id: string, value: number) => {
-    if (!liveEditMode || !simulationResult) {
-      setComponents(prev => prev.map(c => 
-        c.id === id ? { ...c, value } : c
-      ));
-      return;
-    }
-    
+  const updateComponentValueLive = useCallback(async (id: string, value: number) => {
+    const numericVal = isNaN(value) ? 0 : value;
+
     const updatedComponents = components.map(c => 
-      c.id === id ? { ...c, value } : c
+      c.id === id ? { ...c, value: numericVal } : c
     );
     setComponents(updatedComponents);
-    
-    const { components: simComponents, nodes } = convertToSimulationComponents();
-    const updatedSimComponents = simComponents.map(sc =>
-      sc.id === id ? { ...sc, value } : sc
+    setSelectedComponent(prev => prev && prev.id === id ? { ...prev, value: numericVal } : prev);
+
+    // Auto-update simulation & MeasurementBus so Oscilloscope/Multimeter update immediately
+    const hasDynamic = updatedComponents.some(c => 
+      c.type === 'voltage_ac' || c.type === 'signal_generator' || c.type === 'capacitor' || c.type === 'inductor' || c.type.includes('555')
     );
-    
-    const newResult = updateSimulation(simulationResult, updatedSimComponents, nodes, simulationSettings);
-    setSimulationResult(newResult);
-    
-    if (newResult.success) {
-      toast.success('Live update applied', { duration: 1000 });
+    const effectiveSettings: SimulationSettings = {
+      ...simulationSettings,
+      mode: hasDynamic ? 'transient' : simulationSettings.mode
+    };
+
+    if (isSpiceEligible(updatedComponents as any)) {
+      try {
+        const netlist = generateSpiceNetlist(updatedComponents as any, wires as any, effectiveSettings);
+        setCurrentNetlist(netlist);
+        const newResult = await runSpiceSimulation(netlist, effectiveSettings, updatedComponents as any);
+        if (newResult.success) {
+          setSimulationResult(newResult);
+          const bus = new MeasurementBus(newResult, `spice-${Date.now()}`, updatedComponents as any);
+          setMeasurementBus(bus);
+          return;
+        }
+      } catch (e) {
+        console.warn('SPICE live update error:', e);
+      }
     }
-  }, [liveEditMode, simulationResult, components, simulationSettings, convertToSimulationComponents]);
+
+    try {
+      const { components: simComponents, nodes } = convertToSimulationComponents();
+      const updatedSimComponents = simComponents.map(sc =>
+        sc.id === id ? { ...sc, value: numericVal } : sc
+      );
+      const newResult = runDcSimulation(updatedSimComponents, nodes, effectiveSettings);
+      if (newResult.success) {
+        setSimulationResult(newResult);
+        const bus = new MeasurementBus(newResult, `mna-${Date.now()}`, updatedComponents as any);
+        setMeasurementBus(bus);
+      }
+    } catch (e) {
+      console.warn('Simulation live update fallback error:', e);
+    }
+  }, [components, wires, simulationSettings, convertToSimulationComponents]);
+
+  const handleExportNetlist = () => {
+    if (components.length === 0) {
+      toast.error('Add components to generate a SPICE netlist');
+      return;
+    }
+    const netlist = generateSpiceNetlist(components as any, wires as any, simulationSettings);
+    setCurrentNetlist(netlist);
+    downloadNetlist(netlist, 'eezone-circuit.cir');
+    toast.success('Exported SPICE netlist (eezone-circuit.cir)');
+  };
+
+  const handlePreviewNetlist = () => {
+    if (components.length === 0) {
+      toast.error('Add components to generate a SPICE netlist');
+      return;
+    }
+    const netlist = generateSpiceNetlist(components as any, wires as any, simulationSettings);
+    setCurrentNetlist(netlist);
+    setSpiceModalOpen(true);
+  };
 
   const loadTemplate = (template: CircuitTemplate) => {
-    setComponents(template.components);
-    setWires(template.wires.map(w => ({
-      ...w,
-      path: createSmartPath(
-        template.components.find(c => c.id === w.from.componentId)!.x,
-        template.components.find(c => c.id === w.from.componentId)!.y,
-        template.components.find(c => c.id === w.to.componentId)!.x,
-        template.components.find(c => c.id === w.to.componentId)!.y
-      )
-    })));
+    const newComps = template.components;
+    const newWires = template.wires.map(w => {
+      const fromComp = template.components.find(c => c.id === w.from.componentId);
+      const toComp = template.components.find(c => c.id === w.to.componentId);
+      const fromPos = fromComp ? getTerminalPosition(fromComp as any, w.from.terminal) : { x: 0, y: 0 };
+      const toPos = toComp ? getTerminalPosition(toComp as any, w.to.terminal) : { x: 100, y: 100 };
+      return {
+        ...w,
+        color: w.color || '#0F172A',
+        path: createSmartPath(fromPos.x, fromPos.y, toPos.x, toPos.y)
+      };
+    });
+
+    setComponents(newComps);
+    setWires(newWires);
     setSelectedTemplate(template);
     setShowTemplates(false);
     setSaveName(template.name);
     setCurrentProjectId(null);
     saveToHistory();
     toast.success(`Loaded template: ${template.name}`);
+
+    // Determine simulation mode
+    const hasAc = newComps.some(c => c.type === 'voltage_ac' || c.type === 'signal_generator' || c.type.includes('555'));
+    const mode = hasAc ? 'transient' : 'dc';
+    const settings: SimulationSettings = {
+      ...simulationSettings,
+      mode,
+      transientStopTime: 0.01,
+      transientTimeStep: 1e-5
+    };
+    setSimulationSettings(settings);
+
+    // Auto-run simulation immediately so instruments show live values
+    setTimeout(async () => {
+      try {
+        const netlist = generateSpiceNetlist(newComps as any, newWires as any, settings);
+        setCurrentNetlist(netlist);
+        const res = await runSpiceSimulation(netlist, settings, newComps as any);
+        if (res.success) {
+          setSimulationResult(res);
+          setIsRunning(true);
+          setEngineUsed('spice-ts');
+          const bus = new MeasurementBus(res, `auto-${Date.now()}`, newComps as any);
+          setMeasurementBus(bus);
+
+          if (res.componentData) {
+            const firstComponent = Object.values(res.componentData)[0];
+            if (firstComponent) {
+              setVoltage(firstComponent.voltage);
+              setCurrent(firstComponent.current);
+              setPower(firstComponent.power);
+              const r = firstComponent.current > 0 ? firstComponent.voltage / firstComponent.current : 0;
+              setResistance(r);
+            }
+          }
+
+          if (res.waveforms && Object.keys(res.waveforms).length > 0) {
+            const firstWf = Object.values(res.waveforms)[0];
+            if (firstWf?.voltage) {
+              setWaveform(firstWf.voltage);
+            }
+          }
+        }
+      } catch (e) {
+        console.warn('Auto-run template error:', e);
+      }
+    }, 50);
   };
 
   const runValidation = () => {
@@ -866,6 +1067,28 @@ export default function CircuitSimulatorPage() {
     toast.success(`${componentInfo?.label} added to canvas`);
   }, [draggedType, zoom, snapToGrid]);
 
+  const addComponentDirectly = (type: string) => {
+    const componentInfo = COMPONENT_LIBRARY.find(c => c.type === type);
+    const count = components.length;
+    const x = snapToGridValue(160 + (count % 4) * 120);
+    const y = snapToGridValue(120 + Math.floor(count / 4) * 100);
+
+    const newComp: Component = {
+      id: `${type}-${Date.now()}`,
+      type,
+      x,
+      y,
+      value: componentInfo?.defaultValue || 0,
+      unit: componentInfo?.defaultUnit || '',
+      rotation: 0,
+      locked: false
+    };
+
+    setComponents(prev => [...prev, newComp]);
+    saveToHistory();
+    toast.success(`Added ${componentInfo?.label || type}`);
+  };
+
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
     if (!canvasRef.current || !isDraggingFromLibrary) return;
@@ -887,61 +1110,182 @@ export default function CircuitSimulatorPage() {
 
   const removeComponent = (id: string) => {
     const removedWireCount = wires.filter(w => w.from.componentId === id || w.to.componentId === id).length;
-    setWires(prev => prev.filter(w => w.from.componentId !== id && w.to.componentId !== id));
-    setComponents(prev => prev.filter(c => c.id !== id));
+    const remainingWires = wires.filter(w => w.from.componentId !== id && w.to.componentId !== id);
+    const remainingComponents = components.filter(c => c.id !== id);
+    setWires(remainingWires);
+    setComponents(remainingComponents);
     setSelectedComponent(null);
     saveToHistory();
     toast.info(`Component removed${removedWireCount > 0 ? ` (${removedWireCount} wire${removedWireCount !== 1 ? 's' : ''} disconnected)` : ''}`);
+
+    if (simulationResult || isRunning || liveEditMode) {
+      if (remainingComponents.length > 0) {
+        setTimeout(() => runSimulation(), 100);
+      } else {
+        setSimulationResult(null);
+        setMeasurementBus(new MeasurementBus());
+      }
+    }
+  };
+
+  const removeWire = (wireId: string) => {
+    const remainingWires = wires.filter(w => w.id !== wireId);
+    setWires(remainingWires);
+    setSelectedWires(prev => prev.filter(id => id !== wireId));
+    saveToHistory();
+    toast.info('Wire removed');
+
+    if (simulationResult || isRunning || liveEditMode) {
+      setTimeout(() => runSimulation(), 100);
+    }
+  };
+
+  const removeSelectedWires = () => {
+    if (selectedWires.length === 0) return;
+    const count = selectedWires.length;
+    const remainingWires = wires.filter(w => !selectedWires.includes(w.id));
+    setWires(remainingWires);
+    setSelectedWires([]);
+    saveToHistory();
+    toast.info(`Removed ${count} wire${count > 1 ? 's' : ''}`);
+
+    if (simulationResult || isRunning || liveEditMode) {
+      setTimeout(() => runSimulation(), 100);
+    }
   };
 
   const duplicateComponent = (component: Component) => {
     const newComponent: Component = {
       ...component,
       id: `${component.type}-${Date.now()}`,
-      x: component.x + 80,
-      y: component.y + 80,
+      x: component.x + 60,
+      y: component.y + 60,
       locked: false
     };
     setComponents(prev => [...prev, newComponent]);
+    setSelectedComponent(newComponent);
     saveToHistory();
-    toast.success('Component duplicated');
+    toast.success('Component duplicated (Ctrl+D)');
   };
 
   const rotateComponent = (id: string) => {
     setComponents(prev => prev.map(c => 
       c.id === id ? { ...c, rotation: (c.rotation + 90) % 360 } : c
     ));
+    setSelectedComponent(prev => prev && prev.id === id ? { ...prev, rotation: (prev.rotation + 90) % 360 } : prev);
     saveToHistory();
+    toast.info('Component rotated 90° (R)');
   };
 
   const toggleLockComponent = (id: string) => {
     setComponents(prev => prev.map(c => 
       c.id === id ? { ...c, locked: !c.locked } : c
     ));
+    setSelectedComponent(prev => prev && prev.id === id ? { ...prev, locked: !prev.locked } : prev);
   };
 
   const updateComponentValue = (id: string, value: number) => {
     updateComponentValueLive(id, value);
   };
 
-  const getTerminalPosition = (comp: Component, terminal: 'top' | 'bottom' | 'left' | 'right') => {
-    const size = 60;
-    switch (terminal) {
-      case 'top':
-        return { x: comp.x + size / 2, y: comp.y };
-      case 'bottom':
-        return { x: comp.x + size / 2, y: comp.y + size };
-      case 'left':
-        return { x: comp.x, y: comp.y + size / 2 };
-      case 'right':
-        return { x: comp.x + size, y: comp.y + size / 2 };
+  const getComponentTerminals = (comp: Component): {
+    id: 'top' | 'bottom' | 'left' | 'right';
+    label?: string;
+    x: number;
+    y: number;
+  }[] => {
+    switch (comp.type) {
+      case 'ground':
+        return [{ id: 'top', label: 'GND', x: 30, y: 0 }];
+      case 'voltage_dc':
+      case 'voltage_ac':
+        return [
+          { id: 'top', label: '+', x: 30, y: 0 },
+          { id: 'bottom', label: '-', x: 30, y: 60 }
+        ];
+      case 'transistor_npn':
+      case 'transistor_pnp':
+        return [
+          { id: 'left', label: 'B', x: 0, y: 30 },
+          { id: 'top', label: 'C', x: 45, y: 8 },
+          { id: 'bottom', label: 'E', x: 45, y: 52 }
+        ];
+      case 'mosfet_n':
+      case 'mosfet_p':
+        return [
+          { id: 'left', label: 'G', x: 0, y: 30 },
+          { id: 'top', label: 'D', x: 45, y: 8 },
+          { id: 'bottom', label: 'S', x: 45, y: 52 }
+        ];
+      case 'op_amp':
+      case 'comparator':
+        return [
+          { id: 'left', label: '+', x: 0, y: 20 },
+          { id: 'bottom', label: '-', x: 0, y: 40 },
+          { id: 'right', label: 'OUT', x: 60, y: 30 }
+        ];
+      case 'potentiometer':
+        return [
+          { id: 'left', label: '1', x: 0, y: 30 },
+          { id: 'right', label: '2', x: 60, y: 30 },
+          { id: 'top', label: 'W', x: 30, y: 10 }
+        ];
+      default:
+        return [
+          { id: 'left', label: comp.type === 'battery' ? '-' : '1', x: 0, y: 30 },
+          { id: 'right', label: comp.type === 'battery' ? '+' : '2', x: 60, y: 30 }
+        ];
     }
   };
 
-  const handleTerminalMouseDown = (componentId: string, terminal: 'top' | 'bottom' | 'left' | 'right', e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (!canvasRef.current) return;
+  const getTerminalPosition = (comp: Component, terminal: 'top' | 'bottom' | 'left' | 'right') => {
+    const terminals = getComponentTerminals(comp);
+    const found = terminals.find(t => t.id === terminal);
+    if (found) {
+      return { x: comp.x + found.x, y: comp.y + found.y };
+    }
+    switch (terminal) {
+      case 'top': return { x: comp.x + 30, y: comp.y };
+      case 'bottom': return { x: comp.x + 30, y: comp.y + 60 };
+      case 'left': return { x: comp.x, y: comp.y + 30 };
+      case 'right': return { x: comp.x + 60, y: comp.y + 30 };
+    }
+  };
 
+  const [wireDragStartTime, setWireDragStartTime] = useState<number>(0);
+
+  // Magnetic proximity finder for terminals
+  const findNearestTerminal = useCallback((cursorX: number, cursorY: number, excludeComponentId?: string) => {
+    let nearest: {
+      component: Component;
+      terminal: 'top' | 'bottom' | 'left' | 'right';
+      position: { x: number; y: number };
+      distance: number;
+    } | null = null;
+    let minDistance = 50; // 50px generous magnetic snap radius
+
+    components.forEach(comp => {
+      if (excludeComponentId && comp.id === excludeComponentId) return;
+
+      (['top', 'bottom', 'left', 'right'] as const).forEach(terminal => {
+        const pos = getTerminalPosition(comp, terminal);
+        const dist = Math.hypot(cursorX - pos.x, cursorY - pos.y);
+        if (dist < minDistance) {
+          minDistance = dist;
+          nearest = {
+            component: comp,
+            terminal,
+            position: pos,
+            distance: dist
+          };
+        }
+      });
+    });
+
+    return nearest;
+  }, [components]);
+
+  const startWiring = (componentId: string, terminal: 'top' | 'bottom' | 'left' | 'right') => {
     const comp = components.find(c => c.id === componentId);
     if (!comp) return;
 
@@ -951,8 +1295,104 @@ export default function CircuitSimulatorPage() {
       currentX: pos.x,
       currentY: pos.y,
     });
+    setWireDragStartTime(Date.now());
     setWireDrawingMode(true);
-    toast.info('Drag to connect...', { duration: 1000 });
+    toast.info('Click target pin or component to connect wire', { duration: 1500 });
+  };
+
+  const completeWiring = (targetComponentId: string, targetTerminal: 'top' | 'bottom' | 'left' | 'right') => {
+    if (!dragWire) return;
+
+    if (dragWire.from.componentId === targetComponentId && dragWire.from.terminal === targetTerminal) {
+      if (Date.now() - wireDragStartTime > 400) {
+        setDragWire(null);
+        setSnappedTerminal(null);
+        setWireDrawingMode(false);
+        toast.info('Wiring cancelled');
+      }
+      return;
+    }
+
+    if (dragWire.from.componentId === targetComponentId) {
+      toast.error('Cannot connect component to itself');
+      setDragWire(null);
+      setSnappedTerminal(null);
+      setWireDrawingMode(false);
+      return;
+    }
+
+    const duplicate = wires.find(
+      w =>
+        (w.from.componentId === dragWire.from.componentId &&
+          w.from.terminal === dragWire.from.terminal &&
+          w.to.componentId === targetComponentId &&
+          w.to.terminal === targetTerminal) ||
+        (w.to.componentId === dragWire.from.componentId &&
+          w.to.terminal === dragWire.from.terminal &&
+          w.from.componentId === targetComponentId &&
+          w.from.terminal === targetTerminal)
+    );
+
+    if (duplicate) {
+      toast.error('Connection already exists');
+      setDragWire(null);
+      setSnappedTerminal(null);
+      setWireDrawingMode(false);
+      return;
+    }
+
+    const comp = components.find(c => c.id === targetComponentId);
+    if (!comp) return;
+
+    const toPos = getTerminalPosition(comp, targetTerminal);
+    const path = createSmartPath(dragWire.from.x, dragWire.from.y, toPos.x, toPos.y);
+    const color = '#0F172A';
+
+    const newWire: Wire = {
+      id: `wire-${Date.now()}`,
+      from: { componentId: dragWire.from.componentId, terminal: dragWire.from.terminal },
+      to: { componentId: targetComponentId, terminal: targetTerminal },
+      color,
+      path,
+    };
+
+    setWires(prev => [...prev, newWire]);
+    setDragWire(null);
+    setSnappedTerminal(null);
+    setWireDrawingMode(false);
+    saveToHistory();
+    toast.success('Wire connected successfully!');
+  };
+
+  const handleTerminalMouseDown = (componentId: string, terminal: 'top' | 'bottom' | 'left' | 'right', e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!dragWire) {
+      startWiring(componentId, terminal);
+    } else if (dragWire.from.componentId !== componentId) {
+      completeWiring(componentId, terminal);
+    }
+  };
+
+  const handleTerminalClick = (componentId: string, terminal: 'top' | 'bottom' | 'left' | 'right', e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!dragWire) {
+      startWiring(componentId, terminal);
+    } else if (dragWire.from.componentId !== componentId) {
+      completeWiring(componentId, terminal);
+    } else if (Date.now() - wireDragStartTime > 400) {
+      setDragWire(null);
+      setSnappedTerminal(null);
+      setWireDrawingMode(false);
+      toast.info('Wiring cancelled');
+    }
+  };
+
+  const handleTerminalMouseUp = (componentId: string, terminal: 'top' | 'bottom' | 'left' | 'right', e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!dragWire) return;
+    if (dragWire.from.componentId !== componentId) {
+      completeWiring(componentId, terminal);
+    }
   };
 
   const handleCanvasMouseMove = (e: React.MouseEvent) => {
@@ -964,10 +1404,22 @@ export default function CircuitSimulatorPage() {
     const y = (e.clientY - rect.top) / scale;
 
     if (dragWire) {
-      setDragWire(prev => prev ? { ...prev, currentX: x, currentY: y } : null);
+      const nearest = findNearestTerminal(x, y, dragWire.from.componentId);
+      if (nearest) {
+        setSnappedTerminal({
+          componentId: nearest.component.id,
+          terminal: nearest.terminal,
+          x: nearest.position.x,
+          y: nearest.position.y
+        });
+        setDragWire(prev => prev ? { ...prev, currentX: nearest.position.x, currentY: nearest.position.y } : null);
+      } else {
+        setSnappedTerminal(null);
+        setDragWire(prev => prev ? { ...prev, currentX: x, currentY: y } : null);
+      }
     }
 
-    if (draggedComponent && activeTool === 'select') {
+    if (draggedComponent && activeTool === 'select' && !dragWire) {
       const comp = components.find(c => c.id === draggedComponent);
       if (comp && !comp.locked) {
         const newX = snapToGridValue(x - dragOffset.x);
@@ -981,63 +1433,24 @@ export default function CircuitSimulatorPage() {
     }
   };
 
-  const handleTerminalMouseUp = (componentId: string, terminal: 'top' | 'bottom' | 'left' | 'right', e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (!dragWire) return;
-
-    if (dragWire.from.componentId === componentId) {
-      toast.error('Cannot connect component to itself');
-      setDragWire(null);
-      setWireDrawingMode(false);
-      return;
+  const handleCanvasClick = (e: React.MouseEvent) => {
+    if (dragWire) {
+      if (snappedTerminal) {
+        completeWiring(snappedTerminal.componentId, snappedTerminal.terminal);
+      } else if (Date.now() - wireDragStartTime > 400) {
+        setDragWire(null);
+        setSnappedTerminal(null);
+        setWireDrawingMode(false);
+        toast.info('Wiring cancelled');
+      }
     }
-
-    const duplicate = wires.find(
-      w =>
-        (w.from.componentId === dragWire.from.componentId &&
-          w.from.terminal === dragWire.from.terminal &&
-          w.to.componentId === componentId &&
-          w.to.terminal === terminal) ||
-        (w.to.componentId === dragWire.from.componentId &&
-          w.to.terminal === dragWire.from.terminal &&
-          w.from.componentId === componentId &&
-          w.from.terminal === terminal)
-    );
-
-    if (duplicate) {
-      toast.error('Connection already exists');
-      setDragWire(null);
-      setWireDrawingMode(false);
-      return;
-    }
-
-    const comp = components.find(c => c.id === componentId);
-    if (!comp) return;
-
-    const toPos = getTerminalPosition(comp, terminal);
-    const path = createSmartPath(dragWire.from.x, dragWire.from.y, toPos.x, toPos.y);
-    const color = wireColors[wires.length % wireColors.length];
-
-    const newWire: Wire = {
-      id: `wire-${Date.now()}`,
-      from: { componentId: dragWire.from.componentId, terminal: dragWire.from.terminal },
-      to: { componentId, terminal },
-      color,
-      path,
-    };
-
-    setWires(prev => [...prev, newWire]);
-    setDragWire(null);
-    setWireDrawingMode(false);
-    saveToHistory();
-    toast.success('Wire connected successfully!');
   };
 
   const handleCanvasMouseUp = () => {
-    if (dragWire) {
-      setDragWire(null);
-      setWireDrawingMode(false);
-      toast.info('Wire connection cancelled');
+    if (dragWire && Date.now() - wireDragStartTime > 350) {
+      if (snappedTerminal) {
+        completeWiring(snappedTerminal.componentId, snappedTerminal.terminal);
+      }
     }
     if (draggedComponent) {
       setDraggedComponent(null);
@@ -1046,7 +1459,141 @@ export default function CircuitSimulatorPage() {
     }
   };
 
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Don't trigger canvas hotkeys when typing in input fields
+      const target = e.target as HTMLElement;
+      if (target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable)) {
+        return;
+      }
+
+      // Escape: Cancel wiring or deselect all
+      if (e.key === 'Escape') {
+        if (dragWire) {
+          setDragWire(null);
+          setSnappedTerminal(null);
+          setWireDrawingMode(false);
+          toast.info('Wiring cancelled');
+        }
+        setSelectedComponent(null);
+        setSelectedWires([]);
+        setContextMenu(prev => ({ ...prev, visible: false }));
+      }
+
+      // Delete / Backspace: Remove selected component or selected wires
+      if (e.key === 'Delete' || e.key === 'Backspace') {
+        if (selectedComponent) {
+          removeComponent(selectedComponent.id);
+        } else if (selectedWires.length > 0) {
+          removeSelectedWires();
+        }
+      }
+
+      // R or r: Rotate selected component 90 degrees
+      if (e.key === 'r' || e.key === 'R') {
+        if (selectedComponent) {
+          rotateComponent(selectedComponent.id);
+        }
+      }
+
+      // D or d (or Ctrl+D): Duplicate selected component
+      if ((e.ctrlKey && (e.key === 'd' || e.key === 'D')) || (!e.ctrlKey && (e.key === 'd' || e.key === 'D'))) {
+        if (selectedComponent && !e.ctrlKey) {
+          duplicateComponent(selectedComponent);
+        } else if (selectedComponent && e.ctrlKey) {
+          e.preventDefault();
+          duplicateComponent(selectedComponent);
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [dragWire, selectedComponent, selectedWires, components, wires]);
+
+  const handleComponentClick = (comp: Component, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setContextMenu(prev => ({ ...prev, visible: false }));
+    setSelectedWires([]);
+    
+    if (dragWire) {
+      if (comp.id === dragWire.from.componentId) {
+        return;
+      }
+
+      const rect = canvasRef.current?.getBoundingClientRect();
+      const scale = zoom / 100;
+      const x = rect ? (e.clientX - rect.left) / scale : comp.x + 30;
+      const y = rect ? (e.clientY - rect.top) / scale : comp.y + 30;
+
+      const terminals = getComponentTerminals(comp);
+      let bestTerminal = terminals[0]?.id || 'left';
+      let bestDist = Infinity;
+      terminals.forEach(t => {
+        const pos = { x: comp.x + t.x, y: comp.y + t.y };
+        const d = Math.hypot(x - pos.x, y - pos.y);
+        if (d < bestDist) {
+          bestDist = d;
+          bestTerminal = t.id;
+        }
+      });
+
+      completeWiring(comp.id, bestTerminal);
+      return;
+    }
+
+    if (activeTool === 'wire') {
+      const terminals = getComponentTerminals(comp);
+      startWiring(comp.id, terminals[terminals.length - 1]?.id || 'right');
+      return;
+    }
+
+    setSelectedComponent(comp);
+  };
+
+  const handleComponentContextMenu = (comp: Component, e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setSelectedComponent(comp);
+    setSelectedWires([]);
+    setContextMenu({
+      visible: true,
+      x: e.clientX,
+      y: e.clientY,
+      type: 'component',
+      targetComponentId: comp.id
+    });
+  };
+
+  const handleWireContextMenu = (wire: Wire, e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setSelectedWires([wire.id]);
+    setSelectedComponent(null);
+    setContextMenu({
+      visible: true,
+      x: e.clientX,
+      y: e.clientY,
+      type: 'wire',
+      targetWireId: wire.id
+    });
+  };
+
+  const handleCanvasContextMenu = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setContextMenu({
+      visible: true,
+      x: e.clientX,
+      y: e.clientY,
+      type: 'canvas'
+    });
+  };
+
   const handleComponentMouseDown = (e: React.MouseEvent, comp: Component) => {
+    if (dragWire) {
+      e.stopPropagation();
+      return;
+    }
     if (activeTool !== 'select' || comp.locked) return;
     
     const rect = canvasRef.current?.getBoundingClientRect();
@@ -1443,6 +1990,11 @@ export default function CircuitSimulatorPage() {
 
                 <div className="h-6 w-px bg-white/20" />
 
+                <Button variant="outline" onClick={handleExportNetlist} disabled={components.length === 0} className="glass-surface border-emerald-500/40 text-emerald-400 hover:bg-emerald-500/10 hover:border-emerald-500/70" title="Export .cir SPICE Netlist for LTspice/ngspice"><Download className="h-4 w-4 mr-1" />.cir</Button>
+                <Button variant="outline" onClick={handlePreviewNetlist} disabled={components.length === 0} className="glass-surface border-white/20 text-white hover:bg-white/10" title="View SPICE Netlist"><FileCode className="h-4 w-4 mr-1" />SPICE</Button>
+
+                <div className="h-6 w-px bg-white/20" />
+
                 <Button variant="outline" onClick={autoLabel} disabled={wires.length === 0} className="glass-surface border-white/20 text-white hover:bg-white/10"><Sparkles className="h-4 w-4 mr-1" />Label</Button>
                 <Button variant="outline" onClick={autoCleanupWires} disabled={wires.length === 0} className="glass-surface border-white/20 text-white hover:bg-white/10"><Cable className="h-4 w-4 mr-1" />Clean</Button>
                 
@@ -1482,21 +2034,20 @@ export default function CircuitSimulatorPage() {
                           <div 
                             key={comp.type} 
                             draggable 
+                            onClick={() => addComponentDirectly(comp.type)}
                             onDragStart={() => handleDragStart(comp.type)} 
-                            className="p-3 border border-white/10 rounded-lg hover:border-[#00E5FF]/50 hover:bg-[#00E5FF]/10 cursor-move transition-all group glass-surface"
+                            className="p-2.5 border border-white/10 rounded-lg hover:border-[#00E5FF]/50 hover:bg-[#00E5FF]/10 cursor-pointer transition-all group glass-surface"
+                            title="Click or drag to add to canvas"
                           >
                             <div className="flex items-center gap-3">
-                              <div className="w-12 h-12 flex items-center justify-center bg-white/5 rounded-lg group-hover:bg-white/10">
-                                <span className="text-2xl">{comp.icon}</span>
+                              <div className="w-10 h-10 flex items-center justify-center bg-white/5 rounded-lg group-hover:bg-white/10 text-xl">
+                                <span>{comp.icon}</span>
                               </div>
                               <div className="flex-1 min-w-0">
-                                <p className="text-white text-xs font-medium truncate">{comp.label}</p>
+                                <p className="text-white text-xs font-semibold truncate">{comp.label}</p>
                                 <p className="text-[#B8A7E0] text-[10px] truncate">{comp.description}</p>
                               </div>
-                            </div>
-                            <div className="mt-2 flex items-center gap-1 flex-wrap">
-                              <Badge variant="outline" className="text-[9px] px-1 py-0 border-[#9C4AFF]/50 text-[#9C4AFF]">{comp.category}</Badge>
-                              <Badge variant="outline" className="text-[9px] px-1 py-0 border-[#00E5FF]/50 text-[#00E5FF]">{comp.pins} pins</Badge>
+                              <span className="text-[10px] text-[#00E5FF] opacity-0 group-hover:opacity-100 transition-opacity font-bold">+ Add</span>
                             </div>
                           </div>
                         ))}
@@ -1519,12 +2070,13 @@ export default function CircuitSimulatorPage() {
                     </div>
                     <div
                       ref={canvasRef}
+                      onClick={handleCanvasClick}
                       onDrop={handleDrop}
                       onDragOver={handleDragOver}
                       onDragLeave={handleDragLeave}
                       onMouseMove={handleCanvasMouseMove}
                       onMouseUp={handleCanvasMouseUp}
-                      className={`bg-white rounded-lg border-2 ${wireDrawingMode ? 'border-[#9C4AFF] border-solid' : 'border-dashed border-gray-300'} min-h-[500px] relative overflow-hidden transition-all`}
+                      className={`bg-white rounded-lg border-2 ${wireDrawingMode ? 'border-[#00FF88] shadow-lg shadow-[#00FF88]/20 border-solid' : 'border-dashed border-gray-300'} min-h-[500px] relative overflow-hidden transition-all`}
                       style={{
                         backgroundImage: showGrid ? 'radial-gradient(circle, #e5e7eb 1px, transparent 1px)' : 'none',
                         backgroundSize: `${GRID_SIZE * (zoom / 100)}px ${GRID_SIZE * (zoom / 100)}px`,
@@ -1552,102 +2104,328 @@ export default function CircuitSimulatorPage() {
                         </div>
                       )}
 
-                      {/* Wires SVG Layer */}
-                      <svg className="absolute inset-0 pointer-events-none" style={{ zIndex: 1 }}>
+                      {/* Wires SVG Layer (Proteus / MATLAB CAD Style) */}
+                      <svg className="absolute inset-0 w-full h-full pointer-events-none" style={{ zIndex: 10, width: '100%', height: '100%' }}>
                         {wires.map((wire) => {
-                          const pathD = wire.path.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x} ${p.y}`).join(' ');
+                          const pathD = wire.path && wire.path.length > 0 
+                            ? wire.path.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x} ${p.y}`).join(' ')
+                            : '';
                           const isSelected = selectedWires.includes(wire.id);
+                          if (!pathD) return null;
+
                           return (
-                            <g key={wire.id} className="pointer-events-auto cursor-pointer" onClick={(e) => { e.stopPropagation(); setSelectedWires(prev => prev.includes(wire.id) ? prev.filter(id => id !== wire.id) : [...prev, wire.id]); }}>
-                              <path d={pathD} fill="none" stroke={wire.color} strokeWidth="6" strokeLinecap="round" strokeLinejoin="round" opacity="0.3" filter="blur(4px)" />
-                              <path d={pathD} fill="none" stroke={isSelected ? '#FFD700' : wire.color} strokeWidth={isSelected ? "5" : "3"} strokeLinecap="round" strokeLinejoin="round" />
-                              <circle cx={wire.path[0].x} cy={wire.path[0].y} r="4" fill={wire.color} stroke="white" strokeWidth="1" />
-                              <circle cx={wire.path[wire.path.length - 1].x} cy={wire.path[wire.path.length - 1].y} r="4" fill={wire.color} stroke="white" strokeWidth="1" />
+                            <g
+                              key={wire.id}
+                              className="pointer-events-auto cursor-pointer group"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setContextMenu(prev => ({ ...prev, visible: false }));
+                                setSelectedComponent(null);
+                                setSelectedWires(prev => prev.includes(wire.id) ? prev.filter(id => id !== wire.id) : [...prev, wire.id]);
+                              }}
+                              onContextMenu={(e) => handleWireContextMenu(wire, e)}
+                            >
+                              {/* Wide hit-stroke for easy clicking */}
+                              <path d={pathD} fill="none" stroke="transparent" strokeWidth="18" />
+                              
+                              {/* Selection Glowing Halo */}
+                              {isSelected && (
+                                <path
+                                  d={pathD}
+                                  fill="none"
+                                  stroke="#3B82F6"
+                                  strokeWidth="7"
+                                  strokeOpacity="0.4"
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                />
+                              )}
+
+                              {/* Main crisp schematic wire */}
+                              <path
+                                d={pathD}
+                                fill="none"
+                                stroke={isSelected ? '#2563EB' : '#1E293B'}
+                                strokeWidth={isSelected ? "4" : "3"}
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              />
+
+                              {/* Schematic junction dots */}
+                              <circle cx={wire.path[0].x} cy={wire.path[0].y} r="3.5" fill={isSelected ? '#2563EB' : '#1E293B'} />
+                              <circle cx={wire.path[wire.path.length - 1].x} cy={wire.path[wire.path.length - 1].y} r="3.5" fill={isSelected ? '#2563EB' : '#1E293B'} />
+                              
                               {wire.netLabel && (
-                                <text x={(wire.path[0].x + wire.path[wire.path.length - 1].x) / 2} y={(wire.path[0].y + wire.path[wire.path.length - 1].y) / 2 - 10} fontSize="10" fill="#9C4AFF" fontWeight="bold" textAnchor="middle" className="pointer-events-none">{wire.netLabel}</text>
+                                <text
+                                  x={(wire.path[0].x + wire.path[wire.path.length - 1].x) / 2}
+                                  y={(wire.path[0].y + wire.path[wire.path.length - 1].y) / 2 - 8}
+                                  fontSize="11"
+                                  fill="#1E40AF"
+                                  fontWeight="bold"
+                                  textAnchor="middle"
+                                  className="pointer-events-none font-mono select-none"
+                                >
+                                  {wire.netLabel}
+                                </text>
+                              )}
+
+                              {/* Interactive Delete Badge on Selected Wire */}
+                              {isSelected && (
+                                <g
+                                  className="cursor-pointer hover:scale-125 transition-transform"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    removeWire(wire.id);
+                                  }}
+                                >
+                                  <circle
+                                    cx={(wire.path[0].x + wire.path[wire.path.length - 1].x) / 2}
+                                    cy={(wire.path[0].y + wire.path[wire.path.length - 1].y) / 2}
+                                    r="9"
+                                    fill="#EF4444"
+                                    stroke="#FFFFFF"
+                                    strokeWidth="1.5"
+                                  />
+                                  <line
+                                    x1={(wire.path[0].x + wire.path[wire.path.length - 1].x) / 2 - 3.5}
+                                    y1={(wire.path[0].y + wire.path[wire.path.length - 1].y) / 2 - 3.5}
+                                    x2={(wire.path[0].x + wire.path[wire.path.length - 1].x) / 2 + 3.5}
+                                    y2={(wire.path[0].y + wire.path[wire.path.length - 1].y) / 2 + 3.5}
+                                    stroke="#FFFFFF"
+                                    strokeWidth="2"
+                                  />
+                                  <line
+                                    x1={(wire.path[0].x + wire.path[wire.path.length - 1].x) / 2 + 3.5}
+                                    y1={(wire.path[0].y + wire.path[wire.path.length - 1].y) / 2 - 3.5}
+                                    x2={(wire.path[0].x + wire.path[wire.path.length - 1].x) / 2 - 3.5}
+                                    y2={(wire.path[0].y + wire.path[wire.path.length - 1].y) / 2 + 3.5}
+                                    stroke="#FFFFFF"
+                                    strokeWidth="2"
+                                  />
+                                </g>
                               )}
                             </g>
                           );
                         })}
                         {dragWire && (
                           <g>
-                            <line x1={dragWire.from.x} y1={dragWire.from.y} x2={dragWire.currentX} y2={dragWire.currentY} stroke="#9C4AFF" strokeWidth="4" strokeDasharray="10,5" strokeLinecap="round" opacity="0.8">
-                              <animate attributeName="stroke-dashoffset" from="0" to="15" dur="0.5s" repeatCount="indefinite" />
-                            </line>
-                            <circle cx={dragWire.from.x} cy={dragWire.from.y} r="6" fill="#9C4AFF" stroke="white" strokeWidth="2" />
-                            <circle cx={dragWire.currentX} cy={dragWire.currentY} r="5" fill="#FF6B00" className="animate-pulse" />
+                            {/* Proteus drawing wire: clean red dashed guide */}
+                            <line
+                              x1={dragWire.from.x}
+                              y1={dragWire.from.y}
+                              x2={dragWire.currentX}
+                              y2={dragWire.currentY}
+                              stroke="#DC2626"
+                              strokeWidth="2.5"
+                              strokeDasharray="5,4"
+                              strokeLinecap="round"
+                            />
+                            {/* Origin pin marker */}
+                            <rect x={dragWire.from.x - 3.5} y={dragWire.from.y - 3.5} width="7" height="7" fill="#DC2626" stroke="#000" strokeWidth="1" />
+                            {/* Target pin pen cursor */}
+                            <circle cx={dragWire.currentX} cy={dragWire.currentY} r="4" fill="#DC2626" />
+                            <line x1={dragWire.currentX - 7} y1={dragWire.currentY} x2={dragWire.currentX + 7} y2={dragWire.currentY} stroke="#DC2626" strokeWidth="2" />
+                            <line x1={dragWire.currentX} y1={dragWire.currentY - 7} x2={dragWire.currentX} y2={dragWire.currentY + 7} stroke="#DC2626" strokeWidth="2" />
                           </g>
                         )}
                       </svg>
 
+                      {/* Floating Wiring Status Banner */}
+                      {dragWire && (
+                        <div className="absolute top-3 left-1/2 -translate-x-1/2 z-50 bg-slate-900/95 text-white px-4 py-2 rounded-full shadow-2xl border border-red-500/60 flex items-center gap-3 text-xs backdrop-blur-md pointer-events-auto">
+                          <span className="flex items-center gap-2 font-semibold text-red-200">
+                            <span className="w-2.5 h-2.5 rounded-full bg-red-500 animate-ping inline-block" />
+                            Connecting wire... Click any pin or component to connect
+                          </span>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setDragWire(null);
+                              setSnappedTerminal(null);
+                              setWireDrawingMode(false);
+                              toast.info('Wiring cancelled');
+                            }}
+                            className="bg-red-600 hover:bg-red-700 text-white px-2.5 py-1 rounded-full text-[10px] font-bold uppercase transition-colors"
+                          >
+                            Cancel (Esc)
+                          </button>
+                        </div>
+                      )}
+
                       {components.length === 0 ? (
-                        <div className="absolute inset-0 flex items-center justify-center text-gray-400" style={{ zIndex: 0 }}>
-                          <div className="text-center">
-                            <CircuitBoard className="h-16 w-16 mx-auto mb-4 text-gray-300" />
-                            <p className="text-lg font-semibold text-gray-600">Drag components here to build your circuit</p>
-                            <p className="text-sm mt-2">Load a template or saved project to start</p>
-                            <div className="mt-4 flex gap-2 justify-center">
-                              <Button onClick={() => setShowTemplates(true)} variant="outline" className="text-gray-600 border-gray-300">
-                                <BookOpen className="h-4 w-4 mr-2" />Browse Templates
-                              </Button>
+                        <div className="absolute inset-0 flex items-center justify-center text-gray-500 p-6" style={{ zIndex: 0 }}>
+                          <div className="text-center max-w-md">
+                            <div className="w-12 h-12 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center mx-auto mb-3">
+                              <CircuitBoard className="h-6 w-6" />
                             </div>
+                            <h3 className="text-base font-bold text-gray-800">Empty Circuit Canvas</h3>
+                            <p className="text-xs text-gray-500 mt-1 mb-4">Click components on the left to add them, or start with a pre-built circuit below:</p>
+                            
+                            <div className="grid grid-cols-4 gap-2 mb-4">
+                              <button
+                                onClick={() => {
+                                  const t = CIRCUIT_TEMPLATES.find(x => x.id === 'simple_led');
+                                  if (t) loadTemplate(t);
+                                }}
+                                className="p-2.5 bg-white border border-gray-200 hover:border-blue-500 hover:shadow-sm rounded-lg text-left transition-all group"
+                              >
+                                <span className="text-base block mb-1">💡</span>
+                                <p className="text-xs font-bold text-gray-800 group-hover:text-blue-600 truncate">LED Circuit</p>
+                                <p className="text-[10px] text-gray-400">9V + LED</p>
+                              </button>
+
+                              <button
+                                onClick={() => {
+                                  const t = CIRCUIT_TEMPLATES.find(x => x.id === 'voltage_divider');
+                                  if (t) loadTemplate(t);
+                                }}
+                                className="p-2.5 bg-white border border-gray-200 hover:border-blue-500 hover:shadow-sm rounded-lg text-left transition-all group"
+                              >
+                                <span className="text-base block mb-1">⚡</span>
+                                <p className="text-xs font-bold text-gray-800 group-hover:text-blue-600 truncate">Divider</p>
+                                <p className="text-[10px] text-gray-400">12V Divider</p>
+                              </button>
+
+                              <button
+                                onClick={() => {
+                                  const t = CIRCUIT_TEMPLATES.find(x => x.id === 'rc_lowpass');
+                                  if (t) loadTemplate(t);
+                                }}
+                                className="p-2.5 bg-white border border-gray-200 hover:border-blue-500 hover:shadow-sm rounded-lg text-left transition-all group"
+                              >
+                                <span className="text-base block mb-1">⏱️</span>
+                                <p className="text-xs font-bold text-gray-800 group-hover:text-blue-600 truncate">RC Timing</p>
+                                <p className="text-[10px] text-gray-400">Low-Pass</p>
+                              </button>
+
+                              <button
+                                onClick={() => {
+                                  const t = CIRCUIT_TEMPLATES.find(x => x.id === 'rlc_resonance');
+                                  if (t) loadTemplate(t);
+                                }}
+                                className="p-2.5 bg-white border border-gray-200 hover:border-blue-500 hover:shadow-sm rounded-lg text-left transition-all group"
+                              >
+                                <span className="text-base block mb-1">🌊</span>
+                                <p className="text-xs font-bold text-gray-800 group-hover:text-blue-600 truncate">RLC Tank</p>
+                                <p className="text-[10px] text-gray-400">5.03kHz Res</p>
+                              </button>
+                            </div>
+
+                            <Button onClick={() => setShowTemplates(true)} variant="outline" size="sm" className="text-xs text-gray-700 border-gray-300">
+                              <BookOpen className="h-3.5 w-3.5 mr-1.5" />Browse All Templates
+                            </Button>
                           </div>
                         </div>
                       ) : (
                         components.map((comp) => {
-                          const info = COMPONENT_LIBRARY.find(c => c.type === comp.type);
                           const isHovered = hoveredComponent === comp.id;
                           const isSelected = selectedComponent?.id === comp.id;
+                          const compTerminals = getComponentTerminals(comp);
                           
                           return (
                             <motion.div
                               key={comp.id}
                               initial={{ scale: 0 }}
                               animate={{ scale: 1 }}
-                              className={`absolute cursor-pointer transition-all ${
+                              className={`absolute cursor-pointer select-none transition-shadow ${
                                 isSelected
-                                  ? 'ring-2 ring-[#00E5FF] shadow-lg shadow-[#00E5FF]/30'
+                                  ? 'ring-2 ring-[#2563EB] shadow-md'
                                   : isHovered
-                                  ? 'ring-1 ring-[#00E5FF]/50'
+                                  ? 'ring-1 ring-gray-400'
                                   : ''
                               } ${comp.locked ? 'opacity-80' : ''}`}
-                              style={{ left: comp.x, top: comp.y, zIndex: 2 }}
-                              onClick={() => setSelectedComponent(comp)}
+                              style={{ left: comp.x, top: comp.y, zIndex: isSelected ? 30 : 2 }}
+                              onClick={(e) => handleComponentClick(comp, e)}
+                              onContextMenu={(e) => handleComponentContextMenu(comp, e)}
                               onMouseDown={(e) => handleComponentMouseDown(e, comp)}
                               onMouseEnter={() => setHoveredComponent(comp.id)}
                               onMouseLeave={() => setHoveredComponent(null)}
                             >
                               {comp.locked && <Lock className="absolute -top-2 -right-2 h-4 w-4 text-red-500 bg-white rounded-full p-0.5" />}
                               
-                              {/* Terminal connection points */}
-                              {(isHovered || showAllTerminals || wireDrawingMode) && (
-                                <>
-                                  {(['top', 'bottom', 'left', 'right'] as const).map((terminal) => {
-                                    const termPos = { 
-                                      top: { x: 22, y: -8 }, 
-                                      bottom: { x: 22, y: 56 }, 
-                                      left: { x: -8, y: 22 }, 
-                                      right: { x: 56, y: 22 } 
-                                    };
-                                    const isTerminalHovered = hoveredTerminal?.componentId === comp.id && hoveredTerminal?.terminal === terminal;
-                                    return (
-                                      <div
-                                        key={terminal}
-                                        className={`absolute w-4 h-4 border-2 border-white rounded-full cursor-crosshair transition-all shadow-lg ${isTerminalHovered ? 'bg-[#FF6B00] scale-150' : 'bg-[#9C4AFF] hover:bg-[#FF6B00] hover:scale-125'}`}
-                                        style={{ left: termPos[terminal].x, top: termPos[terminal].y, zIndex: 10 }}
-                                        onMouseDown={(e) => handleTerminalMouseDown(comp.id, terminal, e)}
-                                        onMouseUp={(e) => handleTerminalMouseUp(comp.id, terminal, e)}
-                                        onMouseEnter={() => setHoveredTerminal({ componentId: comp.id, terminal })}
-                                        onMouseLeave={() => setHoveredTerminal(null)}
-                                      />
-                                    );
-                                  })}
-                                </>
+                              {/* Proteus / Simulink Style Floating Quick-Action Pill */}
+                              {isSelected && (
+                                <div
+                                  className="absolute -top-10 left-1/2 -translate-x-1/2 flex items-center gap-1 bg-slate-900/95 text-white px-2 py-1 rounded-lg shadow-xl border border-cyan-500/50 backdrop-blur-md z-50 pointer-events-auto"
+                                  onClick={(e) => e.stopPropagation()}
+                                >
+                                  <button
+                                    onClick={() => rotateComponent(comp.id)}
+                                    className="p-1 hover:bg-slate-700 rounded text-cyan-400 hover:text-white transition-colors"
+                                    title="Rotate 90° (R)"
+                                  >
+                                    <RotateCw className="h-3.5 w-3.5" />
+                                  </button>
+                                  <button
+                                    onClick={() => duplicateComponent(comp)}
+                                    className="p-1 hover:bg-slate-700 rounded text-indigo-400 hover:text-white transition-colors"
+                                    title="Duplicate (D)"
+                                  >
+                                    <Copy className="h-3.5 w-3.5" />
+                                  </button>
+                                  <button
+                                    onClick={() => toggleLockComponent(comp.id)}
+                                    className="p-1 hover:bg-slate-700 rounded text-amber-400 hover:text-white transition-colors"
+                                    title={comp.locked ? 'Unlock' : 'Lock'}
+                                  >
+                                    {comp.locked ? <Lock className="h-3.5 w-3.5" /> : <Unlock className="h-3.5 w-3.5" />}
+                                  </button>
+                                  <button
+                                    onClick={() => removeComponent(comp.id)}
+                                    className="p-1 hover:bg-red-600 rounded text-red-400 hover:text-white transition-colors"
+                                    title="Delete (Del)"
+                                  >
+                                    <Trash2 className="h-3.5 w-3.5" />
+                                  </button>
+                                </div>
                               )}
+                              
+                              {/* Proteus / MATLAB Clean Pin Terminals (No Neon Dots) */}
+                              {compTerminals.map((term) => {
+                                const isTerminalHovered = hoveredTerminal?.componentId === comp.id && hoveredTerminal?.terminal === term.id;
+                                const isSnapped = snappedTerminal?.componentId === comp.id && snappedTerminal?.terminal === term.id;
+                                const isSource = dragWire?.from.componentId === comp.id && dragWire?.from.terminal === term.id;
+                                const isWiring = dragWire !== null;
 
-                              <div className="bg-white rounded-lg border-2 border-gray-300 p-2 flex flex-col items-center min-w-[60px]">
+                                return (
+                                  <div
+                                    key={term.id}
+                                    className="absolute flex items-center justify-center cursor-crosshair z-30"
+                                    style={{
+                                      left: term.x - 9,
+                                      top: term.y - 9,
+                                      width: 18,
+                                      height: 18
+                                    }}
+                                    onMouseDown={(e) => handleTerminalMouseDown(comp.id, term.id, e)}
+                                    onMouseUp={(e) => handleTerminalMouseUp(comp.id, term.id, e)}
+                                    onClick={(e) => handleTerminalClick(comp.id, term.id, e)}
+                                    onMouseEnter={() => setHoveredTerminal({ componentId: comp.id, terminal: term.id })}
+                                    onMouseLeave={() => setHoveredTerminal(null)}
+                                    title={`Pin ${term.label || term.id}`}
+                                  >
+                                    {/* Proteus style pin node: clean red square on hover/wire, crisp square otherwise */}
+                                    <div
+                                      className={`transition-all ${
+                                        isSource
+                                          ? 'w-3.5 h-3.5 bg-red-600 border border-black shadow'
+                                          : isSnapped || isTerminalHovered
+                                          ? 'w-4 h-4 bg-red-500 border border-black scale-125'
+                                          : isWiring
+                                          ? 'w-3 h-3 bg-red-400 border border-red-700'
+                                          : 'w-2 h-2 bg-gray-700 border border-black'
+                                      }`}
+                                      style={{ borderRadius: 1 }}
+                                    />
+                                  </div>
+                                );
+                              })}
+
+                              <div className="bg-white/95 rounded border border-gray-300 p-1 flex flex-col items-center min-w-[60px] shadow-sm">
                                 <ComponentSymbol type={comp.type} rotation={comp.rotation} isActive={isRunning} />
-                                <span className="text-[10px] font-medium text-gray-700 mt-1">{comp.value} {comp.unit}</span>
+                                <span className="text-[10px] font-mono font-medium text-gray-700 mt-0.5 whitespace-nowrap">
+                                  {comp.value} {comp.unit}
+                                </span>
                               </div>
                             </motion.div>
                           );
@@ -1655,34 +2433,25 @@ export default function CircuitSimulatorPage() {
                       )}
                     </div>
 
-                    {/* Properties Panel */}
+                    {/* Enhanced Component Properties Inspector */}
                     {selectedComponent && (
-                      <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mt-4 p-5 glass-surface rounded-lg border-2 border-[#00E5FF]/30">
-                        <h4 className="font-bold mb-4 text-white text-base flex items-center gap-2">
-                          <Zap className="h-4 w-4 text-[#00E5FF]" />Component Properties
-                          {liveEditMode && <Badge className="text-xs bg-[#FF6B00]">Live Edit</Badge>}
-                        </h4>
-                        <div className="grid grid-cols-4 gap-4">
-                          <div className="p-3 glass-surface rounded-lg border border-white/20">
-                            <Label className="text-xs font-semibold text-[#00E5FF] mb-1 block">Type</Label>
-                            <p className="text-sm font-bold capitalize text-white">{selectedComponent.type.replace(/_/g, ' ')}</p>
-                          </div>
-                          <div className="p-3 glass-surface rounded-lg border border-white/20">
-                            <Label className="text-xs font-semibold text-[#00E5FF] mb-1 block">Value</Label>
-                            <Input type="number" value={selectedComponent.value} onChange={(e) => updateComponentValue(selectedComponent.id, parseFloat(e.target.value))} className="h-8 text-sm bg-white text-gray-800 font-bold border-[#00E5FF]/30" />
-                          </div>
-                          <div className="p-3 glass-surface rounded-lg border border-white/20">
-                            <Label className="text-xs font-semibold text-[#00E5FF] mb-1 block">Unit</Label>
-                            <p className="text-sm font-bold text-white">{selectedComponent.unit}</p>
-                          </div>
-                          <div className="p-3 glass-surface rounded-lg border border-white/20 flex items-center gap-2">
-                            <Button size="sm" onClick={() => rotateComponent(selectedComponent.id)} className="gradient-violet text-white"><RotateCw className="h-4 w-4" /></Button>
-                            <Button size="sm" onClick={() => duplicateComponent(selectedComponent)} className="gradient-aqua text-white"><Copy className="h-4 w-4" /></Button>
-                            <Button size="sm" onClick={() => toggleLockComponent(selectedComponent.id)} variant="outline" className="border-white/20 text-white">{selectedComponent.locked ? <Unlock className="h-4 w-4" /> : <Lock className="h-4 w-4" />}</Button>
-                            <Button size="sm" variant="destructive" onClick={() => removeComponent(selectedComponent.id)}><Trash2 className="h-4 w-4" /></Button>
-                          </div>
-                        </div>
-                      </motion.div>
+                      <EnhancedComponentProperties
+                        component={selectedComponent}
+                        wires={wires}
+                        simulationResult={simulationResult}
+                        measurementBus={measurementBus}
+                        liveEditMode={liveEditMode || isRunning}
+                        onUpdateValue={(id, val) => updateComponentValue(id, val)}
+                        onUpdateParams={(id, params) => {
+                          setComponents(prev => prev.map(c => c.id === id ? { ...c, params } : c));
+                          setSelectedComponent(prev => prev && prev.id === id ? { ...prev, params } : prev);
+                          updateComponentValue(id, selectedComponent.value);
+                        }}
+                        onRotate={(id) => rotateComponent(id)}
+                        onDuplicate={(comp) => duplicateComponent(comp)}
+                        onToggleLock={(id) => toggleLockComponent(id)}
+                        onRemove={(id) => removeComponent(id)}
+                      />
                     )}
                   </CardContent>
                 </Card>
@@ -1690,80 +2459,235 @@ export default function CircuitSimulatorPage() {
             </CardContent>
           </Card>
 
-          {/* Measurement Cards */}
-          <div className="grid md:grid-cols-3 gap-4 mb-8">
-            <Card className="glass-surface border-white/10">
-              <CardHeader className="pb-3">
-                <CardTitle className="text-white text-base flex items-center gap-2">
-                  <Activity className="h-4 w-4 text-[#00E5FF]" />Oscilloscope
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="bg-gray-900 rounded-lg p-4 h-48 relative overflow-hidden border border-white/10">
-                  {/* Grid lines */}
-                  <svg className="absolute inset-0 opacity-20" width="100%" height="100%">
-                    {[...Array(5)].map((_, i) => (
-                      <line key={`h${i}`} x1="0" y1={`${(i+1)*20}%`} x2="100%" y2={`${(i+1)*20}%`} stroke="#00E5FF" strokeWidth="0.5"/>
-                    ))}
-                    {[...Array(10)].map((_, i) => (
-                      <line key={`v${i}`} x1={`${(i+1)*10}%`} y1="0" x2={`${(i+1)*10}%`} y2="100%" stroke="#00E5FF" strokeWidth="0.5"/>
-                    ))}
-                  </svg>
-                  {waveform.length > 0 ? (
-                    <svg width="100%" height="100%" className="absolute inset-0">
-                      <polyline points={waveform.map((v, i) => `${(i / waveform.length) * 100}%,${50 - (v / (voltage || 1) * 40)}%`).join(' ')} fill="none" stroke="#00E5FF" strokeWidth="2" />
-                    </svg>
-                  ) : (
-                    <div className="absolute inset-0 flex items-center justify-center text-[#B8A7E0] text-sm">Run simulation to see waveform</div>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
+          {/* Signal Generator Toggle Toolbar Item */}
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2">
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => setShowSignalGen(!showSignalGen)}
+                className={`text-xs font-bold ${
+                  showSignalGen ? 'bg-indigo-600 text-white' : 'glass-surface border-white/20 text-white'
+                }`}
+              >
+                <Radio className="h-4 w-4 mr-1.5" /> {showSignalGen ? 'Hide Signal Generator' : 'Show Signal Generator'}
+              </Button>
+            </div>
+          </div>
 
-            <Card className="glass-surface border-white/10">
-              <CardHeader className="pb-3">
-                <CardTitle className="text-white text-base flex items-center gap-2"><Gauge className="h-4 w-4 text-[#00E5FF]" />Multimeter</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-2 text-sm">
-                  <div className="flex justify-between p-2 glass-surface rounded border border-white/10"><span className="text-[#B8A7E0]">Voltage:</span><span className="font-bold text-[#00E5FF]">{voltage.toFixed(2)} V</span></div>
-                  <div className="flex justify-between p-2 glass-surface rounded border border-white/10"><span className="text-[#B8A7E0]">Current:</span><span className="font-bold text-[#00E5FF]">{(current * 1000).toFixed(2)} mA</span></div>
-                  <div className="flex justify-between p-2 glass-surface rounded border border-white/10"><span className="text-[#B8A7E0]">Resistance:</span><span className="font-bold text-[#00E5FF]">{resistance.toFixed(0)} Ω</span></div>
-                  <div className="flex justify-between p-2 glass-surface rounded border border-white/10"><span className="text-[#B8A7E0]">Power:</span><span className="font-bold text-[#00E5FF]">{(power * 1000).toFixed(2)} mW</span></div>
-                </div>
-              </CardContent>
-            </Card>
+          {/* Arbitrary Signal Generator Panel */}
+          {showSignalGen && (
+            <div className="mb-6">
+              <SignalGeneratorPanel
+                config={signalGenConfig}
+                isRunning={isRunning}
+                onChange={(newCfg) => {
+                  setSignalGenConfig(newCfg);
+                  setComponents(prev => prev.map(c => {
+                    if (c.type === 'voltage_ac' || c.type === 'signal_generator') {
+                      const wfTypeMap = { SINE: 0, SQUARE: 1, TRIANGLE: 2, SAWTOOTH: 2, DC: 3 };
+                      return {
+                        ...c,
+                        value: newCfg.amplitude,
+                        params: {
+                          ...c.params,
+                          frequency: newCfg.frequency,
+                          offset: newCfg.offset,
+                          dutyCycle: newCfg.dutyCycle,
+                          waveformType: wfTypeMap[newCfg.waveform] ?? 0
+                        }
+                      };
+                    }
+                    return c;
+                  }));
+                }}
+              />
+            </div>
+          )}
 
-            <Card className="glass-surface border-white/10">
-              <CardHeader className="pb-3">
-                <CardTitle className="text-white text-base flex items-center gap-2"><Zap className="h-4 w-4 text-[#00E5FF]" />Circuit Status</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-2 text-sm text-[#B8A7E0]">
-                  {isRunning ? (
-                    <>
-                      <p className="flex items-center gap-2"><span className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />{simulationSettings.mode.toUpperCase()} analysis running</p>
-                      <p>Components: {components.length}</p>
-                      <p>Wires: {wires.length}</p>
-                      <p>Nets: {buildNetlist(components, wires).length}</p>
-                      <p>Power: {(power * 1000).toFixed(2)} mW</p>
-                    </>
-                  ) : (
-                    <>
-                      <p className="flex items-center gap-2"><span className="h-2 w-2 rounded-full bg-gray-500" />Simulation idle</p>
-                      <p>{components.length} components placed</p>
-                      <p>{wires.length} connections made</p>
-                      <p>{COMPONENT_LIBRARY.length}+ available components</p>
-                      <p>{CIRCUIT_TEMPLATES.length} templates ready</p>
-                      <Button size="sm" onClick={runValidation} className="w-full mt-2 gradient-fire text-white"><Bug className="h-3 w-3 mr-2" />Check Circuit</Button>
-                    </>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
+          {/* Real Virtual Laboratory: 4-Channel Oscilloscope & Digital Multimeter */}
+          <div className="grid lg:grid-cols-12 gap-4 mb-8">
+            {/* Real 4-Channel Working Oscilloscope */}
+            <div className="lg:col-span-7">
+              <InteractiveOscilloscope
+                measurementBus={measurementBus}
+                simulationResult={simulationResult}
+                isRunning={isRunning}
+                onRerunSimulation={runEnhancedSimulation}
+              />
+            </div>
+
+            {/* Real Working Digital Multimeter */}
+            <div className="lg:col-span-5">
+              <InteractiveMultimeter
+                measurementBus={measurementBus}
+                simulationResult={simulationResult}
+                isRunning={isRunning}
+              />
+            </div>
           </div>
         </div>
       </div>
+
+      {/* SPICE Netlist Preview Dialog */}
+      <Dialog open={spiceModalOpen} onOpenChange={setSpiceModalOpen}>
+        <DialogContent className="glass-surface border-white/20 text-white max-w-2xl">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-xl text-[#00E5FF]">
+              <FileCode className="h-5 w-5" /> SPICE Netlist (.cir)
+            </DialogTitle>
+            <DialogDescription className="text-[#B8A7E0]">
+              Standard SPICE netlist generated from your canvas. Compatible with spice-ts, LTspice, ngspice, and KiCad.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="my-4">
+            <ScrollArea className="h-64 rounded-lg bg-black/60 border border-white/10 p-4 font-mono text-xs text-emerald-400">
+              <pre className="whitespace-pre">{currentNetlist || generateSpiceNetlist(components as any, wires as any, simulationSettings)}</pre>
+            </ScrollArea>
+          </div>
+          <DialogFooter className="flex gap-2 sm:justify-between">
+            <Button
+              variant="outline"
+              onClick={() => {
+                const netlist = currentNetlist || generateSpiceNetlist(components as any, wires as any, simulationSettings);
+                navigator.clipboard.writeText(netlist);
+                toast.success('Netlist copied to clipboard');
+              }}
+              className="glass-surface border-white/20 text-white hover:bg-white/10"
+            >
+              <Copy className="h-4 w-4 mr-2" /> Copy Netlist
+            </Button>
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                onClick={() => setSpiceModalOpen(false)}
+                className="glass-surface border-white/20 text-white hover:bg-white/10"
+              >
+                Close
+              </Button>
+              <Button
+                onClick={() => {
+                  handleExportNetlist();
+                  setSpiceModalOpen(false);
+                }}
+                className="gradient-aqua text-white"
+              >
+                <Download className="h-4 w-4 mr-2" /> Download .cir
+              </Button>
+            </div>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Proteus / MATLAB Simulink Right-Click Context Menu */}
+      {contextMenu.visible && (
+        <div
+          className="fixed z-50 bg-slate-900/95 border border-slate-700 text-white rounded-xl shadow-2xl py-1.5 min-w-[200px] backdrop-blur-md text-xs font-medium animate-in fade-in zoom-in-95 duration-100"
+          style={{ left: Math.min(contextMenu.x, typeof window !== 'undefined' ? window.innerWidth - 220 : contextMenu.x), top: Math.min(contextMenu.y, typeof window !== 'undefined' ? window.innerHeight - 250 : contextMenu.y) }}
+          onClick={(e) => e.stopPropagation()}
+        >
+          {contextMenu.type === 'component' && contextMenu.targetComponentId && (
+            <>
+              <div className="px-3 py-1.5 text-[10px] uppercase tracking-wider text-cyan-400 font-bold border-b border-slate-800 flex items-center justify-between">
+                <span>Component Options</span>
+                <Badge className="text-[9px] bg-slate-800 text-slate-300">Proteus EDA</Badge>
+              </div>
+              <button
+                onClick={() => {
+                  rotateComponent(contextMenu.targetComponentId!);
+                  setContextMenu(prev => ({ ...prev, visible: false }));
+                }}
+                className="w-full px-3 py-1.5 flex items-center justify-between hover:bg-slate-800 text-slate-200 hover:text-white transition-colors"
+              >
+                <span className="flex items-center gap-2"><RotateCw className="h-3.5 w-3.5 text-cyan-400" /> Rotate 90°</span>
+                <kbd className="text-[10px] bg-slate-800 px-1.5 py-0.5 rounded text-slate-400 font-mono">R</kbd>
+              </button>
+              <button
+                onClick={() => {
+                  const comp = components.find(c => c.id === contextMenu.targetComponentId);
+                  if (comp) duplicateComponent(comp);
+                  setContextMenu(prev => ({ ...prev, visible: false }));
+                }}
+                className="w-full px-3 py-1.5 flex items-center justify-between hover:bg-slate-800 text-slate-200 hover:text-white transition-colors"
+              >
+                <span className="flex items-center gap-2"><Copy className="h-3.5 w-3.5 text-indigo-400" /> Duplicate (Clone)</span>
+                <kbd className="text-[10px] bg-slate-800 px-1.5 py-0.5 rounded text-slate-400 font-mono">D</kbd>
+              </button>
+              <button
+                onClick={() => {
+                  toggleLockComponent(contextMenu.targetComponentId!);
+                  setContextMenu(prev => ({ ...prev, visible: false }));
+                }}
+                className="w-full px-3 py-1.5 flex items-center gap-2 hover:bg-slate-800 text-slate-200 hover:text-white transition-colors"
+              >
+                <Lock className="h-3.5 w-3.5 text-amber-400" /> Lock / Unlock Position
+              </button>
+              <div className="my-1 border-t border-slate-800" />
+              <button
+                onClick={() => {
+                  removeComponent(contextMenu.targetComponentId!);
+                  setContextMenu(prev => ({ ...prev, visible: false }));
+                }}
+                className="w-full px-3 py-1.5 flex items-center justify-between text-red-400 hover:bg-red-600/20 hover:text-red-300 transition-colors"
+              >
+                <span className="flex items-center gap-2"><Trash2 className="h-3.5 w-3.5" /> Delete Component</span>
+                <kbd className="text-[10px] bg-slate-800 px-1.5 py-0.5 rounded text-slate-400 font-mono">Del</kbd>
+              </button>
+            </>
+          )}
+
+          {contextMenu.type === 'wire' && contextMenu.targetWireId && (
+            <>
+              <div className="px-3 py-1.5 text-[10px] uppercase tracking-wider text-cyan-400 font-bold border-b border-slate-800 flex items-center justify-between">
+                <span>Wire Options</span>
+                <Badge className="text-[9px] bg-slate-800 text-slate-300">Simulink</Badge>
+              </div>
+              <button
+                onClick={() => {
+                  removeWire(contextMenu.targetWireId!);
+                  setContextMenu(prev => ({ ...prev, visible: false }));
+                }}
+                className="w-full px-3 py-1.5 flex items-center justify-between text-red-400 hover:bg-red-600/20 hover:text-red-300 transition-colors"
+              >
+                <span className="flex items-center gap-2"><Trash2 className="h-3.5 w-3.5" /> Delete Wire</span>
+                <kbd className="text-[10px] bg-slate-800 px-1.5 py-0.5 rounded text-slate-400 font-mono">Del</kbd>
+              </button>
+            </>
+          )}
+
+          {contextMenu.type === 'canvas' && (
+            <>
+              <div className="px-3 py-1.5 text-[10px] uppercase tracking-wider text-slate-400 font-bold border-b border-slate-800">
+                Canvas Options
+              </div>
+              <button
+                onClick={() => {
+                  runSimulation();
+                  setContextMenu(prev => ({ ...prev, visible: false }));
+                }}
+                className="w-full px-3 py-1.5 flex items-center justify-between hover:bg-slate-800 text-emerald-400 transition-colors"
+              >
+                <span className="flex items-center gap-2"><Play className="h-3.5 w-3.5" /> Run SPICE Simulation</span>
+              </button>
+              <button
+                onClick={() => {
+                  setWires([]);
+                  setComponents([]);
+                  setSelectedComponent(null);
+                  setSelectedWires([]);
+                  setSimulationResult(null);
+                  setMeasurementBus(new MeasurementBus());
+                  setContextMenu(prev => ({ ...prev, visible: false }));
+                  toast.info('Canvas cleared');
+                }}
+                className="w-full px-3 py-1.5 flex items-center gap-2 text-red-400 hover:bg-red-600/20 hover:text-red-300 transition-colors"
+              >
+                <Trash2 className="h-3.5 w-3.5" /> Clear All Canvas
+              </button>
+            </>
+          )}
+        </div>
+      )}
     </div>
   );
 }

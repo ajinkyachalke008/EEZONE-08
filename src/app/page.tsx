@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useMemo, lazy, Suspense, useEffect } from 'react';
-import { Search, Briefcase, GraduationCap, Wrench, ChevronRight, Star, Zap, Calculator, BookOpen, Cpu, Settings, Lightbulb, CircuitBoard, FileText, Gauge, GraduationCap as EducationIcon, ClipboardList, Scale, Wrench as DiagnosticIcon, Code, Sparkles, Headphones, Globe, Beaker, Box, Shield, Clock, Calendar, TrendingUp, MapPin, FileCheck, BarChart, Thermometer, PlayCircle, Smartphone, Camera, Brain, Award, Building2, Users, CheckCircle2, Target, DollarSign, MessageSquare, FileCheck as FileCheckIcon, Loader2, Battery, RotateCw, Activity, Plug } from 'lucide-react';
+import { Search, Briefcase, GraduationCap, Wrench, ChevronRight, Star, Zap, Calculator, BookOpen, Cpu, Settings, Lightbulb, CircuitBoard, FileText, Gauge, GraduationCap as EducationIcon, ClipboardList, Scale, Wrench as DiagnosticIcon, Code, Sparkles, Headphones, Globe, Beaker, Box, Shield, Clock, Calendar, TrendingUp, MapPin, FileCheck, BarChart, Thermometer, PlayCircle, Smartphone, Camera, Brain, Award, Building2, Users, CheckCircle2, Target, DollarSign, MessageSquare, FileCheck as FileCheckIcon, Loader2, Battery, RotateCw, Activity, Plug, LayoutDashboard, ShieldAlert } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -161,6 +161,108 @@ const toolCategories = [
   },
 ];
 
+const masterVirtualLabs = [
+  {
+    id: 'lab-bench',
+    title: 'Master Lab Bench Studio',
+    subtitle: 'All-in-One Engineering Workstation',
+    description: '830-Point Solderless Breadboard, 4-Channel DSO, Keysight 6.5-digit True-RMS DMM, and Web Audio acoustic physics engine.',
+    href: '/tools/lab-bench',
+    badge: 'NEW • ALL-IN-ONE',
+    badgeGradient: 'from-[#00E5FF] to-[#9C4AFF]',
+    icon: LayoutDashboard,
+    image: 'https://images.unsplash.com/photo-1581092160562-40aa08e78837?w=600&h=350&fit=crop',
+  },
+  {
+    id: 'troubleshooting-exam',
+    title: '"Find-the-Fault" Lab Exam',
+    subtitle: 'Virtual Diagnostic Exam Portal',
+    description: 'Real hardware fault injection, multi-point DMM testing, oscilloscope signal probing, and automated grading scorecard.',
+    href: '/tools/troubleshooting-exam',
+    badge: 'EXAM PORTAL',
+    badgeGradient: 'from-[#FF00C8] to-[#FF6B00]',
+    icon: ShieldAlert,
+    image: 'https://images.unsplash.com/photo-1581092918056-0c4c3acd3789?w=600&h=350&fit=crop',
+  },
+  {
+    id: 'lab-experiments',
+    title: 'University Lab Manuals',
+    subtitle: 'AICTE / IEEE Standard Curriculum',
+    description: '12 Accredited university experiments with dynamic observation recording, calculation verification, and 1-click PDF reports.',
+    href: '/tools/lab-experiments',
+    badge: 'ACCREDITED MANUALS',
+    badgeGradient: 'from-[#00E5FF] to-[#00FF88]',
+    icon: GraduationCap,
+    image: 'https://images.unsplash.com/photo-1532094349884-543bc11b234d?w=600&h=350&fit=crop',
+  },
+  {
+    id: 'electrical-machines',
+    title: 'Electrical Machines & 3-Phase Lab',
+    subtitle: 'IIT Roorkee & Class 0.5 Meters',
+    description: '3-Phase Induction Motor Steinmetz torque curves, 4-Point DC Motor Starter, and Transformer OC/SC test benches.',
+    href: '/tools/electrical-machines',
+    badge: 'ELECTRICAL MACHINES',
+    badgeGradient: 'from-[#FF6B00] to-[#FFD700]',
+    icon: RotateCw,
+    image: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=600&h=350&fit=crop',
+  },
+  {
+    id: 'microprocessor-8085',
+    title: 'Intel 8085 Microprocessor Kit',
+    subtitle: 'Cycle-Accurate Dyna-85 Console',
+    description: 'Dyna-85 hardware trainer kit with 7-segment displays, real hardware interrupt pins (TRAP/RST 7.5), and 64KB memory grid.',
+    href: '/tools/microprocessor-8085',
+    badge: 'MICROPROCESSOR',
+    badgeGradient: 'from-[#9C4AFF] to-[#00E5FF]',
+    icon: Cpu,
+    image: 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=600&h=350&fit=crop',
+  },
+  {
+    id: 'embedded-lab',
+    title: 'Embedded IoT Arduino Lab',
+    subtitle: 'Wokwi Elements & ATmega328P',
+    description: 'Genuine Wokwi Arduino Uno, 1602 LCD, SG90 servo motor, potentiometer ADC, and AVR8js instruction core.',
+    href: '/tools/embedded-lab',
+    badge: 'EMBEDDED IOT',
+    badgeGradient: 'from-[#00E5FF] to-[#9C4AFF]',
+    icon: Sparkles,
+    image: 'https://images.unsplash.com/photo-1553406830-ef2513450d76?w=600&h=350&fit=crop',
+  },
+  {
+    id: 'digital-logic',
+    title: 'Digital Logic & Timing Analyzer',
+    subtitle: '74xx TTL ICs & 4-Channel DSO',
+    description: 'PDIP-14 physical package pinout visualizer with active logic gate highlight and 10ns propagation delay analyzer.',
+    href: '/tools/digital-logic',
+    badge: 'DIGITAL LOGIC',
+    badgeGradient: 'from-[#00E5FF] to-[#0088FF]',
+    icon: Activity,
+    image: 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=600&h=350&fit=crop',
+  },
+  {
+    id: 'circuit-simulator',
+    title: 'Interactive Circuit Simulator CAD',
+    subtitle: 'SPICE MNA Engine & Proteus Tools',
+    description: 'Proteus wire editing, floating quick action pill, animated current particles, and 4-Channel Oscilloscope probing.',
+    href: '/tools/circuit-simulator',
+    badge: 'CIRCUIT CAD',
+    badgeGradient: 'from-[#FF00C8] to-[#9C4AFF]',
+    icon: CircuitBoard,
+    image: 'https://images.unsplash.com/photo-1555664424-778a1e5e1b48?w=600&h=350&fit=crop',
+  },
+  {
+    id: 'kicad-viewer',
+    title: 'KiCad Hardware PCB Viewer',
+    subtitle: 'Gerber, Drill & Board Visualizer',
+    description: 'Interactive PCB layer stack inspection, trace routing, component footprints, and hardware design review.',
+    href: '/tools/kicad-viewer',
+    badge: 'PCB HARDWARE',
+    badgeGradient: 'from-[#FF00C8] to-[#FF6B00]',
+    icon: Box,
+    image: 'https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?w=600&h=350&fit=crop',
+  }
+];
+
 const tutorialContent = [
   { type: 'tutorial-video', title: 'Circuit Analysis Fundamentals', description: 'Learn basic circuit analysis techniques', category: 'tutorials', section: 'Video Tutorial' },
   { type: 'tutorial-video', title: 'Power Systems Design', description: 'Complete guide to power system design', category: 'tutorials', section: 'Video Tutorial' },
@@ -200,35 +302,35 @@ const projectManagementTools = [
     name: 'Material Cost Estimator', 
     description: 'Comprehensive cost analysis tool for calculating component prices, material expenses, shipping costs, and vendor comparisons. Generate detailed budget reports for client proposals and project planning with real-time pricing updates.', 
     href: '/tools/project-management#cost-estimator',
-    image: 'https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/project-uploads/e24d0c9e-e4fc-4077-96b8-bf644fe969e3/generated_images/professional-electrical-engineering-mate-41b9fdce-20251205065649.jpg'
+    image: 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=600&h=350&fit=crop'
   },
   { 
     icon: Clock, 
     name: 'Labor Time Calculator', 
     description: 'Professional labor estimation system for accurately calculating installation hours, troubleshooting time, commissioning duration, and testing phases. Includes complexity factors and skill-level adjustments for precise project timeline forecasting.', 
     href: '/tools/project-management#labor-calculator',
-    image: 'https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/project-uploads/e24d0c9e-e4fc-4077-96b8-bf644fe969e3/generated_images/advanced-labor-time-calculation-interfac-2172bf6d-20251205065648.jpg'
+    image: 'https://images.unsplash.com/photo-1508962914676-134849a727f0?w=600&h=350&fit=crop'
   },
   { 
     icon: Calendar, 
     name: 'Project Timeline Planner', 
     description: 'Interactive Gantt chart creator for visualizing project schedules, tracking milestones, managing dependencies, and coordinating team resources. Features critical path analysis and automated deadline alerts for on-time delivery.', 
     href: '/tools/project-management#timeline',
-    image: 'https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/project-uploads/e24d0c9e-e4fc-4077-96b8-bf644fe969e3/generated_images/interactive-project-timeline-planner-wit-c7d964d7-20251205070756.jpg'
+    image: 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=600&h=350&fit=crop'
   },
   { 
     icon: ClipboardList, 
     name: 'BOM Generator', 
     description: 'Automated Bill of Materials creation tool that generates detailed parts lists with specifications, quantities, part numbers, and supplier information. Export to CSV, PDF, or Excel formats for procurement and documentation purposes.', 
     href: '/tools/project-management#bom',
-    image: 'https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/project-uploads/e24d0c9e-e4fc-4077-96b8-bf644fe969e3/generated_images/automated-bill-of-materials-bom-generato-9671a44e-20251205065649.jpg'
+    image: 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=600&h=350&fit=crop'
   },
   { 
     icon: TrendingUp, 
     name: 'Vendor Comparison', 
     description: 'Multi-vendor price and specification comparison engine for finding the best deals on electrical components. Compare delivery times, warranty terms, technical specs, and total cost across major distributors like Digi-Key, Mouser, and Newark.', 
     href: '/tools/project-management#vendor-comparison',
-    image: 'https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/project-uploads/e24d0c9e-e4fc-4077-96b8-bf644fe969e3/generated_images/multi-vendor-comparison-dashboard-for-el-1b7253e6-20251205065648.jpg'
+    image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=600&h=350&fit=crop'
   },
 ];
 
@@ -238,35 +340,35 @@ const codeComplianceTools = [
     name: 'NEC Code Search', 
     description: 'AI-powered search engine for the National Electrical Code with natural language queries, instant article lookup, cross-referencing, and contextual explanations. Access NEC 2020, 2023, and upcoming 2026 editions with highlighted changes and amendments.', 
     href: '/tools/compliance#nec-search',
-    image: 'https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/project-uploads/e24d0c9e-e4fc-4077-96b8-bf644fe969e3/generated_images/ai-powered-nec-code-search-engine-interf-e2bb1f3c-20251205070756.jpg'
+    image: 'https://images.unsplash.com/photo-1450133064473-71024230f91b?w=600&h=350&fit=crop'
   },
   { 
     icon: Scale, 
     name: 'Compliance Checker', 
     description: 'Automated design verification tool that validates your electrical installations against NEC requirements, NFPA 70E safety standards, and local amendments. Generates comprehensive compliance reports with violation warnings and correction recommendations.', 
     href: '/tools/compliance#checker',
-    image: 'https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/project-uploads/e24d0c9e-e4fc-4077-96b8-bf644fe969e3/generated_images/automated-electrical-compliance-checker--7352e4fd-20251205065736.jpg'
+    image: 'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=600&h=350&fit=crop'
   },
   { 
     icon: FileText, 
     name: 'Code Change Tracker', 
     description: 'Track all updates between NEC editions with side-by-side comparisons, impact analysis, and practical implementation guides. Stay current with the latest safety requirements, installation methods, and calculation updates affecting your projects.', 
     href: '/tools/compliance#change-tracker',
-    image: 'https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/project-uploads/e24d0c9e-e4fc-4077-96b8-bf644fe969e3/generated_images/nec-code-change-tracker-interface-showin-c0e377f0-20251205070758.jpg'
+    image: 'https://images.unsplash.com/photo-1517842645767-c639042777db?w=600&h=350&fit=crop'
   },
   { 
     icon: MapPin, 
     name: 'Jurisdiction Database', 
     description: 'Comprehensive database of local electrical code requirements, amendments, and special provisions for over 15,000 US jurisdictions. Search by ZIP code or city to find specific local regulations, permit requirements, and inspection protocols.', 
     href: '/tools/compliance#jurisdiction',
-    image: 'https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/project-uploads/e24d0c9e-e4fc-4077-96b8-bf644fe969e3/generated_images/comprehensive-electrical-code-jurisdicti-4cac5b33-20251205070756.jpg'
+    image: 'https://images.unsplash.com/photo-1524661135-423995f22d0b?w=600&h=350&fit=crop'
   },
   { 
     icon: FileCheck, 
     name: 'Permit Assistant', 
     description: 'Step-by-step guidance for preparing electrical permit applications with required documentation checklists, form auto-fill, plan review preparation, and common rejection avoidance tips. Includes jurisdiction-specific requirements and submission workflows.', 
     href: '/tools/compliance#permit',
-    image: 'https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/project-uploads/e24d0c9e-e4fc-4077-96b8-bf644fe969e3/generated_images/electrical-permit-application-assistant--121ee328-20251205070756.jpg'
+    image: 'https://images.unsplash.com/photo-1554224154-26032ffc0d07?w=600&h=350&fit=crop'
   },
 ];
 
@@ -276,35 +378,35 @@ const diagnosticTools = [
     name: 'Maintenance Scheduler', 
     description: 'Complete preventive maintenance planning system for tracking equipment service intervals, creating maintenance calendars, setting automated reminders, and logging completed work. Includes NFPA 70B and manufacturer-recommended schedules for electrical equipment.', 
     href: '/tools/diagnostics#scheduler',
-    image: 'https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/project-uploads/e24d0c9e-e4fc-4077-96b8-bf644fe969e3/generated_images/preventive-maintenance-scheduling-system-58bdd198-20251205070756.jpg'
+    image: 'https://images.unsplash.com/photo-1508962914676-134849a727f0?w=600&h=350&fit=crop'
   },
   { 
     icon: FileText, 
     name: 'Test Report Generator', 
     description: 'Professional report creation tool for megger testing, insulation resistance measurements, ground fault testing, and power quality surveys. Auto-generates IEEE and NETA-compliant reports with graphs, pass/fail indicators, and trending analysis for predictive maintenance.', 
     href: '/tools/diagnostics#test-reports',
-    image: 'https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/project-uploads/e24d0c9e-e4fc-4077-96b8-bf644fe969e3/generated_images/professional-electrical-test-report-gene-793e5fbc-20251205065737.jpg'
+    image: 'https://images.unsplash.com/photo-1581092160562-40aa08e78837?w=600&h=350&fit=crop'
   },
   { 
     icon: BarChart, 
     name: 'Load Profile Analyzer', 
     description: 'Advanced analytics for utility meter data with demand pattern recognition, peak load identification, power factor analysis, and energy consumption trends. Visualize daily, weekly, and seasonal usage patterns to optimize electrical systems and reduce utility costs.', 
     href: '/tools/diagnostics#load-analyzer',
-    image: 'https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/project-uploads/e24d0c9e-e4fc-4077-96b8-bf644fe969e3/generated_images/advanced-load-profile-analyzer-dashboard-239f6b0d-20251205065738.jpg'
+    image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600&h=350&fit=crop'
   },
   { 
     icon: Gauge, 
     name: 'Power Quality Reporter', 
     description: 'Comprehensive power quality data interpretation tool for analyzing voltage sags, swells, harmonics, transients, and flicker events. Identifies problem sources, quantifies financial impacts, and recommends mitigation solutions with IEEE 519 compliance verification.', 
     href: '/tools/diagnostics#power-quality',
-    image: 'https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/project-uploads/e24d0c9e-e4fc-4077-96b8-bf644fe969e3/generated_images/comprehensive-power-quality-reporter-int-8fbdf929-20251205065738.jpg'
+    image: 'https://images.unsplash.com/photo-1581092335397-9583fe92d232?w=600&h=350&fit=crop'
   },
   { 
     icon: Thermometer, 
     name: 'Thermal Imaging Tool', 
     description: 'Thermal imaging data analysis platform for detecting hot spots, loose connections, overloaded circuits, and failing components. Imports data from FLIR and other IR cameras, generates prioritized repair lists, and creates professional thermal inspection reports with NFPA 70B standards.', 
     href: '/tools/diagnostics#thermal',
-    image: 'https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/project-uploads/e24d0c9e-e4fc-4077-96b8-bf644fe969e3/generated_images/thermal-imaging-analysis-tool-displaying-7a3ea469-20251205065739.jpg'
+    image: 'https://images.unsplash.com/photo-1581092918056-0c4c3acd3789?w=600&h=350&fit=crop'
   },
 ];
 
@@ -315,7 +417,7 @@ const aiFeatures = [
     description: 'Intelligent code generation for PLC ladder logic, Arduino C++, ESP32 firmware, and industrial automation controllers. Describe your control logic in plain English and get production-ready, commented code with best practices and error handling included.', 
     isPro: true, 
     href: '/tools/ai-features#code-assistant',
-    image: 'https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/project-uploads/e24d0c9e-e4fc-4077-96b8-bf644fe969e3/generated_images/ai-code-generation-interface-for-plc-lad-62b76a57-20251205070759.jpg'
+    image: 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=600&h=350&fit=crop'
   },
   { 
     icon: CircuitBoard, 
@@ -323,7 +425,7 @@ const aiFeatures = [
     description: 'Revolutionary circuit design assistant that converts functional requirements into complete schematic suggestions. Input specifications like voltage, current, frequency requirements and receive optimized circuit topologies with component recommendations and design rationale.', 
     isPro: true, 
     href: '/tools/ai-features#circuit-designer',
-    image: 'https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/project-uploads/e24d0c9e-e4fc-4077-96b8-bf644fe969e3/generated_images/ai-powered-circuit-designer-interface-ge-8917ecd0-20251205070756.jpg'
+    image: 'https://images.unsplash.com/photo-1555664424-778a1e5e1b48?w=600&h=350&fit=crop'
   },
   { 
     icon: Wrench, 
@@ -331,7 +433,7 @@ const aiFeatures = [
     description: 'Advanced diagnostic AI that analyzes photos of electrical problems, error codes, meter readings, and equipment failures. Provides step-by-step troubleshooting procedures, likely root causes ranked by probability, and safety precautions for field technicians.', 
     isPro: true, 
     href: '/tools/ai-features#troubleshooting',
-    image: 'https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/project-uploads/e24d0c9e-e4fc-4077-96b8-bf644fe969e3/generated_images/advanced-ai-troubleshooting-system-analy-6b514d37-20251205070756.jpg'
+    image: 'https://images.unsplash.com/photo-1581092162384-8987c1d64718?w=600&h=350&fit=crop'
   },
   { 
     icon: Headphones, 
@@ -339,7 +441,7 @@ const aiFeatures = [
     description: 'Hands-free operation for field work with natural voice commands for calculations, code lookups, and tool access. Perfect for electricians wearing gloves or working in confined spaces. Supports complex queries like "Calculate voltage drop for 12 AWG copper wire, 150 feet, 20 amps".', 
     isPro: false, 
     href: '/tools/ai-features#voice-input',
-    image: 'https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/project-uploads/e24d0c9e-e4fc-4077-96b8-bf644fe969e3/generated_images/hands-free-voice-input-interface-for-ele-e6b10969-20251205065737.jpg'
+    image: 'https://images.unsplash.com/photo-1590602847861-f357a9332bbc?w=600&h=350&fit=crop'
   },
   { 
     icon: Globe, 
@@ -347,7 +449,7 @@ const aiFeatures = [
     description: 'Full platform translation for Spanish, Mandarin Chinese, and Hindi-speaking electrical professionals. Includes technical terminology, NEC code translations, calculation results, and interface localization to serve the global electrical engineering community.', 
     isPro: false, 
     href: '/tools/ai-features#multi-language',
-    image: 'https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/project-uploads/e24d0c9e-e4fc-4077-96b8-bf644fe969e3/generated_images/multi-language-electrical-engineering-pl-1f0b7628-20251205070756.jpg'
+    image: 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=600&h=350&fit=crop'
   },
   { 
     icon: Sparkles, 
@@ -1565,6 +1667,152 @@ export default function Home() {
             image: tool.image,
           }))}
         />
+      )}
+
+      {/* 🔬 Master Virtual Laboratories & Workstations Section (After Project Management Suite) */}
+      {!searchQuery && (
+        <section className="py-16 px-4 relative overflow-hidden">
+          {/* Ambient Glow Orbs */}
+          <div className="absolute top-1/2 left-10 w-[500px] h-[500px] bg-[#00E5FF] opacity-10 blur-[180px] rounded-full pointer-events-none" />
+          <div className="absolute top-1/3 right-10 w-[500px] h-[500px] bg-[#9C4AFF] opacity-10 blur-[180px] rounded-full pointer-events-none" />
+
+          <div className="container mx-auto max-w-6xl relative z-10">
+            {/* Section Header */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+              className="text-center mb-12 space-y-3"
+            >
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 text-xs font-mono font-bold uppercase tracking-widest mb-2">
+                <LayoutDashboard className="h-4 w-4 text-cyan-400" />
+                Industry & University Standard Virtual Hardware
+              </div>
+              <h2
+                className="text-3xl md:text-5xl font-black text-white tracking-tight"
+                style={{ fontFamily: 'Space Grotesk, sans-serif' }}
+              >
+                🔬 Master Virtual Laboratories & Workstations
+              </h2>
+              <p className="text-sm md:text-base text-[#B8A7E0] max-w-2xl mx-auto leading-relaxed">
+                Real-time SPICE physics solvers, cycle-accurate microprocessor trainer consoles, Moving Iron panel meters, and accredited university experiment manuals.
+              </p>
+            </motion.div>
+
+            {/* Workstations Card Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {masterVirtualLabs.map((lab, index) => {
+                const Icon = lab.icon;
+                return (
+                  <motion.div
+                    key={lab.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.4, delay: index * 0.08 }}
+                    whileHover={{ scale: 1.03, y: -6 }}
+                  >
+                    <Link href={lab.href} className="block h-full">
+                      <Card
+                        className="relative h-full overflow-hidden flex flex-col justify-between bg-gradient-to-br from-[#2B0B4B]/90 via-[#1A0033]/95 to-[#0A0014]/90 border-[3px] border-transparent rounded-[1.5rem] transition-all duration-300 hover:shadow-[0_0_40px_rgba(156,74,255,0.6),0_0_60px_rgba(255,107,0,0.4),0_0_80px_rgba(0,229,255,0.3)] group cursor-pointer"
+                        style={{
+                          backgroundImage: `
+                            linear-gradient(135deg, 
+                              rgba(156, 74, 255, 0.18) 0%, 
+                              rgba(255, 107, 0, 0.12) 50%, 
+                              rgba(0, 229, 255, 0.18) 100%
+                            )
+                          `,
+                        }}
+                      >
+                        {/* Animated flowing border gradient */}
+                        <div
+                          className="absolute inset-0 rounded-[1.5rem] pointer-events-none"
+                          style={{
+                            background: 'linear-gradient(135deg, #FF00C8 0%, #9C4AFF 25%, #00E5FF 50%, #FF6B00 75%, #FF00C8 100%)',
+                            padding: '3px',
+                            WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
+                            WebkitMaskComposite: 'xor',
+                            maskComposite: 'exclude',
+                            animation: 'rotate-gradient 4s linear infinite',
+                            backgroundSize: '200% 200%',
+                          }}
+                        />
+
+                        {/* Card Image */}
+                        {lab.image && (
+                          <div className="relative h-44 w-full overflow-hidden rounded-t-[1.35rem]">
+                            <img
+                              src={lab.image}
+                              alt={lab.title}
+                              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-108"
+                              loading="eager"
+                            />
+                            <div
+                              className="absolute inset-0"
+                              style={{
+                                background: 'linear-gradient(180deg, rgba(10, 0, 20, 0) 0%, rgba(43, 11, 75, 0.5) 100%)'
+                              }}
+                            />
+                          </div>
+                        )}
+
+                        {/* Tag Badge */}
+                        <Badge
+                          className={`absolute ${lab.image ? 'top-48' : 'top-4'} right-4 z-10 px-3 py-1 text-white font-semibold text-xs uppercase tracking-wider border-0 rounded-full bg-gradient-to-r ${lab.badgeGradient || 'from-[#9C4AFF] to-[#00E5FF]'} shadow-[0_0_20px_rgba(156,74,255,0.6)]`}
+                        >
+                          {lab.badge}
+                        </Badge>
+
+                        <div>
+                          <CardHeader className={`pb-3 ${lab.image ? 'pt-5' : 'pt-7'} px-6`}>
+                            <div className="flex items-center gap-3 mb-3">
+                              <div className="p-3 rounded-xl bg-gradient-to-br from-[#9C4AFF]/30 to-[#FF6B00]/20 border border-[#9C4AFF]/40 shadow-[0_0_20px_rgba(156,74,255,0.4)]">
+                                <Icon className="h-7 w-7 text-white group-hover:text-cyan-400 transition-colors" />
+                              </div>
+                            </div>
+                            <CardTitle
+                              className="text-white text-xl font-bold mb-1"
+                              style={{
+                                textShadow: '0 0 15px rgba(156, 74, 255, 0.6)',
+                              }}
+                            >
+                              {lab.title}
+                            </CardTitle>
+                            <span className="text-xs font-mono text-cyan-400 font-bold block">
+                              {lab.subtitle}
+                            </span>
+                          </CardHeader>
+
+                          <CardContent className="px-6 pb-2">
+                            <p
+                              className="text-[#d0c7ff] text-sm leading-relaxed"
+                              style={{
+                                textShadow: '0 0 10px rgba(208, 199, 255, 0.3)',
+                              }}
+                            >
+                              {lab.description}
+                            </p>
+                          </CardContent>
+                        </div>
+
+                        <div className="px-6 pb-6 pt-2">
+                          <Button
+                            className="w-full bg-gradient-to-r from-[#9C4AFF] to-[#FF6B00] hover:from-[#FF00C8] hover:to-[#00E5FF] text-white font-semibold text-sm border-0 rounded-xl shadow-[0_0_20px_rgba(156,74,255,0.5)] hover:shadow-[0_0_30px_rgba(156,74,255,0.8)] transition-all duration-300 flex items-center justify-center gap-2"
+                          >
+                            <span>Launch Workstation</span>
+                            <ChevronRight className="h-4 w-4 text-white group-hover:translate-x-1 transition-transform" />
+                          </Button>
+                        </div>
+                      </Card>
+                    </Link>
+                  </motion.div>
+                );
+              })}
+            </div>
+          </div>
+        </section>
       )}
 
       {/* Code Compliance Tools */}

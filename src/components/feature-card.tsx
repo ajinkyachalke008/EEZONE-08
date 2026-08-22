@@ -1,3 +1,5 @@
+'use client';
+
 import React from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
@@ -8,7 +10,6 @@ import type { LucideProps } from 'lucide-react';
 
 type LucideIcon = React.ForwardRefExoticComponent<Omit<LucideProps, "ref"> & React.RefAttributes<SVGSVGElement>>;
 
-// TypeScript Interfaces
 export interface FeatureCardProps {
   icon: LucideIcon | React.ReactNode;
   featureTitle: string;
@@ -25,7 +26,6 @@ export interface SectionFeaturesProps {
   features: FeatureCardProps[];
 }
 
-// Helper function to check if something is a React component (function or forwardRef)
 const isReactComponent = (obj: unknown): obj is LucideIcon => {
   return (
     typeof obj === 'function' ||
@@ -36,43 +36,38 @@ const isReactComponent = (obj: unknown): obj is LucideIcon => {
   );
 };
 
-// FeatureCard Component
 export const FeatureCard: React.FC<FeatureCardProps> = ({
   icon,
   featureTitle,
   tag,
   shortDescription,
-  ctaLabel = 'Learn More',
+  ctaLabel = 'Access Tool',
   ctaLink,
   image,
 }) => {
-  // Render the icon based on its type
   const renderIcon = () => {
-    // If it's already a React element, render it directly
     if (React.isValidElement(icon)) {
       return React.cloneElement(icon as React.ReactElement, {
-        className: 'h-8 w-8 text-white',
+        className: 'h-7 w-7 text-white',
       });
     }
-    // If it's a component (function or forwardRef), render it as a component
     if (isReactComponent(icon)) {
       const IconComponent = icon;
-      return <IconComponent className="h-8 w-8 text-white" />;
+      return <IconComponent className="h-7 w-7 text-white" />;
     }
-    // Fallback for primitives (strings, numbers, etc.)
-    return <span className="h-8 w-8 text-white flex items-center justify-center">{icon as React.ReactNode}</span>;
+    return <span className="h-7 w-7 text-white flex items-center justify-center">{icon as React.ReactNode}</span>;
   };
 
   const cardContent = (
     <motion.div
-      whileHover={{ scale: 1.05, y: -5 }}
+      whileHover={{ scale: 1.04, y: -6 }}
       transition={{ duration: 0.3 }}
       className="h-full"
     >
       <Card
         className={`
-          relative h-full overflow-hidden
-          bg-gradient-to-br from-[#2B0B4B]/80 via-[#1A0033]/90 to-[#0A0014]/80
+          relative h-full overflow-hidden flex flex-col justify-between
+          bg-gradient-to-br from-[#2B0B4B]/90 via-[#1A0033]/95 to-[#0A0014]/90
           border-[3px] border-transparent
           rounded-[1.5rem]
           transition-all duration-300
@@ -82,9 +77,9 @@ export const FeatureCard: React.FC<FeatureCardProps> = ({
         style={{
           backgroundImage: `
             linear-gradient(135deg, 
-              rgba(156, 74, 255, 0.15) 0%, 
-              rgba(255, 107, 0, 0.1) 50%, 
-              rgba(0, 229, 255, 0.15) 100%
+              rgba(156, 74, 255, 0.18) 0%, 
+              rgba(255, 107, 0, 0.12) 50%, 
+              rgba(0, 229, 255, 0.18) 100%
             )
           `,
         }}
@@ -105,17 +100,17 @@ export const FeatureCard: React.FC<FeatureCardProps> = ({
 
         {/* Feature Image */}
         {image && (
-          <div className="relative h-48 w-full overflow-hidden rounded-t-[1.35rem]">
+          <div className="relative h-44 w-full overflow-hidden rounded-t-[1.35rem]">
             <img
               src={image}
               alt={featureTitle}
-              className="w-full h-full object-cover transition-transform duration-300 hover:scale-110"
-              loading="lazy"
+              className="w-full h-full object-cover transition-transform duration-500 hover:scale-108"
+              loading="eager"
             />
             <div 
               className="absolute inset-0"
               style={{
-                background: 'linear-gradient(180deg, rgba(10, 0, 20, 0) 0%, rgba(43, 11, 75, 0.4) 100%)'
+                background: 'linear-gradient(180deg, rgba(10, 0, 20, 0) 0%, rgba(43, 11, 75, 0.5) 100%)'
               }}
             />
           </div>
@@ -125,7 +120,7 @@ export const FeatureCard: React.FC<FeatureCardProps> = ({
         {tag && (
           <Badge
             className={`
-              absolute ${image ? 'top-52' : 'top-4'} right-4 z-10
+              absolute ${image ? 'top-48' : 'top-4'} right-4 z-10
               px-3 py-1
               text-white font-semibold text-xs uppercase tracking-wider
               border-0 rounded-full
@@ -145,41 +140,45 @@ export const FeatureCard: React.FC<FeatureCardProps> = ({
           </Badge>
         )}
 
-        <CardHeader className={`pb-3 ${image ? 'pt-6' : 'pt-8'} px-6`}>
-          <div className="flex items-center gap-4 mb-4">
-            <div
-              className="p-3 rounded-xl bg-gradient-to-br from-[#9C4AFF]/30 to-[#FF6B00]/20 
-                         border border-[#9C4AFF]/40 shadow-[0_0_20px_rgba(156,74,255,0.4)]"
-            >
-              {renderIcon()}
+        <div>
+          <CardHeader className={`pb-3 ${image ? 'pt-5' : 'pt-7'} px-6`}>
+            <div className="flex items-center gap-3 mb-3">
+              <div
+                className="p-3 rounded-xl bg-gradient-to-br from-[#9C4AFF]/30 to-[#FF6B00]/20 
+                           border border-[#9C4AFF]/40 shadow-[0_0_20px_rgba(156,74,255,0.4)]"
+              >
+                {renderIcon()}
+              </div>
             </div>
-          </div>
-          <CardTitle
-            className="text-white text-xl font-bold mb-2"
-            style={{
-              textShadow: '0 0 15px rgba(156, 74, 255, 0.6)',
-            }}
-          >
-            {featureTitle}
-          </CardTitle>
-        </CardHeader>
+            <CardTitle
+              className="text-white text-xl font-bold mb-1"
+              style={{
+                textShadow: '0 0 15px rgba(156, 74, 255, 0.6)',
+              }}
+            >
+              {featureTitle}
+            </CardTitle>
+          </CardHeader>
 
-        <CardContent className="px-6 pb-6 space-y-4">
-          <p
-            className="text-[#d0c7ff] text-sm leading-relaxed"
-            style={{
-              textShadow: '0 0 10px rgba(208, 199, 255, 0.3)',
-            }}
-          >
-            {shortDescription}
-          </p>
+          <CardContent className="px-6 pb-2">
+            <p
+              className="text-[#d0c7ff] text-sm leading-relaxed"
+              style={{
+                textShadow: '0 0 10px rgba(208, 199, 255, 0.3)',
+              }}
+            >
+              {shortDescription}
+            </p>
+          </CardContent>
+        </div>
 
+        <div className="px-6 pb-6 pt-2">
           {ctaLabel && (
             <Button
-              className="w-full mt-4 
+              className="w-full 
                 bg-gradient-to-r from-[#9C4AFF] to-[#FF6B00] 
                 hover:from-[#FF00C8] hover:to-[#00E5FF]
-                text-white font-semibold
+                text-white font-semibold text-sm
                 border-0 rounded-xl
                 shadow-[0_0_20px_rgba(156,74,255,0.5)]
                 hover:shadow-[0_0_30px_rgba(156,74,255,0.8)]
@@ -188,20 +187,18 @@ export const FeatureCard: React.FC<FeatureCardProps> = ({
               {ctaLabel}
             </Button>
           )}
-        </CardContent>
+        </div>
       </Card>
     </motion.div>
   );
 
-  // If ctaLink is provided, wrap in Link
   if (ctaLink) {
-    return <Link href={ctaLink}>{cardContent}</Link>;
+    return <Link href={ctaLink} className="block h-full">{cardContent}</Link>;
   }
 
   return cardContent;
 };
 
-// SectionFeatures Wrapper Component
 export const SectionFeatures: React.FC<SectionFeaturesProps> = ({
   sectionTitle,
   sectionSubtitle,
@@ -210,9 +207,9 @@ export const SectionFeatures: React.FC<SectionFeaturesProps> = ({
   return (
     <section className="py-16 px-4 relative overflow-hidden">
       {/* Ambient background effects */}
-      <div className="absolute top-10 left-10 w-[500px] h-[500px] bg-[#9C4AFF] opacity-20 blur-[150px] rounded-full animate-pulse-slow" />
+      <div className="absolute top-10 left-10 w-[500px] h-[500px] bg-[#9C4AFF] opacity-20 blur-[150px] rounded-full animate-pulse-slow pointer-events-none" />
       <div
-        className="absolute bottom-10 right-10 w-[400px] h-[400px] bg-[#FF6B00] opacity-20 blur-[150px] rounded-full animate-pulse-slow"
+        className="absolute bottom-10 right-10 w-[400px] h-[400px] bg-[#FF6B00] opacity-20 blur-[150px] rounded-full animate-pulse-slow pointer-events-none"
         style={{ animationDelay: '1.5s' }}
       />
 
@@ -254,22 +251,3 @@ export const SectionFeatures: React.FC<SectionFeaturesProps> = ({
     </section>
   );
 };
-
-// Add keyframes for rotating gradient animation
-if (typeof document !== 'undefined') {
-  const style = document.createElement('style');
-  style.textContent = `
-    @keyframes rotate-gradient {
-      0% {
-        background-position: 0% 50%;
-      }
-      50% {
-        background-position: 100% 50%;
-      }
-      100% {
-        background-position: 0% 50%;
-      }
-    }
-  `;
-  document.head.appendChild(style);
-}
