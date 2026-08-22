@@ -66,16 +66,20 @@ export function SiteHeader({ onSearch, searchQuery, onSearchChange }: HeaderProp
       <div className="absolute top-0 right-1/4 w-[200px] h-[100px] bg-[#FF6B00] opacity-10 blur-[80px] rounded-full animate-pulse-slow" style={{ animationDelay: '1.5s' }} />
 
       <div className="container mx-auto flex h-16 items-center justify-between px-4 relative z-10">
-        <Link href="/" className="flex items-center space-x-2 group">
+        <Link href="/" className="flex items-center space-x-2.5 group">
           <motion.div 
-            className="gradient-violet p-1.5 rounded-lg shadow-glowViolet"
-            whileHover={{ scale: 1.1, rotate: 180 }}
+            className="relative h-10 w-10 rounded-xl overflow-hidden border border-[#9C4AFF]/60 shadow-[0_0_20px_rgba(156,74,255,0.6)] group-hover:border-cyan-400 group-hover:shadow-[0_0_25px_rgba(0,229,255,0.8)] transition-all flex-shrink-0"
+            whileHover={{ scale: 1.1 }}
             transition={{ duration: 0.3 }}
           >
-            <Zap className="h-5 w-5 text-white" />
+            <img 
+              src="/images/logo/ee-zone-app-icon.jpg" 
+              alt="EE ZONE Logo" 
+              className="w-full h-full object-cover"
+            />
           </motion.div>
           <motion.div
-            className="relative px-4 py-2 border-2 border-[#9C4AFF]/50 rounded-xl glass-surface"
+            className="relative px-3.5 py-1.5 border-2 border-[#9C4AFF]/50 rounded-xl glass-surface"
             whileHover={{ 
               boxShadow: "0 0 30px 5px rgba(156, 74, 255, 0.6), inset 0 0 20px rgba(156, 74, 255, 0.2)",
               borderColor: "rgba(156, 74, 255, 0.8)"
@@ -86,7 +90,7 @@ export function SiteHeader({ onSearch, searchQuery, onSearchChange }: HeaderProp
             }}
           >
             <span 
-              className="font-bold text-xl text-white glow-text-violet transition-all group-hover:glow-text-orange" 
+              className="font-bold text-xl text-white glow-text-violet transition-all group-hover:glow-text-orange tracking-wider" 
               style={{ fontFamily: 'Orbitron, sans-serif' }}
             >
               EE ZONE

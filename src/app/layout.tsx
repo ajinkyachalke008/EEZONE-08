@@ -7,8 +7,20 @@ import SiteHeader from "@/components/SiteHeader";
 import Footer from "@/components/Footer";
 
 export const metadata: Metadata = {
-  title: "EE Zone - Electrical & Electronics Hub",
-  description: "Your digital platform for Electrical & Electronics knowledge, tools, calculators, and resources.",
+  title: "EE ZONE - Electrical & Electronics Engineering Hub",
+  description: "Next-Generation Electrical & Electronics Engineering Suite with Real-Time SPICE Physics, Microprocessors & Virtual Workstations",
+  manifest: "/manifest.json",
+  icons: {
+    icon: [
+      { url: "/images/logo/ee-zone-app-icon.jpg" },
+      { url: "/images/logo/ee-zone-app-icon.jpg", sizes: "192x192", type: "image/jpeg" },
+      { url: "/images/logo/ee-zone-app-icon.jpg", sizes: "512x512", type: "image/jpeg" }
+    ],
+    apple: [
+      { url: "/images/logo/ee-zone-app-icon.jpg", sizes: "180x180", type: "image/jpeg" }
+    ],
+    shortcut: "/images/logo/ee-zone-app-icon.jpg"
+  }
 };
 
 export default function RootLayout({
