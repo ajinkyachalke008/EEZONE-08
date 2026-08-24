@@ -53,7 +53,7 @@ export function AICodeAssistant() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState('');
   const [copied, setCopied] = useState(false);
-  const [useOnline, setUseOnline] = useState(false);
+  const [useOnline, setUseOnline] = useState(true);
   const [apiKey, setApiKey] = useState('');
 
   useEffect(() => {
@@ -78,7 +78,7 @@ export function AICodeAssistant() {
       const response = await fetch('/api/ai-code', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ platform, prompt, useOnlineAI: useOnline, apiKey }),
+        body: JSON.stringify({ platform, prompt: prompt.trim(), useOnlineAI: useOnline, apiKey }),
       });
       
       const data = await response.json();
@@ -88,10 +88,15 @@ export function AICodeAssistant() {
       }
       
       let code = data.code || '';
-      // Clean up any markdown code block wrappers
-      code = code.replace(/^```[\w]*\n?/, '').replace(/\n?```$/, '');
+      // Clean up markdown code block wrappers
+      const codeMatch = code.match(/```(?:[a-zA-Z0-9_+\-]*\n)?([\s\S]*?)```/);
+      if (codeMatch && codeMatch[1]) {
+        code = codeMatch[1].trim();
+      } else {
+        code = code.replace(/^```[\w]*\n?/, '').replace(/\n?```$/, '').trim();
+      }
       setGeneratedCode(code);
-      setCodeTitle(data.title || 'Generated Code');
+      setCodeTitle(data.title || `${platform.toUpperCase()} Generated Code`);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to generate code');
     } finally {
@@ -137,11 +142,11 @@ export function AICodeAssistant() {
             AI Code Assistant
             <Badge className={useOnline ? "bg-green-500/20 text-green-400 border-green-500/30 text-xs ml-2 cursor-pointer transition-all" : "bg-blue-500/20 text-blue-400 border-blue-500/30 text-xs ml-2 cursor-pointer transition-all"} onClick={() => setUseOnline(!useOnline)}>
               {useOnline ? <Zap className="h-3 w-3 mr-1" /> : <Code className="h-3 w-3 mr-1" />}
-              {useOnline ? 'Online (API)' : 'Offline (Local)'}
+              {useOnline ? 'Online (AI Powered)' : 'Offline (Local Templates)'}
             </Badge>
           </CardTitle>
           <CardDescription className="text-[#B8A7E0]">
-            Generate production-ready PLC, Arduino, and ESP32 code instantly — powered by EE ZONE&apos;s built-in code engine
+            Generate production-ready PLC, Arduino, and ESP32 code instantly — powered by OpenRouter AI & EE ZONE code engine
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
@@ -165,19 +170,19 @@ export function AICodeAssistant() {
               <div className="flex bg-white/5 rounded-lg border border-white/10 p-1">
                 <button
                   type="button"
-                  onClick={() => setUseOnline(false)}
-                  className={`flex-1 flex items-center justify-center text-sm py-1.5 rounded-md transition-all ${!useOnline ? 'bg-[#9C4AFF]/20 text-[#FF00C8] font-medium' : 'text-white/60 hover:text-white'}`}
-                >
-                  <Code className="h-4 w-4 mr-2" />
-                  Local Fast
-                </button>
-                <button
-                  type="button"
                   onClick={() => setUseOnline(true)}
                   className={`flex-1 flex items-center justify-center text-sm py-1.5 rounded-md transition-all ${useOnline ? 'bg-green-500/20 text-green-400 font-medium' : 'text-white/60 hover:text-white'}`}
                 >
                   <Zap className="h-4 w-4 mr-2" />
-                  Online AI
+                  Online AI (Live)
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setUseOnline(false)}
+                  className={`flex-1 flex items-center justify-center text-sm py-1.5 rounded-md transition-all ${!useOnline ? 'bg-[#9C4AFF]/20 text-[#FF00C8] font-medium' : 'text-white/60 hover:text-white'}`}
+                >
+                  <Code className="h-4 w-4 mr-2" />
+                  Local Templates
                 </button>
               </div>
             </div>
@@ -186,17 +191,20 @@ export function AICodeAssistant() {
           {useOnline && (
             <div className="space-y-2 animate-in fade-in slide-in-from-top-2 duration-300">
               <label className="text-sm font-medium text-white flex items-center justify-between">
-                <span>OpenRouter API Key</span>
-                <a href="https://openrouter.ai/keys" target="_blank" rel="noreferrer" className="text-xs text-[#00D4FF] hover:underline">Get a free key &rarr;</a>
+                <span className="flex items-center gap-1.5">
+                  <Zap className="h-3.5 w-3.5 text-green-400" />
+                  Custom OpenRouter API Key <span className="text-xs text-white/50">(Optional — server key is active)</span>
+                </span>
+                <a href="https://openrouter.ai/keys" target="_blank" rel="noreferrer" className="text-xs text-[#00D4FF] hover:underline">Get a key &rarr;</a>
               </label>
               <Input
                 type="password"
                 value={apiKey}
                 onChange={(e) => handleApiKeyChange(e.target.value)}
-                placeholder="sk-or-v1-..."
+                placeholder="Leave blank to use server API key or enter sk-or-v1-..."
                 className="glass-surface border-white/20 text-white placeholder:text-white/30 font-mono"
               />
-              <p className="text-xs text-[#B8A7E0]">Your key is stored locally in your browser and never sent anywhere except the backend for code generation.</p>
+              <p className="text-xs text-[#B8A7E0]">By default, requests use the platform&apos;s configured AI key. You can also provide your own personal key.</p>
             </div>
           )}
 

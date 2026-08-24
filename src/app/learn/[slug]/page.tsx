@@ -9,7 +9,7 @@ import {
   CheckCircle2, Zap, Battery, RotateCw, Activity, AlertTriangle,
   Cpu, Gauge, Cable, CircuitBoard, Plug, FileCheck, Lightbulb,
   Calculator, FileText, Brain, Beaker, HelpCircle, Loader2, Play,
-  BookMarked, Clock, Target, TrendingUp
+  BookMarked, Clock, Target, TrendingUp, Mic
 } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -17,6 +17,7 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from 'sonner';
+import { AIVivaExaminerDialog } from '@/components/viva/ai-viva-examiner-dialog';
 
 // Topic content data - Full 7-section structure
 import { topicContent } from '@/lib/topic-content';
@@ -68,6 +69,7 @@ export default function TopicPage() {
   const [bookmarkId, setBookmarkId] = useState<number | null>(null);
   const [completedSections, setCompletedSections] = useState<string[]>([]);
   const [userId, setUserId] = useState<string>('');
+  const [isVivaModalOpen, setIsVivaModalOpen] = useState(false);
 
   useEffect(() => {
     const id = getUserId();
@@ -753,71 +755,141 @@ export default function TopicPage() {
                 {activeSection === 'lab-practical' && content.labPractical && (
                   <Card className="glass-surface border-white/10">
                     <CardHeader>
-                      <div className="flex items-center gap-3">
-                        <div className="p-2 bg-[#FF6B00]/20 rounded-lg">
-                          <Beaker className="h-6 w-6 text-[#FF6B00]" />
+                      <div className="flex flex-wrap items-center justify-between gap-4">
+                        <div className="flex items-center gap-3">
+                          <div className="p-2.5 bg-[#FF6B00]/20 rounded-xl">
+                            <Beaker className="h-6 w-6 text-[#FF6B00]" />
+                          </div>
+                          <div>
+                            <CardTitle className="text-white text-xl flex items-center gap-2">
+                              Lab / Practical Insight & Hands-On Manual
+                            </CardTitle>
+                            <CardDescription className="text-[#B8A7E0]">
+                              Connect theoretical formulations to hands-on bench experiments and viva preparation
+                            </CardDescription>
+                          </div>
                         </div>
-                        <div>
-                          <CardTitle className="text-white text-xl">Lab / Practical Insight</CardTitle>
-                          <CardDescription className="text-[#B8A7E0]">
-                            Connect theory to lab work and viva preparation
-                          </CardDescription>
-                        </div>
+
+                        {content.labPractical.virtualLabLink && (
+                          <Link href={content.labPractical.virtualLabLink.url}>
+                            <Button size="sm" className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-black font-black text-xs shadow-lg">
+                              <Zap className="h-3.5 w-3.5 mr-1 text-black" />
+                              Launch {content.labPractical.virtualLabLink.toolName} &rarr;
+                            </Button>
+                          </Link>
+                        )}
                       </div>
                     </CardHeader>
-                    <CardContent>
-                      <div className="space-y-6">
-                        {/* Safety Notes */}
-                        {content.labPractical.safetyNotes && (
-                          <div className="p-4 bg-red-500/10 border border-red-500/30 rounded-xl">
-                            <h4 className="text-red-400 font-semibold mb-3 flex items-center gap-2">
-                              <AlertTriangle className="h-5 w-5" />
-                              Safety Notes
-                            </h4>
-                            <ul className="text-[#E0D6F5] space-y-2">
-                              {content.labPractical.safetyNotes.map((note: string, idx: number) => (
-                                <li key={idx} className="flex items-start gap-2">
-                                  <span className="text-red-400">⚠</span>
-                                  <span>{note}</span>
-                                </li>
-                              ))}
-                            </ul>
-                          </div>
-                        )}
+                    <CardContent className="space-y-6">
+                      {/* Safety Notes Alert */}
+                      {content.labPractical.safetyNotes && content.labPractical.safetyNotes.length > 0 && (
+                        <div className="p-4 bg-red-500/10 border border-red-500/30 rounded-xl">
+                          <h4 className="text-red-400 font-semibold mb-3 flex items-center gap-2">
+                            <AlertTriangle className="h-5 w-5" />
+                            Crucial Safety & Protection Notes
+                          </h4>
+                          <ul className="text-[#E0D6F5] space-y-2 text-sm">
+                            {content.labPractical.safetyNotes.map((note: string, idx: number) => (
+                              <li key={idx} className="flex items-start gap-2">
+                                <span className="text-red-400">⚠</span>
+                                <span>{note}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
 
-                        {/* What to Observe */}
-                        {content.labPractical.observations && (
-                          <div className="p-4 glass-surface border border-[#00E5FF]/30 rounded-xl">
-                            <h4 className="text-[#00E5FF] font-semibold mb-3 flex items-center gap-2">
-                              <Target className="h-5 w-5" />
-                              What to Observe in the Experiment
-                            </h4>
-                            <ul className="text-[#E0D6F5] space-y-2">
-                              {content.labPractical.observations.map((obs: string, idx: number) => (
-                                <li key={idx}>• {obs}</li>
-                              ))}
-                            </ul>
+                      {/* Apparatus Checklist */}
+                      {content.labPractical.apparatus && content.labPractical.apparatus.length > 0 && (
+                        <div className="p-4 glass-surface border border-[#9C4AFF]/30 rounded-xl">
+                          <h4 className="text-[#9C4AFF] font-semibold mb-3 flex items-center gap-2">
+                            <Cable className="h-5 w-5" />
+                            Apparatus & Required Test Instruments
+                          </h4>
+                          <div className="grid sm:grid-cols-2 gap-2 text-xs">
+                            {content.labPractical.apparatus.map((item: string, idx: number) => (
+                              <div key={idx} className="p-2.5 bg-white/5 border border-white/10 rounded-lg text-slate-200 flex items-center gap-2">
+                                <span className="w-4 h-4 rounded-full bg-[#9C4AFF]/20 text-[#9C4AFF] flex items-center justify-center text-[10px] font-bold">
+                                  {idx + 1}
+                                </span>
+                                <span>{item}</span>
+                              </div>
+                            ))}
                           </div>
-                        )}
+                        </div>
+                      )}
 
-                        {/* Viva Questions */}
-                        {content.labPractical.vivaQuestions && (
-                          <div className="p-4 glass-surface border border-[#9C4AFF]/30 rounded-xl">
-                            <h4 className="text-[#9C4AFF] font-semibold mb-4 flex items-center gap-2">
+                      {/* Step-by-Step Procedure */}
+                      {content.labPractical.procedure && content.labPractical.procedure.length > 0 && (
+                        <div className="p-4 glass-surface border border-white/10 rounded-xl">
+                          <h4 className="text-white font-semibold mb-3 flex items-center gap-2">
+                            <FileCheck className="h-5 w-5 text-[#00E5FF]" />
+                            Standard Experimental Procedure
+                          </h4>
+                          <div className="space-y-2 text-xs">
+                            {content.labPractical.procedure.map((step: string, idx: number) => (
+                              <div key={idx} className="p-3 bg-white/5 border border-white/10 rounded-lg flex items-start gap-3 text-slate-200">
+                                <span className="w-5 h-5 rounded-full bg-slate-900 border border-slate-700 text-[#00E5FF] font-mono text-[10px] flex items-center justify-center flex-shrink-0 font-bold">
+                                  {idx + 1}
+                                </span>
+                                <p className="leading-relaxed">{step}</p>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* What to Observe */}
+                      {content.labPractical.observations && content.labPractical.observations.length > 0 && (
+                        <div className="p-4 glass-surface border border-[#00E5FF]/30 rounded-xl">
+                          <h4 className="text-[#00E5FF] font-semibold mb-3 flex items-center gap-2">
+                            <Target className="h-5 w-5" />
+                            Key Observations & Data Logging Points
+                          </h4>
+                          <ul className="text-[#E0D6F5] space-y-2 text-sm">
+                            {content.labPractical.observations.map((obs: string, idx: number) => (
+                              <li key={idx} className="flex items-start gap-2">
+                                <span className="text-[#00E5FF]">✦</span>
+                                <span>{obs}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+
+                      {/* Viva Questions */}
+                      {content.labPractical.vivaQuestions && content.labPractical.vivaQuestions.length > 0 && (
+                        <div className="p-4 glass-surface border border-[#FF00C8]/30 rounded-xl space-y-4">
+                          <div className="flex flex-wrap items-center justify-between gap-3">
+                            <h4 className="text-[#FF00C8] font-semibold flex items-center gap-2">
                               <HelpCircle className="h-5 w-5" />
-                              Viva Questions & Answers
+                              Viva-Voce & Oral Examination Questions
                             </h4>
-                            <div className="space-y-4">
-                              {content.labPractical.vivaQuestions.map((vq: any, idx: number) => (
-                                <div key={idx} className="border-l-2 border-[#9C4AFF]/50 pl-4">
-                                  <p className="text-white font-medium mb-1">Q{idx + 1}: {vq.question}</p>
-                                  <p className="text-[#B8A7E0] text-sm">{vq.answer}</p>
-                                </div>
-                              ))}
-                            </div>
+                            <Button
+                              size="sm"
+                              onClick={() => setIsVivaModalOpen(true)}
+                              className="bg-gradient-to-r from-purple-600 via-pink-600 to-amber-500 hover:from-purple-500 hover:to-amber-400 text-white font-bold text-xs font-mono shadow-lg"
+                            >
+                              <Mic className="h-3.5 w-3.5 mr-1.5 animate-pulse" />
+                              Start Live AI Viva (Voice & Chat) &rarr;
+                            </Button>
                           </div>
-                        )}
-                      </div>
+
+                          <div className="space-y-3">
+                            {content.labPractical.vivaQuestions.map((vq: any, idx: number) => (
+                              <div key={idx} className="p-3.5 bg-white/5 border border-white/10 rounded-lg space-y-1.5">
+                                <p className="text-white font-medium text-sm flex items-center gap-2">
+                                  <span className="text-[#FF00C8] font-bold">Q{idx + 1}:</span>
+                                  {vq.question}
+                                </p>
+                                <p className="text-[#B8A7E0] text-xs pl-6 leading-relaxed font-mono">
+                                  {vq.answer}
+                                </p>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
                     </CardContent>
                     <CardFooter>
                       <Button 
@@ -876,6 +948,19 @@ export default function TopicPage() {
           </div>
         </div>
       </section>
+
+      {/* Interactive AI Viva Voce Examiner Dialog */}
+      <AIVivaExaminerDialog
+        isOpen={isVivaModalOpen}
+        onClose={() => setIsVivaModalOpen(false)}
+        topic={topic?.title || slug}
+        category="Electrical Engineering"
+        experimentCode={slug.toUpperCase()}
+        initialQuestion={
+          content?.labPractical?.vivaQuestions?.[0]?.question ||
+          `Explain the foundational working principle and governing laws of ${topic?.title || slug}.`
+        }
+      />
     </div>
   );
 }

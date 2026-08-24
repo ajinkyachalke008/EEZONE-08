@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -16,7 +16,8 @@ import {
   VolumeX,
   RotateCw,
   Sparkles,
-  ArrowLeft
+  ArrowLeft,
+  GraduationCap
 } from 'lucide-react';
 import Link from 'next/link';
 import { InteractiveBreadboard } from '@/components/breadboard/interactive-breadboard';
@@ -25,10 +26,18 @@ import { InteractiveOscilloscope } from '@/components/circuit/interactive-oscill
 import { MeasurementBus } from '@/lib/measurement-bus';
 import { soundEngine } from '@/lib/audio/lab-sound-engine';
 
+type DMMMode = 'DCV' | 'ACV' | 'OHM' | 'DCI' | 'DIODE' | 'FREQ';
+
 export default function UnifiedLabBenchPage() {
-  const [activeTarget, setActiveTarget] = useState<'breadboard' | 'arduino' | 'machines'>('breadboard');
+  const [activeTarget, setActiveTarget] = useState<'breadboard' | 'arduino'>('breadboard');
   const [isAudioMuted, setIsAudioMuted] = useState(soundEngine.getIsMuted());
   const [measurementBus] = useState<MeasurementBus>(() => new MeasurementBus());
+  const [dmmMode, setDmmMode] = useState<DMMMode>('DCV');
+  const [dmmValue, setDmmValue] = useState('+05.0024');
+  const [dmmUnit, setDmmUnit] = useState('VDC');
+  const [dmmSubtitle, setDmmSubtitle] = useState('DC VOLTAGE AUTO RANGE');
+  const [dmmRange, setDmmRange] = useState('10.000V Range');
+  const [dmmImpedance, setDmmImpedance] = useState('10 GΩ Impedance');
 
   const toggleMute = () => {
     const next = !isAudioMuted;
@@ -36,6 +45,69 @@ export default function UnifiedLabBenchPage() {
     soundEngine.setMuted(next);
     soundEngine.playKeyClick();
   };
+
+  const handleDmmMode = (mode: DMMMode) => {
+    soundEngine.playKeyClick();
+    setDmmMode(mode);
+    switch (mode) {
+      case 'DCV':
+        setDmmValue('+05.0024');
+        setDmmUnit('VDC');
+        setDmmSubtitle('DC VOLTAGE AUTO RANGE');
+        setDmmRange('10.000V Range');
+        setDmmImpedance('10 GΩ Impedance');
+        break;
+      case 'ACV':
+        setDmmValue('230.142');
+        setDmmUnit('VAC');
+        setDmmSubtitle('TRUE RMS AC VOLTAGE');
+        setDmmRange('750.00V Range');
+        setDmmImpedance('1 MΩ || 100pF');
+        break;
+      case 'OHM':
+        setDmmValue('09.9842');
+        setDmmUnit('kΩ');
+        setDmmSubtitle('2-WIRE RESISTANCE');
+        setDmmRange('100.00kΩ Range');
+        setDmmImpedance('100µA Test Current');
+        break;
+      case 'DCI':
+        setDmmValue('+01.2480');
+        setDmmUnit('ADC');
+        setDmmSubtitle('DC CURRENT');
+        setDmmRange('3.0000A Range');
+        setDmmImpedance('0.05Ω Shunt');
+        break;
+      case 'DIODE':
+        setDmmValue('00.6521');
+        setDmmUnit('V');
+        setDmmSubtitle('DIODE CONTINUITY TEST');
+        setDmmRange('1.0000V Range');
+        setDmmImpedance('1mA Current Source');
+        break;
+      case 'FREQ':
+        setDmmValue('050.002');
+        setDmmUnit('Hz');
+        setDmmSubtitle('FREQUENCY COUNTER');
+        setDmmRange('100.000kHz Range');
+        setDmmImpedance('AC Coupled');
+        break;
+    }
+  };
+
+  // Micro-fluctuation simulation for realistic 6.5-digit meter reading
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setDmmValue((prev) => {
+        const num = parseFloat(prev);
+        if (isNaN(num)) return prev;
+        const jitter = (Math.random() - 0.5) * 0.0006;
+        const updated = (num + jitter).toFixed(4);
+        return num >= 0 && prev.startsWith('+') ? `+${updated.padStart(7, '0')}` : updated;
+      });
+    }, 750);
+    return () => clearInterval(interval);
+  }, [dmmMode]);
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 p-4 lg:p-8">
@@ -72,8 +144,8 @@ export default function UnifiedLabBenchPage() {
               {isAudioMuted ? 'Acoustic Engine Muted' : 'Acoustic Engine Active'}
             </Button>
             <Link href="/tools/lab-experiments">
-              <Button size="sm" className="bg-cyan-600 hover:bg-cyan-500 text-white font-bold">
-                Open Lab Experiments
+              <Button size="sm" className="bg-cyan-600 hover:bg-cyan-500 text-white font-bold text-xs">
+                <GraduationCap className="h-4 w-4 mr-1.5" /> Open Lab Experiments Manuals
               </Button>
             </Link>
           </div>
@@ -128,30 +200,40 @@ export default function UnifiedLabBenchPage() {
               <div className="p-4 bg-[#051A15] rounded-xl border-2 border-emerald-950 shadow-[inset_0_4px_15px_rgba(0,0,0,0.9)] flex items-center justify-between">
                 <div>
                   <span className="text-[9px] font-mono text-emerald-500 font-bold block uppercase">
-                    DC VOLTAGE AUTO RANGE
+                    {dmmSubtitle}
                   </span>
                   <span className="font-mono text-3xl font-black text-emerald-400 tracking-wider shadow-[0_0_15px_#10B981]">
-                    +05.0024 <span className="text-sm font-normal text-emerald-300">VDC</span>
+                    {dmmValue} <span className="text-sm font-normal text-emerald-300">{dmmUnit}</span>
                   </span>
                 </div>
                 <div className="text-right font-mono text-[10px] text-slate-400">
-                  <div>10.000V Range</div>
-                  <div className="text-emerald-400 font-bold">10 GΩ Impedance</div>
+                  <div>{dmmRange}</div>
+                  <div className="text-emerald-400 font-bold">{dmmImpedance}</div>
                 </div>
               </div>
 
               {/* Function Buttons */}
-              <div className="grid grid-cols-5 gap-1.5 font-mono text-xs font-bold">
-                {['DCV', 'ACV', '2W Ω', 'DCI', 'DIODE'].map((fn, idx) => (
+              <div className="grid grid-cols-6 gap-1.5 font-mono text-xs font-bold">
+                {[
+                  { key: 'DCV', label: 'DCV' },
+                  { key: 'ACV', label: 'ACV' },
+                  { key: 'OHM', label: '2W Ω' },
+                  { key: 'DCI', label: 'DCI' },
+                  { key: 'DIODE', label: 'DIODE' },
+                  { key: 'FREQ', label: 'FREQ' }
+                ].map((item) => (
                   <Button
-                    key={fn}
+                    key={item.key}
                     size="sm"
-                    variant={idx === 0 ? 'default' : 'secondary'}
+                    onClick={() => handleDmmMode(item.key as DMMMode)}
+                    variant={dmmMode === item.key ? 'default' : 'secondary'}
                     className={`h-8 text-[10px] ${
-                      idx === 0 ? 'bg-amber-500 text-black hover:bg-amber-400' : 'bg-slate-900 text-slate-400'
+                      dmmMode === item.key
+                        ? 'bg-amber-500 text-black hover:bg-amber-400 font-black shadow-md'
+                        : 'bg-slate-900 text-slate-400 hover:text-white'
                     }`}
                   >
-                    {fn}
+                    {item.label}
                   </Button>
                 ))}
               </div>
