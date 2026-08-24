@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
@@ -36,13 +36,16 @@ import {
   MessageSquare,
   ArrowRight,
   Trophy,
-  Rocket
+  Rocket,
+  Mic,
+  Radio,
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { StudyPlanGenerator } from '@/components/career/study-plan-generator';
 import { ResumeBuilder } from '@/components/career/resume-builder';
 import { InterviewPrep } from '@/components/career/interview-prep';
+import { CareerVivaExaminer } from '@/components/career/career-viva-examiner';
 
 const certifications = [
   {
@@ -181,31 +184,40 @@ const certifications = [
 
 const careerTools = [
   {
+    id: 'ai-viva-examiner',
+    title: 'AI Viva & Mock Interview Examiner',
+    description: 'Voice-interactive oral board examination & technical interview defense simulator',
+    icon: Mic,
+    color: 'violet',
+    features: ['Speech synthesis & mic recognition', 'Strict vs supportive AI personas', '4-round adaptive technical defense', 'Instant signed report card & rubric'],
+    action: 'Launch Voice Viva',
+  },
+  {
     id: 'resume-builder',
     title: 'EE Resume Builder',
     description: 'Industry-optimized templates for electrical engineers',
     icon: FileText,
-    color: 'violet',
+    color: 'orange',
     features: ['ATS-friendly templates', 'Technical skills showcase', 'Project highlights', 'Export to PDF/DOCX'],
     action: 'Create Resume',
+  },
+  {
+    id: 'interview-prep',
+    title: 'Interview Question Bank',
+    description: 'Common EE interview questions & answers with sample solutions',
+    icon: MessageSquare,
+    color: 'cyan',
+    features: ['200+ technical questions', 'Behavioral scenarios', 'Audio voice viva integration', 'Expert tips'],
+    action: 'Browse Questions',
   },
   {
     id: 'portfolio',
     title: 'Portfolio Generator',
     description: 'Showcase your projects and achievements',
     icon: Palette,
-    color: 'orange',
+    color: 'violet',
     features: ['Visual project cards', 'Schematic displays', 'GitHub integration', 'Custom domains'],
     action: 'Build Portfolio',
-  },
-  {
-    id: 'interview-prep',
-    title: 'Interview Prep',
-    description: 'Common EE interview questions & answers',
-    icon: MessageSquare,
-    color: 'cyan',
-    features: ['200+ technical questions', 'Behavioral scenarios', 'Video practice', 'Expert tips'],
-    action: 'Start Practicing',
   },
 ];
 
@@ -321,10 +333,25 @@ const studyPlans = [
 ];
 
 export default function CareerPage() {
+  const [activeTab, setActiveTab] = useState('certifications');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [selectedLocation, setSelectedLocation] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [activeCareerTool, setActiveCareerTool] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const tabParam = params.get('tab');
+      const toolParam = params.get('tool');
+      if (tabParam) {
+        setActiveTab(tabParam);
+      }
+      if (toolParam) {
+        setActiveCareerTool(toolParam);
+      }
+    }
+  }, []);
 
   const filteredJobs = jobListings.filter(job => {
     const matchesCategory = selectedCategory === 'all' || job.category.toLowerCase() === selectedCategory;
@@ -445,7 +472,7 @@ export default function CareerPage() {
       {/* Main Content with Enhanced Tabs */}
       <section className="py-12 px-4">
         <div className="container mx-auto max-w-7xl">
-          <Tabs defaultValue="certifications" className="space-y-8">
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-8">
             <TabsList className="glass-surface border border-white/10 p-1.5 grid w-full grid-cols-3 rounded-2xl backdrop-blur-xl">
               <TabsTrigger 
                 value="certifications" 
@@ -744,6 +771,7 @@ export default function CareerPage() {
                     ← Back to Career Tools
                   </Button>
                   
+                  {activeCareerTool === 'ai-viva-examiner' && <CareerVivaExaminer />}
                   {activeCareerTool === 'resume-builder' && <ResumeBuilder />}
                   {activeCareerTool === 'interview-prep' && <InterviewPrep />}
                   {activeCareerTool === 'portfolio' && (

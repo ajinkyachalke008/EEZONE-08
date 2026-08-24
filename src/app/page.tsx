@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useMemo, lazy, Suspense, useEffect } from 'react';
-import { Search, Briefcase, GraduationCap, Wrench, ChevronRight, Star, Zap, Calculator, BookOpen, Cpu, Settings, Lightbulb, CircuitBoard, FileText, Gauge, GraduationCap as EducationIcon, ClipboardList, Scale, Wrench as DiagnosticIcon, Code, Sparkles, Headphones, Globe, Beaker, Box, Shield, Clock, Calendar, TrendingUp, MapPin, FileCheck, BarChart, Thermometer, PlayCircle, Smartphone, Camera, Brain, Award, Building2, Users, CheckCircle2, Target, DollarSign, MessageSquare, FileCheck as FileCheckIcon, Loader2, Battery, RotateCw, Activity, Plug, LayoutDashboard, ShieldAlert } from 'lucide-react';
+import { Search, Briefcase, GraduationCap, Wrench, ChevronRight, ArrowRight, Star, Zap, Calculator, BookOpen, Cpu, Settings, Lightbulb, CircuitBoard, FileText, Gauge, GraduationCap as EducationIcon, ClipboardList, Scale, Wrench as DiagnosticIcon, Code, Sparkles, Headphones, Globe, Beaker, Box, Shield, Clock, Calendar, TrendingUp, MapPin, FileCheck, BarChart, Thermometer, PlayCircle, Smartphone, Camera, Brain, Award, Building2, Users, CheckCircle2, Target, DollarSign, MessageSquare, FileCheck as FileCheckIcon, Loader2, Battery, RotateCw, Activity, Plug, LayoutDashboard, ShieldAlert, Mic, Radio } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -2125,19 +2125,24 @@ export default function Home() {
               >
                 <Card className="glass-surface border-2 border-[#FF6B00]/30 hover:border-[#FF6B00]/60 hover:shadow-glowOrange transition-all h-full">
                   <CardHeader>
-                    <div className="p-4 w-fit rounded-xl gradient-fire mb-4">
-                      <FileText className="h-8 w-8 text-white" />
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="p-4 w-fit rounded-xl gradient-fire">
+                        <Mic className="h-8 w-8 text-white" />
+                      </div>
+                      <Badge className="gradient-fire text-white text-xs border-0 px-2 py-0.5">
+                        Voice AI Active
+                      </Badge>
                     </div>
-                    <CardTitle className="text-white text-2xl mb-2">Career Tools</CardTitle>
+                    <CardTitle className="text-white text-2xl mb-2">Career Tools & AI Viva</CardTitle>
                     <CardDescription className="text-[#B8A7E0]">
-                      Resume Builder, Portfolio, Interview Coach
+                      AI Oral Board Examiner, Resume Builder, Mock Interviews
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div className="flex items-center gap-4 text-sm">
                       <div className="flex items-center gap-2">
-                        <FileText className="h-5 w-5 text-[#FF6B00]" />
-                        <span className="text-white font-semibold">50+ Templates</span>
+                        <Mic className="h-5 w-5 text-[#FF6B00]" />
+                        <span className="text-white font-semibold">Live Audio Viva</span>
                       </div>
                       <div className="flex items-center gap-2">
                         <MessageSquare className="h-5 w-5 text-[#FF6B00]" />
@@ -2145,7 +2150,7 @@ export default function Home() {
                       </div>
                     </div>
                     <ul className="space-y-2">
-                      {['ATS-friendly resumes', 'Portfolio generator', 'Interview prep AI', 'Salary negotiation'].map((feature, idx) => (
+                      {['Voice AI Technical Viva Voce', 'Strict & supportive AI personas', 'ATS-friendly resume builder', 'Instant rubric grade sheet'].map((feature, idx) => (
                         <li key={idx} className="flex items-center gap-2 text-[#B8A7E0] text-sm">
                           <CheckCircle2 className="h-4 w-4 text-[#FF6B00]" />
                           {feature}
@@ -2154,9 +2159,9 @@ export default function Home() {
                     </ul>
                   </CardContent>
                   <CardFooter>
-                    <Link href="/career?tab=career-tools" className="w-full">
+                    <Link href="/career?tab=career-tools&tool=ai-viva-examiner" className="w-full">
                       <Button className="w-full gradient-fire hover:shadow-glowOrange text-white font-semibold rounded-xl">
-                        Access Career Tools
+                        Launch AI Viva Examiner
                       </Button>
                     </Link>
                   </CardFooter>
@@ -2211,6 +2216,43 @@ export default function Home() {
                 </Card>
               </motion.div>
             </div>
+
+            {/* AI Technical Viva Spotlight Banner */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              viewport={{ once: true }}
+              className="glass-surface border-2 border-[#9C4AFF]/40 rounded-2xl p-6 md:p-8 mb-8 relative overflow-hidden shadow-[0_0_30px_rgba(156,74,255,0.25)]"
+            >
+              <div className="absolute top-0 right-0 w-80 h-80 bg-[#FF6B00]/15 blur-[80px] rounded-full pointer-events-none" />
+              <div className="flex flex-col lg:flex-row items-center justify-between gap-6 relative z-10">
+                <div className="flex items-center gap-4">
+                  <div className="p-4 rounded-2xl gradient-violet shadow-glowViolet flex items-center justify-center flex-shrink-0">
+                    <Mic className="h-10 w-10 text-white animate-pulse" />
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2 mb-1">
+                      <Badge className="gradient-fire text-white border-0 text-xs">Featured Career Tool</Badge>
+                      <Badge variant="outline" className="border-white/20 text-[#00E5FF] text-xs">Voice & STT Active</Badge>
+                    </div>
+                    <h3 className="text-xl md:text-2xl font-bold text-white">
+                      Practice Technical Viva & Mock Interviews with AI Voice Examiner
+                    </h3>
+                    <p className="text-[#B8A7E0] text-sm mt-1 max-w-2xl">
+                      Experience 4-round adaptive technical defenses for FE Electrical, PE Power, NEC safety codes, and electronics with real-time voice synthesis and official scorecards.
+                    </p>
+                  </div>
+                </div>
+                <Link href="/career?tab=career-tools&tool=ai-viva-examiner" className="w-full lg:w-auto flex-shrink-0">
+                  <Button size="lg" className="w-full lg:w-auto gradient-violet hover:shadow-glowViolet text-white font-bold px-8 py-6 rounded-xl text-base group">
+                    <Radio className="h-5 w-5 mr-2 animate-pulse" />
+                    Start AI Viva Voice Exam
+                    <ArrowRight className="h-5 w-5 ml-2 group-hover:translate-x-1 transition-transform" />
+                  </Button>
+                </Link>
+              </div>
+            </motion.div>
 
             {/* Stats Banner */}
             <motion.div

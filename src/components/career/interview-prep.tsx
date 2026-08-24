@@ -20,7 +20,10 @@ import {
   Video,
   Star,
   Eye,
+  Radio,
+  Sparkles,
 } from 'lucide-react';
+import { AIVivaExaminerDialog } from '@/components/viva/ai-viva-examiner-dialog';
 
 interface InterviewQuestion {
   id: number;
@@ -145,6 +148,7 @@ export function InterviewPrep() {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [showAnswer, setShowAnswer] = useState(false);
   const [practiceMode, setPracticeMode] = useState<'read' | 'video' | 'audio'>('read');
+  const [isVivaDialogOpen, setIsVivaDialogOpen] = useState(false);
 
   const filteredQuestions = selectedCategory === 'all' 
     ? interviewQuestions 
@@ -291,16 +295,31 @@ export function InterviewPrep() {
               )}
 
               {practiceMode === 'audio' && (
-                <Card className="glass-surface border-[#00E5FF]/30">
-                  <CardContent className="p-8 text-center">
-                    <Mic className="h-16 w-16 text-[#00E5FF] mx-auto mb-4" />
-                    <h4 className="text-white font-semibold mb-2">Audio Practice Mode</h4>
-                    <p className="text-[#B8A7E0] text-sm mb-4">
-                      Practice your answer verbally and get AI feedback on content and clarity
-                    </p>
-                    <Button className="gradient-aqua hover:shadow-glowCyan text-white">
-                      <Mic className="h-4 w-4 mr-2" />
-                      Start Speaking
+                <Card className="glass-surface border-[#00E5FF]/30 relative overflow-hidden">
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-[#00E5FF]/10 rounded-full blur-2xl pointer-events-none" />
+                  <CardContent className="p-8 text-center space-y-4">
+                    <div className="relative inline-block">
+                      <div className="p-4 rounded-full gradient-aqua shadow-glowCyan inline-flex items-center justify-center">
+                        <Mic className="h-10 w-10 text-white animate-pulse" />
+                      </div>
+                      <span className="absolute -top-1 -right-1 flex h-4 w-4">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#00E5FF] opacity-75"></span>
+                        <span className="relative inline-flex rounded-full h-4 w-4 bg-[#00E5FF]"></span>
+                      </span>
+                    </div>
+                    <div>
+                      <h4 className="text-white font-bold text-lg mb-1">AI Viva Voce Voice Mode</h4>
+                      <p className="text-[#B8A7E0] text-sm max-w-md mx-auto">
+                        Speak your answers with real-time speech recognition, get voice synthesized examiner responses, and earn a rubric report card.
+                      </p>
+                    </div>
+                    <Button 
+                      onClick={() => setIsVivaDialogOpen(true)}
+                      className="gradient-aqua hover:shadow-glowCyan text-white font-bold px-8 py-6 rounded-xl text-base group"
+                    >
+                      <Radio className="h-5 w-5 mr-2 text-white animate-pulse" />
+                      Launch Live Voice Viva
+                      <Sparkles className="h-4 w-4 ml-2 text-yellow-300 group-hover:scale-125 transition-transform" />
                     </Button>
                   </CardContent>
                 </Card>
@@ -423,6 +442,19 @@ export function InterviewPrep() {
           </div>
         </CardContent>
       </Card>
+
+      {/* Live AI Viva Voce Examiner Dialog */}
+      <AIVivaExaminerDialog
+        isOpen={isVivaDialogOpen}
+        onClose={() => setIsVivaDialogOpen(false)}
+        topic={`EE Interview: ${currentQuestion.category.toUpperCase()}`}
+        category={`Technical Interview - ${currentQuestion.category}`}
+        experimentCode={`Q${currentQuestion.id}`}
+        governingTheory={currentQuestion.sampleAnswer}
+        initialQuestion={currentQuestion.question}
+        studentName="Engineer Candidate"
+        rollNo="INT-EE-2026"
+      />
     </div>
   );
 }
