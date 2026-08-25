@@ -10,6 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { motion } from 'framer-motion';
+import { CalculatorShell } from '@/components/calculator/CalculatorShell';
 
 export default function CalculatorsPage() {
   // Ohm's Law Calculator
@@ -462,11 +463,24 @@ export default function CalculatorsPage() {
               Calculators & Tools
             </h1>
           </div>
-          <p className="text-lg text-[#B8A7E0]">Professional electrical engineering calculators for everyday use</p>
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <p className="text-lg text-[#B8A7E0]">Professional electrical engineering calculators for everyday use</p>
+            <a
+              href="/tools/scientific-calculator"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-[#E8B93F] to-[#8A6A22] text-[#08090C] font-bold text-sm hover:opacity-90 transition-opacity w-fit shadow-lg shadow-[#E8B93F]/20"
+            >
+              <Calculator className="h-4 w-4" />
+              ⚡ Launch Full Scientific Calculator
+            </a>
+          </div>
         </motion.div>
 
-        <Tabs defaultValue="ohms-law" className="space-y-6" id="calculators">
-          <TabsList className="grid w-full grid-cols-2 lg:grid-cols-4 gap-2 glass-surface border border-white/10 p-2">
+        <Tabs defaultValue="scientific" className="space-y-6" id="calculators">
+          <TabsList className="grid w-full grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 glass-surface border border-white/10 p-2">
+            <TabsTrigger value="scientific" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#E8B93F] data-[state=active]:to-[#8A6A22] data-[state=active]:text-[#08090C] font-bold text-[#F5D785] col-span-2 sm:col-span-3 lg:col-span-1 border border-[#E8B93F]/40 shadow-sm shadow-[#E8B93F]/20">
+              <Calculator className="h-4 w-4 mr-2 text-[#E8B93F] data-[state=active]:text-[#08090C]" />
+              ⚡ Scientific
+            </TabsTrigger>
             <TabsTrigger value="ohms-law" className="data-[state=active]:gradient-violet data-[state=active]:text-white text-[#B8A7E0]">
               <Zap className="h-4 w-4 mr-2" />
               Ohm's Law
@@ -500,6 +514,18 @@ export default function CalculatorsPage() {
               Transformer
             </TabsTrigger>
           </TabsList>
+
+          {/* Scientific Calculator Full Integration */}
+          <TabsContent value="scientific">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4 }}
+              className="rounded-2xl overflow-hidden border border-[#E8B93F]/30 shadow-2xl shadow-black/80"
+            >
+              <CalculatorShell />
+            </motion.div>
+          </TabsContent>
 
           {/* Ohm's Law Calculator */}
           <TabsContent value="ohms-law">
