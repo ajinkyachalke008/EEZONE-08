@@ -485,7 +485,6 @@ See the full [LICENSE](https://github.com/ajinkyachalke008/EEZONE-08/blob/main/L
 <div align="center">
 
 **⚡ EE ZONE — Built for Engineers, by an Engineer ⚡**
-
 *If this project helped you, please ⭐ star the repository*
 
 </div>
