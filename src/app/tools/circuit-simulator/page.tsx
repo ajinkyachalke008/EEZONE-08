@@ -263,6 +263,14 @@ const COMPONENT_PORTS: Record<string, string[]> = Object.fromEntries(
     .filter(([type]) => MULTI_PIN_COMPONENT_TYPES.has(type))
     .map(([type, reference]) => [type, reference.pins.map(pin => pin.name)])
 );
+const COMPONENT_SUPPORT_TOTALS = COMPONENT_LIBRARY.reduce((totals, component) => {
+  const support = getComponentSimulationSupport(component.type);
+  if (support.kind === 'design-only') totals.designOnly += 1;
+  else if (support.accuracy === 'approximate') totals.approximate += 1;
+  else if (support.accuracy === 'marker') totals.markers += 1;
+  else totals.modeled += 1;
+  return totals;
+}, { modeled: 0, approximate: 0, markers: 0, designOnly: 0 });
 
 export default function CircuitSimulatorPage() {
   const [isRunning, setIsRunning] = useState(false);
@@ -335,6 +343,7 @@ export default function CircuitSimulatorPage() {
   
   const [selectedCategory, setSelectedCategory] = useState<string>('power');
   const [componentSearch, setComponentSearch] = useState('');
+  const [componentSupportFilter, setComponentSupportFilter] = useState<'all' | 'simulated' | 'design-only'>('all');
   const [validationErrors, setValidationErrors] = useState<ValidationError[]>([]);
   const [showValidation, setShowValidation] = useState(false);
   const [selectedTemplate, setSelectedTemplate] = useState<CircuitTemplate | null>(null);
@@ -367,10 +376,15 @@ export default function CircuitSimulatorPage() {
   const canvasRef = useRef<HTMLDivElement>(null);
 
   const filteredComponents = useMemo(() => {
-    return componentSearch 
+    const matchesSearchAndCategory = componentSearch 
       ? searchComponents(componentSearch)
       : getComponentsByCategory(selectedCategory);
-  }, [componentSearch, selectedCategory]);
+    if (componentSupportFilter === 'all') return matchesSearchAndCategory;
+    return matchesSearchAndCategory.filter(component => {
+      const isSimulated = getComponentSimulationSupport(component.type).kind === 'spice';
+      return componentSupportFilter === 'simulated' ? isSimulated : !isSimulated;
+    });
+  }, [componentSearch, selectedCategory, componentSupportFilter]);
 
   const saveToHistory = useCallback(() => {
     const newState: HistoryState = {
@@ -1988,6 +2002,35 @@ export default function CircuitSimulatorPage() {
                         <Input value={componentSearch} onChange={(e) => setComponentSearch(e.target.value)} placeholder="Search..." className="pl-10 glass-surface border-white/20 text-white placeholder:text-[#B8A7E0]" />
                       </div>
                     </div>
+
+                    <div className="mb-4 rounded-lg border border-cyan-400/20 bg-slate-950/60 p-2.5">
+                      <div className="mb-2 flex items-center justify-between gap-2 text-[10px]">
+                        <span className="font-bold uppercase tracking-wide text-slate-300">Component support</span>
+                        <span className="text-slate-400">{COMPONENT_LIBRARY.length} parts</span>
+                      </div>
+                      <div className="mb-2 grid grid-cols-4 gap-1 text-center text-[9px]">
+                        <span className="rounded bg-emerald-500/10 px-1 py-1 text-emerald-300">{COMPONENT_SUPPORT_TOTALS.modeled} model</span>
+                        <span className="rounded bg-sky-500/10 px-1 py-1 text-sky-300">{COMPONENT_SUPPORT_TOTALS.approximate} approx</span>
+                        <span className="rounded bg-cyan-500/10 px-1 py-1 text-cyan-300">{COMPONENT_SUPPORT_TOTALS.markers} probe</span>
+                        <span className="rounded bg-amber-500/10 px-1 py-1 text-amber-300">{COMPONENT_SUPPORT_TOTALS.designOnly} draw</span>
+                      </div>
+                      <div className="grid grid-cols-3 gap-1" role="group" aria-label="Filter components by simulation support">
+                        {([
+                          ['all', 'All'],
+                          ['simulated', 'Simulated'],
+                          ['design-only', 'Draw only']
+                        ] as const).map(([filter, label]) => (
+                          <button
+                            key={filter}
+                            type="button"
+                            onClick={() => setComponentSupportFilter(filter)}
+                            aria-pressed={componentSupportFilter === filter}
+                            className={`rounded px-1.5 py-1 text-[9px] font-semibold transition-colors ${componentSupportFilter === filter ? 'bg-cyan-500/20 text-cyan-100 ring-1 ring-cyan-400/40' : 'bg-white/5 text-slate-400 hover:bg-white/10 hover:text-white'}`}
+                          >{label}</button>
+                        ))}
+                      </div>
+                      <p className="mt-2 text-[9px] leading-relaxed text-slate-500">SPICE = direct model · approx = simplified model · draw only = not simulated</p>
+                    </div>
                     
                     {!componentSearch && (
                       <Tabs value={selectedCategory} onValueChange={setSelectedCategory} className="mb-4">
@@ -2003,6 +2046,8 @@ export default function CircuitSimulatorPage() {
                       <div className="space-y-2 text-sm pr-2">
                         {filteredComponents.map((comp) => {
                           const support = getComponentSimulationSupport(comp.type);
+                          const pins = COMPONENT_REFERENCE[comp.type]?.pins ?? [];
+                          const pinNames = pins.map(pin => pin.name).join(' · ');
                           return (
                           <div 
                             key={comp.type} 
@@ -2012,7 +2057,7 @@ export default function CircuitSimulatorPage() {
                             className="p-2.5 border border-white/10 rounded-lg hover:border-[#00E5FF]/50 hover:bg-[#00E5FF]/10 cursor-pointer transition-all group glass-surface"
                             title={`${support.kind === 'spice' ? support.detail : `Design only. ${support.detail}`} Click or drag to add to canvas.`}
                           >
-                            <div className="flex items-center gap-3">
+                            <div className="flex items-start gap-2.5">
                               <div className="w-10 h-10 flex items-center justify-center bg-white/5 rounded-lg group-hover:bg-white/10 text-xl">
                                 <span>{comp.icon}</span>
                               </div>
@@ -2023,20 +2068,24 @@ export default function CircuitSimulatorPage() {
                                     {support.kind === 'spice' ? (support.accuracy === 'approximate' ? 'APPROX' : support.accuracy === 'marker' ? 'PROBE' : 'SPICE') : 'DRAW ONLY'}
                                   </span>
                                 </div>
-                                <p className="text-[#B8A7E0] text-[10px] truncate">{comp.description}</p>
+                                <p className="mt-0.5 text-[#B8A7E0] text-[10px] leading-relaxed">{comp.description}</p>
+                                <p className="mt-1 text-[9px] leading-relaxed text-cyan-100/80" title={pins.map(pin => `${pin.name}: ${pin.description}`).join(' | ')}>
+                                  <span className="font-bold uppercase tracking-wide text-cyan-300">Pins:</span> {pinNames || 'See reference'}
+                                </p>
+                                <p className={`mt-1 text-[9px] leading-relaxed ${support.kind === 'spice' ? 'text-slate-400' : 'text-amber-200/80'}`}>{support.detail}</p>
+                                <p className="mt-1 text-[9px] font-semibold uppercase tracking-wide text-cyan-400/80">Click or drag to add</p>
                               </div>
                               <Button
                                 type="button"
                                 size="sm"
-                                variant="ghost"
+                                variant="outline"
                                 draggable={false}
                                 aria-label={`View ${comp.label} pin and working guide`}
                                 title={`Open detailed ${comp.label} reference`}
                                 onMouseDown={event => event.stopPropagation()}
                                 onClick={event => { event.stopPropagation(); showComponentReference(comp.type); }}
-                                className="h-7 shrink-0 px-1.5 text-cyan-200 hover:bg-cyan-500/15"
-                              ><Info className="h-3.5 w-3.5 mr-1" /><span className="text-[9px]">Details</span></Button>
-                              <span className="text-[10px] text-[#00E5FF] opacity-0 group-hover:opacity-100 transition-opacity font-bold">+ Add</span>
+                                className="h-8 shrink-0 border-cyan-400/30 bg-cyan-500/5 px-2 text-cyan-100 hover:bg-cyan-500/15"
+                              ><Info className="h-3.5 w-3.5 mr-1" /><span className="text-[10px]">Guide</span></Button>
                             </div>
                           </div>
                           );
