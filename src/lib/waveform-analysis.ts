@@ -195,6 +195,26 @@ export function calculateRiseFallTime(
   return { riseTime, fallTime };
 }
 
+function calculateTimeWeightedStats(time: ArrayLike<number>, values: ArrayLike<number>): { mean: number; rms: number; acRms: number } | undefined {
+  if (time.length !== values.length || time.length < 2) return undefined;
+  let duration = 0;
+  let integral = 0;
+  let squareIntegral = 0;
+  for (let i = 1; i < time.length; i++) {
+    const dt = time[i] - time[i - 1];
+    if (!Number.isFinite(dt) || dt <= 0) continue;
+    const v0 = values[i - 1];
+    const v1 = values[i];
+    duration += dt;
+    integral += dt * (v0 + v1) / 2;
+    squareIntegral += dt * (v0 * v0 + v0 * v1 + v1 * v1) / 3;
+  }
+  if (duration <= 0) return undefined;
+  const mean = integral / duration;
+  const meanSquare = squareIntegral / duration;
+  return { mean, rms: Math.sqrt(meanSquare), acRms: Math.sqrt(Math.max(0, meanSquare - mean * mean)) };
+}
+
 /**
  * Comprehensive numerical analysis of a waveform time-series
  */
@@ -221,9 +241,10 @@ export function analyzeWaveform(
   }
 
   const { min, max, pp } = calculateExtremes(values);
-  const vAvg = calculateMean(values);
-  const vRms = calculateRms(values);
-  const vAcRms = calculateAcRms(values);
+  const weighted = calculateTimeWeightedStats(time, values);
+  const vAvg = weighted?.mean ?? calculateMean(values);
+  const vRms = weighted?.rms ?? calculateRms(values);
+  const vAcRms = weighted?.acRms ?? calculateAcRms(values);
   const { frequency, period, dutyCycle } = calculateFrequencyAndPeriod(time, values, triggerLevel);
   const { riseTime, fallTime } = calculateRiseFallTime(time, values);
 
@@ -413,4 +434,5 @@ export function generateScopePolyline(
 
   return points.map(p => `${p.x.toFixed(2)},${p.y.toFixed(2)}`).join(' ');
 }
+
 

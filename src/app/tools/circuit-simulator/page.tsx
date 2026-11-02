@@ -40,16 +40,15 @@ import {
   type ValidationError 
 } from '@/lib/circuit-validator';
 import {
-  runSimulation,
-  updateSimulation,
   type SimulationResult,
-  type SimulationSettings,
-  type SimulationComponent
+  type SimulationSettings
 } from '@/lib/simulation-engine';
 import {
   generateSpiceNetlist,
   downloadNetlist,
-  isSpiceEligible
+  isSpiceEligible,
+  getComponentSimulationSupport,
+  getUnsupportedSimulationComponents
 } from '@/lib/spice-netlist-generator';
 import { runSpiceSimulation } from '@/lib/spice-runner';
 import { MeasurementBus } from '@/lib/measurement-bus';
@@ -57,7 +56,9 @@ import { InteractiveMultimeter } from '@/components/circuit/interactive-multimet
 import { InteractiveOscilloscope } from '@/components/circuit/interactive-oscilloscope';
 import { SignalGeneratorPanel } from '@/components/circuit/signal-generator-panel';
 import { EnhancedComponentProperties } from '@/components/circuit/enhanced-component-properties';
+import { ComponentReferenceDialog } from '@/components/circuit/component-reference-dialog';
 import type { SignalGeneratorConfig } from '@/lib/instrument-types';
+import { COMPONENT_REFERENCE, getComponentReference } from '@/lib/component-reference';
 import {
   Dialog,
   DialogContent,
@@ -70,11 +71,11 @@ import { Textarea } from '@/components/ui/textarea';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
 // Enhanced component SVG symbols for professional rendering
-const ComponentSymbol = ({ type, rotation = 0, isActive = false }: { type: string; rotation?: number; isActive?: boolean }) => {
+const ComponentSymbol = ({ type, rotation = 0, isActive = false }: { type: string; rotation?: number; isActive?: boolean }): React.ReactElement => {
   const color = isActive ? '#00E5FF' : '#374151';
   const glowColor = isActive ? '#00E5FF40' : 'transparent';
-  
-  const symbols: Record<string, JSX.Element> = {
+
+  const symbols: Record<string, React.ReactElement> = {
     resistor: (
       <svg width="60" height="60" viewBox="0 0 60 60">
         <filter id="glow">
@@ -201,7 +202,7 @@ const ComponentSymbol = ({ type, rotation = 0, isActive = false }: { type: strin
       </svg>
     ),
   };
-  
+
   return (
     <div style={{ transform: `rotate(${rotation}deg)` }}>
       {symbols[type] || (
@@ -213,7 +214,7 @@ const ComponentSymbol = ({ type, rotation = 0, isActive = false }: { type: strin
   );
 };
 
-interface Component {
+export interface Component {
   id: string;
   type: string;
   x: number;
@@ -223,12 +224,13 @@ interface Component {
   rotation: number;
   locked?: boolean;
   label?: string;
+  params?: Record<string, number>;
 }
 
-interface Wire {
+export interface Wire {
   id: string;
-  from: { componentId: string; terminal: 'top' | 'bottom' | 'left' | 'right' };
-  to: { componentId: string; terminal: 'top' | 'bottom' | 'left' | 'right' };
+  from: { componentId: string; terminal: string };
+  to: { componentId: string; terminal: string };
   color: string;
   netLabel?: string;
   path: { x: number; y: number }[];
@@ -240,7 +242,7 @@ interface HistoryState {
 }
 
 interface DragWire {
-  from: { componentId: string; terminal: 'top' | 'bottom' | 'left' | 'right'; x: number; y: number };
+  from: { componentId: string; terminal: string; x: number; y: number };
   currentX: number;
   currentY: number;
 }
@@ -248,6 +250,18 @@ interface DragWire {
 const wireColors = ['#FF00C8', '#00E5FF', '#9C4AFF', '#FF6B00', '#00FF88', '#FFD700', '#FF4444', '#44FF44'];
 
 const GRID_SIZE = 20;
+
+const MULTI_PIN_COMPONENT_TYPES = new Set([
+  'logic_and', 'logic_or', 'logic_not', 'logic_nand', 'logic_nor', 'logic_xor',
+  'shift_register', 'counter', 'arduino_uno', 'arduino_nano', 'esp32', 'esp8266',
+  'raspberry_pi_pico', 'ultrasonic', 'temp_sensor', 'pir_sensor', 'servo', 'stepper',
+  'lcd_display', 'oled_display', 'seven_segment', 'buzzer', 'relay', '555_timer'
+]);
+const COMPONENT_PORTS: Record<string, string[]> = Object.fromEntries(
+  Object.entries(COMPONENT_REFERENCE)
+    .filter(([type]) => MULTI_PIN_COMPONENT_TYPES.has(type))
+    .map(([type, reference]) => [type, reference.pins.map(pin => pin.name)])
+);
 
 export default function CircuitSimulatorPage() {
   const [isRunning, setIsRunning] = useState(false);
@@ -270,16 +284,17 @@ export default function CircuitSimulatorPage() {
     transientTimeStep: 0.0001
   });
   const [liveEditMode, setLiveEditMode] = useState(false);
-  
-  const [voltage, setVoltage] = useState(0);
-  const [current, setCurrent] = useState(0);
-  const [resistance, setResistance] = useState(0);
-  const [power, setPower] = useState(0);
-  const [waveform, setWaveform] = useState<number[]>([]);
   const [engineUsed, setEngineUsed] = useState<'spice-ts' | 'legacy-mna'>('spice-ts');
   const [spiceModalOpen, setSpiceModalOpen] = useState(false);
   const [currentNetlist, setCurrentNetlist] = useState('');
-  const [snappedTerminal, setSnappedTerminal] = useState<{ componentId: string; terminal: 'top' | 'bottom' | 'left' | 'right'; x: number; y: number } | null>(null);
+  const invalidateSimulation = useCallback(() => {
+    setSimulationResult(null);
+    setMeasurementBus(new MeasurementBus());
+    setCurrentNetlist('');
+    setIsRunning(false);
+    setLiveEditMode(false);
+  }, []);
+  const [snappedTerminal, setSnappedTerminal] = useState<{ componentId: string; terminal: string; x: number; y: number } | null>(null);
   
   // Real Virtual Laboratory Measurement Bus
   const [measurementBus, setMeasurementBus] = useState<MeasurementBus>(() => new MeasurementBus());
@@ -302,6 +317,12 @@ export default function CircuitSimulatorPage() {
   const [selectedWires, setSelectedWires] = useState<string[]>([]);
   const [wireDrawingMode, setWireDrawingMode] = useState(false);
   const [showAllTerminals, setShowAllTerminals] = useState(true);
+  const [componentReferenceOpen, setComponentReferenceOpen] = useState(false);
+  const [componentReferenceType, setComponentReferenceType] = useState<string | undefined>();
+  const showComponentReference = (type?: string) => {
+    setComponentReferenceType(type);
+    setComponentReferenceOpen(true);
+  };
   const [contextMenu, setContextMenu] = useState<{
     visible: boolean;
     x: number;
@@ -701,65 +722,43 @@ export default function CircuitSimulatorPage() {
     reader.readAsText(file);
   };
 
-  const convertToSimulationComponents = useCallback((): { components: SimulationComponent[]; nodes: string[] } => {
-    const nets = buildNetlist(components, wires);
-    const simComponents: SimulationComponent[] = [];
-    const nodeSet = new Set<string>();
-    
-    components.forEach(comp => {
-      const connectedWires = wires.filter(w => 
-        w.from.componentId === comp.id || w.to.componentId === comp.id
-      );
-      
-      const componentNodes: string[] = [];
-      connectedWires.forEach(wire => {
-        const net = nets.find(n =>
-          n.components.some(nc =>
-            (nc.componentId === wire.from.componentId && nc.terminal === wire.from.terminal) ||
-            (nc.componentId === wire.to.componentId && nc.terminal === wire.to.terminal)
-          )
-        );
-        
-        if (net && !componentNodes.includes(net.label)) {
-          componentNodes.push(net.label);
-          nodeSet.add(net.label);
-        }
-      });
-      
-      while (componentNodes.length < 2) {
-        componentNodes.push('GND');
-      }
-      
-      simComponents.push({
-        id: comp.id,
-        type: comp.type,
-        value: comp.value || 0,
-        unit: comp.unit || '',
-        nodes: componentNodes
-      });
-    });
-    
-    return {
-      components: simComponents,
-      nodes: Array.from(nodeSet)
-    };
-  }, [components, wires]);
-
-  const runEnhancedSimulation = useCallback(async () => {
-    if (components.length === 0) {
+  const runEnhancedSimulation = useCallback(async (circuit?: { components: Component[]; wires: Wire[] }) => {
+    const circuitComponents = circuit?.components ?? components;
+    const circuitWires = circuit?.wires ?? wires;
+    if (circuitComponents.length === 0) {
+      setSimulationResult(null);
+      setMeasurementBus(new MeasurementBus());
       toast.error('Add components to the circuit first');
       return;
     }
     
-    if (wires.length === 0) {
+    if (circuitWires.length === 0) {
+      setSimulationResult(null);
+      setMeasurementBus(new MeasurementBus());
       toast.warning('Add wires to connect components');
       return;
     }
 
+    const unsupported = getUnsupportedSimulationComponents(circuitComponents as any);
+    if (unsupported.length > 0) {
+      setSimulationResult(null);
+      setMeasurementBus(new MeasurementBus());
+      setCurrentNetlist('');
+      setIsRunning(false);
+      setLiveEditMode(false);
+      const names = [...new Set(unsupported.map(component => component.label || COMPONENT_LIBRARY.find(item => item.type === component.type)?.label || component.type))];
+      toast.error(`Cannot simulate yet: ${names.join(', ')}. These parts are marked DRAW ONLY in the catalog.`);
+      return;
+    }
+
     // Pre-flight circuit validation
-    const valErrors = validateCircuit(components, wires);
+    const valErrors = validateCircuit(circuitComponents, circuitWires);
     const criticalErrors = valErrors.filter(e => e.severity >= 4);
     if (criticalErrors.length > 0) {
+      setSimulationResult(null);
+      setMeasurementBus(new MeasurementBus());
+      setIsRunning(false);
+      setLiveEditMode(false);
       setValidationErrors(valErrors);
       setShowValidation(true);
       toast.error(`Circuit issue: ${criticalErrors[0].message}`);
@@ -770,157 +769,88 @@ export default function CircuitSimulatorPage() {
     setLiveEditMode(true);
 
     // Auto-detect mode if AC or reactive/dynamic components are present
-    const hasDynamic = components.some(c => 
+    const hasDynamic = circuitComponents.some(c =>
       c.type === 'voltage_ac' || 
       c.type === 'signal_generator' || 
       c.type === 'capacitor' || 
-      c.type === 'inductor' || 
-      c.type === '555_timer'
+      c.type === 'inductor'
     );
     const effectiveSettings: SimulationSettings = {
       ...simulationSettings,
       mode: hasDynamic ? 'transient' : simulationSettings.mode
     };
 
-    // Try SPICE solver if circuit components are eligible
-    if (isSpiceEligible(components as any)) {
-      try {
-        const netlist = generateSpiceNetlist(components as any, wires as any, effectiveSettings);
-        setCurrentNetlist(netlist);
-        const result = await runSpiceSimulation(netlist, effectiveSettings, components as any);
-        
-        if (result.success) {
-          setSimulationResult(result);
-          setEngineUsed('spice-ts');
-          const bus = new MeasurementBus(result, `spice-${Date.now()}`, components as any);
-          setMeasurementBus(bus);
-          toast.success(`SPICE ${effectiveSettings.mode.toUpperCase()} simulation completed!`);
-
-          if (result.componentData) {
-            const firstComponent = Object.values(result.componentData)[0];
-            if (firstComponent) {
-              setVoltage(firstComponent.voltage);
-              setCurrent(firstComponent.current);
-              setPower(firstComponent.power);
-              const r = firstComponent.current > 0 ? firstComponent.voltage / firstComponent.current : 0;
-              setResistance(r);
-            }
-          }
-
-          if (result.waveforms && Object.keys(result.waveforms).length > 0) {
-            const firstWaveform = Object.values(result.waveforms)[0];
-            if (firstWaveform && firstWaveform.voltage && firstWaveform.voltage.length > 0) {
-              setWaveform(firstWaveform.voltage);
-            }
-          }
-          return;
-        } else {
-          toast.warning(`SPICE solver notice: ${result.error || 'Switching to MNA'}`);
-        }
-      } catch (spiceErr) {
-        console.warn('SPICE simulation error, falling back to legacy MNA:', spiceErr);
-      }
-    }
-
-    // Fallback to MNA solver
-    const { components: simComponents, nodes } = convertToSimulationComponents();
-    if (simComponents.length === 0) {
-      toast.error('No valid components to simulate');
-      setIsRunning(false);
-      return;
-    }
-
     try {
-      const result = runSimulation(simComponents, nodes, simulationSettings);
+      if (!isSpiceEligible(circuitComponents as any)) throw new Error('This circuit contains a component with no SPICE model.');
+      const netlist = generateSpiceNetlist(circuitComponents as any, circuitWires as any, effectiveSettings);
+      setCurrentNetlist(netlist);
+      const result = await runSpiceSimulation(netlist, effectiveSettings, circuitComponents as any);
+      if (!result.success) throw new Error(result.error || 'SPICE simulation failed.');
       setSimulationResult(result);
-      setEngineUsed('legacy-mna');
-      const bus = new MeasurementBus(result, `mna-${Date.now()}`, components as any);
+      setEngineUsed('spice-ts');
+      const bus = new MeasurementBus(result, `spice-${Date.now()}`, circuitComponents as any);
       setMeasurementBus(bus);
-      
-      if (result.success) {
-        toast.info(`Legacy MNA ${simulationSettings.mode.toUpperCase()} simulation completed`);
-        
-        if (simulationSettings.mode === 'dc' && result.componentData) {
-          const firstComponent = Object.values(result.componentData)[0];
-          if (firstComponent) {
-            setVoltage(firstComponent.voltage);
-            setCurrent(firstComponent.current);
-            setPower(firstComponent.power);
-          }
-        }
-        
-        if (result.waveforms && Object.keys(result.waveforms).length > 0) {
-          const firstWaveform = Object.values(result.waveforms)[0];
-          if (firstWaveform && firstWaveform.voltage) {
-            setWaveform(firstWaveform.voltage);
-          }
-        }
-      } else {
-        toast.error(`Simulation failed: ${result.error}`);
-        setIsRunning(false);
-        setLiveEditMode(false);
-      }
+      setIsRunning(false);
+      toast.success(`SPICE ${effectiveSettings.mode.toUpperCase()} simulation completed!`);
     } catch (error) {
-      toast.error('Simulation engine error');
-      console.error(error);
+      const message = error instanceof Error ? error.message : 'SPICE simulation failed.';
+      setSimulationResult(null);
+      setMeasurementBus(new MeasurementBus());
       setIsRunning(false);
       setLiveEditMode(false);
+      toast.error(`Simulation failed: ${message}`);
+      console.error(error);
     }
-  }, [components, wires, simulationSettings, convertToSimulationComponents]);
+  }, [components, wires, simulationSettings]);
 
-  const updateComponentValueLive = useCallback(async (id: string, value: number) => {
+  const updateComponentValueLive = useCallback(async (id: string, value: number, params?: Record<string, any>) => {
     const numericVal = isNaN(value) ? 0 : value;
 
     const updatedComponents = components.map(c => 
-      c.id === id ? { ...c, value: numericVal } : c
+      c.id === id ? { ...c, value: numericVal, ...(params ? { params } : {}) } : c
     );
     setComponents(updatedComponents);
-    setSelectedComponent(prev => prev && prev.id === id ? { ...prev, value: numericVal } : prev);
+    setSelectedComponent(prev => prev && prev.id === id ? { ...prev, value: numericVal, ...(params ? { params } : {}) } : prev);
 
     // Auto-update simulation & MeasurementBus so Oscilloscope/Multimeter update immediately
+    if (!isSpiceEligible(updatedComponents as any)) {
+      setSimulationResult(null);
+      setMeasurementBus(new MeasurementBus());
+      setCurrentNetlist('');
+      return;
+    }
+
     const hasDynamic = updatedComponents.some(c => 
-      c.type === 'voltage_ac' || c.type === 'signal_generator' || c.type === 'capacitor' || c.type === 'inductor' || c.type.includes('555')
+      c.type === 'voltage_ac' || c.type === 'signal_generator' || c.type === 'capacitor' || c.type === 'inductor'
     );
     const effectiveSettings: SimulationSettings = {
       ...simulationSettings,
       mode: hasDynamic ? 'transient' : simulationSettings.mode
     };
 
-    if (isSpiceEligible(updatedComponents as any)) {
-      try {
-        const netlist = generateSpiceNetlist(updatedComponents as any, wires as any, effectiveSettings);
-        setCurrentNetlist(netlist);
-        const newResult = await runSpiceSimulation(netlist, effectiveSettings, updatedComponents as any);
-        if (newResult.success) {
-          setSimulationResult(newResult);
-          const bus = new MeasurementBus(newResult, `spice-${Date.now()}`, updatedComponents as any);
-          setMeasurementBus(bus);
-          return;
-        }
-      } catch (e) {
-        console.warn('SPICE live update error:', e);
-      }
-    }
-
     try {
-      const { components: simComponents, nodes } = convertToSimulationComponents();
-      const updatedSimComponents = simComponents.map(sc =>
-        sc.id === id ? { ...sc, value: numericVal } : sc
-      );
-      const newResult = runDcSimulation(updatedSimComponents, nodes, effectiveSettings);
-      if (newResult.success) {
-        setSimulationResult(newResult);
-        const bus = new MeasurementBus(newResult, `mna-${Date.now()}`, updatedComponents as any);
-        setMeasurementBus(bus);
-      }
+      const netlist = generateSpiceNetlist(updatedComponents as any, wires as any, effectiveSettings);
+      setCurrentNetlist(netlist);
+      const newResult = await runSpiceSimulation(netlist, effectiveSettings, updatedComponents as any);
+      if (!newResult.success) throw new Error(newResult.error || 'SPICE simulation failed.');
+      setSimulationResult(newResult);
+      const bus = new MeasurementBus(newResult, `spice-${Date.now()}`, updatedComponents as any);
+      setMeasurementBus(bus);
     } catch (e) {
+      setSimulationResult(null);
+      setMeasurementBus(new MeasurementBus());
       console.warn('Simulation live update fallback error:', e);
     }
-  }, [components, wires, simulationSettings, convertToSimulationComponents]);
+  }, [components, wires, simulationSettings]);
 
   const handleExportNetlist = () => {
     if (components.length === 0) {
       toast.error('Add components to generate a SPICE netlist');
+      return;
+    }
+    const unsupported = getUnsupportedSimulationComponents(components as any);
+    if (unsupported.length > 0) {
+      toast.error(`Cannot export a runnable SPICE netlist: ${unsupported.map(c => c.label || c.type).join(', ')} have no model.`);
       return;
     }
     const netlist = generateSpiceNetlist(components as any, wires as any, simulationSettings);
@@ -932,6 +862,11 @@ export default function CircuitSimulatorPage() {
   const handlePreviewNetlist = () => {
     if (components.length === 0) {
       toast.error('Add components to generate a SPICE netlist');
+      return;
+    }
+    const unsupported = getUnsupportedSimulationComponents(components as any);
+    if (unsupported.length > 0) {
+      toast.error(`Cannot preview a runnable SPICE netlist: ${unsupported.map(c => c.label || c.type).join(', ')} have no model.`);
       return;
     }
     const netlist = generateSpiceNetlist(components as any, wires as any, simulationSettings);
@@ -955,6 +890,7 @@ export default function CircuitSimulatorPage() {
 
     setComponents(newComps);
     setWires(newWires);
+    invalidateSimulation();
     setSelectedTemplate(template);
     setShowTemplates(false);
     setSaveName(template.name);
@@ -963,7 +899,7 @@ export default function CircuitSimulatorPage() {
     toast.success(`Loaded template: ${template.name}`);
 
     // Determine simulation mode
-    const hasAc = newComps.some(c => c.type === 'voltage_ac' || c.type === 'signal_generator' || c.type.includes('555'));
+    const hasAc = newComps.some(c => c.type === 'voltage_ac' || c.type === 'signal_generator');
     const mode = hasAc ? 'transient' : 'dc';
     const settings: SimulationSettings = {
       ...simulationSettings,
@@ -973,6 +909,15 @@ export default function CircuitSimulatorPage() {
     };
     setSimulationSettings(settings);
 
+    const unsupported = getUnsupportedSimulationComponents(newComps as any);
+    if (unsupported.length > 0) {
+      setSimulationResult(null);
+      setMeasurementBus(new MeasurementBus());
+      setCurrentNetlist('');
+      toast.info(`Loaded for circuit design. Simulation is unavailable for: ${unsupported.map(c => c.label || c.type).join(', ')}.`);
+      return;
+    }
+
     // Auto-run simulation immediately so instruments show live values
     setTimeout(async () => {
       try {
@@ -981,28 +926,11 @@ export default function CircuitSimulatorPage() {
         const res = await runSpiceSimulation(netlist, settings, newComps as any);
         if (res.success) {
           setSimulationResult(res);
-          setIsRunning(true);
+          setIsRunning(false);
           setEngineUsed('spice-ts');
           const bus = new MeasurementBus(res, `auto-${Date.now()}`, newComps as any);
           setMeasurementBus(bus);
 
-          if (res.componentData) {
-            const firstComponent = Object.values(res.componentData)[0];
-            if (firstComponent) {
-              setVoltage(firstComponent.voltage);
-              setCurrent(firstComponent.current);
-              setPower(firstComponent.power);
-              const r = firstComponent.current > 0 ? firstComponent.voltage / firstComponent.current : 0;
-              setResistance(r);
-            }
-          }
-
-          if (res.waveforms && Object.keys(res.waveforms).length > 0) {
-            const firstWf = Object.values(res.waveforms)[0];
-            if (firstWf?.voltage) {
-              setWaveform(firstWf.voltage);
-            }
-          }
         }
       } catch (e) {
         console.warn('Auto-run template error:', e);
@@ -1025,8 +953,12 @@ export default function CircuitSimulatorPage() {
   };
 
   const autoLabel = () => {
-    const labeledWires = autoLabelNets(wires, components);
+    const labeledWires = autoLabelNets(wires, components).map(wire => ({
+      ...wire,
+      path: wires.find(existing => existing.id === wire.id)?.path ?? []
+    }));
     setWires(labeledWires);
+    invalidateSimulation();
     saveToHistory();
     toast.success('Net labels updated automatically');
   };
@@ -1060,12 +992,13 @@ export default function CircuitSimulatorPage() {
     };
 
     setComponents(prev => [...prev, newComponent]);
+    invalidateSimulation();
     setDraggedType(null);
     setIsDraggingFromLibrary(false);
     setDragPreviewPosition(null);
     saveToHistory();
     toast.success(`${componentInfo?.label} added to canvas`);
-  }, [draggedType, zoom, snapToGrid]);
+  }, [draggedType, zoom, snapToGrid, invalidateSimulation]);
 
   const addComponentDirectly = (type: string) => {
     const componentInfo = COMPONENT_LIBRARY.find(c => c.type === type);
@@ -1079,12 +1012,13 @@ export default function CircuitSimulatorPage() {
       x,
       y,
       value: componentInfo?.defaultValue || 0,
-      unit: componentInfo?.defaultUnit || '',
+      unit: componentInfo?.unit || '',
       rotation: 0,
       locked: false
     };
 
     setComponents(prev => [...prev, newComp]);
+    invalidateSimulation();
     saveToHistory();
     toast.success(`Added ${componentInfo?.label || type}`);
   };
@@ -1120,10 +1054,9 @@ export default function CircuitSimulatorPage() {
 
     if (simulationResult || isRunning || liveEditMode) {
       if (remainingComponents.length > 0) {
-        setTimeout(() => runSimulation(), 100);
+        void runEnhancedSimulation({ components: remainingComponents, wires: remainingWires });
       } else {
-        setSimulationResult(null);
-        setMeasurementBus(new MeasurementBus());
+        invalidateSimulation();
       }
     }
   };
@@ -1136,7 +1069,7 @@ export default function CircuitSimulatorPage() {
     toast.info('Wire removed');
 
     if (simulationResult || isRunning || liveEditMode) {
-      setTimeout(() => runSimulation(), 100);
+      void runEnhancedSimulation({ components, wires: remainingWires });
     }
   };
 
@@ -1150,7 +1083,7 @@ export default function CircuitSimulatorPage() {
     toast.info(`Removed ${count} wire${count > 1 ? 's' : ''}`);
 
     if (simulationResult || isRunning || liveEditMode) {
-      setTimeout(() => runSimulation(), 100);
+      void runEnhancedSimulation({ components, wires: remainingWires });
     }
   };
 
@@ -1163,6 +1096,7 @@ export default function CircuitSimulatorPage() {
       locked: false
     };
     setComponents(prev => [...prev, newComponent]);
+    invalidateSimulation();
     setSelectedComponent(newComponent);
     saveToHistory();
     toast.success('Component duplicated (Ctrl+D)');
@@ -1189,56 +1123,114 @@ export default function CircuitSimulatorPage() {
   };
 
   const getComponentTerminals = (comp: Component): {
-    id: 'top' | 'bottom' | 'left' | 'right';
+    id: string;
     label?: string;
     x: number;
     y: number;
   }[] => {
+    const namedPorts = COMPONENT_PORTS[comp.type];
+    const referencePins = COMPONENT_REFERENCE[comp.type]?.pins ?? [];
+    const pinLabel = (terminal: string, fallback: string) => referencePins.find(item => item.terminal === terminal)?.name ?? fallback;
+    if (namedPorts) {
+      if (['logic_and', 'logic_or', 'logic_nand', 'logic_nor', 'logic_xor'].includes(comp.type)) {
+        return [
+          { id: 'left', label: namedPorts[0], x: 0, y: 20 },
+          { id: 'bottom', label: namedPorts[1], x: 30, y: 60 },
+          { id: 'right', label: namedPorts[2], x: 60, y: 30 }
+        ];
+      }
+      if (comp.type === 'logic_not') {
+        return [
+          { id: 'left', label: namedPorts[0], x: 0, y: 30 },
+          { id: 'right', label: namedPorts[1], x: 60, y: 30 }
+        ];
+      }
+
+      const wide = ['arduino_uno', 'arduino_nano', 'esp32', 'esp8266', 'raspberry_pi_pico'].includes(comp.type);
+      const width = wide ? 80 : 60;
+      const sideCounts = [Math.ceil(namedPorts.length / 2), Math.floor(namedPorts.length / 2)];
+      const sideIndexes = [0, 0];
+      return namedPorts.map((label, index) => {
+        const side = index % 2;
+        const sameSideIndex = sideIndexes[side]++;
+        const count = sideCounts[side];
+        const y = 30 + (sameSideIndex - (count - 1) / 2) * 12;
+        return {
+          id: referencePins[index]?.terminal ?? (index === 0 ? 'left' : index === 1 ? 'right' : `pin_${label.toLowerCase().replace(/[^a-z0-9]+/g, '_')}`),
+          label,
+          x: side === 0 ? 0 : width,
+          y
+        };
+      });
+    }
+
     switch (comp.type) {
       case 'ground':
-        return [{ id: 'top', label: 'GND', x: 30, y: 0 }];
+        return [{ id: 'top', label: pinLabel('top', 'GND'), x: 30, y: 0 }];
       case 'voltage_dc':
       case 'voltage_ac':
         return [
-          { id: 'top', label: '+', x: 30, y: 0 },
-          { id: 'bottom', label: '-', x: 30, y: 60 }
+          { id: 'top', label: pinLabel('top', '+'), x: 30, y: 0 },
+          { id: 'bottom', label: pinLabel('bottom', '-'), x: 30, y: 60 }
         ];
+      case 'current_source':
+      case 'ammeter':
+      case 'voltmeter':
+        return [
+          { id: 'left', label: pinLabel('left', '+'), x: 0, y: 30 },
+          { id: 'right', label: pinLabel('right', '-'), x: 60, y: 30 }
+        ];
+      case 'transformer':
+        return [
+          { id: 'left', label: pinLabel('left', 'P1'), x: 0, y: 30 },
+          { id: 'right', label: pinLabel('right', 'P2'), x: 60, y: 30 },
+          { id: 'top', label: pinLabel('top', 'S1'), x: 30, y: 0 },
+          { id: 'bottom', label: pinLabel('bottom', 'S2'), x: 30, y: 60 }
+        ];
+      case 'voltage_regulator':
+        return [
+          { id: 'left', label: pinLabel('left', 'IN'), x: 0, y: 30 },
+          { id: 'right', label: pinLabel('right', 'OUT'), x: 60, y: 30 },
+          { id: 'bottom', label: pinLabel('bottom', 'GND'), x: 30, y: 60 }
+        ];
+      case 'probe':
+        return [{ id: 'top', label: pinLabel('top', 'PROBE'), x: 30, y: 0 }];
       case 'transistor_npn':
       case 'transistor_pnp':
         return [
-          { id: 'left', label: 'B', x: 0, y: 30 },
-          { id: 'top', label: 'C', x: 45, y: 8 },
-          { id: 'bottom', label: 'E', x: 45, y: 52 }
+          { id: 'left', label: pinLabel('left', 'B'), x: 0, y: 30 },
+          { id: 'top', label: pinLabel('top', 'C'), x: 45, y: 8 },
+          { id: 'bottom', label: pinLabel('bottom', 'E'), x: 45, y: 52 }
         ];
       case 'mosfet_n':
       case 'mosfet_p':
         return [
-          { id: 'left', label: 'G', x: 0, y: 30 },
-          { id: 'top', label: 'D', x: 45, y: 8 },
-          { id: 'bottom', label: 'S', x: 45, y: 52 }
+          { id: 'left', label: pinLabel('left', 'G'), x: 0, y: 30 },
+          { id: 'top', label: pinLabel('top', 'D'), x: 45, y: 8 },
+          { id: 'bottom', label: pinLabel('bottom', 'S'), x: 45, y: 52 }
         ];
       case 'op_amp':
       case 'comparator':
         return [
-          { id: 'left', label: '+', x: 0, y: 20 },
-          { id: 'bottom', label: '-', x: 0, y: 40 },
-          { id: 'right', label: 'OUT', x: 60, y: 30 }
+          { id: 'left', label: pinLabel('left', '+'), x: 0, y: 20 },
+          { id: 'bottom', label: pinLabel('bottom', '-'), x: 0, y: 40 },
+          { id: 'right', label: pinLabel('right', 'OUT'), x: 60, y: 30 }
         ];
       case 'potentiometer':
         return [
-          { id: 'left', label: '1', x: 0, y: 30 },
-          { id: 'right', label: '2', x: 60, y: 30 },
-          { id: 'top', label: 'W', x: 30, y: 10 }
+          { id: 'left', label: pinLabel('left', 'A'), x: 0, y: 30 },
+          { id: 'right', label: pinLabel('right', 'B'), x: 60, y: 30 },
+          { id: 'top', label: pinLabel('top', 'W'), x: 30, y: 10 }
         ];
       default:
         return [
-          { id: 'left', label: comp.type === 'battery' ? '-' : '1', x: 0, y: 30 },
-          { id: 'right', label: comp.type === 'battery' ? '+' : '2', x: 60, y: 30 }
+          { id: 'left', label: pinLabel('left', comp.type === 'battery' ? '-' : '1'), x: 0, y: 30 },
+          { id: 'right', label: pinLabel('right', comp.type === 'battery' ? '+' : '2'), x: 60, y: 30 }
         ];
     }
   };
 
-  const getTerminalPosition = (comp: Component, terminal: 'top' | 'bottom' | 'left' | 'right') => {
+  const getTerminalPosition = (comp: Component, terminal: string) => {
     const terminals = getComponentTerminals(comp);
     const found = terminals.find(t => t.id === terminal);
     if (found) {
@@ -1249,6 +1241,7 @@ export default function CircuitSimulatorPage() {
       case 'bottom': return { x: comp.x + 30, y: comp.y + 60 };
       case 'left': return { x: comp.x, y: comp.y + 30 };
       case 'right': return { x: comp.x + 60, y: comp.y + 30 };
+      default: return { x: comp.x + 30, y: comp.y + 30 };
     }
   };
 
@@ -1258,34 +1251,33 @@ export default function CircuitSimulatorPage() {
   const findNearestTerminal = useCallback((cursorX: number, cursorY: number, excludeComponentId?: string) => {
     let nearest: {
       component: Component;
-      terminal: 'top' | 'bottom' | 'left' | 'right';
+      terminal: string;
       position: { x: number; y: number };
       distance: number;
     } | null = null;
     let minDistance = 50; // 50px generous magnetic snap radius
 
-    components.forEach(comp => {
-      if (excludeComponentId && comp.id === excludeComponentId) return;
-
-      (['top', 'bottom', 'left', 'right'] as const).forEach(terminal => {
-        const pos = getTerminalPosition(comp, terminal);
+    for (const comp of components) {
+      if (excludeComponentId && comp.id === excludeComponentId) continue;
+      for (const terminal of getComponentTerminals(comp)) {
+        const pos = { x: comp.x + terminal.x, y: comp.y + terminal.y };
         const dist = Math.hypot(cursorX - pos.x, cursorY - pos.y);
         if (dist < minDistance) {
           minDistance = dist;
           nearest = {
             component: comp,
-            terminal,
+            terminal: terminal.id,
             position: pos,
             distance: dist
           };
         }
-      });
-    });
+      }
+    }
 
     return nearest;
   }, [components]);
 
-  const startWiring = (componentId: string, terminal: 'top' | 'bottom' | 'left' | 'right') => {
+  const startWiring = (componentId: string, terminal: string) => {
     const comp = components.find(c => c.id === componentId);
     if (!comp) return;
 
@@ -1300,7 +1292,7 @@ export default function CircuitSimulatorPage() {
     toast.info('Click target pin or component to connect wire', { duration: 1500 });
   };
 
-  const completeWiring = (targetComponentId: string, targetTerminal: 'top' | 'bottom' | 'left' | 'right') => {
+  const completeWiring = (targetComponentId: string, targetTerminal: string) => {
     if (!dragWire) return;
 
     if (dragWire.from.componentId === targetComponentId && dragWire.from.terminal === targetTerminal) {
@@ -1357,6 +1349,7 @@ export default function CircuitSimulatorPage() {
     };
 
     setWires(prev => [...prev, newWire]);
+    invalidateSimulation();
     setDragWire(null);
     setSnappedTerminal(null);
     setWireDrawingMode(false);
@@ -1364,7 +1357,7 @@ export default function CircuitSimulatorPage() {
     toast.success('Wire connected successfully!');
   };
 
-  const handleTerminalMouseDown = (componentId: string, terminal: 'top' | 'bottom' | 'left' | 'right', e: React.MouseEvent) => {
+  const handleTerminalMouseDown = (componentId: string, terminal: string, e: React.MouseEvent) => {
     e.stopPropagation();
     if (!dragWire) {
       startWiring(componentId, terminal);
@@ -1373,7 +1366,7 @@ export default function CircuitSimulatorPage() {
     }
   };
 
-  const handleTerminalClick = (componentId: string, terminal: 'top' | 'bottom' | 'left' | 'right', e: React.MouseEvent) => {
+  const handleTerminalClick = (componentId: string, terminal: string, e: React.MouseEvent) => {
     e.stopPropagation();
     if (!dragWire) {
       startWiring(componentId, terminal);
@@ -1387,7 +1380,7 @@ export default function CircuitSimulatorPage() {
     }
   };
 
-  const handleTerminalMouseUp = (componentId: string, terminal: 'top' | 'bottom' | 'left' | 'right', e: React.MouseEvent) => {
+  const handleTerminalMouseUp = (componentId: string, terminal: string, e: React.MouseEvent) => {
     e.stopPropagation();
     if (!dragWire) return;
     if (dragWire.from.componentId !== componentId) {
@@ -1697,11 +1690,6 @@ export default function CircuitSimulatorPage() {
     setIsRunning(false);
     setLiveEditMode(false);
     setSimulationResult(null);
-    setVoltage(0);
-    setCurrent(0);
-    setResistance(0);
-    setPower(0);
-    setWaveform([]);
     toast.info('Simulation reset');
   };
 
@@ -1718,19 +1706,6 @@ export default function CircuitSimulatorPage() {
     resetSimulation();
     toast.info('Canvas cleared');
   };
-
-  useEffect(() => {
-    if (isRunning) {
-      const interval = setInterval(() => {
-        setWaveform(prev => {
-          const newWave = [...prev];
-          newWave.push(newWave.shift() || 0);
-          return newWave;
-        });
-      }, 50);
-      return () => clearInterval(interval);
-    }
-  }, [isRunning]);
 
   return (
     <div className="min-h-screen gradient-depth">
@@ -1765,7 +1740,7 @@ export default function CircuitSimulatorPage() {
                     <Badge className="bg-[#FF6B00] text-white animate-pulse">Live Edit Mode</Badge>
                   )}
                 </div>
-                <p className="text-[#B8A7E0]">SPICE-like simulation with DC/AC/Transient analysis • 50+ components • Real-time visualization</p>
+                <p className="text-[#B8A7E0]">Circuit design with detailed component references • 47 catalog components • SPICE DC/AC/Transient analysis</p>
               </div>
               
               <div className="flex gap-2 flex-wrap">
@@ -1985,7 +1960,7 @@ export default function CircuitSimulatorPage() {
                   </SelectContent>
                 </Select>
 
-                <Button onClick={runEnhancedSimulation} disabled={components.length === 0} className="gradient-aqua text-white hover:shadow-glowCyan"><Play className="h-4 w-4 mr-2" />Run</Button>
+                <Button onClick={() => void runEnhancedSimulation()} disabled={components.length === 0} className="gradient-aqua text-white hover:shadow-glowCyan"><Play className="h-4 w-4 mr-2" />Run</Button>
                 <Button variant="outline" onClick={resetSimulation} className="glass-surface border-white/20 text-white hover:bg-white/10"><RotateCcw className="h-4 w-4" /></Button>
 
                 <div className="h-6 w-px bg-white/20" />
@@ -2009,7 +1984,10 @@ export default function CircuitSimulatorPage() {
                 {/* Component Library */}
                 <Card className="glass-surface border-white/10 lg:col-span-1">
                   <CardContent className="pt-6">
-                    <h3 className="font-semibold mb-3 text-[#00E5FF] flex items-center gap-2"><Zap className="h-4 w-4" />Components</h3>
+                    <div className="mb-3 flex items-center justify-between gap-2">
+                      <h3 className="font-semibold text-[#00E5FF] flex items-center gap-2"><Zap className="h-4 w-4" />Components</h3>
+                      <Button size="sm" variant="outline" onClick={() => showComponentReference()} className="h-7 px-2 text-[10px] glass-surface border-cyan-400/30 text-cyan-200 hover:bg-cyan-500/10"><BookOpen className="mr-1 h-3 w-3" />Full guide</Button>
+                    </div>
                     
                     <div className="mb-4">
                       <div className="relative">
@@ -2030,27 +2008,46 @@ export default function CircuitSimulatorPage() {
                     
                     <ScrollArea className="h-[500px]">
                       <div className="space-y-2 text-sm pr-2">
-                        {filteredComponents.map((comp) => (
+                        {filteredComponents.map((comp) => {
+                          const support = getComponentSimulationSupport(comp.type);
+                          return (
                           <div 
                             key={comp.type} 
                             draggable 
                             onClick={() => addComponentDirectly(comp.type)}
                             onDragStart={() => handleDragStart(comp.type)} 
                             className="p-2.5 border border-white/10 rounded-lg hover:border-[#00E5FF]/50 hover:bg-[#00E5FF]/10 cursor-pointer transition-all group glass-surface"
-                            title="Click or drag to add to canvas"
+                            title={`${support.kind === 'spice' ? support.detail : `Design only. ${support.detail}`} Click or drag to add to canvas.`}
                           >
                             <div className="flex items-center gap-3">
                               <div className="w-10 h-10 flex items-center justify-center bg-white/5 rounded-lg group-hover:bg-white/10 text-xl">
                                 <span>{comp.icon}</span>
                               </div>
                               <div className="flex-1 min-w-0">
-                                <p className="text-white text-xs font-semibold truncate">{comp.label}</p>
+                                <div className="flex items-center gap-1.5">
+                                  <p className="text-white text-xs font-semibold truncate">{comp.label}</p>
+                                  <span className={`shrink-0 rounded px-1 py-0.5 text-[8px] font-bold ${support.kind === 'spice' ? 'bg-emerald-500/15 text-emerald-300' : 'bg-amber-500/15 text-amber-300'}`}>
+                                    {support.kind === 'spice' ? (support.accuracy === 'approximate' ? 'APPROX' : support.accuracy === 'marker' ? 'PROBE' : 'SPICE') : 'DRAW ONLY'}
+                                  </span>
+                                </div>
                                 <p className="text-[#B8A7E0] text-[10px] truncate">{comp.description}</p>
                               </div>
+                              <Button
+                                type="button"
+                                size="sm"
+                                variant="ghost"
+                                draggable={false}
+                                aria-label={`View ${comp.label} pin and working guide`}
+                                title={`Open detailed ${comp.label} reference`}
+                                onMouseDown={event => event.stopPropagation()}
+                                onClick={event => { event.stopPropagation(); showComponentReference(comp.type); }}
+                                className="h-7 shrink-0 px-1.5 text-cyan-200 hover:bg-cyan-500/15"
+                              ><Info className="h-3.5 w-3.5 mr-1" /><span className="text-[9px]">Details</span></Button>
                               <span className="text-[10px] text-[#00E5FF] opacity-0 group-hover:opacity-100 transition-opacity font-bold">+ Add</span>
                             </div>
                           </div>
-                        ))}
+                          );
+                        })}
                       </div>
                     </ScrollArea>
                   </CardContent>
@@ -2439,14 +2436,11 @@ export default function CircuitSimulatorPage() {
                         component={selectedComponent}
                         wires={wires}
                         simulationResult={simulationResult}
+                        engineUsed={engineUsed}
                         measurementBus={measurementBus}
                         liveEditMode={liveEditMode || isRunning}
                         onUpdateValue={(id, val) => updateComponentValue(id, val)}
-                        onUpdateParams={(id, params) => {
-                          setComponents(prev => prev.map(c => c.id === id ? { ...c, params } : c));
-                          setSelectedComponent(prev => prev && prev.id === id ? { ...prev, params } : prev);
-                          updateComponentValue(id, selectedComponent.value);
-                        }}
+                        onUpdateParams={(id, params) => void updateComponentValueLive(id, selectedComponent.value ?? 0, params)}
                         onRotate={(id) => rotateComponent(id)}
                         onDuplicate={(comp) => duplicateComponent(comp)}
                         onToggleLock={(id) => toggleLockComponent(id)}
@@ -2485,7 +2479,7 @@ export default function CircuitSimulatorPage() {
                   setSignalGenConfig(newCfg);
                   setComponents(prev => prev.map(c => {
                     if (c.type === 'voltage_ac' || c.type === 'signal_generator') {
-                      const wfTypeMap = { SINE: 0, SQUARE: 1, TRIANGLE: 2, SAWTOOTH: 2, DC: 3 };
+                          const wfTypeMap = { SINE: 0, SQUARE: 1, TRIANGLE: 2, SAWTOOTH: 3, DC: 4 };
                       return {
                         ...c,
                         value: newCfg.amplitude,
@@ -2662,7 +2656,7 @@ export default function CircuitSimulatorPage() {
               </div>
               <button
                 onClick={() => {
-                  runSimulation();
+                  runEnhancedSimulation();
                   setContextMenu(prev => ({ ...prev, visible: false }));
                 }}
                 className="w-full px-3 py-1.5 flex items-center justify-between hover:bg-slate-800 text-emerald-400 transition-colors"
@@ -2688,6 +2682,12 @@ export default function CircuitSimulatorPage() {
           )}
         </div>
       )}
+      <ComponentReferenceDialog
+        open={componentReferenceOpen}
+        onOpenChange={setComponentReferenceOpen}
+        initialType={componentReferenceType}
+      />
     </div>
   );
 }
+

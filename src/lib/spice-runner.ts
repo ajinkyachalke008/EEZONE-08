@@ -10,8 +10,122 @@ import {
   InvalidCircuitError,
   SpiceError
 } from '@spice-ts/core';
-import type { SimulationResult, SimulationSettings, SimulationNode } from './simulation-engine';
+import type { ComponentSimulationData, SimulationResult, SimulationSettings, SimulationNode } from './simulation-engine';
 import type { CanvasComponent, CanvasWire } from './spice-netlist-generator';
+import { analyzeWaveform } from './waveform-analysis';
+
+type NodeValues = Map<string, number>;
+type NodeWaveforms = Map<string, number[]>;
+
+function cleanId(id: string): string {
+  return id.replace(/[^a-zA-Z0-9_]/g, '_');
+}
+
+function findElement(netlist: string, prefix: string, componentId: string): string[] | undefined {
+  const expectedName = `${prefix}_${cleanId(componentId)}`.toUpperCase();
+  const line = netlist.split(/\r?\n/).find(candidate => {
+    const trimmed = candidate.trim();
+    return trimmed && !trimmed.startsWith('*') && trimmed.split(/\s+/)[0].toUpperCase() === expectedName;
+  });
+  return line?.trim().split(/\s+/);
+}
+
+function nodeVoltage(values: NodeValues, name: string): number | undefined {
+  if (name === '0' || name.toUpperCase() === 'GND') return 0;
+  return values.get(name);
+}
+
+function difference(values: NodeValues, positive: string, negative: string): number | undefined {
+  const vPositive = nodeVoltage(values, positive);
+  const vNegative = nodeVoltage(values, negative);
+  return vPositive === undefined || vNegative === undefined ? undefined : vPositive - vNegative;
+}
+
+function finalWaveformDifference(waveforms: NodeWaveforms, positive: string, negative: string): number | undefined {
+  const pos = positive === '0' || positive.toUpperCase() === 'GND' ? undefined : waveforms.get(positive);
+  const neg = negative === '0' || negative.toUpperCase() === 'GND' ? undefined : waveforms.get(negative);
+  if ((positive !== '0' && positive.toUpperCase() !== 'GND' && !pos) ||
+      (negative !== '0' && negative.toUpperCase() !== 'GND' && !neg)) return undefined;
+  const length = Math.min(pos?.length ?? Infinity, neg?.length ?? Infinity);
+  if (!Number.isFinite(length) || length === 0) return undefined;
+  return (pos?.[length - 1] ?? 0) - (neg?.[length - 1] ?? 0);
+}
+
+function makeComponentData(
+  netlist: string,
+  components: CanvasComponent[] | undefined,
+  getVoltage: (positive: string, negative: string) => number | undefined,
+  branchCurrents?: Map<string, number>,
+  branchWaveforms?: Map<string, number[]>,
+  transient = false
+): Record<string, ComponentSimulationData> {
+  const componentData: Record<string, ComponentSimulationData> = {};
+  if (!components) return componentData;
+
+  for (const component of components) {
+    let prefix: string | undefined;
+    if (['resistor', 'ammeter', 'voltmeter'].includes(component.type)) prefix = 'R';
+    else if (component.type === 'capacitor') prefix = 'C';
+    else if (component.type === 'inductor') prefix = 'L';
+    else if (['voltage_dc', 'voltage_ac', 'battery', 'signal_generator'].includes(component.type)) prefix = 'V';
+    else if (component.type === 'current_source') prefix = 'I';
+    else if (['diode', 'led'].includes(component.type)) prefix = 'D';
+    if (!prefix) continue;
+
+    const element = findElement(netlist, prefix, component.id);
+    if (!element || element.length < 3) continue;
+    const [, node1, node2] = element;
+    const voltage = getVoltage(node1, node2);
+    const data: ComponentSimulationData = {};
+    if (voltage !== undefined && Number.isFinite(voltage)) data.voltage = voltage;
+
+    if (['resistor', 'ammeter', 'voltmeter'].includes(component.type)) {
+      const resistance = Number(element[3]);
+      if (voltage !== undefined && Number.isFinite(resistance) && resistance > 0) {
+        const current = voltage / resistance;
+        data.current = current;
+        data.power = voltage * current;
+      }
+    } else if (prefix === 'V' || prefix === 'L') {
+      const branchName = element[0];
+      const current = transient
+        ? branchWaveforms?.get(branchName)?.at(-1)
+        : branchCurrents?.get(branchName);
+      if (current !== undefined && Number.isFinite(current)) data.current = current;
+    } else if (prefix === 'I') {
+      // The generated current source is constant; its netlist value is its exact current.
+      const current = Number(element[3]);
+      if (Number.isFinite(current)) data.current = current;
+    }
+
+    if (data.voltage !== undefined && data.current !== undefined) {
+      data.power = data.voltage * data.current;
+    }
+
+    if (Object.keys(data).length > 0) componentData[component.id] = data;
+  }
+
+  return componentData;
+}
+
+function timeWeightedMetrics(time: number[], values: number[]) {
+  if (time.length < 2 || values.length !== time.length) return undefined;
+  let duration = 0;
+  let integral = 0;
+  let squareIntegral = 0;
+  for (let i = 1; i < time.length; i++) {
+    const dt = time[i] - time[i - 1];
+    if (!Number.isFinite(dt) || dt <= 0) continue;
+    const v0 = values[i - 1];
+    const v1 = values[i];
+    duration += dt;
+    integral += dt * (v0 + v1) / 2;
+    // Exact integral of the square of the linearly interpolated segment.
+    squareIntegral += dt * (v0 * v0 + v0 * v1 + v1 * v1) / 3;
+  }
+  if (duration <= 0) return undefined;
+  return { average: integral / duration, rms: Math.sqrt(squareIntegral / duration) };
+}
 
 /**
  * Maps @spice-ts/core DC result to EEzone SimulationResult
@@ -19,11 +133,12 @@ import type { CanvasComponent, CanvasWire } from './spice-netlist-generator';
 function mapDcResult(
   result: any,
   settings: SimulationSettings,
-  components?: CanvasComponent[]
+  components: CanvasComponent[] | undefined,
+  netlist: string
 ): SimulationResult {
   const dc = result.dc;
   const nodes: SimulationNode[] = [];
-  const componentData: Record<string, { voltage: number; current: number; power: number }> = {};
+  const componentData: Record<string, ComponentSimulationData> = {};
   const waveforms: Record<string, { time: number[]; voltage: number[] }> = {};
   const measurements: {
     rms: Record<string, number>;
@@ -54,37 +169,13 @@ function mapDcResult(
     });
   }
 
-  // Calculate component power and current
-  if (components) {
-    components.forEach(comp => {
-      let vDrop = 0;
-      let iComp = 0;
-
-      // Find voltage of connected nodes
-      if (dc?.voltages) {
-        const vNodes = Array.from(dc.voltages.entries()) as [string, number][];
-        if (vNodes.length > 0) {
-          vDrop = Math.abs(vNodes[0][1]);
-        }
-      }
-
-      if (comp.type === 'resistor') {
-        const r = comp.value || 1000;
-        iComp = r > 0 ? vDrop / r : 0;
-      } else if (comp.type === 'voltage_dc' || comp.type === 'battery') {
-        vDrop = comp.value || 0;
-        iComp = 0.01; // typical load current
-      } else if (comp.type === 'led' || comp.type === 'diode') {
-        vDrop = Math.min(vDrop, 2.0);
-        iComp = 0.02;
-      }
-
-      componentData[comp.id] = {
-        voltage: vDrop,
-        current: iComp,
-        power: Math.abs(vDrop * iComp)
-      };
-    });
+  if (dc?.voltages) {
+    Object.assign(componentData, makeComponentData(
+      netlist,
+      components,
+      (positive, negative) => difference(dc.voltages, positive, negative),
+      dc.currents
+    ));
   }
 
   return {
@@ -104,7 +195,8 @@ function mapDcResult(
 function mapTransientResult(
   result: any,
   settings: SimulationSettings,
-  components?: CanvasComponent[]
+  components: CanvasComponent[] | undefined,
+  netlist: string
 ): SimulationResult {
   const tran = result.transient;
   const time = tran?.time || [];
@@ -116,7 +208,7 @@ function mapTransientResult(
     phase: Record<string, number>;
   } = { rms: {}, peak: {}, frequency: {}, phase: {} };
   const nodes: SimulationNode[] = [];
-  const componentData: Record<string, { voltage: number; current: number; power: number }> = {};
+  const componentData: Record<string, ComponentSimulationData> = {};
 
   if (tran?.voltages) {
     tran.voltages.forEach((voltArr: number[], name: string) => {
@@ -134,44 +226,31 @@ function mapTransientResult(
         voltage: voltArr
       };
 
-      // Calculate RMS and peak
+      // Transient steps may be adaptive and unevenly spaced, so time-weight averages.
       if (voltArr.length > 0) {
-        const sumSq = voltArr.reduce((acc, v) => acc + v * v, 0);
-        const rms = Math.sqrt(sumSq / voltArr.length);
         const peak = Math.max(...voltArr.map(Math.abs));
+        const weighted = timeWeightedMetrics(time, voltArr);
+        const waveformMetrics = analyzeWaveform(time, voltArr);
 
-        // Zero crossing frequency calculation
-        let zeroCrossings = 0;
-        for (let i = 1; i < voltArr.length; i++) {
-          if (voltArr[i - 1] * voltArr[i] < 0) zeroCrossings++;
+        if (weighted) {
+          measurements.rms[name] = weighted.rms;
+          measurements.peak[name] = peak;
+          measurements.frequency[name] = waveformMetrics.frequency;
+          measurements.phase[name] = 0;
         }
-        const tDuration = (time[time.length - 1] || 0.01) - (time[0] || 0);
-        const freq = tDuration > 0 ? zeroCrossings / (2 * tDuration) : 0;
-
-        measurements.rms[name] = rms;
-        measurements.peak[name] = peak;
-        measurements.frequency[name] = freq;
-        measurements.phase[name] = 0;
       }
     });
   }
 
-  // Component data estimation
-  if (components) {
-    components.forEach(comp => {
-      const firstWaveform = Object.values(waveforms)[0];
-      const avgV = firstWaveform?.voltage.length
-        ? firstWaveform.voltage.reduce((a, b) => a + Math.abs(b), 0) / firstWaveform.voltage.length
-        : (comp.value || 0);
-      const r = comp.value || 1000;
-      const i = r > 0 ? avgV / r : 0.01;
-
-      componentData[comp.id] = {
-        voltage: avgV,
-        current: i,
-        power: Math.abs(avgV * i)
-      };
-    });
+  if (tran?.voltages) {
+    Object.assign(componentData, makeComponentData(
+      netlist,
+      components,
+      (positive, negative) => finalWaveformDifference(tran.voltages, positive, negative),
+      undefined,
+      tran.currents,
+      true
+    ));
   }
 
   return {
@@ -203,7 +282,7 @@ function mapAcResult(
     phase: Record<string, number>;
   } = { rms: {}, peak: {}, frequency: {}, phase: {} };
   const nodes: SimulationNode[] = [];
-  const componentData: Record<string, { voltage: number; current: number; power: number }> = {};
+  const componentData: Record<string, ComponentSimulationData> = {};
 
   if (ac?.voltages) {
     ac.voltages.forEach((points: { magnitude: number; phase: number }[], name: string) => {
@@ -256,14 +335,11 @@ export async function runSpiceSimulation(
     const rawResult = await simulate(netlist);
 
     if (settings.mode === 'dc' && rawResult.dc) {
-      return mapDcResult(rawResult, settings, components);
+      return mapDcResult(rawResult, settings, components, netlist);
     } else if (settings.mode === 'transient' && rawResult.transient) {
-      return mapTransientResult(rawResult, settings, components);
+      return mapTransientResult(rawResult, settings, components, netlist);
     } else if (settings.mode === 'ac' && rawResult.ac) {
       return mapAcResult(rawResult, settings, components);
-    } else if (rawResult.dc) {
-      // Fallback to DC if mode requested wasn't in raw result
-      return mapDcResult(rawResult, settings, components);
     } else {
       return {
         success: false,
@@ -305,3 +381,4 @@ export async function runSpiceSimulation(
     };
   }
 }
+

@@ -20,8 +20,8 @@ export interface CanvasComponent {
 
 export interface CanvasWire {
   id: string;
-  from: { componentId: string; terminal: 'top' | 'bottom' | 'left' | 'right' };
-  to: { componentId: string; terminal: 'top' | 'bottom' | 'left' | 'right' };
+  from: { componentId: string; terminal: string };
+  to: { componentId: string; terminal: string };
   color: string;
   netLabel?: string;
   path?: { x: number; y: number }[];
@@ -35,12 +35,77 @@ export const SPICE_ELIGIBLE_CATEGORIES = [
   'measurement'
 ];
 
+const SPICE_MODELED_TYPES = new Set([
+  'resistor', 'capacitor', 'inductor', 'voltage_dc', 'battery', 'current_source',
+  'ground', 'diode', 'led', 'zener_diode', 'voltage_ac', 'signal_generator',
+  'transistor_npn', 'transistor_pnp', 'mosfet_n', 'mosfet_p', 'potentiometer',
+  'op_amp', 'comparator', 'voltage_regulator', 'ammeter', 'voltmeter',
+  // A probe labels/measures a net but is not an electrical load in SPICE.
+  'probe'
+]);
+
+const APPROXIMATE_SPICE_TYPES = new Set([
+  'led', 'zener_diode', 'transistor_npn', 'transistor_pnp', 'mosfet_n', 'mosfet_p',
+  'op_amp', 'comparator', 'voltage_regulator', 'ammeter', 'voltmeter'
+]);
+
+const DESIGN_ONLY_DETAILS: Record<string, string> = {
+  logic_and: 'Digital logic state and propagation are not simulated.',
+  logic_or: 'Digital logic state and propagation are not simulated.',
+  logic_not: 'Digital logic state and propagation are not simulated.',
+  logic_nand: 'Digital logic state and propagation are not simulated.',
+  logic_nor: 'Digital logic state and propagation are not simulated.',
+  logic_xor: 'Digital logic state and propagation are not simulated.',
+  shift_register: 'Clocked register behavior is not simulated.',
+  counter: 'Clocked counter behavior is not simulated.',
+  arduino_uno: 'Firmware and board pin behavior are not simulated.',
+  arduino_nano: 'Firmware and board pin behavior are not simulated.',
+  esp32: 'Firmware, radio, and board pin behavior are not simulated.',
+  esp8266: 'Firmware, radio, and board pin behavior are not simulated.',
+  raspberry_pi_pico: 'Firmware and board pin behavior are not simulated.',
+  ultrasonic: 'Distance-to-voltage sensor behavior is not simulated.',
+  temp_sensor: 'Temperature-to-voltage sensor behavior is not simulated.',
+  pir_sensor: 'Motion-triggered output behavior is not simulated.',
+  servo: 'Servo mechanics and control response are not simulated.',
+  stepper: 'Stepper coils, commutation, and motion are not simulated.',
+  lcd_display: 'Display bus and pixel behavior are not simulated.',
+  oled_display: 'Display bus and pixel behavior are not simulated.',
+  seven_segment: 'Segment logic and display behavior are not simulated.',
+  buzzer: 'Acoustic and piezo behavior are not simulated.',
+  relay: 'Relay coil and switched contacts are not modeled.',
+  transformer: 'The SPICE runtime does not support coupled inductors, so turns ratio and reflected load cannot be simulated.',
+  '555_timer': 'The available symbol has no validated timer macromodel.'
+};
+
+export function getComponentSimulationSupport(type: string): {
+  kind: 'spice' | 'design-only';
+  accuracy: 'modeled' | 'approximate' | 'marker' | 'none';
+  detail: string;
+} {
+  if (!SPICE_MODELED_TYPES.has(type)) {
+    return { kind: 'design-only', accuracy: 'none', detail: DESIGN_ONLY_DETAILS[type] ?? 'No electrical simulation model is available.' };
+  }
+  if (type === 'probe') return { kind: 'spice', accuracy: 'marker', detail: 'Measurement marker; it does not load the circuit.' };
+  if (type === 'ammeter') return { kind: 'spice', accuracy: 'approximate', detail: 'Modeled with a 1 mΩ series shunt (1 mV burden per amp).' };
+  if (type === 'voltmeter') return { kind: 'spice', accuracy: 'approximate', detail: 'Modeled with a 10 MΩ input resistance, so it slightly loads the circuit.' };
+  if (type === 'transformer') return { kind: 'design-only', accuracy: 'none', detail: DESIGN_ONLY_DETAILS.transformer };
+  if (APPROXIMATE_SPICE_TYPES.has(type)) {
+    return { kind: 'spice', accuracy: 'approximate', detail: 'Uses a simplified generic SPICE model; real part limits and parasitics are not represented.' };
+  }
+  return { kind: 'spice', accuracy: 'modeled', detail: 'Simulated with the component’s SPICE primitive.' };
+}
+
+export function getUnsupportedSimulationComponents(components: CanvasComponent[]): CanvasComponent[] {
+  return components.filter(component => getComponentSimulationSupport(component.type).kind !== 'spice');
+}
+
 /**
  * Checks if a component can be simulated with SPICE
  */
 export function getCategoryForType(type: string): string {
+  if (type === 'signal_generator') return 'power';
   const def = COMPONENT_LIBRARY.find(c => c.type === type);
-  return def ? def.category : 'passive';
+  return def ? def.category : 'unsupported';
 }
 
 /**
@@ -48,7 +113,7 @@ export function getCategoryForType(type: string): string {
  */
 export function isSpiceEligible(components: CanvasComponent[]): boolean {
   if (components.length === 0) return false;
-  return components.every(c => SPICE_ELIGIBLE_CATEGORIES.includes(getCategoryForType(c.type)));
+  return components.every(c => getComponentSimulationSupport(c.type).kind === 'spice' && SPICE_ELIGIBLE_CATEGORIES.includes(getCategoryForType(c.type)));
 }
 
 /**
@@ -105,10 +170,10 @@ function createNodeResolver(components: CanvasComponent[], wires: CanvasWire[]) 
   });
 
   return {
-    getNodeForTerminal: (componentId: string, terminal: 'top' | 'bottom' | 'left' | 'right'): string | undefined => {
+    getNodeForTerminal: (componentId: string, terminal: string): string | undefined => {
       return terminalToNode.get(`${componentId}:${terminal}`);
     },
-    getResolvedNodes: (comp: CanvasComponent): { n1: string; n2: string; n3?: string; n4?: string } => {
+    getResolvedNodes: (comp: CanvasComponent): { n1: string; n2: string; n3?: string } => {
       const tTop = terminalToNode.get(`${comp.id}:top`);
       const tBottom = terminalToNode.get(`${comp.id}:bottom`);
       const tLeft = terminalToNode.get(`${comp.id}:left`);
@@ -124,7 +189,6 @@ function createNodeResolver(components: CanvasComponent[], wires: CanvasWire[]) 
       let n1: string;
       let n2: string;
       let n3: string | undefined;
-      let n4: string | undefined;
 
       if (comp.type === 'voltage_dc' || comp.type === 'voltage_ac' || comp.type === 'battery') {
         // Positive (+) is right or top; Negative (-) is left or bottom
@@ -139,6 +203,9 @@ function createNodeResolver(components: CanvasComponent[], wires: CanvasWire[]) 
         n1 = tTop ?? connected[0]?.n ?? `NC_${cleanId(comp.id)}_1`;
         n2 = tLeft ?? (connected.find(c => c.n !== n1)?.n ?? `NC_${cleanId(comp.id)}_2`);
         n3 = tBottom ?? (connected.find(c => c.n !== n1 && c.n !== n2)?.n ?? '0');
+      } else if (['current_source', 'ammeter', 'voltmeter'].includes(comp.type)) {
+        n1 = tLeft ?? tTop ?? connected[0]?.n ?? `NC_${cleanId(comp.id)}_pos`;
+        n2 = tRight ?? tBottom ?? (connected.find(c => c.n !== n1)?.n ?? `NC_${cleanId(comp.id)}_neg`);
       } else if (comp.type === 'potentiometer') {
         n1 = tLeft ?? connected[0]?.n ?? `NC_${cleanId(comp.id)}_1`;
         n2 = tRight ?? (connected.find(c => c.n !== n1)?.n ?? `NC_${cleanId(comp.id)}_2`);
@@ -161,7 +228,7 @@ function createNodeResolver(components: CanvasComponent[], wires: CanvasWire[]) 
         }
       }
 
-      return { n1, n2, n3, n4 };
+      return { n1, n2, n3 };
     },
     terminalToNode
   };
@@ -199,6 +266,11 @@ export function generateSpiceNetlist(
   wires: CanvasWire[],
   settings: SimulationSettings
 ): string {
+  const unsupported = getUnsupportedSimulationComponents(components);
+  if (unsupported.length > 0) {
+    const types = [...new Set(unsupported.map(component => component.type))].join(', ');
+    throw new Error(`No supported SPICE model for: ${types}.`);
+  }
   const { getNodeForTerminal, getResolvedNodes } = createNodeResolver(components, wires);
   const lines: string[] = ['* EE Zone Circuit SPICE Netlist'];
   const models = new Set<string>();
@@ -232,29 +304,35 @@ export function generateSpiceNetlist(
       case 'voltage_dc':
       case 'battery': {
         // Positive terminal = n1, Negative terminal = n2
-        lines.push(`V_${id} ${n1} ${n2} DC ${rawVal}`);
+        lines.push(`V_${id} ${n1} ${n2} DC ${val}`);
         break;
       }
 
       case 'voltage_ac':
       case 'signal_generator': {
         const freq = comp.params?.frequency ?? 1000;
-        const amp = rawVal > 0 ? rawVal : 5.0;
+        const amp = val > 0 ? val : 5.0;
         const offset = comp.params?.offset ?? 0;
-        const wfType = comp.params?.waveformType ?? 0; // 0=SINE, 1=SQUARE, 2=TRIANGLE, 3=DC
+        const wfType = comp.params?.waveformType ?? 0; // 0=SINE, 1=SQUARE, 2=TRIANGLE, 3=SAW, 4=DC
+        const per = 1 / Math.max(freq, 1);
 
-        if (wfType === 1 || comp.params?.waveform === 1) {
+        if (settings.mode === 'ac') {
+          lines.push(`V_${id} ${n1} ${n2} AC ${amp} 0`);
+        } else if (wfType === 1 || comp.params?.waveform === 1) {
           // SQUARE / PULSE
-          const per = 1 / Math.max(freq, 1);
           const duty = (comp.params?.dutyCycle ?? 50) / 100;
           const pw = per * duty;
           const tr = Math.min(per * 0.01, 1e-6);
           lines.push(`V_${id} ${n1} ${n2} PULSE(${offset} ${offset + amp} 0 ${tr} ${tr} ${pw} ${per})`);
+        } else if (wfType === 2) {
+          const ramp = per / 2;
+          lines.push(`V_${id} ${n1} ${n2} PULSE(${offset} ${offset + amp} 0 ${ramp} ${ramp} 0 ${per})`);
         } else if (wfType === 3) {
-          // DC
+          const rise = Math.min(per * 1e-4, 1e-9);
+          const fall = Math.max(per - rise, 1e-12);
+          lines.push(`V_${id} ${n1} ${n2} PULSE(${offset} ${offset + amp} 0 ${rise} ${fall} 0 ${per})`);
+        } else if (wfType === 4) {
           lines.push(`V_${id} ${n1} ${n2} DC ${offset || amp}`);
-        } else if (settings.mode === 'ac') {
-          lines.push(`V_${id} ${n1} ${n2} AC ${amp} 0`);
         } else {
           // SINE default for transient: SIN(VO VA FREQ)
           lines.push(`V_${id} ${n1} ${n2} SIN(${offset} ${amp} ${freq})`);
@@ -263,7 +341,7 @@ export function generateSpiceNetlist(
       }
 
       case 'current_source': {
-        lines.push(`I_${id} ${n1} ${n2} ${rawVal}`);
+        lines.push(`I_${id} ${n1} ${n2} ${val}`);
         break;
       }
 
@@ -272,17 +350,28 @@ export function generateSpiceNetlist(
         break;
       }
 
+      case 'probe': {
+        // Measurement markers do not contribute an electrical element.
+        break;
+      }
+
       case 'diode': {
+        const vf = Math.min(Math.max(rawVal || 0.7, 0.1), 1.5);
+        const saturationCurrent = 0.001 / (Math.exp(vf / 0.02585) - 1);
         const modelName = `DMOD_${id}`;
         lines.push(`D_${id} ${n1} ${n2} ${modelName}`);
-        models.add(`.model ${modelName} D(IS=1e-14 N=1)`);
+        models.add(`.model ${modelName} D(IS=${saturationCurrent.toExponential(8)} N=1)`);
         break;
       }
 
       case 'led': {
+        const vf = Math.min(Math.max(rawVal || 2, 0.5), 4);
+        const ideality = 1.8;
+        const targetCurrent = comp.params?.forwardCurrent ?? 0.02;
+        const saturationCurrent = targetCurrent / (Math.exp(vf / (ideality * 0.02585)) - 1);
         const modelName = `LEDMOD_${id}`;
         lines.push(`D_${id} ${n1} ${n2} ${modelName}`);
-        models.add(`.model ${modelName} D(IS=1e-20 N=1.8)`);
+        models.add(`.model ${modelName} D(IS=${saturationCurrent.toExponential(8)} N=${ideality})`);
         break;
       }
 
@@ -310,7 +399,8 @@ Vz 2 3 DC ${Math.max(vz - 0.7, 0.1)}
         const tEmitter = getNodeForTerminal(comp.id, 'bottom') ?? n3 ?? '0';
         const modelName = `NPNMOD_${id}`;
         lines.push(`Q_${id} ${tCollector} ${tBase} ${tEmitter} ${modelName}`);
-        models.add(`.model ${modelName} NPN(BF=100)`);
+        const beta = Math.min(Math.max(comp.params?.beta ?? 100, 1), 1000);
+        models.add(`.model ${modelName} NPN(BF=${beta})`);
         break;
       }
 
@@ -321,7 +411,8 @@ Vz 2 3 DC ${Math.max(vz - 0.7, 0.1)}
         const tEmitter = getNodeForTerminal(comp.id, 'bottom') ?? n3 ?? '0';
         const modelName = `PNPMOD_${id}`;
         lines.push(`Q_${id} ${tCollector} ${tBase} ${tEmitter} ${modelName}`);
-        models.add(`.model ${modelName} PNP(BF=100)`);
+        const beta = Math.min(Math.max(comp.params?.beta ?? 100, 1), 1000);
+        models.add(`.model ${modelName} PNP(BF=${beta})`);
         break;
       }
 
@@ -332,7 +423,9 @@ Vz 2 3 DC ${Math.max(vz - 0.7, 0.1)}
         const tSource = getNodeForTerminal(comp.id, 'bottom') ?? n3 ?? '0';
         const modelName = `NMOSMOD_${id}`;
         lines.push(`M_${id} ${tDrain} ${tGate} ${tSource} ${tSource} ${modelName}`);
-        models.add(`.model ${modelName} NMOS(VTO=1.0 KP=0.1)`);
+        const threshold = Math.max(comp.params?.thresholdVoltage ?? 1, 0.1);
+        const transconductance = Math.max(comp.params?.transconductance ?? 0.1, 1e-5);
+        models.add(`.model ${modelName} NMOS(VTO=${threshold} KP=${transconductance})`);
         break;
       }
 
@@ -343,7 +436,9 @@ Vz 2 3 DC ${Math.max(vz - 0.7, 0.1)}
         const tSource = getNodeForTerminal(comp.id, 'bottom') ?? n3 ?? '0';
         const modelName = `PMOSMOD_${id}`;
         lines.push(`M_${id} ${tDrain} ${tGate} ${tSource} ${tSource} ${modelName}`);
-        models.add(`.model ${modelName} PMOS(VTO=-1.0 KP=0.1)`);
+        const threshold = -Math.max(comp.params?.thresholdVoltage ?? 1, 0.1);
+        const transconductance = Math.max(comp.params?.transconductance ?? 0.1, 1e-5);
+        models.add(`.model ${modelName} PMOS(VTO=${threshold} KP=${transconductance})`);
         break;
       }
 
@@ -364,11 +459,12 @@ Vz 2 3 DC ${Math.max(vz - 0.7, 0.1)}
         const tInNeg = getNodeForTerminal(comp.id, 'bottom') ?? n2;
         const tOut = getNodeForTerminal(comp.id, 'right') ?? n3 ?? `NC_${id}_out`;
         const subcktName = `OPAMP_${id}`;
+        const gain = Math.max(comp.params?.gain ?? 100000, 1);
         lines.push(`X_${id} ${tInPos} ${tInNeg} ${tOut} ${subcktName}`);
         subcircuits.add(
 `.subckt ${subcktName} 1 2 3
 * 1: in+, 2: in-, 3: out
-E1 3 0 1 2 1e5
+E1 3 0 1 2 ${gain}
 Rin 1 2 10Meg
 Rout 3 0 50
 .ends ${subcktName}`
@@ -380,14 +476,20 @@ Rout 3 0 50
         const tInPos = getNodeForTerminal(comp.id, 'left') ?? n1;
         const tInNeg = getNodeForTerminal(comp.id, 'bottom') ?? n2;
         const tOut = getNodeForTerminal(comp.id, 'right') ?? n3 ?? `NC_${id}_out`;
-        lines.push(`E_${id} ${tOut} 0 ${tInPos} ${tInNeg} 1e6`);
+        const gain = Math.max(comp.params?.gain ?? 1000000, 1);
+        lines.push(`E_${id} ${tOut} 0 ${tInPos} ${tInNeg} ${gain}`);
         break;
       }
 
-      case 'transformer': {
-        // Primary (left, right), Secondary (top, bottom)
-        const ratio = rawVal > 0 ? rawVal / 120 : 1;
-        lines.push(`E_${id} ${n1} ${n2} ${n3 ?? '0'} 0 ${ratio}`);
+      case 'ammeter': {
+        const burden = Math.max(comp.params?.burdenResistance ?? 0.001, 1e-6);
+        lines.push(`R_${id} ${n1} ${n2} ${burden}`);
+        break;
+      }
+
+      case 'voltmeter': {
+        const inputResistance = Math.max(comp.params?.inputResistance ?? 10000000, 1e3);
+        lines.push(`R_${id} ${n1} ${n2} ${inputResistance}`);
         break;
       }
 
@@ -418,11 +520,7 @@ R3 4 2 5k
       }
 
       default:
-        // Passives or unknown components default to resistor
-        if (val > 0) {
-          lines.push(`R_${id} ${n1} ${n2} ${val}`);
-        }
-        break;
+        throw new Error(`No SPICE model is defined for component type "${comp.type}" (${comp.id}).`);
     }
   }
 
@@ -461,3 +559,4 @@ export function downloadNetlist(netlist: string, filename = 'eezone-circuit.cir'
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
 }
+

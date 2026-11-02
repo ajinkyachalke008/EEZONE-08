@@ -16,11 +16,14 @@ import {
 import type { Component as CanvasComponent, Wire } from '@/app/tools/circuit-simulator/page';
 import type { SimulationResult } from '@/lib/simulation-engine';
 import { MeasurementBus } from '@/lib/measurement-bus';
+import { getComponentSimulationSupport } from '@/lib/spice-netlist-generator';
+import { getComponentReference } from '@/lib/component-reference';
 
 interface EnhancedComponentPropertiesProps {
   component: CanvasComponent;
   wires: Wire[];
   simulationResult: SimulationResult | null;
+  engineUsed?: 'spice-ts' | 'legacy-mna';
   measurementBus: MeasurementBus | null;
   liveEditMode: boolean;
   onUpdateValue: (id: string, value: number) => void;
@@ -41,6 +44,7 @@ export const EnhancedComponentProperties: React.FC<EnhancedComponentPropertiesPr
   component,
   wires,
   simulationResult,
+  engineUsed = 'spice-ts',
   measurementBus,
   liveEditMode,
   onUpdateValue,
@@ -51,56 +55,40 @@ export const EnhancedComponentProperties: React.FC<EnhancedComponentPropertiesPr
   onRemove,
   onAttachProbe
 }) => {
-  // Find connected wires and node names
-  const connectedWires = useMemo(() => {
-    return wires.filter(w => w.from.componentId === component.id || w.to.componentId === component.id);
-  }, [wires, component.id]);
+  const componentValue = component.value ?? 0;
+  const simulationSupport = getComponentSimulationSupport(component.type);
+  const componentReference = getComponentReference(component.type);
+  const connectedWires = useMemo(() => wires.filter(w => w.from.componentId === component.id || w.to.componentId === component.id), [wires, component.id]);
 
   // Read telemetry metrics from MeasurementBus / SimulationResult
   const telemetry = useMemo(() => {
     if (!simulationResult || !simulationResult.success) {
-      return { vDrop: 0, current: 0, power: 0, state: 'Idle' };
+      return { vDrop: undefined, current: undefined, power: undefined, state: 'No simulation data' };
     }
 
     // Try finding componentData
     const cData = simulationResult.componentData?.[component.id];
     if (cData) {
       return {
-        vDrop: Math.abs(cData.voltage || 0),
-        current: Math.abs(cData.current || 0),
-        power: Math.abs(cData.power || 0),
-        state: cData.power > 0.5 ? 'High Power' : 'Active'
+        vDrop: cData.voltage === undefined ? undefined : Math.abs(cData.voltage),
+        current: cData.current === undefined ? undefined : Math.abs(cData.current),
+        power: cData.power === undefined ? undefined : Math.abs(cData.power),
+        state: cData.power === undefined ? 'Partial solver data' : cData.power > 0.5 ? 'High Power' : 'Active'
       };
     }
-
-    // Calculate from terminal voltages if available
-    let n1Volt = 0;
-    let n2Volt = 0;
-    if (simulationResult.nodes && simulationResult.nodes.length > 0) {
-      const n1Wire = connectedWires[0];
-      const n2Wire = connectedWires[1];
-      const n1Node = simulationResult.nodes.find(n => n.id === n1Wire?.netLabel || n.id === `Node_${n1Wire?.id}`);
-      const n2Node = simulationResult.nodes.find(n => n.id === n2Wire?.netLabel || n.id === `Node_${n2Wire?.id}`);
-      n1Volt = n1Node?.voltage || 0;
-      n2Volt = n2Node?.voltage || 0;
-    }
-
-    const vDrop = Math.abs(n1Volt - n2Volt);
-    const rVal = component.type === 'resistor' ? component.value : 1000;
-    const current = rVal > 0 ? vDrop / rVal : 0;
-    const power = vDrop * current;
-
-    return {
-      vDrop,
-      current,
-      power,
-      state: power > 0.25 ? 'Hot' : 'Normal'
-    };
-  }, [simulationResult, component, connectedWires]);
+    return { vDrop: undefined, current: undefined, power: undefined, state: 'Unavailable for this component' };
+  }, [simulationResult, component.id]);
 
   // Handle Frequency & AC Params
   const acFreq = component.params?.frequency ?? 1000;
   const acWfType = component.params?.waveformType ?? 0;
+  const potWiperRatio = component.params?.wiperRatio ?? 0.5;
+  const transistorBeta = component.params?.beta ?? 100;
+  const mosfetThreshold = component.params?.thresholdVoltage ?? 1;
+  const mosfetTransconductance = component.params?.transconductance ?? 0.1;
+  const meterInputResistance = component.params?.inputResistance ?? 10000000;
+  const meterBurdenResistance = component.params?.burdenResistance ?? 0.001;
+  const amplifierGain = component.params?.gain ?? (component.type === 'comparator' ? 1000000 : 100000);
 
   const handleFrequencyChange = (newFreq: number) => {
     if (onUpdateParams) {
@@ -132,12 +120,12 @@ export const EnhancedComponentProperties: React.FC<EnhancedComponentPropertiesPr
               </Badge>
               {liveEditMode && (
                 <Badge className="text-[10px] bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
-                  <Sparkles className="h-3 w-3 mr-1" /> Live SPICE Synced
+                  <Sparkles className="h-3 w-3 mr-1" /> Simulation Synced
                 </Badge>
               )}
             </div>
             <p className="text-xs text-slate-400 mt-0.5">
-              {connectedWires.length} Wires Connected • Real-time SPICE MNA parameters
+      {connectedWires.length} Wires Connected • {simulationSupport.detail}
             </p>
           </div>
         </div>
@@ -199,14 +187,14 @@ export const EnhancedComponentProperties: React.FC<EnhancedComponentPropertiesPr
                 <Sliders className="h-3.5 w-3.5" /> Primary Value
               </Label>
               <span className="text-xs font-mono font-bold text-slate-300">
-                {component.value} {component.unit}
+                {componentValue} {component.unit}
               </span>
             </div>
 
             <div className="flex items-center gap-2 mb-3">
               <Input
                 type="number"
-                value={component.value}
+                value={componentValue}
                 onChange={(e) => onUpdateValue(component.id, parseFloat(e.target.value))}
                 className="h-9 font-mono text-base font-bold bg-slate-900 text-cyan-300 border-slate-700 focus:border-cyan-500"
                 step="any"
@@ -224,10 +212,10 @@ export const EnhancedComponentProperties: React.FC<EnhancedComponentPropertiesPr
                 <span>10×</span>
               </div>
               <Slider
-                value={[component.value]}
-                min={Math.max(component.value * 0.1, 0.01)}
-                max={Math.max(component.value * 5, 100)}
-                step={component.value > 100 ? 10 : 0.5}
+                value={[componentValue]}
+                min={Math.max(componentValue * 0.1, 0.01)}
+                max={Math.max(componentValue * 5, 100)}
+                step={componentValue > 100 ? 10 : 0.5}
                 onValueChange={(vals) => onUpdateValue(component.id, vals[0])}
                 className="py-1 cursor-ew-resize"
               />
@@ -239,25 +227,25 @@ export const EnhancedComponentProperties: React.FC<EnhancedComponentPropertiesPr
             <Label className="text-[10px] font-semibold text-slate-400 mb-1.5 block">Quick Multipliers</Label>
             <div className="grid grid-cols-4 gap-1.5">
               <button
-                onClick={() => onUpdateValue(component.id, Math.round(component.value * 0.5 * 100) / 100)}
+                onClick={() => onUpdateValue(component.id, Math.round(componentValue * 0.5 * 100) / 100)}
                 className="px-2 py-1 text-xs font-mono bg-slate-800 hover:bg-slate-700 text-slate-300 rounded border border-slate-700 transition-colors"
               >
                 0.5×
               </button>
               <button
-                onClick={() => onUpdateValue(component.id, Math.round(component.value * 2 * 100) / 100)}
+                onClick={() => onUpdateValue(component.id, Math.round(componentValue * 2 * 100) / 100)}
                 className="px-2 py-1 text-xs font-mono bg-slate-800 hover:bg-slate-700 text-slate-300 rounded border border-slate-700 transition-colors"
               >
                 2.0×
               </button>
               <button
-                onClick={() => onUpdateValue(component.id, component.value * 10)}
+                onClick={() => onUpdateValue(component.id, componentValue * 10)}
                 className="px-2 py-1 text-xs font-mono bg-slate-800 hover:bg-slate-700 text-slate-300 rounded border border-slate-700 transition-colors"
               >
                 10×
               </button>
               <button
-                onClick={() => onUpdateValue(component.id, component.value / 10)}
+                onClick={() => onUpdateValue(component.id, componentValue / 10)}
                 className="px-2 py-1 text-xs font-mono bg-slate-800 hover:bg-slate-700 text-slate-300 rounded border border-slate-700 transition-colors"
               >
                 0.1×
@@ -272,6 +260,12 @@ export const EnhancedComponentProperties: React.FC<EnhancedComponentPropertiesPr
             <Label className="text-xs font-bold text-cyan-400 mb-2 flex items-center gap-1.5">
               <Cpu className="h-3.5 w-3.5" /> Component Characteristics
             </Label>
+            <div className={`mb-3 rounded border px-2 py-1.5 text-[10px] ${simulationSupport.kind === 'spice' ? 'border-emerald-500/30 bg-emerald-500/5 text-emerald-200' : 'border-amber-500/30 bg-amber-500/5 text-amber-200'}`}>
+              {simulationSupport.kind === 'spice'
+                ? `Simulation model: ${simulationSupport.accuracy}`
+                : 'Design symbol only: no electrical model'}
+              <span className="ml-1 text-slate-400">{simulationSupport.detail}</span>
+            </div>
 
             {/* If AC Source or Signal Gen */}
             {(component.type === 'voltage_ac' || component.type === 'signal_generator') && (
@@ -380,13 +374,67 @@ export const EnhancedComponentProperties: React.FC<EnhancedComponentPropertiesPr
                 <div className="p-2 bg-slate-900 rounded border border-slate-800 space-y-1 text-xs">
                   <div className="flex justify-between text-slate-300">
                     <span>Forward Drop (Vf):</span>
-                    <span className="font-mono text-cyan-300 font-bold">{component.type === 'led' ? '2.0 V' : '0.7 V'}</span>
+                    <span className="font-mono text-cyan-300 font-bold">{componentValue.toFixed(2)} V</span>
                   </div>
                   <div className="flex justify-between text-slate-300">
-                    <span>Max Forward Current:</span>
-                    <span className="font-mono text-cyan-300 font-bold">20 mA</span>
+                    <span>Calibration current:</span>
+                    <span className="font-mono text-cyan-300 font-bold">{component.type === 'led' ? `${((component.params?.forwardCurrent ?? 0.02) * 1000).toFixed(1)} mA` : '1 mA'}</span>
                   </div>
                 </div>
+                {component.type === 'led' && (
+                  <div className="mt-2">
+                    <Label className="text-[10px] text-slate-400">Current at the selected forward voltage (A)</Label>
+                    <Input type="number" min={0.0001} step={0.001} value={component.params?.forwardCurrent ?? 0.02} onChange={e => onUpdateParams?.(component.id, { ...component.params, forwardCurrent: Number(e.target.value) })} className="h-8 mt-1 bg-slate-900 text-cyan-300 border-slate-700" />
+                  </div>
+                )}
+              </div>
+            )}
+
+            {component.type === 'potentiometer' && (
+              <div className="space-y-2">
+                <div className="flex justify-between text-[10px] text-slate-400">
+                  <span>Wiper position</span><span className="font-mono text-cyan-300">{Math.round(potWiperRatio * 100)}%</span>
+                </div>
+                <Slider value={[potWiperRatio]} min={0.01} max={0.99} step={0.01} onValueChange={([wiperRatio]) => onUpdateParams?.(component.id, { ...component.params, wiperRatio })} />
+                <p className="text-[10px] text-slate-500">Sets the split between the two simulated resistor sections.</p>
+              </div>
+            )}
+
+            {(component.type === 'transistor_npn' || component.type === 'transistor_pnp') && (
+              <div className="space-y-1.5">
+                <Label className="text-[10px] text-slate-400">Generic transistor beta (BF)</Label>
+                <Input type="number" min={1} max={1000} value={transistorBeta} onChange={e => onUpdateParams?.(component.id, { ...component.params, beta: Number(e.target.value) })} className="h-8 bg-slate-900 text-cyan-300 border-slate-700" />
+                <p className="text-[10px] text-slate-500">Generic model parameter; real transistor gain varies with current and temperature.</p>
+              </div>
+            )}
+
+            {(component.type === 'mosfet_n' || component.type === 'mosfet_p') && (
+              <div className="grid grid-cols-2 gap-2">
+                <div><Label className="text-[10px] text-slate-400">|VTO| (V)</Label><Input type="number" min={0.1} step={0.1} value={mosfetThreshold} onChange={e => onUpdateParams?.(component.id, { ...component.params, thresholdVoltage: Number(e.target.value) })} className="h-8 bg-slate-900 text-cyan-300 border-slate-700" /></div>
+                <div><Label className="text-[10px] text-slate-400">KP (A/V²)</Label><Input type="number" min={0.00001} step={0.01} value={mosfetTransconductance} onChange={e => onUpdateParams?.(component.id, { ...component.params, transconductance: Number(e.target.value) })} className="h-8 bg-slate-900 text-cyan-300 border-slate-700" /></div>
+                <p className="col-span-2 text-[10px] text-slate-500">Generic MOSFET model parameters; no part-specific switching or thermal limits.</p>
+              </div>
+            )}
+
+            {component.type === 'voltmeter' && (
+              <div className="space-y-1.5">
+                <Label className="text-[10px] text-slate-400">Input resistance (Ω)</Label>
+                <Input type="number" min={1000} value={meterInputResistance} onChange={e => onUpdateParams?.(component.id, { ...component.params, inputResistance: Number(e.target.value) })} className="h-8 bg-slate-900 text-cyan-300 border-slate-700" />
+              </div>
+            )}
+
+            {component.type === 'ammeter' && (
+              <div className="space-y-1.5">
+                <Label className="text-[10px] text-slate-400">Shunt resistance (Ω)</Label>
+                <Input type="number" min={0.000001} step={0.001} value={meterBurdenResistance} onChange={e => onUpdateParams?.(component.id, { ...component.params, burdenResistance: Number(e.target.value) })} className="h-8 bg-slate-900 text-cyan-300 border-slate-700" />
+              </div>
+            )}
+
+            {(component.type === 'op_amp' || component.type === 'comparator') && (
+              <div className="space-y-1.5">
+                <Label className="text-[10px] text-slate-400">Open-loop gain (V/V)</Label>
+                <Input type="number" min={1} value={amplifierGain} onChange={e => onUpdateParams?.(component.id, { ...component.params, gain: Number(e.target.value) })} className="h-8 bg-slate-900 text-cyan-300 border-slate-700" />
+                <p className="text-[10px] text-slate-500">Ideal three-terminal model; supply rails and output saturation are omitted.</p>
               </div>
             )}
           </div>
@@ -425,7 +473,7 @@ export const EnhancedComponentProperties: React.FC<EnhancedComponentPropertiesPr
                 <Gauge className="h-3.5 w-3.5" /> In-Circuit Telemetry
               </Label>
               <Badge className="text-[10px] bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">
-                ● Live SPICE
+                ● {engineUsed === 'spice-ts' ? 'SPICE Solver' : 'Legacy MNA estimate'}
               </Badge>
             </div>
 
@@ -434,7 +482,7 @@ export const EnhancedComponentProperties: React.FC<EnhancedComponentPropertiesPr
               <div className="p-2 bg-slate-900/90 rounded border border-slate-800 flex items-center justify-between">
                 <span className="text-xs text-slate-400">Terminal Voltage (ΔV)</span>
                 <span className="text-sm font-mono font-bold text-cyan-300">
-                  {telemetry.vDrop.toFixed(3)} V
+                  {telemetry.vDrop === undefined ? '—' : `${telemetry.vDrop.toFixed(3)} V`}
                 </span>
               </div>
 
@@ -442,7 +490,7 @@ export const EnhancedComponentProperties: React.FC<EnhancedComponentPropertiesPr
               <div className="p-2 bg-slate-900/90 rounded border border-slate-800 flex items-center justify-between">
                 <span className="text-xs text-slate-400">Branch Current (I)</span>
                 <span className="text-sm font-mono font-bold text-amber-300">
-                  {telemetry.current >= 1 ? `${telemetry.current.toFixed(3)} A` : `${(telemetry.current * 1000).toFixed(2)} mA`}
+                  {telemetry.current === undefined ? '—' : telemetry.current >= 1 ? `${telemetry.current.toFixed(3)} A` : `${(telemetry.current * 1000).toFixed(2)} mA`}
                 </span>
               </div>
 
@@ -450,7 +498,7 @@ export const EnhancedComponentProperties: React.FC<EnhancedComponentPropertiesPr
               <div className="p-2 bg-slate-900/90 rounded border border-slate-800 flex items-center justify-between">
                 <span className="text-xs text-slate-400">Power Dissipation (P)</span>
                 <span className="text-sm font-mono font-bold text-emerald-300">
-                  {telemetry.power >= 1 ? `${telemetry.power.toFixed(3)} W` : `${(telemetry.power * 1000).toFixed(2)} mW`}
+                  {telemetry.power === undefined ? '—' : telemetry.power >= 1 ? `${telemetry.power.toFixed(3)} W` : `${(telemetry.power * 1000).toFixed(2)} mW`}
                 </span>
               </div>
             </div>
@@ -458,10 +506,42 @@ export const EnhancedComponentProperties: React.FC<EnhancedComponentPropertiesPr
 
           <div className="flex items-center justify-between pt-2 border-t border-slate-800 text-[10px] text-slate-400">
             <span>Operating State: <strong className="text-slate-200">{telemetry.state}</strong></span>
-            <span>MNA Linearized</span>
+            <span>{engineUsed !== 'spice-ts' ? 'Simplified MNA output' : simulationResult?.mode === 'transient' ? 'SPICE final time sample' : simulationResult?.mode === 'ac' ? 'AC frequency sweep' : 'SPICE DC operating point'}</span>
           </div>
         </div>
       </div>
+
+      {componentReference && (
+        <section className="mt-4 rounded-lg border border-indigo-500/25 bg-slate-950/70 p-4">
+          <div className="mb-3 flex items-center justify-between gap-2">
+            <h4 className="text-xs font-bold uppercase tracking-wide text-indigo-200">Structure, working & pin reference</h4>
+            <span className="text-[10px] text-slate-500">Generic family guide · check the selected part datasheet for ratings</span>
+          </div>
+          <div className="grid gap-3 lg:grid-cols-2">
+            <div className="space-y-3">
+              <div><p className="text-[10px] font-semibold text-slate-400">Internal structure</p><p className="mt-1 text-xs leading-relaxed text-slate-200">{componentReference.structure}</p></div>
+              <div><p className="text-[10px] font-semibold text-slate-400">How it works</p><p className="mt-1 text-xs leading-relaxed text-slate-200">{componentReference.workingPrinciple}</p></div>
+              <div><p className="text-[10px] font-semibold text-slate-400">Common uses</p><p className="mt-1 text-xs leading-relaxed text-slate-300">{componentReference.commonUses}</p></div>
+            </div>
+            <div>
+              <p className="mb-1.5 text-[10px] font-semibold text-slate-400">Pin functions</p>
+              <div className="max-h-48 space-y-1 overflow-y-auto pr-1">
+                {componentReference.pins.map(pin => (
+                  <div key={`${pin.terminal}-${pin.name}`} className="grid grid-cols-[minmax(70px,auto)_1fr] gap-2 rounded bg-slate-900 px-2 py-1.5 text-[10px]">
+                    <span className="font-mono font-bold text-cyan-200">{pin.name} <span className="font-sans font-normal capitalize text-slate-500">{pin.direction}</span></span>
+                    <span className="text-slate-300">{pin.description}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+          <div className="mt-3 grid gap-3 border-t border-slate-800 pt-3 sm:grid-cols-2">
+            <div><p className="mb-1 text-[10px] font-semibold text-slate-400">Characteristics</p><ul className="space-y-1 text-[10px] leading-relaxed text-slate-300">{componentReference.characteristics.map(item => <li key={item}>• {item}</li>)}</ul></div>
+            <div><p className="mb-1 text-[10px] font-semibold text-slate-400">Design notes</p><p className="text-[10px] leading-relaxed text-slate-300">{componentReference.designNotes}</p></div>
+          </div>
+        </section>
+      )}
     </div>
   );
 };
+

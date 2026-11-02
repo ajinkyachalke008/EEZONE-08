@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useMemo } from 'react';
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/dialog';
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -17,6 +17,7 @@ export interface MultimeterProps {
 }
 
 export type DMMMode = 'DCV' | 'ACV' | 'DCA' | 'ACA' | 'RES' | 'CONT' | 'DIODE' | 'PWR';
+interface DMMMeasurement { value: string; unit: string; secondary: string; isStale: boolean; raw: number }
 
 export const InteractiveMultimeter: React.FC<MultimeterProps> = ({
   measurementBus,
@@ -27,7 +28,7 @@ export const InteractiveMultimeter: React.FC<MultimeterProps> = ({
   const [probePos, setProbePos] = useState<string>('auto');
   const [probeCom, setProbeCom] = useState<string>('0');
   const [isHold, setIsHold] = useState(false);
-  const [holdValue, setHoldValue] = useState<{ value: string; unit: string; secondary: string } | null>(null);
+  const [holdValue, setHoldValue] = useState<DMMMeasurement | null>(null);
   const [relOffset, setRelOffset] = useState<number | null>(null);
 
   // Available probe nodes directly from MeasurementBus
@@ -45,7 +46,7 @@ export const InteractiveMultimeter: React.FC<MultimeterProps> = ({
   }, [measurementBus, simulationResult]);
 
   // Read strictly real electrical data from MeasurementBus
-  const measurement = useMemo(() => {
+  const measurement = useMemo<DMMMeasurement>(() => {
     if (isHold && holdValue !== null) {
       return holdValue;
     }
@@ -60,7 +61,9 @@ export const InteractiveMultimeter: React.FC<MultimeterProps> = ({
       };
     }
 
-    const activePos = probePos === 'auto' ? (availableNodes[0]?.id || '1') : probePos;
+    const activePos = probePos === 'auto'
+      ? (measurementBus.getPreferredOutputNode?.() || availableNodes.find(node => node.id !== '0')?.id || '1')
+      : probePos;
     const activeNeg = probeCom;
 
     switch (mode) {
@@ -81,9 +84,9 @@ export const InteractiveMultimeter: React.FC<MultimeterProps> = ({
       case 'ACV': {
         const wf = measurementBus.readWaveform(activePos, activeNeg);
         if (!wf.valid) {
-          return { value: '0.000', unit: 'V AC', secondary: 'No AC signal', isStale: wf.stale, raw: 0 };
+          return { value: '----', unit: 'V AC', secondary: wf.label || 'No time-domain waveform', isStale: wf.stale, raw: 0 };
         }
-        const rms = wf.metrics.vAcRms || (wf.metrics.vRms / Math.SQRT2);
+        const rms = wf.metrics.vAcRms;
         return {
           value: rms.toFixed(3),
           unit: 'V RMS',
@@ -94,26 +97,11 @@ export const InteractiveMultimeter: React.FC<MultimeterProps> = ({
       }
 
       case 'DCA': {
-        const meas = measurementBus.readCurrent('resistor');
-        return {
-          value: meas.formatted,
-          unit: meas.unit,
-          secondary: `Branch Current I(load)`,
-          isStale: meas.stale,
-          raw: meas.value
-        };
+        return { value: '----', unit: '', secondary: 'Select a simulated branch to measure current', isStale: false, raw: 0 };
       }
 
       case 'ACA': {
-        const meas = measurementBus.readCurrent('resistor');
-        const acI = Math.abs(meas.value) / Math.SQRT2;
-        return {
-          value: (acI * 1000).toFixed(2),
-          unit: 'mA RMS',
-          secondary: `AC Branch Current`,
-          isStale: meas.stale,
-          raw: acI
-        };
+        return { value: '----', unit: '', secondary: 'AC branch current is unavailable for this probe', isStale: false, raw: 0 };
       }
 
       case 'RES': {
@@ -121,7 +109,7 @@ export const InteractiveMultimeter: React.FC<MultimeterProps> = ({
         return {
           value: meas.formatted,
           unit: meas.unit,
-          secondary: meas.status === 'OL' ? 'OPEN CIRCUIT (OL)' : 'Equivalent Resistance',
+          secondary: !meas.valid ? meas.description || 'Resistance unavailable' : meas.status === 'OL' ? 'OPEN CIRCUIT (OL)' : 'Equivalent Resistance',
           isStale: meas.stale,
           raw: isFinite(meas.value) ? meas.value : 0
         };
@@ -130,11 +118,11 @@ export const InteractiveMultimeter: React.FC<MultimeterProps> = ({
       case 'CONT': {
         const cont = measurementBus.readContinuity(activePos, activeNeg);
         return {
-          value: cont.isConducting ? `${cont.resistance.toFixed(1)}` : 'OL',
+          value: !cont.valid ? '----' : cont.isConducting ? `${cont.resistance.toFixed(1)}` : 'OL',
           unit: cont.isConducting ? 'Ω' : '',
-          secondary: cont.isConducting ? '🔊 BEEP (CONTINUOUS PATH < 50Ω)' : 'OPEN CIRCUIT (NO CONTINUITY)',
+          secondary: !cont.valid ? 'Continuity unavailable without resistance test mode' : cont.isConducting ? '🔊 BEEP (CONTINUOUS PATH < 50Ω)' : 'OPEN CIRCUIT (NO CONTINUITY)',
           isStale: false,
-          raw: cont.isConducting ? 1 : 0
+          raw: cont.valid && cont.isConducting ? 1 : 0
         };
       }
 
@@ -143,11 +131,11 @@ export const InteractiveMultimeter: React.FC<MultimeterProps> = ({
         const vDrop = Math.abs(meas.value);
         const isForward = vDrop >= 0.3 && vDrop <= 3.5;
         return {
-          value: vDrop.toFixed(3),
-          unit: 'V Forward',
-          secondary: isForward ? 'DIODE CONDUCTING' : 'OPEN / REVERSE BIASED',
+          value: meas.valid ? vDrop.toFixed(3) : '----',
+          unit: meas.valid ? 'V Forward' : '',
+          secondary: !meas.valid ? 'Diode reading unavailable' : isForward ? 'DIODE CONDUCTING' : 'OPEN / REVERSE BIASED',
           isStale: meas.stale,
-          raw: vDrop
+          raw: meas.valid ? vDrop : 0
         };
       }
 
@@ -156,14 +144,14 @@ export const InteractiveMultimeter: React.FC<MultimeterProps> = ({
         return {
           value: pwr.formatted,
           unit: '',
-          secondary: `P = V_rms × I_rms`,
+          secondary: pwr.valid ? 'Real power from resistor DC operating point' : 'Select a component with available DC power data',
           isStale: pwr.stale,
           raw: pwr.realPower
         };
       }
 
       default:
-        return { value: '0.000', unit: 'V', secondary: '', isStale: false, raw: 0 };
+        return { value: '----', unit: '', secondary: 'Select a measurement mode', isStale: false, raw: 0 };
     }
   }, [mode, probePos, probeCom, isHold, holdValue, relOffset, measurementBus, simulationResult, availableNodes]);
 
@@ -354,3 +342,4 @@ export const InteractiveMultimeter: React.FC<MultimeterProps> = ({
     </div>
   );
 };
+

@@ -43,7 +43,7 @@ export const COMPONENT_LIBRARY: ComponentDefinition[] = [
     category: 'power',
     defaultValue: 120,
     unit: 'V',
-    description: 'Alternating current voltage source',
+    description: 'Time-domain source; value is peak amplitude in volts and frequency/waveform are configurable',
     pins: 2,
     tags: ['power', 'ac', 'source']
   },
@@ -131,9 +131,9 @@ export const COMPONENT_LIBRARY: ComponentDefinition[] = [
     label: 'Transformer',
     icon: '⚡',
     category: 'passive',
-    defaultValue: 120,
-    unit: 'V',
-    description: 'AC transformer',
+    defaultValue: 1,
+    unit: 'ratio',
+    description: 'Four-terminal transformer symbol; coupled winding simulation is not currently available',
     pins: 4,
     tags: ['passive', 'transformer', 'ac']
   },
@@ -291,8 +291,8 @@ export const COMPONENT_LIBRARY: ComponentDefinition[] = [
     category: 'digital',
     defaultValue: 8,
     unit: 'bit',
-    description: '8-bit shift register',
-    pins: 8,
+    description: 'Abstract 8-bit serial-in/parallel-out register with four output taps',
+    pins: 9,
     tags: ['digital', 'shift', 'register']
   },
   {
@@ -302,8 +302,8 @@ export const COMPONENT_LIBRARY: ComponentDefinition[] = [
     category: 'digital',
     defaultValue: 0,
     unit: '',
-    description: 'Binary counter',
-    pins: 8,
+    description: 'Generic 4-bit binary counter with clock, enable, and reset',
+    pins: 9,
     tags: ['digital', 'counter']
   },
 
@@ -316,7 +316,7 @@ export const COMPONENT_LIBRARY: ComponentDefinition[] = [
     defaultValue: 0,
     unit: '',
     description: 'Arduino Uno R3 board',
-    pins: 20,
+    pins: 27,
     tags: ['microcontroller', 'arduino', 'uno', 'atmega328']
   },
   {
@@ -327,7 +327,7 @@ export const COMPONENT_LIBRARY: ComponentDefinition[] = [
     defaultValue: 0,
     unit: '',
     description: 'Arduino Nano board',
-    pins: 20,
+    pins: 28,
     tags: ['microcontroller', 'arduino', 'nano']
   },
   {
@@ -338,7 +338,7 @@ export const COMPONENT_LIBRARY: ComponentDefinition[] = [
     defaultValue: 0,
     unit: '',
     description: 'ESP32 WiFi/Bluetooth MCU',
-    pins: 30,
+    pins: 29,
     tags: ['microcontroller', 'esp32', 'wifi', 'bluetooth']
   },
   {
@@ -360,7 +360,7 @@ export const COMPONENT_LIBRARY: ComponentDefinition[] = [
     defaultValue: 0,
     unit: '',
     description: 'Raspberry Pi Pico (RP2040)',
-    pins: 26,
+    pins: 38,
     tags: ['microcontroller', 'raspberry', 'pico', 'rp2040']
   },
 
@@ -411,12 +411,12 @@ export const COMPONENT_LIBRARY: ComponentDefinition[] = [
   },
   {
     type: 'stepper',
-    label: 'Stepper Motor',
+    label: 'Bipolar Stepper Motor',
     icon: '🔄',
     category: 'module',
-    defaultValue: 200,
-    unit: 'steps',
-    description: '28BYJ-48 stepper motor',
+    defaultValue: 0,
+    unit: '',
+    description: 'Generic four-wire bipolar stepper with two phase windings',
     pins: 4,
     tags: ['module', 'motor', 'stepper']
   },
@@ -479,45 +479,45 @@ export const COMPONENT_LIBRARY: ComponentDefinition[] = [
   // ANALOG ICs
   {
     type: 'op_amp',
-    label: 'Op-Amp (LM741)',
+    label: 'Ideal Op-Amp',
     icon: '△',
     category: 'analog',
     defaultValue: 0,
     unit: '',
-    description: 'LM741 operational amplifier',
-    pins: 8,
+    description: 'Simplified three-terminal high-gain amplifier; supply rails and real LM741 limits are omitted',
+    pins: 3,
     tags: ['analog', 'opamp', 'amplifier', 'lm741']
   },
   {
     type: 'comparator',
-    label: 'Comparator',
+    label: 'Ideal Comparator',
     icon: '⋚',
     category: 'analog',
     defaultValue: 0,
     unit: '',
-    description: 'Voltage comparator',
-    pins: 8,
+    description: 'Simplified three-terminal comparator; output saturation, hysteresis, and supply rails are omitted',
+    pins: 3,
     tags: ['analog', 'comparator']
   },
   {
     type: '555_timer',
-    label: '555 Timer',
+    label: '555 Timer (Design Symbol)',
     icon: '⏱️',
     category: 'analog',
     defaultValue: 1,
     unit: 'Hz',
-    description: 'NE555 timer IC',
+    description: 'Eight-pin design symbol with named pins; timing behavior is not currently simulated',
     pins: 8,
     tags: ['analog', '555', 'timer']
   },
   {
     type: 'voltage_regulator',
-    label: 'Voltage Regulator',
+    label: 'Ideal Voltage Regulator',
     icon: '⚡',
     category: 'analog',
     defaultValue: 5,
     unit: 'V',
-    description: 'LM7805 voltage regulator',
+    description: 'Simplified fixed-output source; dropout, current limit, and thermal behavior are omitted',
     pins: 3,
     tags: ['analog', 'regulator', 'lm7805']
   },
@@ -530,7 +530,7 @@ export const COMPONENT_LIBRARY: ComponentDefinition[] = [
     category: 'measurement',
     defaultValue: 0,
     unit: 'A',
-    description: 'Current measurement',
+    description: 'Series current meter with a modeled 1 mΩ shunt',
     pins: 2,
     tags: ['measurement', 'current', 'ammeter']
   },
@@ -541,7 +541,7 @@ export const COMPONENT_LIBRARY: ComponentDefinition[] = [
     category: 'measurement',
     defaultValue: 0,
     unit: 'V',
-    description: 'Voltage measurement',
+    description: 'Parallel voltage meter with a modeled 10 MΩ input resistance',
     pins: 2,
     tags: ['measurement', 'voltage', 'voltmeter']
   },
@@ -575,3 +575,4 @@ export function searchComponents(query: string): ComponentDefinition[] {
 export function getComponentByType(type: string): ComponentDefinition | undefined {
   return COMPONENT_LIBRARY.find(comp => comp.type === type);
 }
+

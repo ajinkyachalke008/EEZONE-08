@@ -45,7 +45,7 @@ export const InteractiveOscilloscope: React.FC<OscilloscopeProps> = ({
   const [ch1Coupling, setCh1Coupling] = useState<'DC' | 'AC'>('DC');
 
   // Channel 2 Config
-  const [ch2Node, setCh2Node] = useState<string>('none');
+  const [ch2Node, setCh2Node] = useState<string>('auto');
   const [ch2Ref, setCh2Ref] = useState<string>('0');
   const [ch2Enabled, setCh2Enabled] = useState(true);
   const [ch2VDiv, setCh2VDiv] = useState(1.0);
@@ -115,12 +115,12 @@ export const InteractiveOscilloscope: React.FC<OscilloscopeProps> = ({
 
     // Resolve node ids
     const activeCh1Node = ch1Node === 'auto'
-      ? (availableNodes[0]?.id || '1')
+      ? (measurementBus.getPreferredOutputNode?.() || availableNodes.find(node => node.id !== '0')?.id || '1')
       : ch1Node;
 
-    const activeCh2Node = ch2Node === 'none'
-      ? (availableNodes.length > 1 ? availableNodes[1]?.id : null)
-      : ch2Node;
+    const activeCh2Node = ch2Node === 'auto'
+      ? (measurementBus.getOtherNode?.(activeCh1Node) || availableNodes.find(node => node.id !== '0' && node.id !== activeCh1Node)?.id || null)
+      : ch2Node === 'none' ? null : ch2Node;
 
     const wf1 = measurementBus.readWaveform(activeCh1Node, ch1Ref);
     const wf2 = activeCh2Node ? measurementBus.readWaveform(activeCh2Node, ch2Ref) : null;
@@ -150,7 +150,7 @@ export const InteractiveOscilloscope: React.FC<OscilloscopeProps> = ({
   const formatPolyline = (time: number[], values: number[], vDiv: number, offsetDiv: number) => {
     if (!time || !values || values.length === 0) return '';
     const totalTimeSpan = currentTimeDiv * 10;
-    return generateScopePolyline(time, values, totalTimeSpan, vDiv, offsetDiv, triggerLevel, triggerSlope);
+    return generateScopePolyline(time, values, totalTimeSpan, vDiv, offsetDiv, triggerLevel, triggerSlope.toUpperCase() as 'RISING' | 'FALLING');
   };
 
   const ch1Points = useMemo(() => {
@@ -598,6 +598,7 @@ export const InteractiveOscilloscope: React.FC<OscilloscopeProps> = ({
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent className="bg-slate-900 border-slate-700 text-white">
+                  <SelectItem value="auto">Auto (Input)</SelectItem>
                   <SelectItem value="none">None (Disabled)</SelectItem>
                   {availableNodes.map(n => (
                     <SelectItem key={n.id} value={n.id}>{n.label}</SelectItem>
@@ -716,3 +717,4 @@ export const InteractiveOscilloscope: React.FC<OscilloscopeProps> = ({
     </div>
   );
 };
+

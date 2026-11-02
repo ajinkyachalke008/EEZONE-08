@@ -96,6 +96,18 @@ export class MeasurementBus {
     }));
   }
 
+  /** Prefer an explicitly named output for automatic instrument probes. */
+  public getPreferredOutputNode(): string | undefined {
+    const nodes = this.getAvailableNodes().filter(node => !node.isGround);
+    const outputName = /(?:^|[^a-z0-9])(?:vout|output|out)(?:$|[^a-z0-9])/i;
+    return nodes.find(node => outputName.test(node.id) || outputName.test(node.label))?.id ?? nodes[0]?.id;
+  }
+
+  /** Find the next non-ground node for a second automatic scope channel. */
+  public getOtherNode(nodeId?: string): string | undefined {
+    return this.getAvailableNodes().find(node => !node.isGround && node.id !== nodeId)?.id;
+  }
+
   /**
    * Reads single-ended ground referenced voltage V(node)
    */
@@ -135,6 +147,10 @@ export class MeasurementBus {
       };
     }
 
+    if (this.result.mode === 'ac') {
+      return { value: 0, formatted: '----', unit: 'V', valid: false, stale: this.isStale, status: 'NO_DATA', positiveNode: positive, negativeNode: negative, description: 'AC analysis returns a frequency sweep. Read its waveform instead of a single voltage value.' };
+    }
+
     const isGround = (id?: string) => !id || id === '0' || id === 'GND' || id.toUpperCase() === 'GROUND';
 
     // Extract positive node voltage
@@ -170,6 +186,18 @@ export class MeasurementBus {
       } else if (this.result.waveforms?.[negative]?.voltage?.length) {
         const arr = this.result.waveforms[negative].voltage;
         vNeg = arr[arr.length - 1];
+      } else {
+        return {
+          value: 0,
+          formatted: 'ERR',
+          unit: 'V',
+          valid: false,
+          stale: this.isStale,
+          status: 'ERR',
+          positiveNode: positive,
+          negativeNode: negative,
+          description: `Node ${negative} not found in circuit netlist`
+        };
       }
     }
 
@@ -225,15 +253,9 @@ export class MeasurementBus {
       };
     }
 
-    let iVal = 0;
-    if (this.result.componentData?.[branchOrComponentId]) {
-      iVal = this.result.componentData[branchOrComponentId].current;
-    } else {
-      // Find first component in dataset if exact branch not mapped
-      const keys = Object.keys(this.result.componentData || {});
-      if (keys.length > 0) {
-        iVal = this.result.componentData[keys[0]].current;
-      }
+    const iVal = this.result.componentData?.[branchOrComponentId]?.current;
+    if (iVal === undefined || !Number.isFinite(iVal)) {
+      return { value: 0, formatted: '----', unit: 'A', valid: false, stale: this.isStale, status: 'NO_DATA', branch: branchOrComponentId, description: 'Current is unavailable for this component.' };
     }
 
     const absI = Math.abs(iVal);
@@ -273,6 +295,14 @@ export class MeasurementBus {
     negativeNode: CircuitNodeId = '0'
   ): WaveformData {
     const isGround = (id?: string) => !id || id === '0' || id === 'GND' || id.toUpperCase() === 'GROUND';
+
+    if (this.result?.success && this.result.mode === 'ac') {
+      return {
+        time: [], values: [], unit: 'V', label: 'AC frequency sweep is not a time-domain waveform',
+        valid: false, stale: this.isStale, positiveNode, negativeNode,
+        source: { type: 'node-voltage', target: positiveNode }, metrics: analyzeWaveform([], [])
+      };
+    }
 
     if (!this.result || !this.result.success || !this.result.waveforms) {
       return {
@@ -318,7 +348,12 @@ export class MeasurementBus {
       if (negWf && negWf.voltage && negWf.voltage.length === posWf.voltage.length) {
         values = posWf.voltage.map((v, idx) => v - (negWf.voltage[idx] ?? 0));
       } else {
-        values = [...posWf.voltage];
+        return {
+          time: [], values: [], unit: 'V', label: `Node ${negativeNode} unavailable`, valid: false,
+          stale: this.isStale, positiveNode, negativeNode,
+          source: { type: 'differential-voltage', target: `${positiveNode}-${negativeNode}` },
+          metrics: analyzeWaveform([], [])
+        };
       }
     }
 
@@ -356,53 +391,7 @@ export class MeasurementBus {
       };
     }
 
-    // Check if connected directly across a resistor
-    const resComp = this.components.find(c => c.type === 'resistor');
-    let r = resComp ? (resComp.value || 1000) : 0;
-
-    if (r === 0) {
-      // Derive R = V / I from operating point
-      const vDiff = Math.abs(this.readDifferentialVoltage(positiveNode, negativeNode).value);
-      const iVal = Math.abs(this.readCurrent('resistor').value);
-      if (iVal > 1e-12) {
-        r = vDiff / iVal;
-      }
-    }
-
-    if (r <= 0 || !isFinite(r)) {
-      return {
-        value: Infinity,
-        formatted: 'OL',
-        unit: 'Ω',
-        valid: true,
-        stale: this.isStale,
-        status: 'OL',
-        description: 'Open Loop (Overload)'
-      };
-    }
-
-    let formatted = '';
-    let unit = 'Ω';
-
-    if (r >= 1e6) {
-      formatted = (r / 1e6).toFixed(3);
-      unit = 'MΩ';
-    } else if (r >= 1e3) {
-      formatted = (r / 1e3).toFixed(2);
-      unit = 'kΩ';
-    } else {
-      formatted = r.toFixed(1);
-      unit = 'Ω';
-    }
-
-    return {
-      value: r,
-      formatted,
-      unit,
-      valid: true,
-      stale: this.isStale,
-      status: this.isStale ? 'STALE' : 'VALID'
-    };
+    return { value: 0, formatted: '----', unit: 'Ω', valid: false, stale: this.isStale, status: 'NO_DATA', description: 'Resistance test mode is not simulated yet.' };
   }
 
   /**
@@ -412,8 +401,11 @@ export class MeasurementBus {
     positiveNode: CircuitNodeId,
     negativeNode: CircuitNodeId = '0',
     thresholdOhms: number = 50
-  ): { isConducting: boolean; resistance: number; formatted: string; isBeep: boolean } {
+  ): { isConducting: boolean; resistance: number; formatted: string; isBeep: boolean; valid: boolean } {
     const resMeas = this.readResistance(positiveNode, negativeNode);
+    if (!resMeas.valid) {
+      return { isConducting: false, resistance: 0, formatted: '----', isBeep: false, valid: false };
+    }
     const r = resMeas.value;
     const isConducting = isFinite(r) && r >= 0 && r <= thresholdOhms;
 
@@ -421,7 +413,8 @@ export class MeasurementBus {
       isConducting,
       resistance: r,
       formatted: isConducting ? `${r.toFixed(1)} Ω` : 'OPEN (OL)',
-      isBeep: isConducting
+      isBeep: isConducting,
+      valid: true
     };
   }
 
@@ -441,21 +434,16 @@ export class MeasurementBus {
       };
     }
 
-    let p = 0;
-    let v = 0;
-    let i = 0;
+    if (this.result.mode !== 'dc') {
+      return { realPower: 0, apparentPower: 0, voltageRms: 0, currentRms: 0, valid: false, stale: this.isStale, formatted: '----' };
+    }
 
-    if (this.result.componentData?.[componentId]) {
-      p = this.result.componentData[componentId].power;
-      v = this.result.componentData[componentId].voltage;
-      i = this.result.componentData[componentId].current;
-    } else {
-      const keys = Object.keys(this.result.componentData || {});
-      if (keys.length > 0) {
-        p = this.result.componentData[keys[0]].power;
-        v = this.result.componentData[keys[0]].voltage;
-        i = this.result.componentData[keys[0]].current;
-      }
+    const data = this.result.componentData?.[componentId];
+    const p = data?.power;
+    const v = data?.voltage;
+    const i = data?.current;
+    if (p === undefined || v === undefined || i === undefined || ![p, v, i].every(Number.isFinite)) {
+      return { realPower: 0, apparentPower: 0, voltageRms: 0, currentRms: 0, valid: false, stale: this.isStale, formatted: '----' };
     }
 
     let formatted = '';
@@ -478,3 +466,4 @@ export class MeasurementBus {
     };
   }
 }
+

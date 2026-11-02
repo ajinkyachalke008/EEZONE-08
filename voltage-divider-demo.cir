@@ -1,0 +1,8 @@
+* EE ZONE trust check: unloaded 12 V voltage divider
+* Expected: VIN=12 V, VOUT=6 V, I=0.6 mA, each resistor dissipates 3.6 mW
+V1 VIN 0 DC 12
+R1 VIN VOUT 10k
+R2 VOUT 0 10k
+.op
+.end
+

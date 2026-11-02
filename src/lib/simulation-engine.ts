@@ -17,16 +17,21 @@ export interface SimulationNode {
   isGround: boolean;
 }
 
+export interface ComponentSimulationData {
+  /** Signed voltage from the first SPICE terminal to the second, when available. */
+  voltage?: number;
+  /** Signed current in the solver's branch direction, when the solver exposes it. */
+  current?: number;
+  /** Signed instantaneous/DC power, only when voltage and current are solver-derived. */
+  power?: number;
+}
+
 export interface SimulationResult {
   success: boolean;
   mode: 'dc' | 'ac' | 'transient';
   timestamp: number;
   nodes: SimulationNode[];
-  componentData: Record<string, {
-    voltage: number;
-    current: number;
-    power: number;
-  }>;
+  componentData: Record<string, ComponentSimulationData>;
   waveforms?: {
     [nodeId: string]: {
       time: number[];
@@ -358,25 +363,21 @@ export function simulateDC(
     const voltages = solver.solve();
     
     // Calculate component currents and powers
-    const componentData: Record<string, any> = {};
+    const componentData: Record<string, ComponentSimulationData> = {};
     
     components.forEach(comp => {
       const v1 = voltages.get(comp.nodes[0]) || 0;
       const v2 = voltages.get(comp.nodes[1]) || 0;
       const voltageDrop = v1 - v2;
       
-      let current = 0;
+      let current: number | undefined;
       if (comp.type === 'resistor') {
         current = voltageDrop / comp.value;
-      } else if (comp.type === 'voltage_dc' || comp.type === 'battery') {
-        // Current through voltage source (simplified)
-        current = 0.001; // Placeholder
       }
-      
+
       componentData[comp.id] = {
         voltage: Math.abs(voltageDrop),
-        current: Math.abs(current),
-        power: Math.abs(voltageDrop * current)
+        ...(current === undefined ? {} : { current: Math.abs(current), power: Math.abs(voltageDrop * current) })
       };
     });
     
@@ -418,7 +419,7 @@ export function simulateAC(
     const pointsPerDecade = settings.acPointsPerDecade || 10;
     
     const waveforms: Record<string, any> = {};
-    const measurements: Record<string, any> = { rms: {}, peak: {}, frequency: {}, phase: {} };
+    const measurements: NonNullable<SimulationResult['measurements']> = { rms: {}, peak: {}, frequency: {}, phase: {} };
     
     // Generate frequency points
     const decades = Math.log10(stopFreq / startFreq);
@@ -534,7 +535,7 @@ export function simulateTransient(
     }
     
     // Calculate measurements
-    const measurements: Record<string, any> = { rms: {}, peak: {}, frequency: {}, phase: {} };
+    const measurements: NonNullable<SimulationResult['measurements']> = { rms: {}, peak: {}, frequency: {}, phase: {} };
     
     Object.keys(waveforms).forEach(nodeId => {
       const voltages = waveforms[nodeId].voltage;
@@ -616,3 +617,4 @@ export function updateSimulation(
   // In a real implementation, this would do incremental updates
   return runSimulation(updatedComponents, nodes, settings);
 }
+
