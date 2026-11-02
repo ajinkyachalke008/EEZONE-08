@@ -69,7 +69,7 @@ export interface SignalGeneratorConfig {
   enabled: boolean;
   waveform: 'SINE' | 'SQUARE' | 'TRIANGLE' | 'SAWTOOTH' | 'DC';
   frequency: number; // in Hz (e.g. 1000)
-  amplitude: number; // in Vpp or Vpeak (e.g. 5.0)
+  amplitude: number; // peak-to-peak voltage (e.g. 5.0 Vpp)
   offset: number; // in Volts (e.g. 0.0)
   dutyCycle: number; // in % (e.g. 50)
   outputNode: string;

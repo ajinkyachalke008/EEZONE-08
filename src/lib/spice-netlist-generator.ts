@@ -152,17 +152,50 @@ function cleanId(id: string): string {
 function createNodeResolver(components: CanvasComponent[], wires: CanvasWire[]) {
   const nets = buildNetlist(components as any, wires as any);
   const terminalToNode = new Map<string, string>();
-  let nextNodeNumber = 1;
+  const explicitNodes = new Map<string, string>();
+  const allocatedNodes = new Map<string, string>();
 
   nets.forEach(net => {
+    const label = net.explicitLabel?.trim().toUpperCase();
+    if (net.isGround || label === 'GND' || label === '0') {
+      if (label) explicitNodes.set(label, '0');
+    }
+  });
+
+  const allocateUniqueNode = (base: string, owner: string): string => {
+    let candidate = base || 'N';
+    let suffix = 1;
+    while (allocatedNodes.has(candidate.toUpperCase()) && allocatedNodes.get(candidate.toUpperCase()) !== owner) {
+      candidate = `${base || 'N'}_${suffix++}`;
+    }
+    allocatedNodes.set(candidate.toUpperCase(), owner);
+    return candidate;
+  };
+
+  nets.forEach((net, index) => {
     let nodeName = '0';
-    if (!net.isGround && net.label.toUpperCase() !== 'GND') {
-      const sanitized = net.label.replace(/[^a-zA-Z0-9_]/g, '_');
-      if (sanitized && sanitized.toUpperCase() !== 'GND') {
-        nodeName = sanitized;
-      } else {
-        nodeName = `N${nextNodeNumber++}`;
+    const explicitLabel = net.explicitLabel?.trim();
+    const normalizedLabel = explicitLabel?.toUpperCase() ?? '';
+
+    if (net.isGround || normalizedLabel === 'GND' || normalizedLabel === '0') {
+      nodeName = '0';
+      // A user label on a reference net is an alias for ground everywhere.
+      if (explicitLabel && normalizedLabel !== 'GND' && normalizedLabel !== '0') {
+        explicitNodes.set(normalizedLabel, '0');
       }
+    } else if (explicitLabel) {
+      const existing = explicitNodes.get(normalizedLabel);
+      if (existing) {
+        nodeName = existing;
+      } else {
+        const sanitized = explicitLabel.replace(/[^a-zA-Z0-9_]/g, '_') || `N${index + 1}`;
+        nodeName = allocateUniqueNode(sanitized, `label:${normalizedLabel}`);
+        explicitNodes.set(normalizedLabel, nodeName);
+      }
+    } else {
+      // buildNetlist's friendly labels (e.g. VCC) are not electrical aliases.
+      // Keep each unlabeled connected net electrically independent.
+      nodeName = allocateUniqueNode(`N${index + 1}`, `net:${net.id}`);
     }
     net.components.forEach(nc => {
       terminalToNode.set(`${nc.componentId}:${nc.terminal}`, nodeName);
@@ -311,8 +344,9 @@ export function generateSpiceNetlist(
       case 'voltage_ac':
       case 'signal_generator': {
         const freq = comp.params?.frequency ?? 1000;
-        const amp = val > 0 ? val : 5.0;
-        const offset = comp.params?.offset ?? 0;
+        const generatorEnabled = comp.params?.signalGeneratorEnabled !== 0;
+        const amp = generatorEnabled ? val : 0;
+        const offset = generatorEnabled ? (comp.params?.offset ?? 0) : 0;
         const wfType = comp.params?.waveformType ?? 0; // 0=SINE, 1=SQUARE, 2=TRIANGLE, 3=SAW, 4=DC
         const per = 1 / Math.max(freq, 1);
 
@@ -320,19 +354,22 @@ export function generateSpiceNetlist(
           lines.push(`V_${id} ${n1} ${n2} AC ${amp} 0`);
         } else if (wfType === 1 || comp.params?.waveform === 1) {
           // SQUARE / PULSE
-          const duty = (comp.params?.dutyCycle ?? 50) / 100;
-          const pw = per * duty;
+          const duty = Math.min(Math.max((comp.params?.dutyCycle ?? 50) / 100, 0), 1);
           const tr = Math.min(per * 0.01, 1e-6);
-          lines.push(`V_${id} ${n1} ${n2} PULSE(${offset} ${offset + amp} 0 ${tr} ${tr} ${pw} ${per})`);
+          const tf = tr;
+          // The high-state interval includes the rising edge and roughly half
+          // of the falling edge when measured at the waveform midpoint.
+          const pw = Math.max(per * duty - tr - tf / 2, 0);
+          lines.push(`V_${id} ${n1} ${n2} PULSE(${offset - amp} ${offset + amp} 0 ${tr} ${tf} ${pw} ${per})`);
         } else if (wfType === 2) {
           const ramp = per / 2;
-          lines.push(`V_${id} ${n1} ${n2} PULSE(${offset} ${offset + amp} 0 ${ramp} ${ramp} 0 ${per})`);
+          lines.push(`V_${id} ${n1} ${n2} PULSE(${offset - amp} ${offset + amp} 0 ${ramp} ${ramp} 0 ${per})`);
         } else if (wfType === 3) {
           const rise = Math.min(per * 1e-4, 1e-9);
           const fall = Math.max(per - rise, 1e-12);
-          lines.push(`V_${id} ${n1} ${n2} PULSE(${offset} ${offset + amp} 0 ${rise} ${fall} 0 ${per})`);
+          lines.push(`V_${id} ${n1} ${n2} PULSE(${offset - amp} ${offset + amp} 0 ${rise} ${fall} 0 ${per})`);
         } else if (wfType === 4) {
-          lines.push(`V_${id} ${n1} ${n2} DC ${offset || amp}`);
+          lines.push(`V_${id} ${n1} ${n2} DC ${offset}`);
         } else {
           // SINE default for transient: SIN(VO VA FREQ)
           lines.push(`V_${id} ${n1} ${n2} SIN(${offset} ${amp} ${freq})`);
@@ -559,4 +596,3 @@ export function downloadNetlist(netlist: string, filename = 'eezone-circuit.cir'
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
 }
-

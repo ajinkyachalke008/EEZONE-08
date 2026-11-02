@@ -33,6 +33,8 @@ interface Wire {
 interface Net {
   id: string;
   label: string;
+  /** User-entered net label. Generated display labels must never short separate nets. */
+  explicitLabel?: string;
   components: { componentId: string; terminal: string }[];
   isGround: boolean;
   isPower: boolean;
@@ -100,21 +102,21 @@ export function buildNetlist(components: Component[], wires: Wire[]): Net[] {
         return false;
       });
 
-      // Auto-label based on type
-      let label = `Node_${nets.length + 1}`;
-      if (isGround) label = 'GND';
-      else if (isPower) label = 'VCC';
+      const terminalKeys = new Set(netComponents.map(({ componentId, terminal }) => `${componentId}:${terminal}`));
+      const explicitLabel = wires.find(wire => {
+        const fromKey = `${wire.from.componentId}:${wire.from.terminal}`;
+        const toKey = `${wire.to.componentId}:${wire.to.terminal}`;
+        return (terminalKeys.has(fromKey) || terminalKeys.has(toKey)) && Boolean(wire.netLabel?.trim());
+      })?.netLabel?.trim();
 
-      // Check for existing label from wires
-      const wire = wires.find(w => 
-        (w.from.componentId === netComponents[0].componentId && w.from.terminal === netComponents[0].terminal) ||
-        (w.to.componentId === netComponents[0].componentId && w.to.terminal === netComponents[0].terminal)
-      );
-      if (wire?.netLabel) label = wire.netLabel;
+      // Display labels are hints only. The solver uses explicitLabel for global
+      // label-based connections and gives every unlabeled net its own node.
+      const label = explicitLabel || (isGround ? 'GND' : isPower ? 'VCC' : `Node_${nets.length + 1}`);
 
       nets.push({
         id: netId,
         label,
+        explicitLabel,
         components: netComponents,
         isGround,
         isPower
@@ -463,6 +465,27 @@ function checkIsolatedComponents(components: Component[], wires: Wire[]): Valida
 // Auto-generate net labels
 export function autoLabelNets(wires: Wire[], components: Component[]): Wire[] {
   const nets = buildNetlist(components, wires);
+  const usedLabels = new Set(
+    nets.flatMap(net => net.explicitLabel ? [net.explicitLabel.trim().toUpperCase()] : [])
+  );
+  const generatedLabels = new Map<string, string>();
+
+  nets.forEach((net, index) => {
+    if (net.explicitLabel) return;
+    if (net.isGround) {
+      generatedLabels.set(net.id, 'GND');
+      return;
+    }
+
+    const prefix = net.isPower ? 'VCC' : 'N';
+    let candidate = `${prefix}_${index + 1}`;
+    let suffix = 1;
+    while (usedLabels.has(candidate.toUpperCase())) {
+      candidate = `${prefix}_${index + 1}_${suffix++}`;
+    }
+    usedLabels.add(candidate.toUpperCase());
+    generatedLabels.set(net.id, candidate);
+  });
   
   return wires.map(wire => {
     // Find which net this wire belongs to
@@ -474,7 +497,7 @@ export function autoLabelNets(wires: Wire[], components: Component[]): Wire[] {
     );
 
     if (net && !wire.netLabel) {
-      return { ...wire, netLabel: net.label };
+      return { ...wire, netLabel: net.explicitLabel ?? generatedLabels.get(net.id) ?? net.label };
     }
 
     return wire;

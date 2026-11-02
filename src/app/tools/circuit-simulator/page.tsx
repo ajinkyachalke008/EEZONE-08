@@ -59,6 +59,7 @@ import { EnhancedComponentProperties } from '@/components/circuit/enhanced-compo
 import { ComponentReferenceDialog } from '@/components/circuit/component-reference-dialog';
 import type { SignalGeneratorConfig } from '@/lib/instrument-types';
 import { COMPONENT_REFERENCE, getComponentReference } from '@/lib/component-reference';
+import { rotateTerminalPositions } from '@/lib/circuit-component-geometry';
 import {
   Dialog,
   DialogContent,
@@ -768,17 +769,9 @@ export default function CircuitSimulatorPage() {
     setIsRunning(true);
     setLiveEditMode(true);
 
-    // Auto-detect mode if AC or reactive/dynamic components are present
-    const hasDynamic = circuitComponents.some(c =>
-      c.type === 'voltage_ac' || 
-      c.type === 'signal_generator' || 
-      c.type === 'capacitor' || 
-      c.type === 'inductor'
-    );
-    const effectiveSettings: SimulationSettings = {
-      ...simulationSettings,
-      mode: hasDynamic ? 'transient' : simulationSettings.mode
-    };
+    // The selected analysis is authoritative. Reactive components are valid in
+    // DC, AC, and transient analyses, each with different physical meaning.
+    const effectiveSettings = simulationSettings;
 
     try {
       if (!isSpiceEligible(circuitComponents as any)) throw new Error('This circuit contains a component with no SPICE model.');
@@ -820,13 +813,7 @@ export default function CircuitSimulatorPage() {
       return;
     }
 
-    const hasDynamic = updatedComponents.some(c => 
-      c.type === 'voltage_ac' || c.type === 'signal_generator' || c.type === 'capacitor' || c.type === 'inductor'
-    );
-    const effectiveSettings: SimulationSettings = {
-      ...simulationSettings,
-      mode: hasDynamic ? 'transient' : simulationSettings.mode
-    };
+    const effectiveSettings = simulationSettings;
 
     try {
       const netlist = generateSpiceNetlist(updatedComponents as any, wires as any, effectiveSettings);
@@ -1122,7 +1109,7 @@ export default function CircuitSimulatorPage() {
     updateComponentValueLive(id, value);
   };
 
-  const getComponentTerminals = (comp: Component): {
+  const getUnrotatedComponentTerminals = (comp: Component): {
     id: string;
     label?: string;
     x: number;
@@ -1228,6 +1215,12 @@ export default function CircuitSimulatorPage() {
           { id: 'right', label: pinLabel('right', comp.type === 'battery' ? '+' : '2'), x: 60, y: 30 }
         ];
     }
+  };
+
+  const getComponentTerminals = (comp: Component) => {
+    const terminals = getUnrotatedComponentTerminals(comp);
+    const isWideSymbol = ['arduino_uno', 'arduino_nano', 'esp32', 'esp8266', 'raspberry_pi_pico'].includes(comp.type);
+    return rotateTerminalPositions(terminals, comp.rotation, isWideSymbol ? 80 : 60, 60);
   };
 
   const getTerminalPosition = (comp: Component, terminal: string) => {
@@ -2479,21 +2472,26 @@ export default function CircuitSimulatorPage() {
                   setSignalGenConfig(newCfg);
                   setComponents(prev => prev.map(c => {
                     if (c.type === 'voltage_ac' || c.type === 'signal_generator') {
-                          const wfTypeMap = { SINE: 0, SQUARE: 1, TRIANGLE: 2, SAWTOOTH: 3, DC: 4 };
+                      const wfTypeMap: Record<SignalGeneratorConfig['waveform'], number> = {
+                        SINE: 0, SQUARE: 1, TRIANGLE: 2, SAWTOOTH: 3, DC: 4
+                      };
                       return {
                         ...c,
-                        value: newCfg.amplitude,
+                        // The panel is specified in Vpp; the source symbol stores Vpeak.
+                        value: newCfg.enabled ? newCfg.amplitude / 2 : 0,
                         params: {
                           ...c.params,
                           frequency: newCfg.frequency,
                           offset: newCfg.offset,
                           dutyCycle: newCfg.dutyCycle,
-                          waveformType: wfTypeMap[newCfg.waveform] ?? 0
+                          waveformType: wfTypeMap[newCfg.waveform],
+                          signalGeneratorEnabled: newCfg.enabled ? 1 : 0
                         }
                       };
                     }
                     return c;
                   }));
+                  invalidateSimulation();
                 }}
               />
             </div>
@@ -2690,4 +2688,3 @@ export default function CircuitSimulatorPage() {
     </div>
   );
 }
-
