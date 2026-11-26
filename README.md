@@ -90,6 +90,7 @@ The platform is built on **Next.js 15 App Router**, backed by **Turso (libSQL)**
 |:---:|:---:|
 | ![Learning Hub Preview](https://placehold.co/600x350/0A0A0F/22C55E?text=Add+Learning+Hub+Screenshot) | ![Magic CAD Preview](https://placehold.co/600x350/0A0A0F/3B82F6?text=Add+Magic+CAD+Screenshot) |
 
+
 > 📸 **To add your own screenshots:** Upload images to this repo under `/public/previews/` and replace the placeholder URLs above.
 
 </div>
@@ -130,6 +131,7 @@ The platform is built on **Next.js 15 App Router**, backed by **Turso (libSQL)**
 - Fuse & Breaker Sizing, Voltage Divider, PCB Trace Width, Thermal Management
 
 ---
+
 
 ### 🔌 Interactive Design & Simulation
 
